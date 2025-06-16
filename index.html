@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My App Collection</title>
+    <!-- Tailwind CSS CDN for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Light blue-gray background */
+            color: #334155; /* Dark slate text */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+            flex-grow: 1;
+        }
+        .app-card {
+            background-color: #ffffff;
+            border-radius: 1.5rem; /* More rounded corners for cards */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Soft shadow */
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .app-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 20px -5px rgba(0, 0, 0, 0.15), 0 6px 10px -3px rgba(0, 0, 0, 0.08);
+        }
+        .app-card h2 {
+            color: #1e293b; /* Darker heading color */
+            font-weight: 700; /* Extra bold title */
+            margin-bottom: 0.75rem;
+            font-size: 1.75rem; /* Text-2xl */
+        }
+        .app-card p {
+            color: #475569; /* Darker gray for description */
+            margin-bottom: 1.5rem;
+            font-size: 1rem; /* Text-base */
+            line-height: 1.6;
+        }
+        .btn-access {
+            background-image: linear-gradient(to right, #6366f1, #8b5cf6); /* Gradient button */
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: 9999px; /* Fully rounded pill button */
+            font-weight: 600;
+            transition: all 0.2s ease-in-out;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            text-decoration: none; /* Remove underline from links */
+            display: inline-block; /* Allows padding and width */
+        }
+        .btn-access:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 10px -1px rgba(0, 0, 0, 0.15), 0 3px 6px -1px rgba(0, 0, 0, 0.08);
+        }
+        .header {
+            background-image: linear-gradient(to right top, #6d28d9, #7c3aed, #8b5cf6, #9c6cff, #ac7eff); /* Vibrant gradient header */
+            color: white;
+            padding: 4rem 2rem;
+            text-align: center;
+            border-bottom-left-radius: 2rem; /* More prominent curve */
+            border-bottom-right-radius: 2rem;
+            box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.2);
+        }
+        .header h1 {
+            font-size: 3.5rem; /* Text-5xl */
+            font-weight: 800; /* Extra bold */
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        .header p {
+            font-size: 1.25rem; /* Text-xl */
+            opacity: 0.9;
+        }
+        .footer {
+            background-color: #1e293b; /* Dark slate background */
+            color: #cbd5e1; /* Light gray text */
+            padding: 2rem;
+            text-align: center;
+            border-top-left-radius: 1.5rem;
+            border-top-right-radius: 1.5rem;
+            margin-top: auto; /* Push footer to the bottom */
+            box-shadow: 0 -10px 15px -3px rgba(0, 0, 0, 0.1), 0 -4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .footer a {
+            color: #a78bfa; /* Lighter purple for links */
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <header class="header">
+        <h1>Welcome to My App Hub!</h1>
+        <p>Your one-stop destination for useful web applications, built to simplify your tasks.</p>
+    </header>
+
+    <main class="container py-12">
+        <div id="apps-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- App cards will be dynamically inserted here -->
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2024 My App Collection. All rights reserved.</p>
+        <p class="mt-2 text-sm">Developed with <span class="text-red-500">&hearts;</span> by Nishikant Xalxo - <a href="https://www.instagram.com/nishix_vamp" target="_blank" rel="noopener noreferrer">@nishix_vamp</a></p>
+    </footer>
+
+    <script>
+        // Array to store your app details
+        // You can easily add more apps by adding new objects to this array
+        const apps = [
+            {
+                title: "Passport Photo Creator",
+                description: "Effortlessly create and customize passport-sized photos for various documents. Adjust dimensions, crop, and arrange multiple copies on a single page for printing.",
+                url: "https://shaderindia.github.io/PassportSizePhoto/"
+            },
+            {
+                title: "Monthly Salary Calculator",
+                description: "Calculate your net monthly salary after deductions. Quickly determine your take-home pay based on your gross income and various financial inputs.",
+                url: "https://shaderindia.github.io/Monthly-Salary-Calculator-/"
+            },
+            // Add more apps here in the future:
+            // {
+            //     title: "Your New App Title",
+            //     description: "A concise, 20-word description of what your new app does and its main benefit to the user.",
+            //     url: "https://your-new-app-link.com/"
+            // }
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const appsGrid = document.getElementById('apps-grid');
+
+            // Loop through the apps array and create a card for each
+            apps.forEach(app => {
+                const appCard = document.createElement('div');
+                appCard.classList.add('app-card');
+
+                const appTitle = document.createElement('h2');
+                appTitle.textContent = app.title;
+
+                const appDescription = document.createElement('p');
+                appDescription.textContent = app.description;
+
+                const accessButton = document.createElement('a');
+                accessButton.href = app.url;
+                accessButton.target = "_blank"; // Open link in a new tab
+                accessButton.rel = "noopener noreferrer"; // Security best practice for target='_blank'
+                accessButton.classList.add('btn-access');
+                accessButton.textContent = "Access App";
+
+                appCard.appendChild(appTitle);
+                appCard.appendChild(appDescription);
+                appCard.appendChild(accessButton);
+
+                appsGrid.appendChild(appCard);
+            });
+        });
+    </script>
+</body>
+</html>
