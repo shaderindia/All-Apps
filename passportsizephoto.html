@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7727546410030506"
+     crossorigin="anonymous"></script>
+  <meta charset="UTF-8">
+  <title>Passport Photo Maker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- FontAwesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <!-- Google Fonts (Inter) -->
+  <link href="https://fonts.googleapis.com/css?family=Inter:400,600&display=swap" rel="stylesheet">
+  <!-- Main Styles -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="header-glass">
+    <div class="header-content">
+      <div class="header-title">
+        <i class="fa fa-passport"></i> Passport Photo Maker
+        <span class="header-badge">2025</span>
+      </div>
+      <div class="header-sub">
+        Create, crop, and print passport photos — ultra-smooth, mobile friendly, and completely free!
+      </div>
+    </div>
+    <div class="header-nav">
+      <button class="nav-btn" id="theme-btn" title="Toggle dark mode">
+        <i class="fa fa-moon"></i>
+      </button>
+      <button class="nav-btn" id="info-btn" title="How to use">
+        <i class="fa fa-info-circle"></i>
+      </button>
+    </div>
+  </header>
+  <!-- AdSense Ad: Passport Photo Maker -->
+  <main>
+    <section class="card card-glass shadow-lg">
+      <h2><i class="fa fa-cog"></i> Settings</h2>
+      <div class="settings-grid">
+        <div class="form-group">
+          <label for="unit">Unit</label>
+          <select id="unit">
+            <option value="mm">mm</option>
+            <option value="inch">inch</option>
+            <option value="px">px</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="dpi">DPI</label>
+          <input type="number" id="dpi" min="72" max="1200" step="1" value="300">
+        </div>
+        <div class="form-group">
+          <label for="photo-width">Photo Width</label>
+          <input type="number" id="photo-width" min="10" max="1000" step="0.01" value="35">
+        </div>
+        <div class="form-group">
+          <label for="photo-height">Photo Height</label>
+          <input type="number" id="photo-height" min="10" max="1000" step="0.01" value="45">
+        </div>
+        <div class="form-group">
+          <label for="num-photos">No. of Photos</label>
+          <input type="number" id="num-photos" min="1" max="50" step="1" value="8">
+        </div>
+        <div class="form-group">
+          <label for="page-size">Page Size</label>
+          <select id="page-size">
+            <option value="a4">A4</option>
+            <option value="4r">4R (4"x6")</option>
+            <option value="custom">Custom</option>
+          </select>
+          <div id="custom-page-size" class="custom-page-inputs" style="display:none;">
+            <input type="number" id="custom-width" min="40" max="1000" step="0.1" placeholder="Width">
+            <input type="number" id="custom-height" min="40" max="1000" step="0.1" placeholder="Height">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="h-spacing">Horizontal Spacing</label>
+          <input type="number" id="h-spacing" min="0" max="100" step="0.01" value="10">
+        </div>
+        <div class="form-group">
+          <label for="v-spacing">Vertical Spacing</label>
+          <input type="number" id="v-spacing" min="0" max="100" step="0.01" value="10">
+        </div>
+        <div class="form-group">
+          <label for="margin-top">Margin Top</label>
+          <input type="number" id="margin-top" min="0" max="100" step="0.01" value="10">
+        </div>
+        <div class="form-group">
+          <label for="margin-bottom">Margin Bottom</label>
+          <input type="number" id="margin-bottom" min="0" max="100" step="0.01" value="10">
+        </div>
+        <div class="form-group">
+          <label for="margin-left">Margin Left</label>
+          <input type="number" id="margin-left" min="0" max="100" step="0.01" value="10">
+        </div>
+        <div class="form-group">
+          <label for="margin-right">Margin Right</label>
+          <input type="number" id="margin-right" min="0" max="100" step="0.01" value="10">
+        </div>
+        <div class="form-group form-switch">
+          <label for="autocenter-margin">Auto-Center Margins</label>
+          <label class="switch">
+            <input type="checkbox" id="autocenter-margin">
+            <span class="slider"></span>
+          </label>
+          <!-- Reset Margins button will be appended here by JS -->
+        </div>
+        <div class="form-group form-switch">
+          <label for="show-cutlines">Show Cutlines</label>
+          <label class="switch">
+            <input type="checkbox" id="show-cutlines" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+    </section>
+    <section class="card card-glass shadow-lg">
+      <h2><i class="fa fa-image"></i> Upload & Crop</h2>
+      <div class="upload-area">
+        <input type="file" id="photo-upload" accept="image/*">
+      </div>
+      <div id="preview-section" class="photo-preview-container hidden">
+        <div id="photo-preview-wrapper">
+          <img id="photo-preview" alt="photo preview">
+          <div id="crop-box" class="hidden"></div>
+        </div>
+        <div class="adjust-hint">
+          Pinch/Zoom or drag to adjust<br>
+          <b>Crop:</b> <button class="btn-main" id="crop-toggle"><i class="fa fa-crop"></i> Crop</button>
+        </div>
+        <div class="adjust-tools">
+          <button id="rotate-left" title="Rotate left"><i class="fa fa-undo"></i></button>
+          <button id="rotate-right" title="Rotate right"><i class="fa fa-redo"></i></button>
+        </div>
+      </div>
+    </section>
+    <section class="card card-glass shadow-lg">
+      <h2><i class="fa fa-print"></i> Output & Download</h2>
+      <div class="canvas-area">
+        <canvas id="output-canvas"></canvas>
+      </div>
+      <div class="output-controls">
+        <label for="format">Format</label>
+        <select id="format">
+          <option value="jpg">JPG</option>
+          <option value="png">PNG</option>
+        </select>
+        <button class="btn-main" id="download-btn"><i class="fa fa-download"></i> Download</button>
+        <button class="btn-main" id="download-hq-btn"><i class="fa fa-download"></i> HQ Download</button>
+        <button class="btn-main" id="share-btn"><i class="fa fa-share-alt"></i> Share this App</button>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="branding">
+      Made with <span class="heart">❤</span> by
+      <a href="https://github.com/shaderindia" target="_blank">shaderindia</a>
+      <span class="divider">|</span>
+      <a href="https://github.com/shaderindia/passport-photo-maker" target="_blank">GitHub</a>
+    </div>
+    <div style="margin-top:0.7em;">
+      Credits: Released by <strong>nishikant xalxo</strong> (<a href="https://www.instagram.com/nishix_vamp" target="_blank">@nishix_vamp</a>)
+      <br>
+      Owner: <b>shaderindia</b> &nbsp;|&nbsp; Release date: <b>26 May 2025</b>
+    </div>
+    <div style="margin-top:0.7em;">
+      &copy; 2025 Passport Photo Maker — Free and Open Source.
+    </div>
+  </footer>
+  <!-- Modal for Info/How to Use -->
+  <div class="modal-glass" id="info-modal">
+    <div class="modal-content">
+      <button class="close-btn" id="close-info"><i class="fa fa-times"></i></button>
+      <h2><i class="fa fa-info-circle"></i> How to Use</h2>
+      <ul>
+        <li>Upload a clear, straight photo (JPG/PNG).</li>
+        <li>Pinch/zoom/drag to center face. Use <b>Crop</b> to select exact area.</li>
+        <li>Adjust photo size, DPI, page size, margins as needed.</li>
+        <li>Download or print your ready-to-use passport photo sheet!</li>
+      </ul>
+      <div class="tip"><i class="fa fa-mobile-alt"></i> Mobile-friendly: Works on any device!</div>
+    </div>
+  </div>
+  <!-- Main Script -->
+  <script src="script.js"></script>
+</body>
+</html>
