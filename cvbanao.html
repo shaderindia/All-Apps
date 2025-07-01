@@ -1,0 +1,975 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elite Resume Builder - Create Professional A4 Resumes Online Free</title>
+    <meta name="description" content="Create professional A4-sized resumes with our Elite Resume Builder. Free online resume maker with PDF download, mobile-friendly design, and perfect A4 formatting.">
+    <meta name="keywords" content="resume builder, CV maker, professional resume, A4 resume, online resume, free resume builder, PDF resume, job application">
+    <meta name="author" content="Shader7 - Elite Resume Builder">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Elite Resume Builder - Create Professional A4 Resumes Online Free">
+    <meta property="og:description" content="Create professional A4-sized resumes with our Elite Resume Builder. Free online resume maker with PDF download and perfect formatting.">
+    <meta property="og:url" content="https://shader7.com/resume-builder">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Elite Resume Builder - Create Professional A4 Resumes">
+    <meta name="twitter:description" content="Free online resume builder with A4 formatting and PDF download. Create professional resumes in minutes.">
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Elite Resume Builder",
+      "description": "Professional A4 resume builder with PDF download",
+      "url": "https://shader7.com/resume-builder",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web Browser",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+    </script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        /* A4 Preview - Exact A4 dimensions */
+        .a4-preview {
+            width: 210mm;
+            min-height: 297mm;
+            background: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin: 0 auto;
+            padding: 15mm;
+            box-sizing: border-box;
+            font-size: var(--resume-font-size, 10pt);
+            line-height: 1.3;
+            color: #374151;
+            transform-origin: top center;
+            transition: all 0.3s ease;
+        }
+        
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .a4-preview {
+                width: 100%;
+                min-height: auto;
+                padding: 1rem;
+                font-size: var(--resume-font-size, 9pt);
+            }
+        }
+        
+        /* Resume content styling */
+        .resume-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        
+        .resume-photo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid #4f46e5;
+            flex-shrink: 0;
+        }
+        
+        .resume-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .resume-photo-placeholder {
+            width: 100%;
+            height: 100%;
+            background: #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #9ca3af;
+            font-size: 2rem;
+        }
+        
+        .resume-info h1 {
+            font-size: 2.2em;
+            font-weight: bold;
+            color: #1f2937;
+            margin: 0 0 5px 0;
+        }
+        
+        .resume-info h2 {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #4f46e5;
+            margin: 0 0 10px 0;
+        }
+        
+        .contact-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            font-size: 0.85em;
+            color: #6b7280;
+        }
+        
+        .resume-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+        
+        .main-section, .sidebar-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .section h3 {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #1f2937;
+            margin: 0 0 8px 0;
+            padding: 5px 10px;
+            background-color: #e0e7ff;
+            border-radius: 4px;
+        }
+        
+        .section p, .section li {
+            font-size: 0.9em;
+            line-height: 1.4;
+            margin-bottom: 5px;
+        }
+        
+        .section ul {
+            margin: 0;
+            padding-left: 15px;
+        }
+        
+        .experience-item {
+            margin-bottom: 10px;
+        }
+        
+        .experience-title {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 3px;
+        }
+        
+        .personal-details p {
+            margin-bottom: 3px;
+        }
+        
+        .skills-list {
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+        
+        .declaration {
+            text-align: center;
+            font-style: italic;
+            font-size: 0.8em;
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        /* Mobile adjustments for resume */
+        @media (max-width: 768px) {
+            .resume-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .resume-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .contact-info {
+                justify-content: center;
+            }
+        }
+        
+        .photo-upload-area {
+            width: 150px;
+            height: 150px;
+            border: 2px dashed #d1d5db;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        .photo-upload-area:hover {
+            border-color: #4f46e5;
+        }
+        .photo-upload-area img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 24px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+        .toast.show {
+            transform: translateX(0);
+        }
+        .toast.success {
+            background-color: #22c55e;
+        }
+        .toast.error {
+            background-color: #ef4444;
+        }
+        .toast.info {
+            background-color: #3b82f6;
+        }
+        
+        /* Font size controls */
+        .font-controls {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
+        }
+        
+        .font-slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #e5e7eb;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .font-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4f46e5;
+            cursor: pointer;
+        }
+        
+        .font-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4f46e5;
+            cursor: pointer;
+            border: none;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <!-- Header -->
+    <div class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex items-center justify-between">
+                <button onclick="window.open('https://shader7.com', '_blank')" 
+                        class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                    <i class="fas fa-home"></i>
+                    Back to Shader7
+                </button>
+                <h1 class="text-2xl font-bold text-indigo-600 hidden sm:block">
+                    Elite Resume Builder
+                </h1>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Form Section -->
+        <div id="form-section" class="space-y-8">
+            <div class="text-center">
+                <h1 class="text-4xl font-bold text-gray-900 mb-4 sm:hidden">
+                    Elite Resume Builder
+                </h1>
+                <p class="text-gray-600 mb-2">Create professional resumes with ease</p>
+                <p class="text-sm text-gray-500">Data is saved in your browser's local storage</p>
+            </div>
+
+            <form id="resumeForm" class="space-y-8">
+                <!-- Personal Information -->
+                <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-6 flex items-center gap-2">
+                        <i class="fas fa-user text-indigo-600"></i>
+                        Personal Information
+                    </h2>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-2 space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
+                                    <input type="text" id="fullName" required 
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                           placeholder="e.g., Jane Doe">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Designation *</label>
+                                    <input type="text" id="designation" required 
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                           placeholder="e.g., Senior Marketing Manager">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                                    <input type="email" id="email" required 
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                           placeholder="your.email@example.com">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Phone *</label>
+                                    <input type="text" id="phone" required 
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                           placeholder="+123 456 7890">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Address *</label>
+                                <input type="text" id="address" required 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                       placeholder="123 Main St, Anytown, USA">
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-center space-y-4">
+                            <label class="block text-sm font-medium text-gray-700">Profile Photo</label>
+                            <div class="photo-upload-area" onclick="document.getElementById('photoInput').click()">
+                                <img id="photoPreview" style="display: none;" alt="Profile">
+                                <div id="photoPlaceholder" class="text-center text-gray-500">
+                                    <i class="fas fa-camera text-2xl mb-2"></i>
+                                    <span class="text-sm">Click to upload</span>
+                                </div>
+                            </div>
+                            <input type="file" id="photoInput" accept="image/*" style="display: none;">
+                            <button type="button" id="removePhoto" onclick="removePhoto()" 
+                                    class="text-red-600 hover:text-red-700 text-sm font-medium" style="display: none;">
+                                Remove Photo
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Personal Details -->
+                <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-6 flex items-center gap-2">
+                        <i class="fas fa-user-circle text-indigo-600"></i>
+                        Personal Details
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Marital Status</label>
+                            <select id="maritalStatus" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">Select...</option>
+                                <option value="Single">Single</option>
+                                <option value="Married">Married</option>
+                                <option value="Divorced">Divorced</option>
+                                <option value="Widowed">Widowed</option>
+                                <option value="Prefer not to say">Prefer not to say</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
+                            <input type="date" id="birthDate" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Gender</label>
+                            <select id="gender" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">Select...</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Non-binary">Non-binary</option>
+                                <option value="Prefer not to say">Prefer not to say</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Objective -->
+                <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-6 flex items-center gap-2">
+                        <i class="fas fa-bullseye text-indigo-600"></i>
+                        Objective / Summary
+                    </h2>
+                    <textarea id="objective" rows="4" required
+                              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                              placeholder="A concise statement highlighting your career goals, key qualifications, and what you aim to achieve in a new role."></textarea>
+                </div>
+
+                <!-- Education -->
+                <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-6 flex items-center gap-2">
+                        <i class="fas fa-graduation-cap text-indigo-600"></i>
+                        Education
+                    </h2>
+                    <textarea id="education" rows="4" required
+                              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                              placeholder="List your degrees, universities, locations, and graduation years, each on a new line.&#10;e.g., M.Sc. Computer Science, University of XYZ, City, 2020&#10;B.Sc. Software Engineering, ABC College, City, 2018"></textarea>
+                </div>
+
+                <!-- Skills -->
+                <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-6 flex items-center gap-2">
+                        <i class="fas fa-lightbulb text-indigo-600"></i>
+                        Skills
+                    </h2>
+                    <textarea id="skills" rows="4" required
+                              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                              placeholder="Highlight your skills. Use bullet points or commas.&#10;e.g., - Project Management, Data Analysis&#10;- Python, JavaScript, SQL"></textarea>
+                </div>
+
+                <!-- Experience -->
+                <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-6 flex items-center gap-2">
+                        <i class="fas fa-briefcase text-indigo-600"></i>
+                        Experience
+                    </h2>
+                    <textarea id="experience" rows="6" required
+                              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                              placeholder="Detail work history, most recent first. Newlines for new roles/bullets.&#10;Software Engineer, Tech Solutions Inc., New York, 2021 - Present&#10;- Key achievement 1&#10;- Key achievement 2"></textarea>
+                </div>
+
+                <!-- CAD/CAM Software -->
+                <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-6 flex items-center gap-2">
+                        <i class="fas fa-cogs text-indigo-600"></i>
+                        CAD/CAM Software
+                    </h2>
+                    <textarea id="cadcamSoftware" rows="3"
+                              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                              placeholder="List CAD/CAM software you are proficient in.&#10;e.g., AutoCAD, SolidWorks, CATIA, Siemens NX, Fusion 360, Mastercam"></textarea>
+                </div>
+
+                <!-- Languages -->
+                <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-6 flex items-center gap-2">
+                        <i class="fas fa-language text-indigo-600"></i>
+                        Languages
+                    </h2>
+                    <textarea id="languages" rows="3"
+                              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                              placeholder="List languages and proficiency.&#10;e.g., English (Fluent)&#10;Spanish (Conversational)"></textarea>
+                </div>
+
+                <!-- Declaration -->
+                <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-6 flex items-center gap-2">
+                        <i class="fas fa-scroll text-indigo-600"></i>
+                        Declaration
+                    </h2>
+                    <textarea id="declaration" rows="3"
+                              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">I hereby declare that the information provided is true and correct to the best of my knowledge.</textarea>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-wrap gap-4 justify-center">
+                    <button type="submit" class="flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors">
+                        <i class="fas fa-eye"></i>
+                        Generate Preview
+                    </button>
+                    <button type="button" onclick="saveResume()" class="flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors">
+                        <i class="fas fa-save"></i>
+                        Save Resume
+                    </button>
+                    <button type="button" onclick="loadResume()" class="flex items-center gap-2 border border-indigo-600 text-indigo-600 px-6 py-3 rounded-lg font-semibold hover:bg-indigo-50 transition-colors">
+                        <i class="fas fa-folder-open"></i>
+                        Load Resume
+                    </button>
+                    <button type="button" onclick="resetForm()" class="flex items-center gap-2 border border-indigo-600 text-indigo-600 px-6 py-3 rounded-lg font-semibold hover:bg-indigo-50 transition-colors">
+                        <i class="fas fa-redo-alt"></i>
+                        Reset Form
+                    </button>
+                    <button type="button" onclick="shareApp()" class="flex items-center gap-2 border border-indigo-600 text-indigo-600 px-6 py-3 rounded-lg font-semibold hover:bg-indigo-50 transition-colors">
+                        <i class="fas fa-share-alt"></i>
+                        Share App
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Preview Section -->
+        <div id="preview-section" class="space-y-6" style="display: none;">
+            <div class="flex items-center justify-between">
+                <h2 class="text-2xl font-bold text-gray-900">Resume Preview</h2>
+                <div class="flex gap-2">
+                    <button onclick="downloadPDF()" class="flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors">
+                        <i class="fas fa-download"></i>
+                        Download PDF
+                    </button>
+                    <button onclick="closePreview()" class="flex items-center gap-2 border border-indigo-600 text-indigo-600 px-6 py-3 rounded-lg font-semibold hover:bg-indigo-50 transition-colors">
+                        <i class="fas fa-times"></i>
+                        Close Preview
+                    </button>
+                </div>
+            </div>
+
+            <!-- Font Size Controls -->
+            <div class="font-controls">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                        <i class="fas fa-text-height text-indigo-600"></i>
+                        Adjust Content Size
+                    </h3>
+                    <button onclick="autoAdjustFont()" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors text-sm">
+                        <i class="fas fa-magic"></i>
+                        Auto Adjust
+                    </button>
+                </div>
+                <div class="flex items-center gap-4">
+                    <span class="text-sm text-gray-600 min-w-0">Small</span>
+                    <input type="range" id="fontSizeSlider" class="font-slider flex-1" min="7" max="12" value="10" step="0.5" oninput="adjustFontSize(this.value)">
+                    <span class="text-sm text-gray-600 min-w-0">Large</span>
+                    <span id="fontSizeDisplay" class="text-sm font-medium text-indigo-600 min-w-0">10pt</span>
+                </div>
+            </div>
+
+            <div class="flex justify-center">
+                <div class="a4-preview" id="resumePreview">
+                    <!-- Resume content will be generated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center mt-12 py-8 border-t border-gray-200">
+            <p class="text-gray-600">
+                Built with passion by 
+                <a href="https://www.instagram.com/nishix_vamp/" target="_blank" rel="noopener noreferrer" 
+                   class="text-indigo-600 hover:underline font-semibold">
+                    nishix_vamp
+                </a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Toast notifications -->
+    <div id="toast" class="toast"></div>
+
+    <script>
+        let photoData = null;
+        let currentFontSize = 10;
+
+        // Load saved data on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSavedData();
+        });
+
+        // Photo upload functionality
+        document.getElementById('photoInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.size > 5 * 1024 * 1024) {
+                    showToast('File too large. Please select an image smaller than 5MB.', 'error');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    photoData = e.target.result;
+                    document.getElementById('photoPreview').src = photoData;
+                    document.getElementById('photoPreview').style.display = 'block';
+                    document.getElementById('photoPlaceholder').style.display = 'none';
+                    document.getElementById('removePhoto').style.display = 'block';
+                    showToast('Photo uploaded successfully!', 'success');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function removePhoto() {
+            photoData = null;
+            document.getElementById('photoPreview').style.display = 'none';
+            document.getElementById('photoPlaceholder').style.display = 'block';
+            document.getElementById('removePhoto').style.display = 'none';
+            document.getElementById('photoInput').value = '';
+            showToast('Photo removed.', 'info');
+        }
+
+        // Font size adjustment functions
+        function adjustFontSize(size) {
+            currentFontSize = parseFloat(size);
+            const resumePreview = document.getElementById('resumePreview');
+            if (resumePreview) {
+                resumePreview.style.setProperty('--resume-font-size', size + 'pt');
+                document.getElementById('fontSizeDisplay').textContent = size + 'pt';
+            }
+        }
+
+        function autoAdjustFont() {
+            const resumePreview = document.getElementById('resumePreview');
+            if (resumePreview) {
+                const isMobile = window.innerWidth <= 768;
+                const optimalSize = isMobile ? 8.5 : 9.5;
+                
+                currentFontSize = optimalSize;
+                document.getElementById('fontSizeSlider').value = optimalSize;
+                adjustFontSize(optimalSize);
+                showToast('Font size auto-adjusted for optimal fit!', 'success');
+            }
+        }
+
+        // Form submission
+        document.getElementById('resumeForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                fullName: document.getElementById('fullName').value,
+                designation: document.getElementById('designation').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                address: document.getElementById('address').value,
+                maritalStatus: document.getElementById('maritalStatus').value,
+                birthDate: document.getElementById('birthDate').value,
+                gender: document.getElementById('gender').value,
+                objective: document.getElementById('objective').value,
+                education: document.getElementById('education').value,
+                skills: document.getElementById('skills').value,
+                experience: document.getElementById('experience').value,
+                cadcamSoftware: document.getElementById('cadcamSoftware').value,
+                languages: document.getElementById('languages').value,
+                declaration: document.getElementById('declaration').value,
+                photo: photoData
+            };
+
+            // Validation
+            const requiredFields = ['fullName', 'designation', 'email', 'phone', 'address', 'objective', 'education', 'skills', 'experience'];
+            const missingFields = requiredFields.filter(field => !formData[field]);
+            
+            if (missingFields.length > 0) {
+                showToast('Please fill in all required fields.', 'error');
+                return;
+            }
+
+            generateResume(formData);
+        });
+
+        function generateResume(data) {
+            const formatText = (text) => text.replace(/\n/g, '<br>');
+            
+            const formatExperience = (experience) => {
+                const sections = experience.split('\n\n').filter(section => section.trim());
+                return sections.map(section => {
+                    const lines = section.trim().split('\n');
+                    const jobTitle = lines[0];
+                    const responsibilities = lines.slice(1);
+                    
+                    return `
+                        <div class="experience-item">
+                            <p class="experience-title">${jobTitle}</p>
+                            ${responsibilities.length > 0 ? `
+                                <ul>
+                                    ${responsibilities.map(resp => `<li>${resp.replace(/^- /, '')}</li>`).join('')}
+                                </ul>
+                            ` : ''}
+                        </div>
+                    `;
+                }).join('');
+            };
+
+            const formatSkills = (skills) => {
+                return skills.split('\n').filter(skill => skill.trim()).map(skill => 
+                    skill.replace(/^- /, '').trim()
+                ).join(', ');
+            };
+
+            const formatList = (text) => {
+                return text.split('\n').filter(item => item.trim()).map(item => 
+                    `<p>${item.trim()}</p>`
+                ).join('');
+            };
+
+            const resumeHTML = `
+                <div class="resume-header">
+                    <div class="resume-photo">
+                        ${data.photo ? 
+                            `<img src="${data.photo}" alt="Profile Photo">` : 
+                            `<div class="resume-photo-placeholder">
+                                <i class="fas fa-user"></i>
+                            </div>`
+                        }
+                    </div>
+                    <div class="resume-info">
+                        <h1>${data.fullName}</h1>
+                        <h2>${data.designation}</h2>
+                        <div class="contact-info">
+                            <span>📧 ${data.email}</span>
+                            <span>📞 ${data.phone}</span>
+                            <span>📍 ${data.address}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="resume-content">
+                    <div class="main-section">
+                        ${data.objective ? `
+                            <div class="section">
+                                <h3>Objective / Summary</h3>
+                                <p>${formatText(data.objective)}</p>
+                            </div>
+                        ` : ''}
+
+                        ${data.experience ? `
+                            <div class="section">
+                                <h3>Experience</h3>
+                                ${formatExperience(data.experience)}
+                            </div>
+                        ` : ''}
+
+                        ${data.education ? `
+                            <div class="section">
+                                <h3>Education</h3>
+                                ${formatList(data.education)}
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    <div class="sidebar-section">
+                        ${(data.maritalStatus || data.birthDate || data.gender) ? `
+                            <div class="section">
+                                <h3>Personal Details</h3>
+                                <div class="personal-details">
+                                    ${data.maritalStatus ? `<p><strong>Marital Status:</strong> ${data.maritalStatus}</p>` : ''}
+                                    ${data.birthDate ? `<p><strong>Date of Birth:</strong> ${data.birthDate}</p>` : ''}
+                                    ${data.gender ? `<p><strong>Gender:</strong> ${data.gender}</p>` : ''}
+                                </div>
+                            </div>
+                        ` : ''}
+
+                        ${data.skills ? `
+                            <div class="section">
+                                <h3>Skills</h3>
+                                <div class="skills-list">${formatSkills(data.skills)}</div>
+                            </div>
+                        ` : ''}
+
+                        ${data.cadcamSoftware ? `
+                            <div class="section">
+                                <h3>CAD/CAM Software</h3>
+                                <div class="skills-list">
+                                    ${data.cadcamSoftware.split(',').map(software => software.trim()).join(', ')}
+                                </div>
+                            </div>
+                        ` : ''}
+
+                        ${data.languages ? `
+                            <div class="section">
+                                <h3>Languages</h3>
+                                ${formatList(data.languages)}
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+
+                ${data.declaration ? `
+                    <div class="declaration">
+                        <h3>Declaration</h3>
+                        <p>${formatText(data.declaration)}</p>
+                    </div>
+                ` : ''}
+            `;
+
+            document.getElementById('resumePreview').innerHTML = resumeHTML;
+            
+            // Apply current font size
+            adjustFontSize(currentFontSize);
+            
+            document.getElementById('form-section').style.display = 'none';
+            document.getElementById('preview-section').style.display = 'block';
+            showToast('Resume generated successfully!', 'success');
+        }
+
+        function closePreview() {
+            document.getElementById('preview-section').style.display = 'none';
+            document.getElementById('form-section').style.display = 'block';
+        }
+
+        function downloadPDF() {
+            const element = document.getElementById('resumePreview');
+            const opt = {
+                margin: 10,
+                filename: 'resume.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2canvas(element, {
+                scale: 2,
+                useCORS: true,
+                allowTaint: true,
+            }).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new window.jspdf.jsPDF('p', 'mm', 'a4');
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = pdf.internal.pageSize.getHeight();
+                
+                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                pdf.save('resume.pdf');
+                
+                showToast('PDF downloaded successfully!', 'success');
+            }).catch(error => {
+                console.error('Error generating PDF:', error);
+                showToast('Error generating PDF. Please try again.', 'error');
+            });
+        }
+
+        function saveResume() {
+            const formData = {
+                fullName: document.getElementById('fullName').value,
+                designation: document.getElementById('designation').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                address: document.getElementById('address').value,
+                maritalStatus: document.getElementById('maritalStatus').value,
+                birthDate: document.getElementById('birthDate').value,
+                gender: document.getElementById('gender').value,
+                objective: document.getElementById('objective').value,
+                education: document.getElementById('education').value,
+                skills: document.getElementById('skills').value,
+                experience: document.getElementById('experience').value,
+                cadcamSoftware: document.getElementById('cadcamSoftware').value,
+                languages: document.getElementById('languages').value,
+                declaration: document.getElementById('declaration').value,
+                photo: photoData,
+                fontSize: currentFontSize
+            };
+
+            try {
+                localStorage.setItem('elite-resume-data', JSON.stringify(formData));
+                showToast('Resume saved successfully!', 'success');
+            } catch (error) {
+                showToast('Error saving resume. Please try again.', 'error');
+            }
+        }
+
+        function loadResume() {
+            try {
+                const savedData = localStorage.getItem('elite-resume-data');
+                if (savedData) {
+                    const data = JSON.parse(savedData);
+                    populateForm(data);
+                    showToast('Resume loaded successfully!', 'success');
+                } else {
+                    showToast('No saved resume found.', 'error');
+                }
+            } catch (error) {
+                showToast('Error loading resume. Please try again.', 'error');
+            }
+        }
+
+        function loadSavedData() {
+            try {
+                const savedData = localStorage.getItem('elite-resume-data');
+                if (savedData) {
+                    const data = JSON.parse(savedData);
+                    populateForm(data);
+                }
+            } catch (error) {
+                console.error('Error loading saved data:', error);
+            }
+        }
+
+        function populateForm(data) {
+            document.getElementById('fullName').value = data.fullName || '';
+            document.getElementById('designation').value = data.designation || '';
+            document.getElementById('email').value = data.email || '';
+            document.getElementById('phone').value = data.phone || '';
+            document.getElementById('address').value = data.address || '';
+            document.getElementById('maritalStatus').value = data.maritalStatus || '';
+            document.getElementById('birthDate').value = data.birthDate || '';
+            document.getElementById('gender').value = data.gender || '';
+            document.getElementById('objective').value = data.objective || '';
+            document.getElementById('education').value = data.education || '';
+            document.getElementById('skills').value = data.skills || '';
+            document.getElementById('experience').value = data.experience || '';
+            document.getElementById('cadcamSoftware').value = data.cadcamSoftware || '';
+            document.getElementById('languages').value = data.languages || '';
+            document.getElementById('declaration').value = data.declaration || '';
+
+            if (data.photo) {
+                photoData = data.photo;
+                document.getElementById('photoPreview').src = photoData;
+                document.getElementById('photoPreview').style.display = 'block';
+                document.getElementById('photoPlaceholder').style.display = 'none';
+                document.getElementById('removePhoto').style.display = 'block';
+            }
+
+            // Load saved font size
+            if (data.fontSize) {
+                currentFontSize = data.fontSize;
+                document.getElementById('fontSizeSlider').value = currentFontSize;
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('resumeForm').reset();
+            removePhoto();
+            document.getElementById('declaration').value = 'I hereby declare that the information provided is true and correct to the best of my knowledge.';
+            currentFontSize = 10;
+            document.getElementById('fontSizeSlider').value = 10;
+            closePreview();
+            showToast('Form reset successfully!', 'info');
+        }
+
+        function shareApp() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Elite Resume Builder',
+                    text: 'Create professional resumes with this amazing tool!',
+                    url: window.location.href,
+                }).catch(console.error);
+            } else {
+                navigator.clipboard.writeText(window.location.href).then(() => {
+                    showToast('App link copied to clipboard!', 'success');
+                }).catch(() => {
+                    showToast('Unable to copy link.', 'error');
+                });
+            }
+        }
+
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
