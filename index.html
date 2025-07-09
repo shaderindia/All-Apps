@@ -1,0 +1,950 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Enhanced SEO Meta Tags -->
+    <title>SHADER7.com | Free Web Tools, Blog & Apps by Nishikant Xalxo</title>
+    <meta name="description" content="Explore SHADER7.com, a collection of free web tools and insightful articles by Nishikant Xalxo. Find a Passport Photo Creator, Salary Calculator, Resume Builder, and more.">
+    <meta name="keywords" content="free web tools, passport photo creator, salary calculator, resume builder, mechanical engineer, web apps, productivity tools, fairshare expenses, romania salary, nishikant xalxo">
+    <meta name="author" content="Nishikant Xalxo">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="SHADER7.com | Free Web Tools, Blog & Apps by Nishikant Xalxo">
+    <meta property="og:description" content="Explore SHADER7.com, a collection of free web tools and insightful articles by Nishikant Xalxo. Find a Passport Photo Creator, Salary Calculator, Resume Builder, and more.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://shader7.com/">
+    <meta property="og:image" content="https://shader7.com/og-image.jpg">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #1e293b;
+            background-color: #f8fafc;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Fixed Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(239, 246, 255, 0.95);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid rgba(147, 197, 253, 0.2);
+        }
+
+        .navbar.scrolled {
+            background: rgba(239, 246, 255, 0.98);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .nav-brand {
+            color: #1e40af;
+            font-size: 1.5rem;
+            font-weight: 800;
+            text-decoration: none;
+            letter-spacing: -0.025em;
+            transition: all 0.3s ease;
+        }
+
+        .nav-brand:hover {
+            color: #1d4ed8;
+            transform: scale(1.05);
+        }
+
+        .nav-menu {
+            display: none;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-menu.active {
+            display: flex;
+            flex-direction: column;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: rgba(239, 246, 255, 0.98);
+            backdrop-filter: blur(12px);
+            padding: 2rem 1rem;
+            border-radius: 0 0 1rem 1rem;
+            box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-link {
+            color: #1e40af;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: rgba(147, 197, 253, 0.2);
+            color: #1d4ed8;
+            transform: translateY(-2px);
+        }
+
+        .nav-toggle {
+            display: block;
+            background: none;
+            border: none;
+            color: #1e40af;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-toggle:hover {
+            background: rgba(147, 197, 253, 0.2);
+            transform: scale(1.1);
+        }
+
+        @media (min-width: 768px) {
+            .nav-menu {
+                display: flex;
+                flex-direction: row;
+            }
+
+            .nav-toggle {
+                display: none;
+            }
+
+            .nav-menu.active {
+                position: static;
+                flex-direction: row;
+                background: transparent;
+                padding: 0;
+                box-shadow: none;
+            }
+        }
+
+        /* Main Content - Add proper top spacing */
+        .main-content {
+            margin-top: 80px; /* Space for fixed navbar */
+            min-height: calc(100vh - 80px);
+        }
+
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(135deg, rgba(239, 246, 255, 0.9), rgba(248, 250, 252, 0.9));
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .hero-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #1e40af;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: #64748b;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 1rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            margin: 2rem 0;
+        }
+
+        @media (min-width: 768px) {
+            .hero-title {
+                font-size: 3.5rem;
+            }
+            .hero-subtitle {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Section Styles */
+        .section {
+            padding: 4rem 0;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            text-align: center;
+            color: #1e293b;
+            margin-bottom: 1rem;
+        }
+
+        .section-subtitle {
+            font-size: 1.125rem;
+            text-align: center;
+            color: #64748b;
+            max-width: 600px;
+            margin: 0 auto 3rem;
+            line-height: 1.6;
+        }
+
+        /* Grid System - Fixed */
+        .grid {
+            display: grid;
+            gap: 2rem;
+            grid-template-columns: 1fr;
+        }
+
+        @media (min-width: 640px) {
+            .grid-sm-2 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 768px) {
+            .grid-md-2 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .grid-md-3 {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .grid-lg-3 {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .grid-lg-4 {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        /* Card Styles */
+        .card {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            height: 100%; /* Ensure equal height cards */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .card-icon {
+            width: 3rem;
+            height: 3rem;
+            color: #3b82f6;
+            margin: 0 auto 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 1rem;
+        }
+
+        .card-description {
+            color: #64748b;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+            flex-grow: 1; /* Push button to bottom */
+        }
+
+        .card-meta {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            color: #64748b;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Button Styles */
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+            text-decoration: none;
+            padding: 0.75rem 2rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: none;
+            cursor: pointer;
+            margin-top: auto; /* Push to bottom of card */
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+        }
+
+        .btn-secondary {
+            color: #3b82f6;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+        }
+
+        .btn-secondary:hover {
+            color: #2563eb;
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        /* About Section */
+        .about-section {
+            background: white;
+            border-radius: 2rem;
+            padding: 3rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            margin: 2rem 0;
+        }
+
+        .about-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4, #10b981);
+        }
+
+        .profile-image {
+            width: 8rem;
+            height: 8rem;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #c4b5fd;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            margin: 0 auto 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .profile-image:hover {
+            transform: scale(1.05);
+        }
+
+        .about-grid {
+            display: grid;
+            gap: 2rem;
+            margin: 2rem 0;
+            text-align: left;
+        }
+
+        @media (min-width: 768px) {
+            .about-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .about-item h3 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 1rem;
+        }
+
+        .about-item p {
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .contact-info {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        .contact-item:hover {
+            background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+            transform: translateY(-2px);
+        }
+
+        .contact-item a {
+            color: #374151;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        /* Footer */
+        .footer {
+            background: linear-gradient(135deg, #1e293b, #334155);
+            color: #cbd5e1;
+            text-align: center;
+            padding: 3rem 1rem;
+            border-radius: 2rem 2rem 0 0;
+            box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            margin-top: 4rem;
+        }
+
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4, #10b981);
+        }
+
+        .footer h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-subtitle {
+            color: #94a3b8;
+            margin-bottom: 2rem;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-links a {
+            color: #c4b5fd;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+        }
+
+        .footer-links a:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #374151;
+            padding-top: 2rem;
+        }
+
+        .footer-bottom p {
+            margin-bottom: 0.5rem;
+        }
+
+        .heart {
+            color: #ef4444;
+            animation: heartbeat 2s ease-in-out infinite;
+        }
+
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* Responsive Design Fixes */
+        @media (max-width: 640px) {
+            .container {
+                padding: 0 0.75rem;
+            }
+            
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .card {
+                padding: 1.5rem;
+            }
+            
+            .about-section {
+                padding: 2rem;
+            }
+        }
+
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 6rem;
+        }
+
+        /* Loading animation */
+        .loading {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .loading.loaded {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Utility Classes */
+        .text-center { text-align: center; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="#home" class="nav-brand">SHADER7</a>
+            
+            <ul class="nav-menu" id="nav-menu">
+                <li><a href="#home" class="nav-link">Home</a></li>
+                <li><a href="#apps" class="nav-link">Apps</a></li>
+                <li><a href="#blog" class="nav-link">Blog</a></li>
+                <li><a href="#about" class="nav-link">About</a></li>
+                <li><a href="#faq" class="nav-link">FAQ</a></li>
+            </ul>
+            
+            <button class="nav-toggle" id="nav-toggle">
+                <i data-lucide="menu"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Hero Section -->
+        <section id="home" class="hero-section">
+            <div class="container">
+                <h1 class="hero-title">Welcome to SHADER7</h1>
+                <p class="hero-subtitle">
+                    A collection of free, practical web tools and insightful articles created by Nishikant Xalxo. 
+                    Made to simplify your daily tasks and provide valuable knowledge.
+                </p>
+                <img 
+                    src="https://i.imgur.com/8zpXoOA.png"
+                    alt="SHADER7 Tools - Passport Photo Maker, CV Maker, Salary Calculator"
+                    class="hero-image loading"
+                />
+            </div>
+        </section>
+
+        <!-- Apps Section -->
+        <section id="apps" class="section">
+            <div class="container">
+                <h2 class="section-title">My Free Apps</h2>
+                <p class="section-subtitle">Practical tools designed to make your life easier</p>
+                
+                <div class="grid grid-sm-2 grid-lg-3">
+                    <div class="card loading">
+                        <i data-lucide="users" class="card-icon"></i>
+                        <h3 class="card-title">FairShare Expenses</h3>
+                        <p class="card-description">
+                            Effortlessly calculate and settle monthly shared expenses among roommates or groups. Get clear payment instructions for who pays whom.
+                        </p>
+                        <a href="fairshare.html" class="btn-primary">Access App</a>
+                    </div>
+
+                    <div class="card loading">
+                        <i data-lucide="camera" class="card-icon"></i>
+                        <h3 class="card-title">Passport Photo Creator</h3>
+                        <p class="card-description">
+                            Effortlessly create and customize passport-sized photos for various documents. Adjust dimensions, crop, and arrange multiple copies on a single page for printing.
+                        </p>
+                        <a href="passportsizephoto.html" class="btn-primary">Access App</a>
+                    </div>
+
+                    <div class="card loading">
+                        <i data-lucide="calculator" class="card-icon"></i>
+                        <h3 class="card-title">Monthly Salary Calculator for Romania</h3>
+                        <p class="card-description">
+                            Calculate your net monthly salary after deductions. Quickly determine your take-home pay based on your gross income and various financial inputs.
+                        </p>
+                        <a href="romaniasalarycalculator.html" class="btn-primary">Access App</a>
+                    </div>
+
+                    <div class="card loading">
+                        <i data-lucide="file-text" class="card-icon"></i>
+                        <h3 class="card-title">Resume Maker for Mechanical Engineers</h3>
+                        <p class="card-description">
+                            A specialized tool for Mechanical Engineers to effortlessly create professional and impactful resumes. Highlight your skills and experience for your dream job.
+                        </p>
+                        <a href="cvbanao.html" class="btn-primary">Access App</a>
+                    </div>
+
+                    <div class="card loading">
+                        <i data-lucide="code" class="card-icon"></i>
+                        <h3 class="card-title">App & Game Builder</h3>
+                        <p class="card-description">
+                            Create stunning web applications and games with AI assistance. Build, customize, and deploy your projects with ease using our powerful development platform.
+                        </p>
+                        <a href="https://lovable.dev/invite/2c1a3590-c593-4273-83c7-e36cd55fa966" target="_blank" class="btn-primary">Start Building</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Blog Section -->
+        <section id="blog" class="section">
+            <div class="container">
+                <h2 class="section-title">Latest Articles</h2>
+                <p class="section-subtitle">Insights and guides to help you succeed</p>
+                
+                <div class="grid grid-sm-2 grid-lg-3">
+                    <div class="card loading">
+                        <div class="card-meta">
+                            <i data-lucide="clock"></i>
+                            <span>5 min read</span>
+                        </div>
+                        <h3 class="card-title">5 Essential Tips for a Standout Mechanical Engineer Resume</h3>
+                        <p class="card-description">
+                            Learn how to tailor your resume to land your dream job in mechanical engineering. These tips will help you highlight your skills and experience effectively.
+                        </p>
+                        <a href="blog-post-1.html" class="btn-secondary">
+                            Read More
+                            <i data-lucide="arrow-right"></i>
+                        </a>
+                    </div>
+
+                    <div class="card loading">
+                        <div class="card-meta">
+                            <i data-lucide="clock"></i>
+                            <span>7 min read</span>
+                        </div>
+                        <h3 class="card-title">Understanding Your Romanian Salary: Gross vs. Net Pay</h3>
+                        <p class="card-description">
+                            Demystify the deductions on your Romanian payslip. This guide explains the key taxes and contributions so you can better manage your finances.
+                        </p>
+                        <a href="blog-post-2.html" class="btn-secondary">
+                            Read More
+                            <i data-lucide="arrow-right"></i>
+                        </a>
+                    </div>
+
+                    <div class="card loading">
+                        <div class="card-meta">
+                            <i data-lucide="clock"></i>
+                            <span>4 min read</span>
+                        </div>
+                        <h3 class="card-title">How to Create Perfect Passport Photos at Home</h3>
+                        <p class="card-description">
+                            Save time and money by creating your own passport photos. Follow our simple guide to meet official requirements without leaving your house.
+                        </p>
+                        <a href="blog-post-3.html" class="btn-secondary">
+                            Read More
+                            <i data-lucide="arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="section">
+            <div class="container">
+                <div class="about-section">
+                    <h2 class="section-title">About Nishikant Xalxo</h2>
+                    
+                    <img 
+                        src="https://raw.githubusercontent.com/shaderindia/Image-for-profile/refs/heads/main/undefined%20-%20Imgur.jpeg"
+                        alt="Nishikant Xalxo - CNC Milling Operator and Web Developer"
+                        class="profile-image loading"
+                    />
+                    
+                    <div class="about-grid">
+                        <div class="about-item">
+                            <h3>
+                                <i data-lucide="briefcase" style="color: #3b82f6;"></i>
+                                Professional Background
+                            </h3>
+                            <p>
+                                I'm a CNC Milling Operator with a deep passion for mechanical engineering precision 
+                                and creative web development problem-solving. My unique background allows me to bring 
+                                both technical expertise and practical engineering knowledge to my digital projects.
+                            </p>
+                        </div>
+                        
+                        <div class="about-item">
+                            <h3>
+                                <i data-lucide="target" style="color: #3b82f6;"></i>
+                                Mission & Vision
+                            </h3>
+                            <p>
+                                SHADER7 represents the convergence of my passions. I develop practical, free-to-use 
+                                web applications designed to simplify common tasks for everyone, from students to 
+                                professionals, while sharing valuable knowledge through insightful articles.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <p style="font-size: 1.125rem; color: #374151; line-height: 1.6; margin: 2rem 0;">
+                            My goal is to create high-quality, reliable tools and share useful knowledge that makes 
+                            a real difference in people's daily lives. Thank you for visiting, and I hope you find 
+                            my work helpful in your journey!
+                        </p>
+                    </div>
+                    
+                    <div style="border-top: 1px solid #e5e7eb; padding-top: 2rem; margin-top: 2rem;">
+                        <h3 style="font-size: 1.25rem; font-weight: 600; color: #1f2937; margin-bottom: 1.5rem;">
+                            Get In Touch
+                        </h3>
+                        <div class="contact-info">
+                            <div class="contact-item">
+                                <i data-lucide="mail" style="color: #3b82f6;"></i>
+                                <a href="mailto:nxdecore@gmail.com">nxdecore@gmail.com</a>
+                            </div>
+                            <div class="contact-item">
+                                <i data-lucide="instagram" style="color: #e91e63;"></i>
+                                <a href="https://www.instagram.com/nishix_vamp" target="_blank">@nishix_vamp</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section id="faq" class="section">
+            <div class="container">
+                <h2 class="section-title">Frequently Asked Questions</h2>
+                <p class="section-subtitle">Common questions about SHADER7 tools and services</p>
+                
+                <div class="grid" style="max-width: 800px; margin: 0 auto;">
+                    <div class="card loading">
+                        <h3 class="card-title" style="text-align: left;">Are all tools completely free?</h3>
+                        <p class="card-description" style="text-align: left;">
+                            Yes! All SHADER7 tools are 100% free to use. No hidden fees, no subscriptions, no premium features. 
+                            I believe in providing valuable tools that everyone can access regardless of their budget.
+                        </p>
+                    </div>
+                    
+                    <div class="card loading">
+                        <h3 class="card-title" style="text-align: left;">Do I need to create an account?</h3>
+                        <p class="card-description" style="text-align: left;">
+                            No account required! You can use all tools immediately without any registration. 
+                            Your privacy is important, and I don't collect or store any personal data.
+                        </p>
+                    </div>
+                    
+                    <div class="card loading">
+                        <h3 class="card-title" style="text-align: left;">Can I suggest new features or tools?</h3>
+                        <p class="card-description" style="text-align: left;">
+                            Absolutely! I welcome feedback and suggestions. Feel free to reach out via email or Instagram 
+                            with your ideas for new tools or improvements to existing ones.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div>
+                <h3>SHADER7</h3>
+                <p class="footer-subtitle">Free tools and knowledge for everyone</p>
+            </div>
+            
+            <div class="footer-links">
+                <a href="#about">About SHADER7</a>
+                <a href="#faq">FAQ</a>
+                <a href="privacy.html">Privacy Policy</a>
+                <a href="terms.html">Terms and Conditions</a>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 Nishikant Xalxo - Free Apps & Articles. All rights reserved.</p>
+                <p style="font-size: 0.875rem; color: #94a3b8;">
+                    Built with <span class="heart">♥</span> and code
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Navigation functionality
+        const navToggle = document.getElementById('nav-toggle');
+        const navMenu = document.getElementById('nav-menu');
+        const navbar = document.getElementById('navbar');
+
+        // Toggle mobile menu
+        navToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+            
+            const icon = navToggle.querySelector('i');
+            if (navMenu.classList.contains('active')) {
+                icon.setAttribute('data-lucide', 'x');
+            } else {
+                icon.setAttribute('data-lucide', 'menu');
+            }
+            lucide.createIcons();
+        });
+
+        // Close mobile menu when clicking on a link
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                navMenu.classList.remove('active');
+                const icon = navToggle.querySelector('i');
+                icon.setAttribute('data-lucide', 'menu');
+                lucide.createIcons();
+            });
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('loaded');
+                }
+            });
+        }, observerOptions);
+
+        // Observe all loading elements for animation
+        document.querySelectorAll('.loading').forEach((element, index) => {
+            element.style.transitionDelay = `${index * 0.1}s`;
+            observer.observe(element);
+        });
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!navbar.contains(e.target) && navMenu.classList.contains('active')) {
+                navMenu.classList.remove('active');
+                const icon = navToggle.querySelector('i');
+                icon.setAttribute('data-lucide', 'menu');
+                lucide.createIcons();
+            }
+        });
+
+        console.log('SHADER7 website loaded successfully! 🚀');
+    </script>
+</body>
+</html>
