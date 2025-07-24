@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Free Receipt Generator - 5 Modern Templates & Logo Upload</title>
+    <meta name="description" content="The best free online receipt maker. Create, customize, print, and download professional receipts with 5 modern templates and your own logo. Instantly mobile-friendly.">
+    <meta name="keywords" content="receipt generator, free receipt maker, online receipt, invoice generator, custom receipt, receipt template, business receipt">
+    <meta name="author" content="Shader7">
+    
+    <meta property="og:title" content="Free Receipt Generator - 5 Modern Templates & Logo Upload">
+    <meta property="og:description" content="Create and download professional receipts instantly with multiple templates and logo support.">
+    <meta property="og:image" content="https://shader7.com/receipt-generator-preview.jpg"> <meta property="og:url" content="https://shader7.com/receipt-generator.html"> <meta property="og:type" content="website">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Free Receipt Generator - 5 Modern Templates & Logo Upload">
+    <meta name="twitter:description" content="Create and download professional receipts instantly with multiple templates and logo support.">
+    <meta name="twitter:image" content="https://shader7.com/receipt-generator-preview.jpg"> <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXX" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+        /* --- Base & Layout Styles --- */
+        :root {
+            --primary-color: #007bff;
+            --primary-hover: #0056b3;
+            --secondary-color: #17a2b8;
+            --secondary-hover: #138496;
+            --success-color: #28a745;
+            --success-hover: #218838;
+            --light-gray: #f5f5f5;
+            --border-color: #ddd;
+            --text-color: #333;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: var(--light-gray); line-height: 1.6; color: var(--text-color); }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
+        
+        /* --- Header & Footer --- */
+        .page-header { background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 1rem 0; margin-bottom: 1rem; }
+        .header-content { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+        .logo { font-size: 1.5rem; font-weight: bold; }
+        .back-btn { background: var(--primary-color); color: white; padding: 0.5rem 1rem; text-decoration: none; border-radius: 4px; transition: background 0.3s; }
+        .back-btn:hover { background: var(--primary-hover); }
+        .page-footer { background: #333; color: white; text-align: center; padding: 2rem 0; margin-top: 3rem; }
+        .page-footer a { color: var(--primary-color); }
+        
+        /* --- Main Content & Form --- */
+        .main-content { display: grid; grid-template-columns: 1fr 420px; gap: 2rem; }
+        .form-container { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .intro-text { margin-bottom: 2rem; }
+        h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+        h2 { font-size: 1.5rem; margin-bottom: 1rem; color: var(--text-color); border-bottom: 3px solid var(--primary-color); padding-bottom: 0.5rem; }
+        h3 { font-size: 1.25rem; margin: 2rem 0 1rem 0; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; }
+        .form-group input, .form-group textarea { width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 4px; font-size: 1rem; }
+        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--primary-color); }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        
+        /* --- Buttons --- */
+        .btn { display: block; width: 100%; text-align: center; background: var(--success-color); color: white; padding: 0.85rem 1.5rem; border: none; border-radius: 4px; cursor: pointer; font-size: 1.1rem; font-weight: 600; margin-top: 1rem; transition: background 0.3s; }
+        .btn:hover { background: var(--success-hover); }
+        .btn-secondary { background: var(--secondary-color); }
+        .btn-secondary:hover { background: var(--secondary-hover); }
+        .btn-small { padding: 0.5rem 1rem; font-size: 0.9rem; background: var(--primary-color); }
+        .btn-small:hover { background: var(--primary-hover); }
+        .btn-danger { background: #dc3545; padding: 0.25rem 0.5rem; font-size: 0.8rem; margin-bottom: 1rem; border-radius: 4px; border: none; color: white; cursor: pointer; }
+        
+        /* --- Template Selector --- */
+        .template-selector { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 1rem; margin-top: 1rem; }
+        .template-box { border: 2px solid var(--border-color); border-radius: 4px; padding: 0.5rem; text-align: center; cursor: pointer; transition: all 0.3s; }
+        .template-box:hover, .template-box.active { border-color: var(--primary-color); box-shadow: 0 0 10px rgba(0, 123, 255, 0.3); }
+        .template-box img { max-width: 100%; height: auto; border: 1px solid #eee; }
+        .template-box p { margin-top: 0.5rem; font-weight: 600; }
+        
+        /* --- Receipt Preview --- */
+        .preview-container { position: sticky; top: 2rem; }
+        #receiptPreview { background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); padding: 2rem; }
+        .receipt { width: 100%; max-width: 350px; margin: 0 auto; background: white; padding: 1rem; font-size: 12px; line-height: 1.4; transition: all 0.3s ease; }
+        .receipt-logo { text-align: center; margin-bottom: 1rem; }
+        .receipt-logo img { max-width: 150px; max-height: 75px; }
+        .receipt-header, .receipt-company, .receipt-info, .receipt-items, .receipt-totals, .receipt-footer { margin-bottom: 1rem; }
+        .item-row, .total-row { display: flex; justify-content: space-between; margin-bottom: 0.25rem; }
+        
+        /* === TEMPLATE STYLES === */
+        /* Template 1: Classic Thermal */
+        #receiptPreview.template-1 .receipt { font-family: 'Courier New', monospace; border: 1px dashed #333; }
+        #receiptPreview.template-1 .receipt-header { text-align: center; border-bottom: 2px dashed #333; padding-bottom: 0.5rem; font-weight: bold; }
+        #receiptPreview.template-1 .receipt-company { text-align: center; }
+        #receiptPreview.template-1 .receipt-items { border-top: 1px solid #333; border-bottom: 1px solid #333; padding: 0.5rem 0; }
+        #receiptPreview.template-1 .grand-total { border-top: 1px solid #333; padding-top: 0.5rem; font-weight: bold; }
+        #receiptPreview.template-1 .receipt-footer { text-align: center; font-size: 10px; }
+        
+        /* Template 2: Modern Minimalist */
+        #receiptPreview.template-2 .receipt { font-family: Arial, sans-serif; border: 1px solid #eee; padding: 1.5rem; border-radius: 6px; }
+        #receiptPreview.template-2 .receipt-header { text-align: left; font-size: 1.5rem; font-weight: 600; color: var(--primary-color); margin-bottom: 1.5rem; }
+        #receiptPreview.template-2 .receipt-company strong { font-size: 1rem; }
+        #receiptPreview.template-2 .receipt-items { border-top: 1px solid #eee; padding-top: 1rem; }
+        #receiptPreview.template-2 .item-row:first-child { font-weight: bold; color: #555; }
+        #receiptPreview.template-2 .grand-total { border-top: 2px solid var(--primary-color); padding-top: 0.5rem; font-size: 1.1em; font-weight: bold; }
+        #receiptPreview.template-2 .receipt-footer { color: #888; }
+        
+        /* Template 3: Corporate Invoice */
+        #receiptPreview.template-3 .receipt { font-family: 'Segoe UI', sans-serif; border: none; box-shadow: 0 0 15px rgba(0,0,0,0.1); border-radius: 4px; padding: 1.5rem; font-size: 13px; }
+        #receiptPreview.template-3 .receipt-header { background-color: #f7f7f7; padding: 1rem; margin: -1.5rem -1.5rem 1rem -1.5rem; border-bottom: 3px solid var(--primary-color); text-align: right; }
+        #receiptPreview.template-3 .receipt-header strong { font-size: 1.8rem; color: #333; }
+        #receiptPreview.template-3 .receipt-company { text-align: left; }
+        #receiptPreview.template-3 .item-row { padding: 0.5rem 0; border-bottom: 1px solid #f0f0f0; }
+        #receiptPreview.template-3 .item-row:first-child { font-weight: bold; }
+        #receiptPreview.template-3 .receipt-totals { margin-top: 1.5rem; text-align: right; }
+        #receiptPreview.template-3 .total-row { justify-content: flex-end; gap: 2rem; }
+        #receiptPreview.template-3 .grand-total { background-color: #f7f7f7; padding: 0.75rem; margin-right: -1.5rem; margin-bottom: -1.5rem; font-size: 1.2em; }
+        #receiptPreview.template-3 .receipt-footer { text-align: center; padding-top: 1rem; border-top: 1px solid #eee; margin-top: 2rem; }
+
+        /* Template 4: Creative Boutique */
+        #receiptPreview.template-4 .receipt { font-family: 'Georgia', serif; border: 2px solid #DABFDE; background-color: #FDFAFF; padding: 1.5rem; }
+        #receiptPreview.template-4 .receipt-header, #receiptPreview.template-4 .receipt-footer { text-align: center; }
+        #receiptPreview.template-4 .receipt-header strong { font-family: 'Brush Script MT', cursive; font-size: 2.5rem; color: #5D3A6B; font-weight: normal; }
+        #receiptPreview.template-4 .item-row, #receiptPreview.template-4 .total-row { padding: 0.2rem 0; }
+        #receiptPreview.template-4 .receipt-items { border-top: 1px dashed #DABFDE; border-bottom: 1px dashed #DABFDE; padding: 0.5rem 0; }
+        #receiptPreview.template-4 .grand-total { font-size: 1.2em; color: #5D3A6B; font-weight: bold; }
+        #receiptPreview.template-4 .receipt-footer { font-style: italic; color: #5D3A6B; }
+
+        /* Template 5: Dark Mode */
+        #receiptPreview.template-5 .receipt { font-family: 'Consolas', 'Menlo', monospace; background-color: #2d343e; color: #f0f0f0; border: 1px solid #444; border-radius: 4px; }
+        #receiptPreview.template-5 .receipt-header { color: #50fa7b; }
+        #receiptPreview.template-5 .receipt-company, #receiptPreview.template-5 .receipt-info, #receiptPreview.template-5 .receipt-footer { color: #bd93f9; }
+        #receiptPreview.template-5 strong, #receiptPreview.template-5 .item-row:first-child { color: #f8f8f2; }
+        #receiptPreview.template-5 .receipt-items { border-top: 1px solid #6272a4; border-bottom: 1px solid #6272a4; }
+        #receiptPreview.template-5 .grand-total { color: #50fa7b; border-top: 1px solid #6272a4; }
+        #receiptPreview.template-5 .receipt-footer { border-top: 1px solid #444; padding-top: 1rem; margin-top: 1rem; }
+
+        /* --- Ad Spaces --- */
+        .ad-space { display: none; /* Hide ads for cleaner example, enable if needed */ }
+        
+        /* --- Responsive & Mobile-Friendly Styles --- */
+        @media (max-width: 992px) {
+            .main-content { grid-template-columns: 1fr; }
+            .preview-container { position: static; margin-top: 2rem; }
+            .receipt { max-width: 100%; }
+        }
+        @media (max-width: 768px) {
+            h1 { font-size: 1.8rem; }
+            h2 { font-size: 1.3rem; }
+            .form-row { grid-template-columns: 1fr; }
+            .header-content { justify-content: center; text-align: center; }
+            .template-selector { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        /* --- Print Styles --- */
+        @media print {
+            body * { visibility: hidden; }
+            #receiptPreview, #receiptPreview * { visibility: visible; }
+            #receiptPreview { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; border: none; box-shadow: none; }
+            .receipt { width: 80mm !important; max-width: 80mm !important; margin: 0 auto; border: none !important; box-shadow: none !important; color-adjust: exact; -webkit-print-color-adjust: exact; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="page-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">Receipt Generator</div>
+                <a href="https://shader7.com" class="back-btn">← Back to Shader7</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="intro-text">
+            <h1>Free Online Receipt Generator</h1>
+            <p>Create professional, custom receipts in seconds. Choose from five modern templates, add your logo, and download as a PDF or JPG. Perfect for small businesses, freelancers, and retail stores. It's fast, free, and mobile-friendly.</p>
+        </div>
+
+        <div class="main-content">
+            <form id="receiptForm" class="form-container" onsubmit="return false;">
+                <section>
+                    <h2>Customize Your Receipt</h2>
+                    
+                    <h3>Choose a Template</h3>
+                    <div class="template-selector" id="templateSelector">
+                        <div class="template-box active" data-template="template-1">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDEwMCAxNTAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNmZmYiIHN0cm9rZT0iI2NjYyIgc3Ryb2tlLWRhc2hhcnJheT0iNCA0Ii8+PHRleHQgeD0iNTAiIHk9IjIwIiBmb250LWZhbWlseT0iQ291cmllciBOZXciIGZvbnQtc2l6ZT0iMTIiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlJFQ0VJUFRUZXh0Pjx0ZXh0IHg9IjUwIiB5PSIzNSIgZm9udC1mYW1pbHk9IkNvdXJpZXIgTmV3IiBmb250LXNpemU9IjgiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkNvbXBhbnkgTmFtZTwvdGV4dD48bGluZSB4MT0iMTAiIHkyPSIzOCIgeDI9IjkwIiB5MT0iMzgiIHN0cm9rZT0iIzMzMyIvPjx0ZXh0IHg9IjEwIiB5PSI1MCIgZm9udC1mYW1pbHk9IkNvdXJpZXIgTmV3IiBmb250LXNpemU9IjciPkRhdGU6IFhYWC4uLjwvdGV4dD48bGluZSB4MT0iMTAiIHkyPSI5MCIgeDI9IjkwIiB5MT0iOTAiIHN0cm9rZT0iIzMzMyIvPjx0ZXh0IHg9IjEwIiB5PSIxMDUiIGZvbnQtZmFtaWx5PSJDb3VyaWVyIE5ldyIgZm9udC1zaXplPSI3Ij5Ub3RhbDo8L3RleHQ+PC9zdmc+" alt="Classic Thermal Template Thumbnail">
+                            <p>Classic</p>
+                        </div>
+                        <div class="template-box" data-template="template-2">
+                             <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDEwMCAxNTAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNmZmYiIHN0cm9rZT0iI2VlZSIvPjx0ZXh0IHg9IjEwIiB5PSIyNSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXdlaWdodD0iYm9sZCIgZm9udC1zaXplPSIxMiIgZmlsbD0iIzAwN2JmZiI+UkVDRUlQVDwvdGV4dD48dGV4dCB4PSIxMCIgeT0iNTAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSI4Ij5Db21wYW55IE5hbWU8L3RleHQ+PGxpbmUgeDE9IjEwIiB5Mj0iOTUiIHgyPSI5MCIgeTE9Ijk1IiBzdHJva2U9IiMwMDdiZmYiIHN0cm9rZS13aWR0aD0iMiIvPjx0ZXh0IHg9IjEwIiB5PSIxMTAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSI4Ij5Ub3RhbDo8L3RleHQ+PC9zdmc+" alt="Modern Minimalist Template Thumbnail">
+                            <p>Minimalist</p>
+                        </div>
+                        <div class="template-box" data-template="template-3">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDEwMCAxNTAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNmZmYiIHN0cm9rZT0iI2VlZSIvPjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMzAiIGZpbGw9IiNmN2Y3ZjciLz48bGluZSB4MT0iMCIgeTI9IjMwIiB4Mj0iMTAwIiB5MT0iMzAiIHN0cm9rZT0iIzAwN2JmZiIgc3Ryb2tlLXdpZHRoPSIzIi8+PHRleHQgeD0iOTAiIHk9IjIzIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtd2VpZ2h0PSJib2xkIiBmb250LXNpemU9IjE0IiB0ZXh0LWFuY2hvcj0iZW5kIj5SRUNFSVBUPC90ZXh0Pjx0ZXh0IHg9IjEwIiB5PSI1MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjgiPkNvbXBhbnk8L3RleHQ+PGxpbmUgeDE9IjEwIiB5Mj0iMTAwIiB4Mj0iOTAiIHkxPSIxMDAiIHN0cm9rZT0iI2YwZjBmMCIvPjwvc3ZnPg==" alt="Corporate Invoice Template Thumbnail">
+                            <p>Corporate</p>
+                        </div>
+                         <div class="template-box" data-template="template-4">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDEwMCAxNTAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNmZGZhZmYiIHN0cm9rZT0iI2RhYmZkZSIgc3Ryb2tlLXdpZHRoPSIyIi8+PHRleHQgeD0iNTAlIiB5PSIzMCIgZm9udC1mYW1pbHk9ImN1cnNpdmUiIGZvbnQtc2l6ZT0iMjAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM1ZDNhNmIiPkxvZ288L3RleHQ+PHRleHQgeD0iMTUiIHk9IjYwIiBmb250LWZhbWlseT0iR2VvcmdpYSIgZm9udC1zaXplPSI4Ij5EYXRlOjwvdGV4dD48bGluZSB4MT0iMTUiIHkyPSI5MCIgeDI9Ijg1IiB5MT0iOTAiIHN0cm9rZT0iI2RhYmZkZSIgc3Ryb2tlLWRhc2hhcnJheT0iMyAzIi8+PHRleHQgeD0iMTUiIHk9IjEwNSIgZm9udC1mYW1pbHk9Ikdlb3JnaWEiIGZvbnQtc2l6ZT0iOCI+VG90YWw6PC90ZXh0Pjwvc3ZnPg==" alt="Creative Boutique Template Thumbnail">
+                            <p>Boutique</p>
+                        </div>
+                        <div class="template-box" data-template="template-5">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDEwMCAxNTAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiMyZDM0M2UiIHN0cm9rZT0iIzQ0NCIvPjx0ZXh0IHg9IjUwJSIgeT0iMjUiIGZvbnQtZmFtaWx5PSJDb25zb2xhcyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzUwZmE3YiI+UkVDRUlQVDwvdGV4dD48dGV4dCB4PSIxMCIgeT0iNTAiIGZvbnQtZmFtaWx5PSJDb25zb2xhcyIgZmlsbD0iI2JkOTNmOSIgc2l6ZT0iOCI+Q29tcGFueTwvdGV4dD48bGluZSB4MT0iMTAiIHkyPSI5MCIgeDI9IjkwIiB5MT0iOTAiIHN0cm9rZT0iIzYyNzJhNCIvPjx0ZXh0IHg9IjEwIiB5PSIxMDUiIGZvbnQtZmFtaWx5PSJDb25zb2xhcyIgZmlsbD0iIzUwZmE3YiIgc2l6ZT0iOCI+VG90YWw6PC90ZXh0Pjwvc3ZnPg==" alt="Dark Mode Template Thumbnail">
+                            <p>Dark</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h3>Company Information</h3>
+                    <div class="form-group">
+                        <label for="companyLogo">Company Logo (Optional)</label>
+                        <input type="file" id="companyLogo" accept="image/*">
+                    </div>
+                    <div class="form-group">
+                        <label for="companyName">Company Name</label>
+                        <input type="text" id="companyName" placeholder="Your Company Inc.">
+                    </div>
+                    <div class="form-group">
+                        <label for="companyAddress">Address</label>
+                        <input type="text" id="companyAddress" placeholder="123 Main Street, Anytown, USA 12345">
+                    </div>
+                     <div class="form-row">
+                        <div class="form-group">
+                            <label for="companyPhone">Phone</label>
+                            <input type="text" id="companyPhone" placeholder="(555) 123-4567">
+                        </div>
+                        <div class="form-group">
+                            <label for="gstNumber">GST / VAT Number (Optional)</label>
+                            <input type="text" id="gstNumber" placeholder="22AAAAA0000A1Z5">
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h3>Receipt Details</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="invoiceNumber">Receipt / Invoice #</label>
+                            <input type="text" id="invoiceNumber">
+                        </div>
+                        <div class="form-group">
+                            <label for="invoiceDate">Date</label>
+                            <input type="date" id="invoiceDate">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="customerName">Customer Name</label>
+                            <input type="text" id="customerName" placeholder="John Doe">
+                        </div>
+                        <div class="form-group">
+                            <label for="cashier">Cashier / Staff Name</label>
+                            <input type="text" id="cashier" placeholder="Jane Smith">
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h3>Items</h3>
+                    <div id="itemsContainer">
+                        </div>
+                    <button type="button" onclick="addItem()" class="btn-small">Add Item</button>
+                </section>
+
+                <section>
+                    <h3>Totals & Footer</h3>
+                    <div class="form-group">
+                        <label for="taxRate">Tax Rate (%)</label>
+                        <input type="number" id="taxRate" placeholder="0" min="0" max="100" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label for="footerText">Footer Message</label>
+                        <textarea id="footerText" rows="3" placeholder="Thank you for your business!"></textarea>
+                    </div>
+                </section>
+
+                <button type="button" onclick="updateReceipt()" class="btn">Update & Preview Receipt</button>
+                <button type="button" onclick="printReceipt()" class="btn btn-secondary">Print Receipt</button>
+                <button type="button" onclick="downloadReceipt('jpg')" class="btn btn-secondary">Download JPG</button>
+                <button type="button" onclick="downloadReceipt('pdf')" class="btn btn-secondary">Download PDF</button>
+            </form>
+
+            <aside class="preview-container">
+                <h2>Receipt Preview</h2>
+                <div id="receiptPreview" class="template-1">
+                    <div class="receipt">
+                        <header class="receipt-header">
+                            <strong>RECEIPT</strong>
+                        </header>
+                         <div class="receipt-logo" id="previewLogoContainer" style="display: none;">
+                            <img id="previewLogo" src="" alt="Company Logo">
+                        </div>
+                        <section class="receipt-company">
+                            <div><strong id="previewCompanyName">Your Company Name</strong></div>
+                            <div id="previewCompanyAddress">123 Main Street, City</div>
+                            <div id="previewCompanyPhone">Phone: (555) 123-4567</div>
+                            <div id="previewGST" style="display: none;">GST/VAT: <span></span></div>
+                        </section>
+                        <section class="receipt-info">
+                            <div>Invoice: <span id="previewInvoiceNumber"></span></div>
+                            <div>Date: <span id="previewDate"></span></div>
+                            <div>Customer: <span id="previewCustomer"></span></div>
+                            <div>Cashier: <span id="previewCashier"></span></div>
+                        </section>
+                        <section class="receipt-items">
+                            <div class="item-row">
+                                <strong>Item</strong>
+                                <strong>Total</strong>
+                            </div>
+                            <div id="previewItems"></div>
+                        </section>
+                        <section class="receipt-totals">
+                            <div class="total-row">
+                                <span>Subtotal:</span>
+                                <span id="previewSubtotal">₹0.00</span>
+                            </div>
+                            <div class="total-row" id="taxRow" style="display: none;">
+                                <span>Tax (<span id="previewTaxRate">0</span>%):</span>
+                                <span id="previewTax">₹0.00</span>
+                            </div>
+                            <div class="total-row grand-total">
+                                <strong>Total:</strong>
+                                <strong id="previewTotal">₹0.00</strong>
+                            </div>
+                        </section>
+                        <footer class="receipt-footer">
+                            <div id="previewFooter">Thank you!</div>
+                        </footer>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <footer class="page-footer">
+        <div class="container">
+            <p>Powered by <a href="https://shader7.com" target="_blank" rel="noopener">Shader7.com</a> | Current Date: <span id="currentDate"></span></p>
+            <p>Free Online Receipt Generator - Create Professional Receipts Instantly</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- INITIALIZATION ---
+            
+            // Set current date on input and footer
+            const today = new Date();
+            const todayISO = today.toISOString().split('T')[0];
+            document.getElementById('invoiceDate').value = todayISO;
+            document.getElementById('currentDate').textContent = today.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+            // Generate initial random invoice number
+            document.getElementById('invoiceNumber').value = 'INV-' + today.getFullYear() + '-' + Math.floor(Math.random() * 9000 + 1000);
+
+            // Add first item entry
+            addItem();
+
+            // Initial receipt render
+            updateReceipt();
+
+            // --- EVENT LISTENERS ---
+            
+            // Auto-update receipt on any form input change
+            document.getElementById('receiptForm').addEventListener('input', updateReceipt);
+            
+            // Logo upload listener
+            document.getElementById('companyLogo').addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const logoContainer = document.getElementById('previewLogoContainer');
+                        const logoImg = document.getElementById('previewLogo');
+                        logoImg.src = e.target.result;
+                        logoImg.alt = (document.getElementById('companyName').value || "Company") + " Logo";
+                        logoContainer.style.display = 'block';
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Template selector listener
+            document.getElementById('templateSelector').addEventListener('click', function(event) {
+                const templateBox = event.target.closest('.template-box');
+                if (templateBox) {
+                    const selectedTemplate = templateBox.dataset.template;
+                    
+                    // Update active state on UI
+                    document.querySelectorAll('.template-box').forEach(box => box.classList.remove('active'));
+                    templateBox.classList.add('active');
+
+                    // Apply template class to preview
+                    const preview = document.getElementById('receiptPreview');
+                    preview.className = ''; // Clear all classes
+                    preview.classList.add(selectedTemplate); // Add the new one
+                }
+            });
+        });
+
+        // --- CORE FUNCTIONS ---
+
+        function addItem() {
+            const container = document.getElementById('itemsContainer');
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'item-entry form-row';
+            itemDiv.innerHTML = `
+                <div class="form-group" style="flex-grow: 3;">
+                    <label>Item Name</label>
+                    <input type="text" class="item-name" placeholder="Service or Product">
+                </div>
+                <div class="form-group">
+                    <label>Qty</label>
+                    <input type="number" class="item-qty" value="1" min="1">
+                </div>
+                <div class="form-group">
+                    <label>Price</label>
+                    <input type="number" class="item-price" placeholder="0.00" step="0.01" min="0">
+                </div>
+                <button type="button" onclick="removeItem(this)" class="btn-danger" aria-label="Remove Item" style="align-self: end; margin-bottom: 1rem; height: 45px;">&times;</button>
+            `;
+            container.appendChild(itemDiv);
+            if (document.activeElement) document.activeElement.blur(); // Remove focus to trigger update
+            updateReceipt();
+        }
+
+        function removeItem(button) {
+            button.parentElement.remove();
+            updateReceipt();
+        }
+
+        function updateReceipt() {
+            // Company Info
+            document.getElementById('previewCompanyName').textContent = document.getElementById('companyName').value || 'Your Company Name';
+            document.getElementById('previewCompanyAddress').textContent = document.getElementById('companyAddress').value || '123 Main Street, City';
+            document.getElementById('previewCompanyPhone').textContent = 'Phone: ' + (document.getElementById('companyPhone').value || '(555) 123-4567');
+            
+            const gstNumber = document.getElementById('gstNumber').value;
+            const gstElement = document.getElementById('previewGST');
+            if (gstNumber) {
+                gstElement.style.display = 'block';
+                gstElement.querySelector('span').textContent = gstNumber;
+            } else {
+                gstElement.style.display = 'none';
+            }
+
+            // Receipt Details
+            document.getElementById('previewInvoiceNumber').textContent = document.getElementById('invoiceNumber').value || 'N/A';
+            document.getElementById('previewDate').textContent = document.getElementById('invoiceDate').value || new Date().toLocaleDateString();
+            document.getElementById('previewCustomer').textContent = document.getElementById('customerName').value || 'Walk-in Customer';
+            document.getElementById('previewCashier').textContent = document.getElementById('cashier').value || 'Staff';
+
+            // Items & Totals Calculation
+            const itemsPreviewContainer = document.getElementById('previewItems');
+            itemsPreviewContainer.innerHTML = '';
+            let subtotal = 0;
+            const itemEntries = document.querySelectorAll('.item-entry');
+            
+            itemEntries.forEach(entry => {
+                const name = entry.querySelector('.item-name').value || 'Item';
+                const qty = parseFloat(entry.querySelector('.item-qty').value) || 1;
+                const price = parseFloat(entry.querySelector('.item-price').value) || 0;
+                const total = qty * price;
+                subtotal += total;
+
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'item-row';
+                itemDiv.innerHTML = `
+                    <div>${name} (${qty} x ${price.toFixed(2)})</div>
+                    <span>₹${total.toFixed(2)}</span>
+                `;
+                itemsPreviewContainer.appendChild(itemDiv);
+            });
+
+            // Update Totals Display
+            const taxRate = parseFloat(document.getElementById('taxRate').value) || 0;
+            const taxAmount = subtotal * (taxRate / 100);
+            const total = subtotal + taxAmount;
+            
+            document.getElementById('previewSubtotal').textContent = '₹' + subtotal.toFixed(2);
+            document.getElementById('previewTotal').textContent = '₹' + total.toFixed(2);
+
+            const taxRow = document.getElementById('taxRow');
+            if (taxRate > 0) {
+                taxRow.style.display = 'flex';
+                document.getElementById('previewTaxRate').textContent = taxRate;
+                document.getElementById('previewTax').textContent = '₹' + taxAmount.toFixed(2);
+            } else {
+                taxRow.style.display = 'none';
+            }
+            
+            // Footer
+            document.getElementById('previewFooter').textContent = document.getElementById('footerText').value || 'Thank you for your business!';
+        }
+
+        function printReceipt() {
+            window.print();
+        }
+
+        async function downloadReceipt(format) {
+            const receiptElement = document.getElementById('receiptPreview');
+            const invoiceNumber = document.getElementById('invoiceNumber').value || 'receipt';
+            
+            // Temporarily remove padding for a tighter capture
+            const originalPadding = receiptElement.style.padding;
+            receiptElement.style.padding = '0';
+            
+            try {
+                const canvas = await html2canvas(receiptElement.querySelector('.receipt'), { 
+                    scale: 3, // Higher scale for better resolution
+                    backgroundColor: null, // Use element's background
+                    useCORS: true 
+                });
+
+                const imgData = canvas.toDataURL(format === 'jpg' ? 'image/jpeg' : 'image/png', 1.0);
+
+                if (format === 'pdf') {
+                    const { jsPDF } = window.jspdf;
+                    const pdf = new jsPDF({
+                        orientation: 'p',
+                        unit: 'px',
+                        format: [canvas.width, canvas.height]
+                    });
+                    pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+                    pdf.save(`${invoiceNumber}.pdf`);
+                } else {
+                    const link = document.createElement('a');
+                    link.href = imgData;
+                    link.download = `${invoiceNumber}.${format}`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+            } catch (error) {
+                console.error('Error generating receipt:', error);
+                alert('Failed to generate receipt. Please try again.');
+            } finally {
+                // Restore padding
+                receiptElement.style.padding = originalPadding;
+            }
+        }
+    </script>
+</body>
+</html>
