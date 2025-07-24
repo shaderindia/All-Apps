@@ -7,9 +7,11 @@
     <meta name="description" content="Create professional receipts online for free. Generate, customize and download receipts instantly.">
     <meta name="keywords" content="receipt generator, free receipt maker, online receipt, invoice generator">
     
-    <!-- Google AdSense - Replace with your actual AdSense code -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXX" crossorigin="anonymous"></script>
     
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
     <style>
         * {
             margin: 0;
@@ -154,7 +156,7 @@
         }
 
         /* Receipt Preview */
-        .receipt-preview {
+        .receipt-preview-container { /* Renamed for clarity */
             background: white;
             padding: 2rem;
             border-radius: 8px;
@@ -242,6 +244,23 @@
             background: #218838;
         }
 
+        .btn-secondary {
+            background: #17a2b8;
+        }
+
+        .btn-secondary:hover {
+            background: #138496;
+        }
+
+        .btn-info {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .btn-info:hover {
+            background: #e0a800;
+        }
+
         .footer {
             background: #333;
             color: white;
@@ -268,26 +287,38 @@
             }
         }
 
+        /* --- CORRECTED CSS --- */
+        /* This is the reliable way to handle printing a specific element. */
         @media print {
+            /* Hide everything in the body by default */
             body * {
                 visibility: hidden;
             }
-            
-            .receipt, .receipt * {
+            /* Make the receipt preview container and everything inside it visible */
+            .receipt-preview-container, .receipt-preview-container * {
                 visibility: visible;
             }
-            
-            .receipt {
+            /* Position the receipt at the top-left of the print page */
+            .receipt-preview-container {
                 position: absolute;
                 left: 0;
                 top: 0;
-                width: 80mm;
+                margin: 0;
+                padding: 0;
+                width: 100%;
+                box-shadow: none;
+                border: none;
+            }
+            .receipt {
+                width: 80mm; /* Standard thermal receipt width */
+                margin: 0 auto;
+                border: none;
+                box-shadow: none;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
     <div class="header">
         <div class="container">
             <div class="header-content">
@@ -297,31 +328,26 @@
         </div>
     </div>
 
-    <!-- Top Ad Space -->
     <div class="container">
         <div class="ad-space ad-top">
             <div>Advertisement Space - Top Banner (728x90)</div>
         </div>
     </div>
 
-    <!-- Left Sidebar Ad -->
     <div class="ad-space ad-sidebar ad-left">
         <div style="writing-mode: vertical-lr; text-orientation: mixed;">
             Advertisement<br>(160x600)
         </div>
     </div>
 
-    <!-- Right Sidebar Ad -->
     <div class="ad-space ad-sidebar ad-right">
         <div style="writing-mode: vertical-lr; text-orientation: mixed;">
             Advertisement<br>(160x600)
         </div>
     </div>
 
-    <!-- Main Content -->
     <div class="container">
         <div class="main-content">
-            <!-- Form Section -->
             <div class="form-section">
                 <h2 class="section-title">Company Information</h2>
                 <div class="form-row">
@@ -375,7 +401,7 @@
                             </div>
                             <div class="form-group">
                                 <label>Quantity</label>
-                                <input type="number" class="item-qty" placeholder="1" min="1">
+                                <input type="number" class="item-qty" placeholder="1" min="1" value="1">
                             </div>
                         </div>
                         <div class="form-group">
@@ -397,12 +423,12 @@
                 </div>
 
                 <button type="button" onclick="updateReceipt()" class="btn">Update Receipt</button>
-                <button type="button" onclick="printReceipt()" class="btn" style="background: #17a2b8; margin-top: 0.5rem;">Print Receipt</button>
+                <button type="button" onclick="printReceipt()" class="btn btn-secondary" style="margin-top: 0.5rem;">Print Receipt</button>
+                <button type="button" onclick="downloadReceipt('jpg')" class="btn btn-info" style="margin-top: 0.5rem;">Download JPG</button>
+                <button type="button" onclick="downloadReceipt('pdf')" class="btn btn-secondary" style="margin-top: 0.5rem;">Download PDF</button>
             </div>
 
-            <!-- Receipt Preview -->
-            <div class="receipt-preview">
-                <h2 class="section-title">Receipt Preview</h2>
+            <div class="receipt-preview-container"> <h2 class="section-title">Receipt Preview</h2>
                 <div id="receiptPreview" class="receipt">
                     <div class="receipt-header">
                         <strong>RECEIPT</strong>
@@ -457,13 +483,11 @@
             </div>
         </div>
 
-        <!-- Bottom Ad Space -->
         <div class="ad-space" style="height: 90px; margin-top: 2rem;">
             <div>Advertisement Space - Bottom Banner (728x90)</div>
         </div>
     </div>
 
-    <!-- Footer -->
     <div class="footer">
         <div class="container">
             <p>Powered by <a href="https://shader7.com" style="color: #007bff;">Shader7.com</a></p>
@@ -493,7 +517,7 @@
                     </div>
                     <div class="form-group">
                         <label>Quantity</label>
-                        <input type="number" class="item-qty" placeholder="1" min="1">
+                        <input type="number" class="item-qty" placeholder="1" min="1" value="1">
                     </div>
                 </div>
                 <div class="form-group">
@@ -575,8 +599,53 @@
             document.getElementById('previewFooter').textContent = document.getElementById('footerText').value || 'Thank you for your business!';
         }
 
+        /* --- CORRECTED JAVASCRIPT --- */
+        // With the correct CSS, this function becomes very simple.
         function printReceipt() {
+            // The @media print CSS will automatically handle hiding other elements.
             window.print();
+        }
+
+        async function downloadReceipt(format) {
+            const receiptElement = document.getElementById('receiptPreview');
+            const invoiceNumber = document.getElementById('invoiceNumber').value || 'receipt';
+
+            const originalWidth = receiptElement.style.width;
+            receiptElement.style.width = '80mm'; 
+
+            try {
+                const canvas = await html2canvas(receiptElement, { scale: 3 }); 
+
+                if (format === 'jpg') {
+                    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                    const link = document.createElement('a');
+                    link.href = imgData;
+                    link.download = `${invoiceNumber}.jpg`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                } else if (format === 'pdf') {
+                    const imgData = canvas.toDataURL('image/jpeg', 1.0);
+
+                    const { jsPDF } = window.jspdf;
+                    
+                    const imgWidth = canvas.width;
+                    const imgHeight = canvas.height;
+                    const pdf = new jsPDF({
+                        orientation: 'portrait',
+                        unit: 'px',
+                        format: [imgWidth, imgHeight]
+                    });
+
+                    pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
+                    pdf.save(`${invoiceNumber}.pdf`);
+                }
+            } catch (error) {
+                console.error('Error generating receipt:', error);
+                alert('Failed to generate receipt. Please try again.');
+            } finally {
+                receiptElement.style.width = originalWidth;
+            }
         }
 
         // Auto-update receipt when inputs change
