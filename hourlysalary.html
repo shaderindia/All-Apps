@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -111,6 +110,277 @@
         #swap-currencies-btn { background: none; border: 1px solid var(--light-gray); color: var(--primary); font-size: 1.2rem; padding: 0.5rem; line-height: 1; margin-top: 1.5rem; }
         #converter-result-display { font-size: 1.5rem; font-weight: bold; color: var(--primary); text-align: center; margin-top: 1.5rem; min-height: 2.25rem; }
 
+        /* Report Preview Modal Styles */
+        #report-preview-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            z-index: 1000;
+            padding: 20px;
+        }
+        #report-preview-modal.hidden {
+            display: none;
+        }
+        .report-controls {
+            margin-top: 0;
+            text-align: center;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            width: calc(min(95%, 900px));
+            flex-shrink: 0;
+            z-index: 1001;
+        }
+        .zoom-controls {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background-color: #fff;
+            padding: 8px 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .zoom-controls button {
+            padding: 8px 12px;
+        }
+        .zoom-controls span {
+            font-weight: bold;
+            color: #555;
+            min-width: 40px;
+            text-align: center;
+        }
+        #report-scrollable-content {
+            flex-grow: 1;
+            overflow-y: auto;
+            width: calc(min(95%, 900px));
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 10px 0;
+            position: relative;
+        }
+        #report-preview-content {
+            background-color: #fff;
+            width: 210mm;
+            padding: 15mm;
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+            position: relative;
+            font-family: 'Roboto', sans-serif;
+            color: #333;
+            font-size: 10pt;
+            margin: 0;
+            transform-origin: top left;
+            transition: transform 0.2s ease-out;
+            flex-shrink: 0;
+        }
+        .report-header {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .report-header h2 {
+            font-size: 18pt;
+            margin: 0;
+            color: #2c3e50;
+        }
+        .report-header p {
+            margin: 3pt 0;
+            font-size: 9pt;
+            color: #666;
+        }
+        .report-company-name {
+            font-size: 16pt;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 10pt;
+            color: #2c3e50;
+            word-break: break-word;
+            overflow-wrap: break-word;
+            max-width: 90%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .report-details {
+            margin-bottom: 10pt;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8pt;
+        }
+        .report-details > div {
+            flex: 1 1 45%;
+            min-width: 180px;
+            margin-bottom: 3pt;
+        }
+        .report-details .left-section,
+        .report-details .right-section {
+            flex: 1;
+            min-width: unset;
+            padding: 0 10px;
+        }
+        .report-details .left-section {
+            text-align: left;
+        }
+        .report-details .right-section {
+            text-align: right;
+        }
+        .report-details p, .report-summary p {
+            margin: 1pt 0;
+            font-size: 9pt;
+        }
+        .report-table-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 10pt;
+            margin-bottom: 15pt;
+            page-break-inside: avoid;
+        }
+        .report-table {
+            width: 48%;
+            border-collapse: collapse;
+            background-color: #fff;
+            flex-shrink: 0;
+        }
+        .report-table th, .report-table td {
+            border: 1px solid #eee;
+            padding: 6pt;
+            text-align: left;
+            font-size: 8pt;
+        }
+        .report-table th {
+            background-color: #f5f5f5;
+            font-weight: bold;
+        }
+        .report-table th:nth-child(1), .report-table td:nth-child(1) {
+            width: 50%;
+        }
+        .report-table th:nth-child(2), .report-table td:nth-child(2) {
+            width: 25%;
+            text-align: center;
+        }
+        .report-table th:nth-child(3), .report-table td:nth-child(3) {
+            width: 25%;
+            text-align: right;
+        }
+        .report-total-box {
+            background-color: #4a90e2;
+            color: #fff;
+            padding: 12pt;
+            text-align: right;
+            font-size: 14pt;
+            font-weight: bold;
+            border-radius: 5px;
+            margin-top: 15pt;
+        }
+        .report-footer {
+            margin-top: 30pt;
+            font-size: 9pt;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .report-footer p {
+            margin-bottom: 10pt;
+        }
+        .report-footer .left-footer-section {
+            flex: 1 1 45%;
+            text-align: left;
+        }
+        .report-footer .right-footer-section {
+            flex: 1 1 45%;
+            text-align: right;
+        }
+        #modal-download-pdf-btn, #modal-download-jpg-btn {
+            color: #fff;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            animation: pulse 2s infinite alternate;
+        }
+        #modal-download-pdf-btn {
+            background-color: #e74c3c;
+        }
+        #modal-download-jpg-btn {
+            background-color: #f39c12;
+        }
+        #modal-download-pdf-btn:hover { background-color: #c0392b; }
+        #modal-download-jpg-btn:hover { background-color: #e67e22; }
+        #modal-close-btn {
+            background-color: #7f8c8d;
+            color: #fff;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        #modal-close-btn:hover {
+            background-color: #636e72;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        .report-watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 3.5em;
+            color: rgba(0, 0, 0, 0.05);
+            pointer-events: none;
+            user-select: none;
+            white-space: nowrap;
+            z-index: 0;
+            opacity: 0.7;
+        }
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.4);
+            }
+            100% {
+                transform: scale(1.05);
+                box-shadow: 0 0 0 10px rgba(231, 76, 60, 0);
+            }
+        }
+        .force-two-columns .report-table-container {
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            justify-content: space-between !important;
+            align-items: flex-start !important;
+        }
+        .force-two-columns .report-table {
+            width: 48% !important;
+            min-width: 200px;
+        }
+
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
         @media (max-width: 768px) {
@@ -124,6 +394,44 @@
             .button-group { flex-direction: column; }
             button { width: 100%; }
             #swap-currencies-btn { margin-top: 0; }
+            .report-controls {
+                width: 100%;
+                margin-bottom: 10px;
+                padding: 8px;
+            }
+            .report-controls button,
+            .zoom-controls {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            .zoom-controls {
+                order: -1;
+            }
+            #report-scrollable-content {
+                width: 100%;
+                padding: 5px 0;
+                overflow-x: auto;
+            }
+            #report-preview-content {
+                width: 210mm;
+                padding: 10mm;
+            }
+            .report-details div, .report-summary div {
+                flex: 1 1 100%;
+            }
+            .report-watermark {
+                font-size: 2.5em;
+            }
+            .report-footer {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .report-footer .left-footer-section,
+            .report-footer .right-footer-section {
+                text-align: left;
+                width: 100%;
+                margin-bottom: 5pt;
+            }
         }
 
         .site-footer { background-color: var(--dark); color: var(--light-gray); padding: 2.5rem 1rem; margin-top: auto; }
@@ -227,6 +535,23 @@
         <p id="rate-info" style="text-align:center; font-size:0.8rem; color: var(--gray); margin-top:1rem;"></p>
     </div>
 
+    <!-- Report Preview Modal -->
+    <div id="report-preview-modal" class="hidden">
+        <div class="report-controls">
+            <button id="modal-download-pdf-btn" onclick="downloadReport('pdf')"><i class="fas fa-file-pdf"></i> Download PDF</button>
+            <div class="zoom-controls">
+                <button onclick="zoomReport(-0.1)"><i class="fas fa-search-minus"></i></button>
+                <span id="zoom-level">100%</span>
+                <button onclick="zoomReport(0.1)"><i class="fas fa-search-plus"></i></button>
+            </div>
+            <button id="modal-download-jpg-btn" onclick="downloadReport('jpg')"><i class="fas fa-file-image"></i> Download JPG</button>
+            <button id="modal-close-btn" onclick="hideReportPreview()"><i class="fas fa-times"></i> Close</button>
+        </div>
+        <div id="report-scrollable-content">
+            <div id="report-preview-content"></div>
+        </div>
+    </div>
+
 </div>
 
 <footer class="site-footer" data-html2canvas-ignore="true">
@@ -257,6 +582,7 @@
     let exchangeRates = {};
     let lastExchangeRateUpdate = null;
     const supportedCurrencies = ['EUR', 'USD', 'GBP', 'INR', 'RON'];
+    let currentZoom = 1.0; // For report preview zoom
 
     // --- INITIALIZATION ---
     function init() {
@@ -387,7 +713,15 @@
             handleCurrencyConversion();
         } catch (error) {
             console.error('Error fetching exchange rate:', error);
-            document.getElementById('rate-info').textContent = 'Could not fetch live rates.';
+            document.getElementById('rate-info').textContent = 'Could not fetch live rates. Using default rates.';
+            // Set default rates if API fails
+            exchangeRates = {
+                EUR: 0.2,
+                USD: 0.22,
+                GBP: 0.17,
+                INR: 18.5,
+                RON: 1
+            };
         }
     }
     
@@ -462,13 +796,318 @@
         recalculateSalary();
     }
     
-    // Report generation and other utilities would go here, unchanged from the previous version.
-    // For brevity, they are omitted but are assumed to be present.
-    function showReportPreview() { alert("Report generation is ready."); }
-    function shareApp() { alert("Sharing is ready."); }
+    // --- REPORT GENERATION FUNCTIONS ---
+    function showReportPreview() {
+        const employeeName = document.getElementById('employee-name-input').value.trim();
+        const companyName = document.getElementById('company-name').value.trim();
+        const monthYearValue = document.getElementById('month-year-picker').value;
+
+        if (!employeeName || !companyName || !monthYearValue) {
+            alert('Please enter Employee Name, Company Name, and select a Month/Year before generating a report.');
+            return;
+        }
+
+        const reportContentDiv = document.getElementById('report-preview-content');
+        reportContentDiv.innerHTML = generateReportHTML();
+        document.getElementById('report-preview-modal').classList.remove('hidden');
+        resetZoom();
+    }
+
+    function hideReportPreview() {
+        document.getElementById('report-preview-modal').classList.add('hidden');
+    }
+
+    function generateReportHTML() {
+        const employeeName = document.getElementById('employee-name-input').value.trim() || 'N/A';
+        const companyName = document.getElementById('company-name').value.trim() || 'N/A';
+        const salary = parseFloat(document.getElementById('salary').value) || 0;
+        const fixedBaseHours = parseFloat(document.getElementById('fixedBaseHours').value) || 0; 
+        const monthYearValue = document.getElementById('month-year-picker').value;
+        
+        if (!monthYearValue) {
+            return "<p style='text-align: center; color: #e74c3c;'>Please select a month and year to generate the report.</p>";
+        }
+
+        const [yearStr, monthStr] = monthYearValue.split('-');
+        const year = parseInt(yearStr);
+        const month = parseInt(monthStr); // Month is 1-indexed
+
+        const weekendRate = parseFloat(document.getElementById('weekendRate').value) || 1;
+        const targetCurrency = document.getElementById('target-currency-select').value;
+        const conversionRate = exchangeRates[targetCurrency] || 0;
+
+        const monthName = new Date(year, month - 1).toLocaleString('default', { month: 'long' });
+        const daysInMonth = new Date(year, month, 0).getDate();
+
+        let totalHrsOverall = 0;
+        let totalWeightedHours = 0;
+        const standardHoursPerDay = 8; 
+
+        let totalWeekdayOvertimeHours = 0;
+        let totalWeekendOvertimeHours = 0; 
+        let totalRegularHoursForReport = 0; 
+        let totalWeekendHours = 0; 
+        let daysWorked = 0; 
+        let daysOff = 0;    
+
+        const hourlyRate = (fixedBaseHours > 0) ? (salary / fixedBaseHours) : 0;
+
+        const dailyEntries = [];
+
+        // Get all calendar days regardless of hours entered
+        for (let day = 1; day <= daysInMonth; day++) {
+            const hoursSelect = document.querySelector(`#calendar-container .hours-select[data-day="${day}"]`);
+            const shiftSelect = document.querySelector(`#calendar-container .shift-select[data-day="${day}"]`);
+
+            const hrs = parseFloat(hoursSelect ? hoursSelect.value : '') || 0;
+            const isWeekend = hoursSelect ? (hoursSelect.dataset.isWeekend === 'true') : false;
+            const shiftType = shiftSelect ? shiftSelect.options[shiftSelect.selectedIndex].text : 'N/A';
+            
+            dailyEntries.push({
+                day: day,
+                hours: hrs,
+                shift: shiftType,
+                isWeekend: isWeekend
+            });
+        }
+
+        // Sort by day to ensure correct order
+        dailyEntries.sort((a, b) => a.day - b.day);
+
+        const dailyEntriesHtmlLeft = [];
+        const dailyEntriesHtmlRight = [];
+
+        // Strict split: First 15 days on left, rest on right
+        const fixedLeftTableDays = 15;
+        let splitPoint = Math.min(daysInMonth, fixedLeftTableDays); 
+
+        dailyEntries.forEach((data) => {
+            const dateObj = new Date(year, month - 1, data.day);
+            const isWeekend = data.isWeekend;
+            const multiplier = isWeekend ? weekendRate : 1; 
+            const hrs = data.hours;
+            const shiftType = data.shift;
+
+            let regularHrsToday = Math.min(hrs, standardHoursPerDay);
+            let overtimeHrsToday = Math.max(0, hrs - standardHoursPerDay);
+
+            totalHrsOverall += hrs;
+            totalWeightedHours += hrs * multiplier;
+            totalRegularHoursForReport += regularHrsToday; 
+            if (isWeekend) { 
+                totalWeekendHours += hrs;
+            }
+
+            if (overtimeHrsToday > 0) {
+                if (isWeekend) {
+                    totalWeekendOvertimeHours += overtimeHrsToday; 
+                } else {
+                    totalWeekdayOvertimeHours += overtimeHrsToday;
+                }
+            }
+            
+            // Calculate days worked and days off
+            if (hrs > 0) {
+                daysWorked++;
+            } else {
+                daysOff++;
+            }
+
+            const dailyPay = (hrs * hourlyRate * multiplier).toFixed(2);
+            const dayOfWeek = dateObj.toLocaleDateString('en-GB', { weekday: 'short' });
+            
+            // New combined string for Date, Day, and Shift Type
+            const dateDayShift = `${dateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })} (${dayOfWeek}) - ${shiftType}`;
+            const hoursWorkedDisplay = `${hrs} hrs${overtimeHrsToday > 0 ? ` (+${overtimeHrsToday} OT)` : ''}`;
+
+            const rowHtml = `
+                <tr>
+                    <td>${dateDayShift}</td>
+                    <td>${hoursWorkedDisplay}</td>
+                    <td>${dailyPay} RON</td>
+                </tr>
+            `;
+
+            if (data.day <= splitPoint) { 
+                dailyEntriesHtmlLeft.push(rowHtml);
+            } else {
+                dailyEntriesHtmlRight.push(rowHtml);
+            }
+        });
+
+        const totalSalaryRON = (totalWeightedHours * hourlyRate).toFixed(2);
+        const totalSalaryConverted = (totalSalaryRON * conversionRate).toFixed(2);
+
+        return `
+            <div class="report-watermark">${companyName}</div>
+            <div class="report-company-name">${companyName}</div>
+            <div class="report-header">
+                <h2>Salary Report</h2>
+                <p>For the month of ${monthName} ${year}</p>
+            </div>
+
+            <div class="report-details" style="display: flex; justify-content: space-between;">
+                <div class="left-section">
+                    <p><strong>Employee Name:</strong> ${employeeName}</p>
+                    <p><strong>Base Salary:</strong> ${salary.toFixed(2)} RON</p>
+                    <p><strong>Fixed Base Hours:</strong> ${fixedBaseHours}</p>
+                    <p><strong>Calculated Hourly Rate:</strong> ${hourlyRate.toFixed(2)} RON</p>
+                    <p><strong>Weekend Multiplier:</strong> ${weekendRate}x</p>
+                </div>
+                <div class="right-section">
+                    <p><strong>Total Hours Worked:</strong> ${totalHrsOverall}</p>
+                    <p><strong>Total Regular Hours (up to 8/day):</strong> ${totalRegularHoursForReport}</p>
+                    <p><strong>Weekday OT Hours:</strong> ${totalWeekdayOvertimeHours}</p>
+                    <p><strong>Total Weekend Hours:</strong> ${totalWeekendHours}</p>
+                    <p><strong>Total Salary:</strong> ${totalSalaryRON} RON</p>
+                    <p><strong>Total Salary:</strong> ${totalSalaryConverted} ${targetCurrency}</p>
+                </div>
+            </div>
+
+            <h3 style="text-align: center; margin-top: 15pt; margin-bottom: 8pt; font-size: 12pt;">Daily Work Log</h3>
+            <div class="report-table-container">
+                <table class="report-table" style="width: 48%;">
+                    <thead>
+                        <tr>
+                            <th>Date, Day & Shift Option</th>
+                            <th>Hours Worked</th>
+                            <th>Daily Pay (RON)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${dailyEntriesHtmlLeft.join('')}
+                    </tbody>
+                </table>
+                <table class="report-table" style="width: 48%;">
+                    <thead>
+                        <tr>
+                            <th>Date, Day & Shift Option</th>
+                            <th>Hours Worked</th>
+                            <th>Daily Pay (RON)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${dailyEntriesHtmlRight.join('')}
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="report-footer">
+                <div class="left-footer-section">
+                    <p><strong>Employee Signature:</strong> ___________________________________________</p>
+                    <p><strong>Date of Salary Received:</strong> ___________________________________</p>
+                </div>
+                <div class="right-footer-section">
+                    <p><strong>Days Worked:</strong> ${daysWorked} days</p>
+                    <p><strong>Days Off:</strong> ${daysOff} days</p>
+                </div>
+            </div>
+        `;
+    }
+
+    function zoomReport(factor) {
+        currentZoom = Math.max(0.5, Math.min(2.0, currentZoom + factor));
+        document.getElementById('report-preview-content').style.transform = `scale(${currentZoom})`;
+        document.getElementById('zoom-level').textContent = `${Math.round(currentZoom * 100)}%`;
+    }
+
+    function resetZoom() {
+        currentZoom = 1.0;
+        document.getElementById('report-preview-content').style.transform = `scale(${currentZoom})`;
+        document.getElementById('zoom-level').textContent = `100%`;
+    }
+
+    async function downloadReport(format) { 
+        const reportElement = document.getElementById('report-preview-content');
+        const reportScrollableContent = document.getElementById('report-scrollable-content'); 
+        
+        // Save original styles
+        const originalTransform = reportElement.style.transform;
+        const originalTransformOrigin = reportElement.style.transformOrigin;
+        
+        // Apply capture-specific styles to force two columns
+        reportElement.style.transform = 'scale(1)'; 
+        reportElement.style.transformOrigin = 'top left';
+        reportScrollableContent.classList.add('force-two-columns'); 
+
+        const canvas = await html2canvas(reportElement, {
+            scale: 2, // Higher scale for better resolution
+            useCORS: true,
+            logging: false,
+            width: reportElement.offsetWidth, 
+            height: reportElement.offsetHeight
+        });
+
+        // Restore original styles after capturing
+        reportElement.style.transform = originalTransform;
+        reportElement.style.transformOrigin = originalTransformOrigin;
+        reportScrollableContent.classList.remove('force-two-columns'); // Remove the class
+
+        const employeeName = document.getElementById('employee-name-input').value.trim() || 'Employee';
+        const companyName = document.getElementById('company-name').value.trim() || 'Company';
+        const filenamePrefix = `Salary_Report_${employeeName.replace(/\s/g, '_')}_${companyName.replace(/\s/g, '_')}_${document.getElementById('month-year-picker').value}`;
+
+        if (format === 'pdf') {
+            const { jsPDF } = window.jspdf;
+            const imgData = canvas.toDataURL('image/jpeg', 1.0); 
+
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = pdf.internal.pageSize.getHeight();
+
+            const imgWidth = canvas.width;
+            const imgHeight = canvas.height;
+
+            const ratio = pdfWidth / imgWidth;
+            const finalImgHeight = imgHeight * ratio;
+
+            let position = 0;
+            let heightLeft = finalImgHeight;
+
+            pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, finalImgHeight);
+            heightLeft -= pdfHeight;
+
+            while (heightLeft >= -1) { 
+                position = heightLeft - pdfHeight; 
+                pdf.addPage();
+                pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, finalImgHeight);
+                heightLeft -= pdfHeight;
+            }
+
+            pdf.save(`${filenamePrefix}.pdf`);
+        } else if (format === 'jpg') {
+            const imgData = canvas.toDataURL('image/jpeg', 1.0);
+            const link = document.createElement('a');
+            link.download = `${filenamePrefix}.jpg`;
+            link.href = imgData;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    }
+
+    function shareApp() {
+        if (navigator.share) {
+            navigator.share({
+                title: 'Advanced Salary Calculator',
+                text: 'Check out this advanced Salary Calculator App for daily work logging and reporting!',
+                url: window.location.href,
+            })
+            .catch((error) => console.log('Error sharing', error));
+        } else {
+            alert('Share feature not supported in your browser. You can manually copy the URL from the address bar.');
+        }
+    }
+
+    // Save employee and company name when they are typed
+    document.getElementById('employee-name-input').addEventListener('input', () => {
+        localStorage.setItem('lastEmployeeName', document.getElementById('employee-name-input').value.trim());
+    });
+    document.getElementById('company-name').addEventListener('input', () => {
+        localStorage.setItem('lastCompanyName', document.getElementById('company-name').value.trim());
+    });
 
     window.onload = init;
 </script>
 </body>
 </html>
-```
