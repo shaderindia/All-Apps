@@ -253,19 +253,20 @@
         /* Updated calendar select styles - more compact and without dropdown arrow */
         .calendar-day-select {
             width: 100%;
-            padding: 0.2rem 0.5rem;
-            margin-top: 0.2rem;
+            padding: 0.1rem 0.3rem;
+            margin-top: 0.1rem;
             border: 1px solid var(--light-gray);
-            border-radius: 6px;
-            font-size: 0.7rem;
-            margin-bottom: 0.2rem;
-            height: 24px;
+            border-radius: 4px;
+            font-size: 0.6rem;
+            margin-bottom: 0.1rem;
+            height: 20px;
             -webkit-appearance: none;
             -moz-appearance: none;
             appearance: none;
             background-image: none;
             transition: all 0.2s ease;
             cursor: pointer;
+            text-align: center;
         }
 
         .calendar-day-select:hover {
@@ -478,18 +479,18 @@
             }
             
             #calendar-container td {
-                height: 70px;
+                height: 60px;
             }
             
             .calendar-day-select {
-                font-size: 0.65rem;
-                padding: 0.2rem 0.3rem;
-                height: 22px;
+                font-size: 0.55rem;
+                padding: 0.1rem 0.2rem;
+                height: 18px;
             }
             
             #calendar-container td div {
-                font-size: 0.8rem;
-                margin-bottom: 0.2rem;
+                font-size: 0.7rem;
+                margin-bottom: 0.1rem;
             }
             
             .button-group {
@@ -502,6 +503,21 @@
             
             .salary-display h2 {
                 font-size: 1.8rem;
+            }
+
+            /* Mobile report preview adjustments */
+            #report-preview-content {
+                padding: 1rem;
+                width: 100%;
+                max-width: 100%;
+                transform: scale(0.9);
+                transform-origin: top center;
+            }
+
+            .report-controls {
+                width: 100%;
+                flex-direction: column;
+                gap: 0.5rem;
             }
         }
 
@@ -521,6 +537,15 @@
             .report-controls {
                 flex-direction: column;
                 gap: 0.5rem;
+            }
+
+            #calendar-container td {
+                height: 55px;
+            }
+
+            .calendar-day-select {
+                font-size: 0.5rem;
+                height: 16px;
             }
         }
 
@@ -826,13 +851,13 @@
             html += '<td></td>';
         }
 
-        let hoursOptions = '<option value="">Hrs</option>';
+        let hoursOptions = '<option value="">H</option>';
         for (let h = 0; h <= 16; h++) {
             hoursOptions += `<option value="${h}">${h}</option>`;
         }
 
         const shiftOptions = `
-            <option value="">Shift</option>
+            <option value="">S</option>
             <option value="8">8h</option>
             <option value="12">12h</option>
             <option value="0">Off</option>
@@ -852,7 +877,7 @@
 
             html += `
                 <td class="${cellClass}">
-                    <div style="font-weight:bold; margin-bottom:5px;">${day}${getDateSuffix(day)}</div>
+                    <div style="font-weight:bold; margin-bottom:3px; font-size:0.7rem;">${day}${getDateSuffix(day)}</div>
                     <select class="calendar-day-select hours-select" onchange="recalculateSalary()" data-day="${day}" data-is-weekend="${isWeekend}">
                         ${hoursOptions}
                     </select>
@@ -1277,6 +1302,28 @@
                         left: 0;
                         top: 0;
                         width: 100%;
+                    }
+                }
+                @media (max-width: 768px) {
+                    .report-details {
+                        flex-direction: column;
+                    }
+                    .left-section, .right-section {
+                        width: 100%;
+                    }
+                    .report-table-container {
+                        flex-direction: column;
+                    }
+                    .report-table {
+                        width: 100%;
+                        margin-bottom: 20px;
+                    }
+                    .report-footer {
+                        flex-direction: column;
+                    }
+                    .left-footer-section, .right-footer-section {
+                        width: 100%;
+                        margin-bottom: 20px;
                     }
                 }
             </style>
