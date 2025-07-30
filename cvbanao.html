@@ -2,13 +2,12 @@
 <html lang="en">
 <head>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-FCJR8H4DME"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-FCJR8H4DME');
-</script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-FCJR8H4DME');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Elite Resume Builder - Create Professional A4 Resumes Online Free</title>
@@ -53,6 +52,17 @@
             font-family: 'Inter', sans-serif;
         }
         
+        /* A4 Preview Container */
+        .a4-preview-container {
+            width: 100%;
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 1rem;
+            background: #f5f5f5;
+            border-radius: 8px;
+            margin: 0 auto;
+        }
+        
         /* A4 Preview - Exact A4 dimensions */
         .a4-preview {
             width: 210mm;
@@ -66,17 +76,22 @@
             line-height: 1.3;
             color: #374151;
             transform-origin: top center;
-            transition: all 0.3s ease;
         }
         
         /* Mobile responsive */
         @media (max-width: 768px) {
             .a4-preview {
-                width: 100%;
-                min-height: auto;
-                padding: 1rem;
-                font-size: var(--resume-font-size, 9pt);
+                transform: scale(0.8);
+                transform-origin: 0 0;
+                margin: 0;
             }
+        }
+        
+        /* Resume container for proper declaration positioning */
+        .resume-container {
+            position: relative;
+            min-height: calc(297mm - 30mm); /* A4 height minus padding */
+            padding-bottom: 40px; /* Space for declaration */
         }
         
         /* Resume content styling */
@@ -149,17 +164,32 @@
             gap: 15px;
         }
         
+        /* Improved heading alignment */
         .section h3 {
             font-size: 1.1em;
             font-weight: 600;
             color: #1f2937;
-            margin: 0 0 8px 0;
-            padding: 5px 10px;
+            margin: 0 0 10px 0;
+            padding: 0;
             background-color: #e0e7ff;
             border-radius: 4px;
-            /* FIX: Use Flexbox for robust vertical centering */
+            min-height: 36px;
+            box-sizing: border-box;
             display: flex;
             align-items: center;
+            position: relative;
+        }
+        
+        .section h3 span {
+            padding: 8px 10px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            height: 100%;
+        }
+        
+        .section-content {
+            margin-top: 8px;
         }
         
         .section p, .section li {
@@ -174,17 +204,17 @@
         }
         
         .experience-item {
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
         
         .experience-title {
             font-weight: 600;
             color: #1f2937;
-            margin-bottom: 3px;
+            margin-bottom: 5px;
         }
         
         .personal-details p {
-            margin-bottom: 3px;
+            margin-bottom: 5px;
         }
         
         .skills-list {
@@ -193,10 +223,13 @@
         }
         
         .declaration {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
             text-align: center;
             font-style: italic;
             font-size: 0.8em;
-            margin-top: 15px;
             padding-top: 10px;
             border-top: 1px solid #e5e7eb;
         }
@@ -297,6 +330,91 @@
             background: #4f46e5;
             cursor: pointer;
             border: none;
+        }
+        
+        /* Mobile controls */
+        .mobile-controls {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .mobile-controls {
+                display: flex;
+                justify-content: center;
+                gap: 1rem;
+                padding: 1rem;
+                background: white;
+                box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+                position: sticky;
+                bottom: 0;
+                z-index: 100;
+            }
+            
+            .mobile-controls button {
+                padding: 0.75rem;
+                background: #e5e7eb;
+                border-radius: 50%;
+                width: 44px;
+                height: 44px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: none;
+                cursor: pointer;
+            }
+        }
+        
+        /* Add language button */
+        .add-language-btn {
+            background-color: #4f46e5;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .add-language-btn:hover {
+            background-color: #4338ca;
+        }
+        
+        /* Close preview button */
+        .close-preview-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        /* Remove language button */
+        .remove-language-btn {
+            color: #ef4444;
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 8px 0;
+        }
+        
+        .remove-language-btn:hover {
+            color: #dc2626;
         }
     </style>
 </head>
@@ -419,6 +537,18 @@
                                 <option value="Prefer not to say">Prefer not to say</option>
                             </select>
                         </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Nationality</label>
+                            <input type="text" id="nationality" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                   placeholder="e.g., Indian">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Driving License</label>
+                            <input type="text" id="drivingLicense" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                   placeholder="e.g., DL-1234567890">
+                        </div>
                     </div>
                 </div>
 
@@ -445,11 +575,21 @@
                 <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
                     <h2 class="text-xl font-semibold text-gray-900 mb-6 flex items-center gap-2">
                         <i class="fas fa-lightbulb text-indigo-600"></i>
-                        Skills
+                        Skills (Technical)
                     </h2>
-                    <textarea id="skills" rows="4" required
+                    <textarea id="skillsTechnical" rows="4" required
                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                              placeholder="Highlight your skills. Use bullet points or commas.&#10;e.g., - Project Management, Data Analysis&#10;- Python, JavaScript, SQL"></textarea>
+                              placeholder="List your technical skills.&#10;e.g., - Python, JavaScript, SQL&#10;- Machine Learning, Data Analysis"></textarea>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-6 flex items-center gap-2">
+                        <i class="fas fa-lightbulb text-indigo-600"></i>
+                        Skills (Additional)
+                    </h2>
+                    <textarea id="skillsAdditional" rows="4"
+                              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                              placeholder="List your additional skills.&#10;e.g., - Project Management&#10;- Team Leadership&#10;- Public Speaking"></textarea>
                 </div>
 
                 <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
@@ -464,22 +604,31 @@
 
                 <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
                     <h2 class="text-xl font-semibold text-gray-900 mb-6 flex items-center gap-2">
-                        <i class="fas fa-cogs text-indigo-600"></i>
-                        CAD/CAM Software
-                    </h2>
-                    <textarea id="cadcamSoftware" rows="3"
-                              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                              placeholder="List CAD/CAM software you are proficient in.&#10;e.g., AutoCAD, SolidWorks, CATIA, Siemens NX, Fusion 360, Mastercam"></textarea>
-                </div>
-
-                <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
-                    <h2 class="text-xl font-semibold text-gray-900 mb-6 flex items-center gap-2">
                         <i class="fas fa-language text-indigo-600"></i>
                         Languages
                     </h2>
-                    <textarea id="languages" rows="3"
-                              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                              placeholder="List languages and proficiency.&#10;e.g., English (Fluent)&#10;Spanish (Conversational)"></textarea>
+                    <div id="languages-container">
+                        <div class="language-field grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Language</label>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <input type="text" name="language" 
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                           placeholder="e.g., English">
+                                    <select name="languageProficiency" 
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                        <option value="Native">Native</option>
+                                        <option value="Fluent">Fluent</option>
+                                        <option value="Intermediate">Intermediate</option>
+                                        <option value="Basic">Basic</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" id="add-language-btn" class="add-language-btn">
+                        <i class="fas fa-plus"></i> Add Another Language
+                    </button>
                 </div>
 
                 <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
@@ -550,9 +699,24 @@
                 </div>
             </div>
 
-            <div class="flex justify-center">
+            <div class="a4-preview-container">
                 <div class="a4-preview" id="resumePreview">
+                    <div class="resume-container">
+                        <!-- Content will be generated here -->
                     </div>
+                </div>
+            </div>
+
+            <div class="mobile-controls sm:hidden">
+                <button onclick="zoomOut()">
+                    <i class="fas fa-search-minus"></i>
+                </button>
+                <button onclick="resetZoom()">
+                    <i class="fas fa-search"></i>
+                </button>
+                <button onclick="zoomIn()">
+                    <i class="fas fa-search-plus"></i>
+                </button>
             </div>
         </div>
 
@@ -572,10 +736,47 @@
     <script>
         let photoData = null;
         let currentFontSize = 10;
+        let currentZoom = 0.8;
+        let closePreviewBtn = null;
 
         // Load saved data on page load
         document.addEventListener('DOMContentLoaded', function() {
             loadSavedData();
+            
+            // Add event listener for adding languages
+            document.getElementById('add-language-btn').addEventListener('click', function() {
+                const container = document.getElementById('languages-container');
+                const newField = document.createElement('div');
+                newField.className = 'language-field grid grid-cols-1 md:grid-cols-2 gap-6 mb-4';
+                newField.innerHTML = `
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Language</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="text" name="language" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                   placeholder="e.g., French">
+                            <select name="languageProficiency" 
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="Native">Native</option>
+                                <option value="Fluent">Fluent</option>
+                                <option value="Intermediate">Intermediate</option>
+                                <option value="Basic">Basic</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="flex items-end">
+                        <button type="button" class="remove-language-btn text-red-600 hover:text-red-700 text-sm font-medium">
+                            <i class="fas fa-times"></i> Remove
+                        </button>
+                    </div>
+                `;
+                container.appendChild(newField);
+                
+                // Add event listener to the remove button
+                newField.querySelector('.remove-language-btn').addEventListener('click', function() {
+                    container.removeChild(newField);
+                });
+            });
         });
 
         // Photo upload functionality
@@ -632,6 +833,33 @@
             }
         }
 
+        // Zoom controls for mobile
+        function zoomIn() {
+            currentZoom = Math.min(currentZoom + 0.1, 1.2);
+            document.querySelector('.a4-preview').style.transform = `scale(${currentZoom})`;
+        }
+
+        function zoomOut() {
+            currentZoom = Math.max(currentZoom - 0.1, 0.5);
+            document.querySelector('.a4-preview').style.transform = `scale(${currentZoom})`;
+        }
+
+        function resetZoom() {
+            currentZoom = 0.8;
+            document.querySelector('.a4-preview').style.transform = `scale(${currentZoom})`;
+        }
+
+        // Setup close preview button
+        function setupClosePreviewButton() {
+            if (!closePreviewBtn) {
+                closePreviewBtn = document.createElement('button');
+                closePreviewBtn.className = 'close-preview-btn';
+                closePreviewBtn.innerHTML = '<i class="fas fa-times"></i>';
+                closePreviewBtn.addEventListener('click', closePreview);
+                document.body.appendChild(closePreviewBtn);
+            }
+        }
+
         // Form submission
         document.getElementById('resumeForm').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -645,18 +873,31 @@
                 maritalStatus: document.getElementById('maritalStatus').value,
                 birthDate: document.getElementById('birthDate').value,
                 gender: document.getElementById('gender').value,
+                nationality: document.getElementById('nationality').value,
+                drivingLicense: document.getElementById('drivingLicense').value,
                 objective: document.getElementById('objective').value,
                 education: document.getElementById('education').value,
-                skills: document.getElementById('skills').value,
+                skillsTechnical: document.getElementById('skillsTechnical').value,
+                skillsAdditional: document.getElementById('skillsAdditional').value,
                 experience: document.getElementById('experience').value,
-                cadcamSoftware: document.getElementById('cadcamSoftware').value,
-                languages: document.getElementById('languages').value,
                 declaration: document.getElementById('declaration').value,
                 photo: photoData
             };
 
+            // Collect language data
+            const languageFields = document.querySelectorAll('.language-field');
+            formData.languages = [];
+            
+            languageFields.forEach(field => {
+                const lang = field.querySelector('[name="language"]').value;
+                const prof = field.querySelector('[name="languageProficiency"]').value;
+                if (lang) {
+                    formData.languages.push({ language: lang, proficiency: prof });
+                }
+            });
+
             // Validation
-            const requiredFields = ['fullName', 'designation', 'email', 'phone', 'address', 'objective', 'education', 'skills', 'experience'];
+            const requiredFields = ['fullName', 'designation', 'email', 'phone', 'address', 'objective', 'education', 'skillsTechnical', 'experience'];
             const missingFields = requiredFields.filter(field => !formData[field]);
             
             if (missingFields.length > 0) {
@@ -665,6 +906,7 @@
             }
 
             generateResume(formData);
+            setupClosePreviewButton();
         });
 
         function generateResume(data) {
@@ -706,7 +948,7 @@
                 <div class="resume-header">
                     <div class="resume-photo">
                         ${data.photo ? 
-                            `<img src="${data.photo}" alt="Profile Photo">` : 
+                            `<img src="${data.photo}" alt="Profile Photo" style="object-fit: cover; width: 100%; height: 100%;">` : 
                             `<div class="resume-photo-placeholder">
                                 <i class="fas fa-user"></i>
                             </div>`
@@ -727,71 +969,79 @@
                     <div class="main-section">
                         ${data.objective ? `
                             <div class="section">
-                                <h3>Objective / Summary</h3>
-                                <p>${formatText(data.objective)}</p>
+                                <h3><span>Objective / Summary</span></h3>
+                                <div class="section-content">
+                                    <p>${formatText(data.objective)}</p>
+                                </div>
                             </div>
                         ` : ''}
 
                         ${data.experience ? `
                             <div class="section">
-                                <h3>Experience</h3>
-                                ${formatExperience(data.experience)}
+                                <h3><span>Experience</span></h3>
+                                <div class="section-content">
+                                    ${formatExperience(data.experience)}
+                                </div>
                             </div>
                         ` : ''}
 
                         ${data.education ? `
                             <div class="section">
-                                <h3>Education</h3>
-                                ${formatList(data.education)}
+                                <h3><span>Education</span></h3>
+                                <div class="section-content">
+                                    ${formatList(data.education)}
+                                </div>
                             </div>
                         ` : ''}
                     </div>
 
                     <div class="sidebar-section">
-                        ${(data.maritalStatus || data.birthDate || data.gender) ? `
+                        ${(data.maritalStatus || data.birthDate || data.gender || data.nationality || data.drivingLicense) ? `
                             <div class="section">
-                                <h3>Personal Details</h3>
-                                <div class="personal-details">
+                                <h3><span>Personal Details</span></h3>
+                                <div class="section-content personal-details">
                                     ${data.maritalStatus ? `<p><strong>Marital Status:</strong> ${data.maritalStatus}</p>` : ''}
-                                    ${data.birthDate ? `<p><strong>Date of Birth:</strong> ${data.birthDate}</p>` : ''}
+                                    ${data.birthDate ? `<p><strong>Date of Birth:</strong> ${new Date(data.birthDate).toLocaleDateString()}</p>` : ''}
                                     ${data.gender ? `<p><strong>Gender:</strong> ${data.gender}</p>` : ''}
+                                    ${data.nationality ? `<p><strong>Nationality:</strong> ${data.nationality}</p>` : ''}
+                                    ${data.drivingLicense ? `<p><strong>Driving License:</strong> ${data.drivingLicense}</p>` : ''}
                                 </div>
                             </div>
                         ` : ''}
 
-                        ${data.skills ? `
+                        ${data.skillsTechnical ? `
                             <div class="section">
-                                <h3>Skills</h3>
-                                <div class="skills-list">${formatSkills(data.skills)}</div>
+                                <h3><span>Technical Skills</span></h3>
+                                <div class="section-content skills-list">${formatSkills(data.skillsTechnical)}</div>
                             </div>
                         ` : ''}
 
-                        ${data.cadcamSoftware ? `
+                        ${data.skillsAdditional ? `
                             <div class="section">
-                                <h3>CAD/CAM Software</h3>
-                                <div class="skills-list">
-                                    ${data.cadcamSoftware.split(/[\n,]/).map(software => software.trim()).filter(s => s).join(', ')}
+                                <h3><span>Additional Skills</span></h3>
+                                <div class="section-content skills-list">${formatSkills(data.skillsAdditional)}</div>
+                            </div>
+                        ` : ''}
+
+                        ${data.languages && data.languages.length > 0 ? `
+                            <div class="section">
+                                <h3><span>Languages</span></h3>
+                                <div class="section-content languages-list">
+                                    ${data.languages.map(lang => `
+                                        <p><strong>${lang.language}:</strong> ${lang.proficiency}</p>
+                                    `).join('')}
                                 </div>
-                            </div>
-                        ` : ''}
-
-                        ${data.languages ? `
-                            <div class="section">
-                                <h3>Languages</h3>
-                                ${formatList(data.languages)}
                             </div>
                         ` : ''}
                     </div>
                 </div>
 
-                ${data.declaration ? `
-                    <div class="declaration">
-                        <p>${formatText(data.declaration)}</p>
-                    </div>
-                ` : ''}
+                <div class="declaration">
+                    <p>${formatText(data.declaration)}</p>
+                </div>
             `;
 
-            document.getElementById('resumePreview').innerHTML = resumeHTML;
+            document.querySelector('.resume-container').innerHTML = resumeHTML;
             
             // Apply current font size
             adjustFontSize(currentFontSize);
@@ -805,50 +1055,156 @@
         function closePreview() {
             document.getElementById('preview-section').style.display = 'none';
             document.getElementById('form-section').style.display = 'block';
+            resetZoom();
+            if (closePreviewBtn) {
+                closePreviewBtn.remove();
+                closePreviewBtn = null;
+            }
         }
 
         function downloadPDF() {
             showToast('Generating PDF... Please wait.', 'info');
             const element = document.getElementById('resumePreview');
             
-            /* NOTE: This method captures the entire resume as a single image. 
-               If the content is longer than one page, it will be scaled down (squashed) 
-               to fit, which may impact readability. True multi-page PDF generation 
-               is significantly more complex.
-            */
+            // Store original styles
+            const originalTransform = element.style.transform;
+            const originalWidth = element.style.width;
+            
+            // Reset any mobile scaling
+            element.style.transform = 'none';
+            element.style.width = '210mm';
+            
+            // Temporarily hide UI elements
+            const downloadBtn = document.querySelector('[onclick="downloadPDF()"]');
+            const closeBtn = document.querySelector('[onclick="closePreview()"]');
+            if (downloadBtn) downloadBtn.style.visibility = 'hidden';
+            if (closeBtn) closeBtn.style.visibility = 'hidden';
+            
+            // Force repaint to ensure all elements are properly rendered
+            element.style.visibility = 'hidden';
+            element.offsetHeight; // Trigger reflow
+            element.style.visibility = 'visible';
+            
+            // Temporarily modify heading styles for PDF export
+            const headings = document.querySelectorAll('.section h3');
+            headings.forEach(h => {
+                h.style.display = 'flex';
+                h.style.alignItems = 'center';
+                h.style.justifyContent = 'center';
+                h.style.height = '36px';
+                h.style.marginBottom = '10px';
+            });
+            
+            // Ensure photo maintains aspect ratio
+            const photo = document.querySelector('.resume-photo img');
+            if (photo) {
+                photo.style.objectFit = 'cover';
+                photo.style.width = '100%';
+                photo.style.height = '100%';
+            }
+            
+            // Add spacing between sections
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.style.marginBottom = '15px';
+            });
+            
             html2canvas(element, {
-                scale: 2, // Higher scale improves quality
+                scale: 3,
+                scrollX: 0,
+                scrollY: 0,
+                windowWidth: element.scrollWidth,
+                windowHeight: element.scrollHeight,
                 useCORS: true,
                 allowTaint: true,
-                windowWidth: element.scrollWidth,
-                windowHeight: element.scrollHeight
+                letterRendering: true,
+                logging: true,
+                onclone: (clonedDoc) => {
+                    // Ensure cloned document has proper styles
+                    const clonedHeadings = clonedDoc.querySelectorAll('.section h3');
+                    clonedHeadings.forEach(h => {
+                        h.style.display = 'flex';
+                        h.style.alignItems = 'center';
+                        h.style.justifyContent = 'center';
+                        h.style.height = '36px';
+                        h.style.marginBottom = '10px';
+                    });
+                    
+                    const clonedPhoto = clonedDoc.querySelector('.resume-photo img');
+                    if (clonedPhoto) {
+                        clonedPhoto.style.objectFit = 'cover';
+                        clonedPhoto.style.width = '100%';
+                        clonedPhoto.style.height = '100%';
+                    }
+                    
+                    const clonedSections = clonedDoc.querySelectorAll('.section');
+                    clonedSections.forEach(section => {
+                        section.style.marginBottom = '15px';
+                    });
+                }
             }).then(canvas => {
-                const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                // Restore original styles
+                element.style.transform = originalTransform;
+                element.style.width = originalWidth;
+                headings.forEach(h => {
+                    h.style.display = '';
+                    h.style.alignItems = '';
+                    h.style.justifyContent = '';
+                    h.style.height = '';
+                    h.style.marginBottom = '';
+                });
+                
+                if (photo) {
+                    photo.style.objectFit = '';
+                    photo.style.width = '';
+                    photo.style.height = '';
+                }
+                
+                sections.forEach(section => {
+                    section.style.marginBottom = '';
+                });
+                
+                if (downloadBtn) downloadBtn.style.visibility = 'visible';
+                if (closeBtn) closeBtn.style.visibility = 'visible';
+                
+                const imgData = canvas.toDataURL('image/jpeg', 1.0);
                 const pdf = new window.jspdf.jsPDF({
-                    orientation: 'p',
+                    orientation: 'portrait',
                     unit: 'mm',
                     format: 'a4'
                 });
-                const pdfWidth = pdf.internal.pageSize.getWidth();
-                const pdfHeight = pdf.internal.pageSize.getHeight();
                 
-                const canvasWidth = canvas.width;
-                const canvasHeight = canvas.height;
-                const canvasRatio = canvasHeight / canvasWidth;
-                
-                const finalPdfHeight = pdfWidth * canvasRatio;
-
-                if (finalPdfHeight > pdfHeight) {
-                     showToast('Warning: Content may be scaled to fit PDF.', 'info');
-                }
-
-                pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, finalPdfHeight > pdfHeight ? pdfHeight : finalPdfHeight);
+                // Add image to PDF (full page)
+                pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
                 pdf.save(`${document.getElementById('fullName').value.replace(' ', '_')}_Resume.pdf`);
                 
                 showToast('PDF downloaded successfully!', 'success');
             }).catch(error => {
-                console.error('Error generating PDF:', error);
-                showToast('Error generating PDF. See console for details.', 'error');
+                console.error('PDF generation error:', error);
+                showToast('Error generating PDF', 'error');
+                // Restore original styles even if error occurs
+                element.style.transform = originalTransform;
+                element.style.width = originalWidth;
+                headings.forEach(h => {
+                    h.style.display = '';
+                    h.style.alignItems = '';
+                    h.style.justifyContent = '';
+                    h.style.height = '';
+                    h.style.marginBottom = '';
+                });
+                
+                if (photo) {
+                    photo.style.objectFit = '';
+                    photo.style.width = '';
+                    photo.style.height = '';
+                }
+                
+                sections.forEach(section => {
+                    section.style.marginBottom = '';
+                });
+                
+                if (downloadBtn) downloadBtn.style.visibility = 'visible';
+                if (closeBtn) closeBtn.style.visibility = 'visible';
             });
         }
 
@@ -862,16 +1218,29 @@
                 maritalStatus: document.getElementById('maritalStatus').value,
                 birthDate: document.getElementById('birthDate').value,
                 gender: document.getElementById('gender').value,
+                nationality: document.getElementById('nationality').value,
+                drivingLicense: document.getElementById('drivingLicense').value,
                 objective: document.getElementById('objective').value,
                 education: document.getElementById('education').value,
-                skills: document.getElementById('skills').value,
+                skillsTechnical: document.getElementById('skillsTechnical').value,
+                skillsAdditional: document.getElementById('skillsAdditional').value,
                 experience: document.getElementById('experience').value,
-                cadcamSoftware: document.getElementById('cadcamSoftware').value,
-                languages: document.getElementById('languages').value,
                 declaration: document.getElementById('declaration').value,
                 photo: photoData,
                 fontSize: currentFontSize
             };
+
+            // Collect language data
+            const languageFields = document.querySelectorAll('.language-field');
+            formData.languages = [];
+            
+            languageFields.forEach(field => {
+                const lang = field.querySelector('[name="language"]').value;
+                const prof = field.querySelector('[name="languageProficiency"]').value;
+                if (lang) {
+                    formData.languages.push({ language: lang, proficiency: prof });
+                }
+            });
 
             try {
                 localStorage.setItem('elite-resume-data', JSON.stringify(formData));
@@ -919,13 +1288,100 @@
             document.getElementById('maritalStatus').value = data.maritalStatus || '';
             document.getElementById('birthDate').value = data.birthDate || '';
             document.getElementById('gender').value = data.gender || '';
+            document.getElementById('nationality').value = data.nationality || '';
+            document.getElementById('drivingLicense').value = data.drivingLicense || '';
             document.getElementById('objective').value = data.objective || '';
             document.getElementById('education').value = data.education || '';
-            document.getElementById('skills').value = data.skills || '';
+            document.getElementById('skillsTechnical').value = data.skillsTechnical || '';
+            document.getElementById('skillsAdditional').value = data.skillsAdditional || '';
             document.getElementById('experience').value = data.experience || '';
-            document.getElementById('cadcamSoftware').value = data.cadcamSoftware || '';
-            document.getElementById('languages').value = data.languages || '';
             document.getElementById('declaration').value = data.declaration || 'I hereby declare that the information provided is true and correct to the best of my knowledge.';
+
+            // Populate languages
+            const languagesContainer = document.getElementById('languages-container');
+            languagesContainer.innerHTML = ''; // Clear existing fields
+            
+            if (data.languages && data.languages.length > 0) {
+                data.languages.forEach((lang, index) => {
+                    const newField = document.createElement('div');
+                    newField.className = 'language-field grid grid-cols-1 md:grid-cols-2 gap-6 mb-4';
+                    
+                    // First language field doesn't have remove button
+                    if (index === 0) {
+                        newField.innerHTML = `
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Language</label>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <input type="text" name="language" 
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                           placeholder="e.g., English"
+                                           value="${lang.language || ''}">
+                                    <select name="languageProficiency" 
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                        <option value="Native" ${lang.proficiency === 'Native' ? 'selected' : ''}>Native</option>
+                                        <option value="Fluent" ${lang.proficiency === 'Fluent' ? 'selected' : ''}>Fluent</option>
+                                        <option value="Intermediate" ${lang.proficiency === 'Intermediate' ? 'selected' : ''}>Intermediate</option>
+                                        <option value="Basic" ${lang.proficiency === 'Basic' ? 'selected' : ''}>Basic</option>
+                                    </select>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        newField.innerHTML = `
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Language</label>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <input type="text" name="language" 
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                           placeholder="e.g., French"
+                                           value="${lang.language || ''}">
+                                    <select name="languageProficiency" 
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                        <option value="Native" ${lang.proficiency === 'Native' ? 'selected' : ''}>Native</option>
+                                        <option value="Fluent" ${lang.proficiency === 'Fluent' ? 'selected' : ''}>Fluent</option>
+                                        <option value="Intermediate" ${lang.proficiency === 'Intermediate' ? 'selected' : ''}>Intermediate</option>
+                                        <option value="Basic" ${lang.proficiency === 'Basic' ? 'selected' : ''}>Basic</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="flex items-end">
+                                <button type="button" class="remove-language-btn text-red-600 hover:text-red-700 text-sm font-medium">
+                                    <i class="fas fa-times"></i> Remove
+                                </button>
+                            </div>
+                        `;
+                        
+                        // Add event listener to the remove button
+                        newField.querySelector('.remove-language-btn').addEventListener('click', function() {
+                            languagesContainer.removeChild(newField);
+                        });
+                    }
+                    
+                    languagesContainer.appendChild(newField);
+                });
+            } else {
+                // Add default first language field if no saved languages
+                const defaultField = document.createElement('div');
+                defaultField.className = 'language-field grid grid-cols-1 md:grid-cols-2 gap-6 mb-4';
+                defaultField.innerHTML = `
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Language</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="text" name="language" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                   placeholder="e.g., English">
+                            <select name="languageProficiency" 
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="Native">Native</option>
+                                <option value="Fluent">Fluent</option>
+                                <option value="Intermediate">Intermediate</option>
+                                <option value="Basic">Basic</option>
+                            </select>
+                        </div>
+                    </div>
+                `;
+                languagesContainer.appendChild(defaultField);
+            }
 
             if (data.photo) {
                 photoData = data.photo;
@@ -940,6 +1396,7 @@
             if (data.fontSize) {
                 currentFontSize = data.fontSize;
                 document.getElementById('fontSizeSlider').value = currentFontSize;
+                adjustFontSize(currentFontSize);
             }
         }
 
@@ -950,8 +1407,31 @@
             currentFontSize = 10;
             document.getElementById('fontSizeSlider').value = 10;
             adjustFontSize(10);
+            
+            // Reset languages to just one field
+            const languagesContainer = document.getElementById('languages-container');
+            languagesContainer.innerHTML = `
+                <div class="language-field grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Language</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="text" name="language" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                   placeholder="e.g., English">
+                            <select name="languageProficiency" 
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="Native">Native</option>
+                                <option value="Fluent">Fluent</option>
+                                <option value="Intermediate">Intermediate</option>
+                                <option value="Basic">Basic</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
             if (document.getElementById('preview-section').style.display === 'block') {
-                 closePreview();
+                closePreview();
             }
             showToast('Form has been reset!', 'info');
         }
