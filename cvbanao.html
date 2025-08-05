@@ -702,8 +702,7 @@
             <div class="a4-preview-container">
                 <div class="a4-preview" id="resumePreview">
                     <div class="resume-container">
-                        <!-- Content will be generated here -->
-                    </div>
+                        </div>
                 </div>
             </div>
 
@@ -958,9 +957,9 @@
                         <h1>${data.fullName}</h1>
                         <h2>${data.designation}</h2>
                         <div class="contact-info">
-                            <span>📧 ${data.email}</span>
-                            <span>📞 ${data.phone}</span>
-                            <span>📍 ${data.address}</span>
+                            <span>&#128231; ${data.email}</span>
+                            <span>&#128222; ${data.phone}</span>
+                            <span>&#127968; ${data.address}</span>
                         </div>
                     </div>
                 </div>
@@ -1062,151 +1061,100 @@
             }
         }
 
-        function downloadPDF() {
+        async function downloadPDF() {
             showToast('Generating PDF... Please wait.', 'info');
-            const element = document.getElementById('resumePreview');
-            
-            // Store original styles
-            const originalTransform = element.style.transform;
-            const originalWidth = element.style.width;
-            
-            // Reset any mobile scaling
-            element.style.transform = 'none';
-            element.style.width = '210mm';
-            
-            // Temporarily hide UI elements
+            const resumeElement = document.getElementById('resumePreview');
             const downloadBtn = document.querySelector('[onclick="downloadPDF()"]');
             const closeBtn = document.querySelector('[onclick="closePreview()"]');
+            
+            // Temporarily adjust styles for better PDF output
+            const originalPadding = resumeElement.style.padding;
+            const originalBoxShadow = resumeElement.style.boxShadow;
+            resumeElement.style.padding = '10mm'; 
+            resumeElement.style.boxShadow = 'none';
+
+            await new Promise(resolve => setTimeout(resolve, 50));
+
+            // Hide buttons to prevent them from appearing in the PDF
             if (downloadBtn) downloadBtn.style.visibility = 'hidden';
             if (closeBtn) closeBtn.style.visibility = 'hidden';
-            
-            // Force repaint to ensure all elements are properly rendered
-            element.style.visibility = 'hidden';
-            element.offsetHeight; // Trigger reflow
-            element.style.visibility = 'visible';
-            
-            // Temporarily modify heading styles for PDF export
-            const headings = document.querySelectorAll('.section h3');
-            headings.forEach(h => {
-                h.style.display = 'flex';
-                h.style.alignItems = 'center';
-                h.style.justifyContent = 'center';
-                h.style.height = '36px';
-                h.style.marginBottom = '10px';
-            });
-            
-            // Ensure photo maintains aspect ratio
-            const photo = document.querySelector('.resume-photo img');
-            if (photo) {
-                photo.style.objectFit = 'cover';
-                photo.style.width = '100%';
-                photo.style.height = '100%';
-            }
-            
-            // Add spacing between sections
-            const sections = document.querySelectorAll('.section');
-            sections.forEach(section => {
-                section.style.marginBottom = '15px';
-            });
-            
-            html2canvas(element, {
-                scale: 3,
-                scrollX: 0,
-                scrollY: 0,
-                windowWidth: element.scrollWidth,
-                windowHeight: element.scrollHeight,
-                useCORS: true,
-                allowTaint: true,
-                letterRendering: true,
-                logging: true,
-                onclone: (clonedDoc) => {
-                    // Ensure cloned document has proper styles
-                    const clonedHeadings = clonedDoc.querySelectorAll('.section h3');
-                    clonedHeadings.forEach(h => {
-                        h.style.display = 'flex';
-                        h.style.alignItems = 'center';
-                        h.style.justifyContent = 'center';
-                        h.style.height = '36px';
-                        h.style.marginBottom = '10px';
-                    });
-                    
-                    const clonedPhoto = clonedDoc.querySelector('.resume-photo img');
-                    if (clonedPhoto) {
-                        clonedPhoto.style.objectFit = 'cover';
-                        clonedPhoto.style.width = '100%';
-                        clonedPhoto.style.height = '100%';
-                    }
-                    
-                    const clonedSections = clonedDoc.querySelectorAll('.section');
-                    clonedSections.forEach(section => {
-                        section.style.marginBottom = '15px';
-                    });
-                }
-            }).then(canvas => {
-                // Restore original styles
-                element.style.transform = originalTransform;
-                element.style.width = originalWidth;
-                headings.forEach(h => {
-                    h.style.display = '';
-                    h.style.alignItems = '';
-                    h.style.justifyContent = '';
-                    h.style.height = '';
-                    h.style.marginBottom = '';
-                });
-                
-                if (photo) {
-                    photo.style.objectFit = '';
-                    photo.style.width = '';
-                    photo.style.height = '';
-                }
-                
-                sections.forEach(section => {
-                    section.style.marginBottom = '';
-                });
-                
-                if (downloadBtn) downloadBtn.style.visibility = 'visible';
-                if (closeBtn) closeBtn.style.visibility = 'visible';
-                
-                const imgData = canvas.toDataURL('image/jpeg', 1.0);
-                const pdf = new window.jspdf.jsPDF({
+
+            try {
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF({
                     orientation: 'portrait',
                     unit: 'mm',
                     format: 'a4'
                 });
-                
-                // Add image to PDF (full page)
-                pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
-                pdf.save(`${document.getElementById('fullName').value.replace(' ', '_')}_Resume.pdf`);
-                
-                showToast('PDF downloaded successfully!', 'success');
-            }).catch(error => {
-                console.error('PDF generation error:', error);
-                showToast('Error generating PDF', 'error');
-                // Restore original styles even if error occurs
-                element.style.transform = originalTransform;
-                element.style.width = originalWidth;
-                headings.forEach(h => {
-                    h.style.display = '';
-                    h.style.alignItems = '';
-                    h.style.justifyContent = '';
-                    h.style.height = '';
-                    h.style.marginBottom = '';
+
+                const canvas = await html2canvas(resumeElement, {
+                    scale: 2, 
+                    useCORS: true,
+                    allowTaint: true,
+                    logging: false,
+                    onclone: (clonedDoc) => {
+                        const photoImg = clonedDoc.querySelector('.resume-photo img');
+                        if (photoImg && photoImg.src) {
+                            const photoContainer = photoImg.parentElement;
+                            const photoDiv = clonedDoc.createElement('div');
+                            photoDiv.style.width = '100%';
+                            photoDiv.style.height = '100%';
+                            photoDiv.style.backgroundImage = `url(${photoImg.src})`;
+                            photoDiv.style.backgroundSize = 'cover';
+                            photoDiv.style.backgroundPosition = 'center';
+                            photoContainer.innerHTML = ''; 
+                            photoContainer.appendChild(photoDiv);
+                        }
+
+                        const headings = clonedDoc.querySelectorAll('.section h3');
+                        headings.forEach(h => {
+                            h.style.display = 'flex';
+                            h.style.alignItems = 'center';
+                            h.style.height = h.offsetHeight + 'px'; 
+                            const span = h.querySelector('span');
+                            if (span) {
+                                span.style.display = 'flex';
+                                span.style.alignItems = 'center';
+                                span.style.height = '100%';
+                                span.style.width = '100%';
+                            }
+                        });
+                    }
                 });
+
+                const imgData = canvas.toDataURL('image/jpeg', 0.95);
                 
-                if (photo) {
-                    photo.style.objectFit = '';
-                    photo.style.width = '';
-                    photo.style.height = '';
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = pdf.internal.pageSize.getHeight();
+                const imgHeight = canvas.height * pdfWidth / canvas.width;
+                
+                let heightLeft = imgHeight;
+                let position = 0;
+
+                while (heightLeft > 0) {
+                    if (position !== 0) {
+                        pdf.addPage();
+                    }
+                    pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight);
+                    heightLeft -= pdfHeight;
+                    position -= pdfHeight;
                 }
-                
-                sections.forEach(section => {
-                    section.style.marginBottom = '';
-                });
+
+                const filename = `${document.getElementById('fullName').value.replace(/ /g, '_')}_Resume.pdf`;
+                pdf.save(filename);
+                showToast('PDF downloaded successfully!', 'success');
+            } catch (error) {
+                console.error('Error generating PDF:', error);
+                showToast('An error occurred while generating the PDF.', 'error');
+            } finally {
+                resumeElement.style.padding = originalPadding;
+                resumeElement.style.boxShadow = originalBoxShadow;
                 
                 if (downloadBtn) downloadBtn.style.visibility = 'visible';
                 if (closeBtn) closeBtn.style.visibility = 'visible';
-            });
+            }
         }
+
 
         function saveResume() {
             const formData = {
@@ -1230,7 +1178,6 @@
                 fontSize: currentFontSize
             };
 
-            // Collect language data
             const languageFields = document.querySelectorAll('.language-field');
             formData.languages = [];
             
@@ -1297,16 +1244,14 @@
             document.getElementById('experience').value = data.experience || '';
             document.getElementById('declaration').value = data.declaration || 'I hereby declare that the information provided is true and correct to the best of my knowledge.';
 
-            // Populate languages
             const languagesContainer = document.getElementById('languages-container');
-            languagesContainer.innerHTML = ''; // Clear existing fields
+            languagesContainer.innerHTML = '';
             
             if (data.languages && data.languages.length > 0) {
                 data.languages.forEach((lang, index) => {
                     const newField = document.createElement('div');
                     newField.className = 'language-field grid grid-cols-1 md:grid-cols-2 gap-6 mb-4';
                     
-                    // First language field doesn't have remove button
                     if (index === 0) {
                         newField.innerHTML = `
                             <div>
@@ -1351,7 +1296,6 @@
                             </div>
                         `;
                         
-                        // Add event listener to the remove button
                         newField.querySelector('.remove-language-btn').addEventListener('click', function() {
                             languagesContainer.removeChild(newField);
                         });
@@ -1360,7 +1304,6 @@
                     languagesContainer.appendChild(newField);
                 });
             } else {
-                // Add default first language field if no saved languages
                 const defaultField = document.createElement('div');
                 defaultField.className = 'language-field grid grid-cols-1 md:grid-cols-2 gap-6 mb-4';
                 defaultField.innerHTML = `
@@ -1408,7 +1351,6 @@
             document.getElementById('fontSizeSlider').value = 10;
             adjustFontSize(10);
             
-            // Reset languages to just one field
             const languagesContainer = document.getElementById('languages-container');
             languagesContainer.innerHTML = `
                 <div class="language-field grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
