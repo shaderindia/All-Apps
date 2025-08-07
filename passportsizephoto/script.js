@@ -302,8 +302,14 @@ document.addEventListener('DOMContentLoaded', function () {
       let dy = e.touches[0].clientY - lastPan.y;
       panTarget.x += dx;
       panTarget.y += dy;
+      // Clamp panTarget to keep image within bounds
+      const maxPanX = Math.max(0, (photoPreview.clientWidth * zoomTarget - photoPreviewWrapper.clientWidth) / 2);
+      const maxPanY = Math.max(0, (photoPreview.clientHeight * zoomTarget - photoPreviewWrapper.clientHeight) / 2);
+      panTarget.x = clamp(panTarget.x, -maxPanX, maxPanX);
+      panTarget.y = clamp(panTarget.y, -maxPanY, maxPanY);
+
       lastPan = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-      updatePreviewTransform();
+      updatePreviewTransform(); // Use animatePhoto via requestAnimationFrame
       renderCanvas();
       e.preventDefault();
     }
@@ -322,8 +328,14 @@ document.addEventListener('DOMContentLoaded', function () {
     if (isImgPanning && !cropActive) {
       let dx = e.clientX - lastPan.x, dy = e.clientY - lastPan.y;
       panTarget.x += dx;
-      panTarget.y += dy;
+      panTarget.y += dy;      
+      // Clamp panTarget to keep image within bounds
+      const maxPanX = Math.max(0, (photoPreview.clientWidth * zoomTarget - photoPreviewWrapper.clientWidth) / 2);
+      const maxPanY = Math.max(0, (photoPreview.clientHeight * zoomTarget - photoPreviewWrapper.clientHeight) / 2);
+      panTarget.x = clamp(panTarget.x, -maxPanX, maxPanX);
+      panTarget.y = clamp(panTarget.y, -maxPanY, maxPanY);
       lastPan = { x: e.clientX, y: e.clientY };
+
       updatePreviewTransform();
       renderCanvas();
       e.preventDefault();
@@ -333,14 +345,20 @@ document.addEventListener('DOMContentLoaded', function () {
   photoPreviewWrapper.addEventListener('wheel', (e) => {
     if (!imgLoaded) return;
     e.preventDefault();
-    let scale = Math.exp(-e.deltaY / 240);
+    let scale = Math.exp(-e.deltaY / 480);
     let prevZoom = zoomTarget;
     zoomTarget = Math.max(0.1, Math.min(zoomTarget * scale, 8));
     let rect = photoPreview.getBoundingClientRect();
     let cx = e.clientX - rect.left;
     let cy = e.clientY - rect.top;
+    // Update panTarget based on zoom point
     panTarget.x = (panTarget.x - cx) * (zoomTarget / prevZoom) + cx;
     panTarget.y = (panTarget.y - cy) * (zoomTarget / prevZoom) + cy;
+    // Clamp panTarget after zoom
+    const maxPanX = Math.max(0, (photoPreview.clientWidth * zoomTarget - photoPreviewWrapper.clientWidth) / 2);
+    const maxPanY = Math.max(0, (photoPreview.clientHeight * zoomTarget - photoPreviewWrapper.clientHeight) / 2);
+    panTarget.x = clamp(panTarget.x, -maxPanX, maxPanX);
+    panTarget.y = clamp(panTarget.y, -maxPanY, maxPanY);
     updatePreviewTransform();
     renderCanvas();
   }, { passive: false });
