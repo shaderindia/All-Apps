@@ -345,7 +345,7 @@ document.addEventListener('DOMContentLoaded', function () {
   photoPreviewWrapper.addEventListener('wheel', (e) => {
     if (!imgLoaded) return;
     e.preventDefault();
-    let scale = Math.exp(-e.deltaY / 480);
+    let scale = Math.exp(-e.deltaY / 240000);
     let prevZoom = zoomTarget;
     zoomTarget = Math.max(0.1, Math.min(zoomTarget * scale, 8));
     let rect = photoPreview.getBoundingClientRect();
