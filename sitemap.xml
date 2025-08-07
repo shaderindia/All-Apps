@@ -1,658 +1,96 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Receipt Generator - Free Online Receipt Maker</title>
-    <meta name="description" content="Create professional receipts online for free. Generate, customize and download receipts instantly.">
-    <meta name="keywords" content="receipt generator, free receipt maker, online receipt, invoice generator">
-    
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXX" crossorigin="anonymous"></script>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
-            line-height: 1.6;
-        }
-
-        .header {
-            background: white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            padding: 1rem 0;
-            margin-bottom: 1rem;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 1rem;
-        }
-
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #333;
-        }
-
-        .back-btn {
-            background: #007bff;
-            color: white;
-            padding: 0.5rem 1rem;
-            text-decoration: none;
-            border-radius: 4px;
-            transition: background 0.3s;
-        }
-
-        .back-btn:hover {
-            background: #0056b3;
-        }
-
-        /* Ad Spaces */
-        .ad-space {
-            background: #f8f9fa;
-            border: 2px dashed #dee2e6;
-            padding: 2rem;
-            text-align: center;
-            color: #6c757d;
-            margin: 1rem 0;
-            border-radius: 4px;
-        }
-
-        .ad-top {
-            height: 90px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .ad-sidebar {
-            width: 160px;
-            height: 600px;
-            position: fixed;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-
-        .ad-left {
-            left: 20px;
-        }
-
-        .ad-right {
-            right: 20px;
-        }
-
-        .main-content {
-            display: grid;
-            grid-template-columns: 1fr 400px;
-            gap: 2rem;
-            margin: 0 auto;
-            max-width: 1000px;
-        }
-
-        /* Form Styles */
-        .form-section {
-            background: white;
-            padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: bold;
-            color: #333;
-        }
-
-        .form-group input,
-        .form-group textarea {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 1rem;
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #007bff;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-
-        .section-title {
-            font-size: 1.25rem;
-            margin-bottom: 1rem;
-            color: #333;
-            border-bottom: 2px solid #007bff;
-            padding-bottom: 0.5rem;
-        }
-
-        /* Receipt Preview */
-        .receipt-preview-container { /* Renamed for clarity */
-            background: white;
-            padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 2rem;
-        }
-
-        .receipt {
-            width: 300px;
-            margin: 0 auto;
-            background: white;
-            padding: 1rem;
-            border: 1px solid #ddd;
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
-            line-height: 1.4;
-        }
-
-        .receipt-header {
-            text-align: center;
-            border-bottom: 2px dashed #333;
-            padding-bottom: 0.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .receipt-company {
-            text-align: center;
-            margin-bottom: 1rem;
-        }
-
-        .receipt-info {
-            margin-bottom: 1rem;
-        }
-
-        .receipt-items {
-            border-top: 1px solid #333;
-            border-bottom: 1px solid #333;
-            padding: 0.5rem 0;
-            margin: 1rem 0;
-        }
-
-        .item-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 0.5rem;
-        }
-
-        .receipt-totals {
-            margin: 1rem 0;
-        }
-
-        .total-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 0.25rem;
-        }
-
-        .grand-total {
-            font-weight: bold;
-            border-top: 1px solid #333;
-            padding-top: 0.5rem;
-            margin-top: 0.5rem;
-        }
-
-        .receipt-footer {
-            text-align: center;
-            margin-top: 1rem;
-            font-size: 10px;
-        }
-
-        .btn {
-            background: #28a745;
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 1rem;
-            margin-top: 1rem;
-            width: 100%;
-        }
-
-        .btn:hover {
-            background: #218838;
-        }
-
-        .btn-secondary {
-            background: #17a2b8;
-        }
-
-        .btn-secondary:hover {
-            background: #138496;
-        }
-
-        .btn-info {
-            background: #ffc107;
-            color: #333;
-        }
-
-        .btn-info:hover {
-            background: #e0a800;
-        }
-
-        .footer {
-            background: #333;
-            color: white;
-            text-align: center;
-            padding: 2rem 0;
-            margin-top: 3rem;
-        }
-
-        @media (max-width: 768px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
-
-            .ad-sidebar {
-                display: none;
-            }
-
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-
-            .header-content {
-                text-align: center;
-            }
-        }
-
-        /* --- CORRECTED CSS --- */
-        /* This is the reliable way to handle printing a specific element. */
-        @media print {
-            /* Hide everything in the body by default */
-            body * {
-                visibility: hidden;
-            }
-            /* Make the receipt preview container and everything inside it visible */
-            .receipt-preview-container, .receipt-preview-container * {
-                visibility: visible;
-            }
-            /* Position the receipt at the top-left of the print page */
-            .receipt-preview-container {
-                position: absolute;
-                left: 0;
-                top: 0;
-                margin: 0;
-                padding: 0;
-                width: 100%;
-                box-shadow: none;
-                border: none;
-            }
-            .receipt {
-                width: 80mm; /* Standard thermal receipt width */
-                margin: 0 auto;
-                border: none;
-                box-shadow: none;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">Receipt Generator</div>
-                <a href="https://shader7.com" class="back-btn">← Back to Shader7</a>
-            </div>
-        </div>
-    </div>
-
-    <div class="container">
-        <div class="ad-space ad-top">
-            <div>Advertisement Space - Top Banner (728x90)</div>
-        </div>
-    </div>
-
-    <div class="ad-space ad-sidebar ad-left">
-        <div style="writing-mode: vertical-lr; text-orientation: mixed;">
-            Advertisement<br>(160x600)
-        </div>
-    </div>
-
-    <div class="ad-space ad-sidebar ad-right">
-        <div style="writing-mode: vertical-lr; text-orientation: mixed;">
-            Advertisement<br>(160x600)
-        </div>
-    </div>
-
-    <div class="container">
-        <div class="main-content">
-            <div class="form-section">
-                <h2 class="section-title">Company Information</h2>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="companyName">Company Name</label>
-                        <input type="text" id="companyName" placeholder="Your Company Name">
-                    </div>
-                    <div class="form-group">
-                        <label for="companyPhone">Phone</label>
-                        <input type="text" id="companyPhone" placeholder="(555) 123-4567">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="companyAddress">Address</label>
-                    <input type="text" id="companyAddress" placeholder="123 Main Street, City, State">
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="gstNumber">GST Number (Optional)</label>
-                        <input type="text" id="gstNumber" placeholder="22AAAAA0000A1Z5">
-                    </div>
-                    <div class="form-group">
-                        <label for="cashier">Cashier</label>
-                        <input type="text" id="cashier" placeholder="Cashier Name">
-                    </div>
-                </div>
-
-                <h2 class="section-title">Receipt Information</h2>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="invoiceNumber">Invoice Number</label>
-                        <input type="text" id="invoiceNumber" placeholder="INV-2024-001">
-                    </div>
-                    <div class="form-group">
-                        <label for="invoiceDate">Date</label>
-                        <input type="date" id="invoiceDate">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="customerName">Customer Name</label>
-                    <input type="text" id="customerName" placeholder="Customer Name">
-                </div>
-
-                <h2 class="section-title">Items</h2>
-                <div id="itemsContainer">
-                    <div class="item-entry">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Item Name</label>
-                                <input type="text" class="item-name" placeholder="Item Name">
-                            </div>
-                            <div class="form-group">
-                                <label>Quantity</label>
-                                <input type="number" class="item-qty" placeholder="1" min="1" value="1">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Price (₹)</label>
-                            <input type="number" class="item-price" placeholder="0.00" step="0.01" min="0">
-                        </div>
-                    </div>
-                </div>
-                <button type="button" onclick="addItem()" style="background: #007bff; color: white; padding: 0.5rem 1rem; border: none; border-radius: 4px; margin-bottom: 1rem;">Add Item</button>
-
-                <div class="form-group">
-                    <label for="taxRate">Tax Rate (%)</label>
-                    <input type="number" id="taxRate" placeholder="10" min="0" max="100" step="0.1">
-                </div>
-
-                <div class="form-group">
-                    <label for="footerText">Footer Message</label>
-                    <textarea id="footerText" rows="3" placeholder="Thank you for your business!"></textarea>
-                </div>
-
-                <button type="button" onclick="updateReceipt()" class="btn">Update Receipt</button>
-                <button type="button" onclick="printReceipt()" class="btn btn-secondary" style="margin-top: 0.5rem;">Print Receipt</button>
-                <button type="button" onclick="downloadReceipt('jpg')" class="btn btn-info" style="margin-top: 0.5rem;">Download JPG</button>
-                <button type="button" onclick="downloadReceipt('pdf')" class="btn btn-secondary" style="margin-top: 0.5rem;">Download PDF</button>
-            </div>
-
-            <div class="receipt-preview-container"> <h2 class="section-title">Receipt Preview</h2>
-                <div id="receiptPreview" class="receipt">
-                    <div class="receipt-header">
-                        <strong>RECEIPT</strong>
-                    </div>
-                    
-                    <div class="receipt-company">
-                        <div><strong id="previewCompanyName">Your Company Name</strong></div>
-                        <div id="previewCompanyAddress">123 Main Street, City</div>
-                        <div id="previewCompanyPhone">Phone: (555) 123-4567</div>
-                        <div id="previewGST" style="display: none;">GST: <span></span></div>
-                    </div>
-                    
-                    <div class="receipt-info">
-                        <div>Invoice: <span id="previewInvoiceNumber">INV-2024-001</span></div>
-                        <div>Date: <span id="previewDate">02/07/2024</span></div>
-                        <div>Customer: <span id="previewCustomer">Walk-in Customer</span></div>
-                        <div>Cashier: <span id="previewCashier">Staff</span></div>
-                    </div>
-                    
-                    <div class="receipt-items">
-                        <div class="item-row" style="font-weight: bold;">
-                            <span>Item</span>
-                            <span>Total</span>
-                        </div>
-                        <div id="previewItems">
-                            <div class="item-row">
-                                <div>Sample Item X 1 qty</div>
-                                <span>₹0.00</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="receipt-totals">
-                        <div class="total-row">
-                            <span>Subtotal:</span>
-                            <span id="previewSubtotal">₹0.00</span>
-                        </div>
-                        <div class="total-row" id="taxRow" style="display: none;">
-                            <span>Tax (<span id="previewTaxRate">0</span>%):</span>
-                            <span id="previewTax">₹0.00</span>
-                        </div>
-                        <div class="total-row grand-total">
-                            <span>Total:</span>
-                            <span id="previewTotal">₹0.00</span>
-                        </div>
-                    </div>
-                    
-                    <div class="receipt-footer">
-                        <div id="previewFooter">Thank you for your business!</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="ad-space" style="height: 90px; margin-top: 2rem;">
-            <div>Advertisement Space - Bottom Banner (728x90)</div>
-        </div>
-    </div>
-
-    <div class="footer">
-        <div class="container">
-            <p>Powered by <a href="https://shader7.com" style="color: #007bff;">Shader7.com</a></p>
-            <p>Free Online Receipt Generator - Create Professional Receipts Instantly</p>
-        </div>
-    </div>
-
-    <script>
-        // Set current date
-        document.getElementById('invoiceDate').value = new Date().toISOString().split('T')[0];
-        
-        // Generate random invoice number
-        document.getElementById('invoiceNumber').value = 'INV-' + new Date().getFullYear() + '-' + Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-
-        let itemCount = 1;
-
-        function addItem() {
-            itemCount++;
-            const container = document.getElementById('itemsContainer');
-            const itemDiv = document.createElement('div');
-            itemDiv.className = 'item-entry';
-            itemDiv.innerHTML = `
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Item Name</label>
-                        <input type="text" class="item-name" placeholder="Item Name">
-                    </div>
-                    <div class="form-group">
-                        <label>Quantity</label>
-                        <input type="number" class="item-qty" placeholder="1" min="1" value="1">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Price (₹)</label>
-                    <input type="number" class="item-price" placeholder="0.00" step="0.01" min="0">
-                </div>
-                <button type="button" onclick="removeItem(this)" style="background: #dc3545; color: white; padding: 0.25rem 0.5rem; border: none; border-radius: 4px; margin-bottom: 1rem; font-size: 0.8rem;">Remove</button>
-            `;
-            container.appendChild(itemDiv);
-        }
-
-        function removeItem(button) {
-            button.parentElement.remove();
-            updateReceipt();
-        }
-
-        function updateReceipt() {
-            // Update company info
-            document.getElementById('previewCompanyName').textContent = document.getElementById('companyName').value || 'Your Company Name';
-            document.getElementById('previewCompanyAddress').textContent = document.getElementById('companyAddress').value || '123 Main Street, City';
-            document.getElementById('previewCompanyPhone').textContent = 'Phone: ' + (document.getElementById('companyPhone').value || '(555) 123-4567');
-            
-            const gstNumber = document.getElementById('gstNumber').value;
-            const gstElement = document.getElementById('previewGST');
-            if (gstNumber) {
-                gstElement.style.display = 'block';
-                gstElement.querySelector('span').textContent = gstNumber;
-            } else {
-                gstElement.style.display = 'none';
-            }
-
-            // Update invoice info
-            document.getElementById('previewInvoiceNumber').textContent = document.getElementById('invoiceNumber').value || 'INV-2024-001';
-            document.getElementById('previewDate').textContent = document.getElementById('invoiceDate').value || new Date().toLocaleDateString();
-            document.getElementById('previewCustomer').textContent = document.getElementById('customerName').value || 'Walk-in Customer';
-            document.getElementById('previewCashier').textContent = document.getElementById('cashier').value || 'Staff';
-
-            // Update items and calculate totals
-            const itemsContainer = document.getElementById('previewItems');
-            itemsContainer.innerHTML = '';
-            
-            let subtotal = 0;
-            const itemEntries = document.querySelectorAll('.item-entry');
-            
-            itemEntries.forEach(entry => {
-                const name = entry.querySelector('.item-name').value || 'Item';
-                const qty = parseInt(entry.querySelector('.item-qty').value) || 1;
-                const price = parseFloat(entry.querySelector('.item-price').value) || 0;
-                const total = qty * price;
-                subtotal += total;
-
-                const itemDiv = document.createElement('div');
-                itemDiv.className = 'item-row';
-                itemDiv.innerHTML = `
-                    <div>${name} X ${qty} qty</div>
-                    <span>₹${total.toFixed(2)}</span>
-                `;
-                itemsContainer.appendChild(itemDiv);
-            });
-
-            // Update totals
-            document.getElementById('previewSubtotal').textContent = '₹' + subtotal.toFixed(2);
-            
-            const taxRate = parseFloat(document.getElementById('taxRate').value) || 0;
-            const taxAmount = subtotal * (taxRate / 100);
-            const total = subtotal + taxAmount;
-
-            if (taxRate > 0) {
-                document.getElementById('taxRow').style.display = 'flex';
-                document.getElementById('previewTaxRate').textContent = taxRate;
-                document.getElementById('previewTax').textContent = '₹' + taxAmount.toFixed(2);
-            } else {
-                document.getElementById('taxRow').style.display = 'none';
-            }
-
-            document.getElementById('previewTotal').textContent = '₹' + total.toFixed(2);
-
-            // Update footer
-            document.getElementById('previewFooter').textContent = document.getElementById('footerText').value || 'Thank you for your business!';
-        }
-
-        /* --- CORRECTED JAVASCRIPT --- */
-        // With the correct CSS, this function becomes very simple.
-        function printReceipt() {
-            // The @media print CSS will automatically handle hiding other elements.
-            window.print();
-        }
-
-        async function downloadReceipt(format) {
-            const receiptElement = document.getElementById('receiptPreview');
-            const invoiceNumber = document.getElementById('invoiceNumber').value || 'receipt';
-
-            const originalWidth = receiptElement.style.width;
-            receiptElement.style.width = '80mm'; 
-
-            try {
-                const canvas = await html2canvas(receiptElement, { scale: 3 }); 
-
-                if (format === 'jpg') {
-                    const imgData = canvas.toDataURL('image/jpeg', 0.95);
-                    const link = document.createElement('a');
-                    link.href = imgData;
-                    link.download = `${invoiceNumber}.jpg`;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                } else if (format === 'pdf') {
-                    const imgData = canvas.toDataURL('image/jpeg', 1.0);
-
-                    const { jsPDF } = window.jspdf;
-                    
-                    const imgWidth = canvas.width;
-                    const imgHeight = canvas.height;
-                    const pdf = new jsPDF({
-                        orientation: 'portrait',
-                        unit: 'px',
-                        format: [imgWidth, imgHeight]
-                    });
-
-                    pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
-                    pdf.save(`${invoiceNumber}.pdf`);
-                }
-            } catch (error) {
-                console.error('Error generating receipt:', error);
-                alert('Failed to generate receipt. Please try again.');
-            } finally {
-                receiptElement.style.width = originalWidth;
-            }
-        }
-
-        // Auto-update receipt when inputs change
-        document.addEventListener('input', updateReceipt);
-        
-        // Initialize receipt
-        updateReceipt();
-    </script>
-</body>
-</html>
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
+  
+  <!-- Homepage -->
+  <url>
+    <loc>https://shader7.com/</loc>
+    <lastmod>2024-12-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://shader7.com/og-image-enhanced.jpg</image:loc>
+      <image:title>SHADER7 Professional Tools Suite</image:title>
+      <image:caption>Free professional tools for passport photos, salary calculations, and resume building</image:caption>
+    </image:image>
+  </url>
+  
+  <!-- Tools Section -->
+  <url>
+    <loc>https://shader7.com/#tools</loc>
+    <lastmod>2024-12-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <!-- Individual Tools -->
+  <url>
+    <loc>https://shader7.com/#passport-photo</loc>
+    <lastmod>2024-12-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://shader7.com/#salary-calculator</loc>
+    <lastmod>2024-11-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://shader7.com/#resume-maker</loc>
+    <lastmod>2024-12-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://shader7.com/#expense-splitter</loc>
+    <lastmod>2024-10-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <!-- About Section -->
+  <url>
+    <loc>https://shader7.com/#about</loc>
+    <lastmod>2024-12-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <!-- Blog Section -->
+  <url>
+    <loc>https://shader7.com/#blog</loc>
+    <lastmod>2024-12-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <!-- Contact/Support -->
+  <url>
+    <loc>https://shader7.com/#support</loc>
+    <lastmod>2024-11-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <!-- Privacy Policy -->
+  <url>
+    <loc>https://shader7.com/privacy</loc>
+    <lastmod>2024-01-15</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  
+  <!-- Terms of Service -->
+  <url>
+    <loc>https://shader7.com/terms</loc>
+    <lastmod>2024-01-15</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  
+</urlset>
