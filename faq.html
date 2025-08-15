@@ -3,54 +3,175 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FAQ | SHADER7.com</title>
-    <meta name="description" content="Find answers to frequently asked questions about SHADER7's free web tools, including privacy, cost, and how to use the applications.">
+    <title>FAQ - Frequently Asked Questions - SHADER7</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f0f4f8; }
-        .content-card { background-color: white; border-radius: 1.5rem; padding: 2rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
-        h1, h3 { color: #1e293b; font-weight: 700; }
-        p { color: #475569; line-height: 1.6; }
-        a { color: #6366f1; text-decoration: none; }
-        a:hover { text-decoration: underline; }
-        .faq-item { border-bottom: 1px solid #e2e8f0; padding-bottom: 1.5rem; margin-bottom: 1.5rem; }
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        .main-nav { background-color: #7c3aed; }
+        .footer-gradient { background: linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #020617 100%); }
+        .faq-question {
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out, padding 0.5s ease-in-out;
+        }
+        .faq-item.active .faq-answer {
+            max-height: 500px; /* Adjust as needed */
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+        .faq-item.active .faq-arrow {
+            transform: rotate(180deg);
+        }
+        .faq-arrow {
+            transition: transform 0.3s ease;
+        }
     </style>
 </head>
-<body class="flex flex-col min-h-screen">
-    <div class="container mx-auto py-8 sm:py-12 flex-grow">
-        <div class="content-card max-w-4xl mx-auto">
-            <h1 class="text-3xl sm:text-4xl mb-6 text-center">Frequently Asked Questions</h1>
-
-            <div class="faq-item">
-                <h3 class="text-xl font-bold mb-2">1. Are the tools on SHADER7 really free to use?</h3>
-                <p>Yes, absolutely. All tools and applications available on SHADER7.com are 100% free to use. There are no hidden fees, subscriptions, or charges. The project is supported by advertising, which allows us to keep the tools free for everyone.</p>
-            </div>
-
-            <div class="faq-item">
-                <h3 class="text-xl font-bold mb-2">2. Do you store my personal data?</h3>
-                <p>Your privacy is a top priority. For tools like the Passport Photo Creator and Resume Maker, all processing is done within your browser. We do not upload, save, or view any of the personal files or information you use in our applications. For more details, please read our full <a href="./privacy.html">Privacy Policy</a>.</p>
-            </div>
-
-            <div class="faq-item">
-                <h3 class="text-xl font-bold mb-2">3. How does the Passport Photo Creator work?</h3>
-                <p>The Passport Photo Creator allows you to upload a photo, select the correct dimensions for your country's requirements, and adjust the crop. You can then arrange multiple copies onto a single, standard-sized sheet (like A4 or Letter) to make printing easy and cost-effective.</p>
-            </div>
-
-            <div class="faq-item">
-                <h3 class="text-xl font-bold mb-2">4. Is the Resume Maker suitable for professions other than Mechanical Engineering?</h3>
-                <p>While the Resume Maker was initially designed with mechanical engineers in mind, its structure and formatting are versatile. Anyone looking to create a clean, professional resume can use it effectively. Simply tailor the content to your specific industry and experience.</p>
-            </div>
-            
-            <div class="faq-item">
-                <h3 class="text-xl font-bold mb-2">5. I found a bug or have a suggestion. How can I contact you?</h3>
-                <p>We appreciate your feedback! If you encounter an issue, have a suggestion for a new feature, or want to recommend a new tool, please send an email to <a href="mailto:nxdecore@gmail.com">nxdecore@gmail.com</a>. We read every message and are always looking for ways to improve the site.</p>
-            </div>
-
-            <div class="text-center mt-8">
-                <a href="./index.html" class="bg-indigo-600 text-white font-bold py-2 px-6 rounded-full hover:bg-indigo-700 transition">Back to Home</a>
+<body>
+    <!-- Navigation -->
+    <nav class="main-nav sticky top-0 z-50 py-4">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between">
+                <a href="/" class="flex items-center"><span class="text-2xl font-bold text-white">🎨 SHADER7</span></a>
+                <div class="hidden md:flex space-x-8">
+                    <a href="/#tools" class="text-white hover:text-purple-300">Tools</a>
+                    <a href="about.html" class="text-white hover:text-purple-300">About</a>
+                    <a href="blog.html" class="text-white hover:text-purple-300">Blog</a>
+                    <a href="contact.html" class="text-white hover:text-purple-300">Contact</a>
+                    <a href="faq.html" class="text-white font-semibold border-b-2 border-green-300">FAQ</a>
+                </div>
             </div>
         </div>
-    </div>
+    </nav>
+
+    <!-- Header -->
+    <header class="bg-white">
+        <div class="max-w-4xl mx-auto py-12 px-4 text-center">
+            <h1 class="text-5xl font-extrabold text-gray-900">Frequently Asked Questions</h1>
+            <p class="mt-4 text-xl text-gray-600">Have a question? We've got answers. If you can't find what you're looking for, feel free to contact us.</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="py-16">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <!-- General Questions Section -->
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">General Questions</h2>
+            <div class="space-y-4">
+                <div class="faq-item bg-white rounded-lg shadow-sm">
+                    <div class="faq-question p-6 flex justify-between items-center">
+                        <h3 class="text-lg font-semibold text-gray-900">Is SHADER7 really free to use?</h3>
+                        <div class="faq-arrow text-purple-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>
+                        </div>
+                    </div>
+                    <div class="faq-answer px-6 text-gray-600">
+                        <p>Yes, absolutely. All tools and articles on SHADER7 are 100% free. There are no hidden fees, subscriptions, or premium features. Our goal is to provide accessible professional tools for everyone.</p>
+                    </div>
+                </div>
+                <div class="faq-item bg-white rounded-lg shadow-sm">
+                    <div class="faq-question p-6 flex justify-between items-center">
+                        <h3 class="text-lg font-semibold text-gray-900">Do I need to create an account to use the tools?</h3>
+                        <div class="faq-arrow text-purple-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>
+                        </div>
+                    </div>
+                    <div class="faq-answer px-6 text-gray-600">
+                        <p>No. We are committed to a "privacy-first" approach, which means we do not require any registration or account creation. You can use all our tools instantly and anonymously.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tool Questions Section -->
+            <h2 class="text-3xl font-bold text-gray-800 mt-12 mb-6">Tool-Specific Questions</h2>
+            <div class="space-y-4">
+                <div class="faq-item bg-white rounded-lg shadow-sm">
+                    <div class="faq-question p-6 flex justify-between items-center">
+                        <h3 class="text-lg font-semibold text-gray-900">Are the photos from the Passport Photo Creator guaranteed to be accepted?</h3>
+                        <div class="faq-arrow text-purple-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>
+                        </div>
+                    </div>
+                    <div class="faq-answer px-6 text-gray-600">
+                        <p>Our tool is designed to crop and format your photo to meet official government standards (e.g., size, head position). However, acceptance ultimately depends on the quality of the original photo you upload. Please follow our guide on taking a compliant photo (lighting, background, neutral expression) to ensure the best results.</p>
+                    </div>
+                </div>
+                <div class="faq-item bg-white rounded-lg shadow-sm">
+                    <div class="faq-question p-6 flex justify-between items-center">
+                        <h3 class="text-lg font-semibold text-gray-900">Can I save my resume from the Resume Builder and edit it later?</h3>
+                        <div class="faq-arrow text-purple-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>
+                        </div>
+                    </div>
+                    <div class="faq-answer px-6 text-gray-600">
+                        <p>Because we do not store your data, you cannot save your resume on our website to edit later. You should finalize your resume during your session and download the final PDF to your own device. You can always start a new one by re-entering your information.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Privacy Questions Section -->
+            <h2 class="text-3xl font-bold text-gray-800 mt-12 mb-6">Privacy & Data Questions</h2>
+            <div class="space-y-4">
+                <div class="faq-item bg-white rounded-lg shadow-sm">
+                    <div class="faq-question p-6 flex justify-between items-center">
+                        <h3 class="text-lg font-semibold text-gray-900">Do you store the photos or documents I upload/create?</h3>
+                        <div class="faq-arrow text-purple-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>
+                        </div>
+                    </div>
+                    <div class="faq-answer px-6 text-gray-600">
+                        <p>No. We never upload your personal files or data to our servers. All processing (like removing a photo's background or generating a resume PDF) happens securely within your own browser. Your files and information never leave your computer.</p>
+                    </div>
+                </div>
+                <div class="faq-item bg-white rounded-lg shadow-sm">
+                    <div class="faq-question p-6 flex justify-between items-center">
+                        <h3 class="text-lg font-semibold text-gray-900">How does SHADER7 make money if everything is free?</h3>
+                        <div class="faq-arrow text-purple-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>
+                        </div>
+                    </div>
+                    <div class="faq-answer px-6 text-gray-600">
+                        <p>SHADER7 is supported by two main sources: (1) unobtrusive ads displayed on the site, managed by Google AdSense, and (2) voluntary donations from users who find our tools helpful. This allows us to cover server costs and development time without ever charging our users or selling their data.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer-gradient text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="text-center">
+                <p>&copy; 2025 Nishikant Xalxo - SHADER7 Free Tools & Articles.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const faqItems = document.querySelectorAll('.faq-item');
+
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question');
+                question.addEventListener('click', () => {
+                    // Close other active items
+                    faqItems.forEach(otherItem => {
+                        if (otherItem !== item && otherItem.classList.contains('active')) {
+                            otherItem.classList.remove('active');
+                        }
+                    });
+                    // Toggle the clicked item
+                    item.classList.toggle('active');
+                });
+            });
+        });
+    </script>
 </body>
 </html>
