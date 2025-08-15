@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drill Feed & Speed Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .input-group {
+            position: relative;
+        }
+        .input-unit {
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            font-size: 0.875rem;
+        }
+        .toggle-btn {
+            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+        }
+        .toggle-btn.active {
+            background-color: #4f46e5;
+            color: white;
+        }
+        .toggle-btn:not(.active) {
+            background-color: #374151;
+            color: #d1d5db;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-md bg-gray-800 p-6 sm:p-8 rounded-2xl shadow-2xl border border-gray-700">
+        
+        <h1 class="text-2xl sm:text-3xl font-bold text-center mb-2 text-indigo-400">Drill Speed Calculator</h1>
+        <p class="text-center text-gray-400 mb-6">HSS Drill | No Coolant</p>
+        
+        <label class="block text-sm font-medium text-gray-300 mb-2 text-center">Select Material</label>
+        <div class="flex justify-center mb-6 bg-gray-700 rounded-lg p-1">
+            <button id="mild-steel-btn" class="toggle-btn w-1/2 py-2 rounded-md text-sm sm:text-base font-semibold active">Mild Steel</button>
+            <button id="inox-btn" class="toggle-btn w-1/2 py-2 rounded-md text-sm sm:text-base font-semibold">Inox (Stainless)</button>
+        </div>
+        
+        <div class="bg-gray-700/50 p-4 rounded-lg mb-6 border border-gray-600">
+            <div class="flex justify-between items-center mt-2">
+                <span class="font-medium text-gray-300">Base Cutting Speed:</span>
+                <span id="cutting-speed-display" class="font-semibold text-white">15 m/min</span>
+            </div>
+        </div>
+        
+        <div class="space-y-4">
+            <div>
+                <label for="drill-diameter" class="block text-sm font-medium text-gray-300 mb-1">Drill Diameter</label>
+                <div class="input-group"><input type="number" id="drill-diameter" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3" placeholder="e.g., 6"><span class="input-unit">mm</span></div>
+            </div>
+            <div>
+                <label for="drilling-depth" class="block text-sm font-medium text-gray-300 mb-1">Drilling Depth</label>
+                <div class="input-group"><input type="number" id="drilling-depth" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3" placeholder="e.g., 25"><span class="input-unit">mm</span></div>
+            </div>
+        </div>
+        
+        <div class="flex flex-col sm:flex-row gap-4 mt-6">
+            <button id="calculate-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition">Calculate</button>
+            <button id="clear-btn" class="w-full bg-gray-600 hover:bg-gray-500 text-white font-bold py-3 px-4 rounded-lg transition">Clear</button>
+        </div>
+        
+        <div id="results" class="mt-8 pt-6 border-t border-gray-700 space-y-4 hidden">
+            <h2 class="text-xl font-semibold text-center text-indigo-400">Adjusted Results</h2>
+            <div class="grid grid-cols-2 gap-2 text-sm bg-gray-700/50 p-3 rounded-lg">
+                <span class="font-medium text-gray-300">Depth Ratio:</span><span id="depth-ratio-result" class="font-semibold text-white text-right">0x</span>
+                <span class="font-medium text-gray-300">Speed Reduction:</span><span id="speed-reduction-result" class="font-semibold text-white text-right">0%</span>
+                <span class="font-medium text-gray-300">Feed Reduction:</span><span id="feed-reduction-result" class="font-semibold text-white text-right">0%</span>
+                <span class="font-medium text-gray-300">Base Feed (f<sub class="lowercase">n</sub>):</span><span id="feed-per-rev-result" class="font-semibold text-white text-right">0 mm/rev</span>
+            </div>
+            <div class="flex justify-between items-center bg-gray-700 p-4 rounded-lg"><span class="font-medium text-gray-300">Spindle Speed:</span><span id="spindle-speed-result" class="font-bold text-2xl text-green-400">0 RPM</span></div>
+            <div class="flex justify-between items-center bg-gray-700 p-4 rounded-lg"><span class="font-medium text-gray-300">Feed Rate:</span><span id="feed-rate-result" class="font-bold text-2xl text-green-400">0 mm/min</span></div>
+        </div>
+        
+        <div id="error-message" class="mt-4 text-center text-red-400 font-medium hidden"></div>
+
+    </div>
+
+    <script>
+        const mildSteelBtn = document.getElementById('mild-steel-btn');
+        const inoxBtn = document.getElementById('inox-btn');
+        const cuttingSpeedDisplay = document.getElementById('cutting-speed-display');
+        const drillDiameterInput = document.getElementById('drill-diameter');
+        const drillingDepthInput = document.getElementById('drilling-depth');
+        const calculateBtn = document.getElementById('calculate-btn');
+        const clearBtn = document.getElementById('clear-btn');
+        const resultsDiv = document.getElementById('results');
+        const depthRatioResult = document.getElementById('depth-ratio-result');
+        const speedReductionResult = document.getElementById('speed-reduction-result');
+        const feedReductionResult = document.getElementById('feed-reduction-result');
+        const feedPerRevResult = document.getElementById('feed-per-rev-result');
+        const spindleSpeedResult = document.getElementById('spindle-speed-result');
+        const feedRateResult = document.getElementById('feed-rate-result');
+        const errorMessage = document.getElementById('error-message');
+
+        let selectedMaterial = 'mildSteel';
+        const CUTTING_SPEEDS = { mildSteel: 15, inox: 8 };
+
+        mildSteelBtn.addEventListener('click', () => setMaterial('mildSteel'));
+        inoxBtn.addEventListener('click', () => setMaterial('inox'));
+        calculateBtn.addEventListener('click', calculate);
+        clearBtn.addEventListener('click', clearFields);
+
+        function setMaterial(material) {
+            selectedMaterial = material;
+            mildSteelBtn.classList.toggle('active', material === 'mildSteel');
+            inoxBtn.classList.toggle('active', material !== 'mildSteel');
+            cuttingSpeedDisplay.textContent = `${CUTTING_SPEEDS[material]} m/min`;
+            resultsDiv.classList.add('hidden');
+        }
+
+        function getFeedPerRev(diameter, material) {
+            if (material === 'mildSteel') {
+                if (diameter <= 3) return 0.04; if (diameter <= 10) return 0.07; return 0.15;
+            } else { // Inox
+                if (diameter <= 3) return 0.025; if (diameter <= 10) return 0.05; return 0.10;
+            }
+        }
+
+        function calculate() {
+            const drillDiameter = parseFloat(drillDiameterInput.value);
+            const drillingDepth = parseFloat(drillingDepthInput.value);
+
+            if (isNaN(drillDiameter) || isNaN(drillingDepth) || drillDiameter <= 0 || drillingDepth <= 0) {
+                errorMessage.textContent = 'Please enter valid positive numbers for diameter and depth.';
+                errorMessage.classList.remove('hidden');
+                resultsDiv.classList.add('hidden');
+                return;
+            }
+            errorMessage.classList.add('hidden');
+
+            const cuttingSpeed = CUTTING_SPEEDS[selectedMaterial];
+            const feedPerRev = getFeedPerRev(drillDiameter, selectedMaterial);
+            const baseSpindleSpeed = (cuttingSpeed * 1000) / (Math.PI * drillDiameter);
+            
+            const depthRatio = drillingDepth / drillDiameter;
+            let speedReduction = 0, feedReduction = 0;
+
+            if (depthRatio > 6) { speedReduction = 0.35; feedReduction = 0.20; } 
+            else if (depthRatio > 5) { speedReduction = 0.30; feedReduction = 0.20; } 
+            else if (depthRatio > 4) { speedReduction = 0.20; feedReduction = 0.10; } 
+            else if (depthRatio > 3) { speedReduction = 0.10; feedReduction = 0.10; }
+
+            const adjustedSpindleSpeed = baseSpindleSpeed * (1 - speedReduction);
+            const adjustedFeedPerRev = feedPerRev * (1 - feedReduction);
+            const finalFeedRate = adjustedSpindleSpeed * adjustedFeedPerRev;
+
+            depthRatioResult.textContent = `${depthRatio.toFixed(1)}x`;
+            speedReductionResult.textContent = `${speedReduction * 100}%`;
+            feedReductionResult.textContent = `${feedReduction * 100}%`;
+            feedPerRevResult.textContent = `${feedPerRev.toFixed(2)} mm/rev`;
+            spindleSpeedResult.textContent = `${Math.round(adjustedSpindleSpeed)} RPM`;
+            feedRateResult.textContent = `${Math.round(finalFeedRate)} mm/min`;
+            resultsDiv.classList.remove('hidden');
+        }
+        
+        function clearFields() {
+            drillDiameterInput.value = '';
+            drillingDepthInput.value = '';
+            resultsDiv.classList.add('hidden');
+            errorMessage.classList.add('hidden');
+            drillDiameterInput.focus();
+        }
+
+        setMaterial('mildSteel');
+    </script>
+</body>
+</html>
