@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fanuc CNC G-Code Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .input-group { position: relative; }
+        .input-unit { position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 0.875rem; }
+        .tab-btn { transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out; }
+        .tab-btn.active { background-color: #4f46e5; color: white; }
+        .tab-btn:not(.active) { background-color: #374151; color: #d1d5db; }
+        .checkbox-label { transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out; }
+        input[type="checkbox"]:checked + .checkbox-label { background-color: #4f46e5; border-color: #6366f1; color: white; }
+        input[type="checkbox"]:disabled + .checkbox-label { background-color: #374151; color: #6b7280; cursor: not-allowed; border-color: #4b5563;}
+    </style>
+</head>
+<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-2xl bg-gray-800 p-6 sm:p-8 rounded-2xl shadow-2xl border border-gray-700">
+        
+        <h1 class="text-2xl sm:text-3xl font-bold text-center mb-6 text-indigo-400">CNC G-Code Generator (Fanuc)</h1>
+
+        <div class="flex justify-center mb-6 bg-gray-700 rounded-lg p-1">
+            <button id="face-milling-tab" class="tab-btn w-1/3 py-2 rounded-md text-sm font-semibold">Face Milling</button>
+            <button id="simple-contour-tab" class="tab-btn w-1/3 py-2 rounded-md text-sm font-semibold active">Simple Contour</button>
+            <button id="pcd-tab" class="tab-btn w-1/3 py-2 rounded-md text-sm font-semibold">PCD Drilling</button>
+        </div>
+
+        <div id="face-milling-inputs" class="hidden">
+             <h2 class="text-xl font-semibold text-center text-gray-300 mb-4">Face Milling Parameters</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="space-y-4">
+                    <div><label for="fm-workpiece-x" class="block text-sm font-medium">Workpiece Length (X)</label><div class="input-group"><input type="number" id="fm-workpiece-x" class="w-full bg-gray-700 rounded-lg p-3" placeholder="e.g., 200"><span class="input-unit">mm</span></div></div>
+                    <div><label for="fm-workpiece-y" class="block text-sm font-medium">Workpiece Width (Y)</label><div class="input-group"><input type="number" id="fm-workpiece-y" class="w-full bg-gray-700 rounded-lg p-3" placeholder="e.g., 100"><span class="input-unit">mm</span></div></div>
+                    <div><label for="fm-total-depth" class="block text-sm font-medium">Total Depth (Z)</label><div class="input-group"><input type="number" id="fm-total-depth" class="w-full bg-gray-700 rounded-lg p-3" placeholder="e.g., 5"><span class="input-unit">mm</span></div></div>
+                    <div><label for="fm-depth-of-cut" class="block text-sm font-medium">Depth of Cut</label><div class="input-group"><input type="number" id="fm-depth-of-cut" class="w-full bg-gray-700 rounded-lg p-3" placeholder="e.g., 1"><span class="input-unit">mm</span></div></div>
+                </div>
+                <div class="space-y-4">
+                    <div><label for="fm-cutter-diameter" class="block text-sm font-medium">Cutter Diameter</label><div class="input-group"><input type="number" id="fm-cutter-diameter" class="w-full bg-gray-700 rounded-lg p-3" placeholder="e.g., 50"><span class="input-unit">mm</span></div></div>
+                    <div><label for="fm-stepover" class="block text-sm font-medium">Stepover</label><div class="input-group"><input type="number" id="fm-stepover" value="75" class="w-full bg-gray-700 rounded-lg p-3"><span class="input-unit">%</span></div></div>
+                    <div><label for="fm-safety-distance" class="block text-sm font-medium">Safety Z Distance</label><div class="input-group"><input type="number" id="fm-safety-distance" value="10" class="w-full bg-gray-700 rounded-lg p-3"><span class="input-unit">mm</span></div></div>
+                    <div><label for="fm-origin-select" class="block text-sm font-medium">Origin (X0 Y0)</label><select id="fm-origin-select" class="w-full bg-gray-700 rounded-lg p-3"><option value="bottom-left">X- Y-</option><option value="center">Center</option><option value="top-left">X- Y+</option><option value="bottom-right">X+ Y-</option><option value="top-right">X+ Y+</option></select></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="simple-contour-inputs">
+            <div class="space-y-6">
+                <div><h2 class="text-lg font-semibold text-gray-300 mb-2 border-b border-gray-700 pb-2">Step 1: Select Working Plane</h2><select id="sc-plane-select" class="w-full bg-gray-700 rounded-lg p-3"><option value="G17">G17 (X-Y Plane)</option><option value="G18">G18 (X-Z Plane)</option><option value="G19">G19 (Y-Z Plane)</option></select></div>
+                <div><h2 class="text-lg font-semibold text-gray-300 mb-2 border-b border-gray-700 pb-2">Step 2: Workpiece & Tool</h2><div class="grid grid-cols-1 md:grid-cols-3 gap-4"><div><label id="size1-label" for="workpiece-size1" class="block text-sm font-medium">Workpiece Size (X)</label><div class="input-group"><input type="number" id="workpiece-size1" class="w-full bg-gray-700 rounded-lg p-3" placeholder="e.g., 200"><span class="input-unit">mm</span></div></div><div><label id="size2-label" for="workpiece-size2" class="block text-sm font-medium">Workpiece Size (Y)</label><div class="input-group"><input type="number" id="workpiece-size2" class="w-full bg-gray-700 rounded-lg p-3" placeholder="e.g., 100"><span class="input-unit">mm</span></div></div><div><label for="cutter-diameter" class="block text-sm font-medium">Cutter Diameter</label><div class="input-group"><input type="number" id="cutter-diameter" class="w-full bg-gray-700 rounded-lg p-3" placeholder="e.g., 20"><span class="input-unit">mm</span></div></div></div></div>
+                <div><h2 class="text-lg font-semibold text-gray-300 mb-2 border-b border-gray-700 pb-2">Step 3: Select Machining Side(s) & Origin</h2><div id="machining-side-container" class="grid grid-cols-2 md:grid-cols-5 gap-2"></div>
+                <div class="mt-4"><label for="sc-origin-select" class="block text-sm font-medium">Workpiece Origin</label><select id="sc-origin-select" class="w-full bg-gray-700 rounded-lg p-3 mt-1"><option value="center">Center</option><option value="bottom-left">X- Y-</option><option value="top-left">X- Y+</option><option value="bottom-right">X+ Y-</option><option value="top-right">X+ Y+</option></select></div></div>
+                <div><h2 class="text-lg font-semibold text-gray-300 mb-2 border-b border-gray-700 pb-2">Step 4: Machining Parameters</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div><label id="final-depth-label" for="final-depth" class="block text-sm font-medium">Final Depth (Z)</label><div class="input-group"><input type="number" id="final-depth" class="w-full bg-gray-700 rounded-lg p-3" placeholder="e.g., -5"><span class="input-unit">mm</span></div></div>
+                        <div><label for="depth-of-cut" class="block text-sm font-medium">Depth of Cut</label><div class="input-group"><input type="number" id="depth-of-cut" class="w-full bg-gray-700 rounded-lg p-3" placeholder="e.g., 1"><span class="input-unit">mm</span></div></div>
+                        <div><label for="safety-z-distance" class="block text-sm font-medium">Safety Z Distance</label><div class="input-group"><input type="number" id="safety-z-distance" value="5" class="w-full bg-gray-700 rounded-lg p-3"><span class="input-unit">mm</span></div></div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
+                        <div><label for="milling-type" class="block text-sm font-medium">Milling Type</label><select id="milling-type" class="w-full bg-gray-700 rounded-lg p-3"><option value="G41">Climb (G41)</option><option value="G42">Conventional (G42)</option></select></div>
+                        <div><label for="material-select" class="block text-sm font-medium">Material</label><select id="material-select" class="w-full bg-gray-700 rounded-lg p-3"><option value="mild-steel">Mild Steel</option><option value="inox">Inox (Stainless)</option><option value="aluminum">Aluminum</option><option value="titanium">Titanium</option><option value="plastics">Plastics</option></select></div>
+                        <div><label for="tool-offset-d" class="block text-sm font-medium">Tool Offset (D)</label><input type="number" id="tool-offset-d" value="1" class="w-full bg-gray-700 rounded-lg p-3"></div>
+                        <div><label id="approach-label" for="approach-distance" class="block text-sm font-medium">X/Y Approach</label><div class="input-group"><input type="number" id="approach-distance" value="2" class="w-full bg-gray-700 rounded-lg p-3"><span class="input-unit">mm</span></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="pcd-inputs" class="hidden">
+            <h2 class="text-xl font-semibold text-center text-gray-300 mb-4">PCD Drilling Parameters</h2>
+            <div class="space-y-4">
+                 <div><label for="pcd-diameter" class="block text-sm font-medium">PCD (Circle Diameter)</label><div class="input-group"><input type="number" id="pcd-diameter" class="w-full bg-gray-700 rounded-lg p-3" placeholder="e.g., 100"><span class="input-unit">mm</span></div></div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div><label for="start-angle" class="block text-sm font-medium">First Hole Angle</label><div class="input-group"><input type="number" id="start-angle" value="0" class="w-full bg-gray-700 rounded-lg p-3"><span class="input-unit">°</span></div></div>
+                    <div><label for="angle-between" class="block text-sm font-medium">Angle Between Holes</label><div class="input-group"><input type="number" id="angle-between" class="w-full bg-gray-700 rounded-lg p-3" placeholder="e.g., 45"><span class="input-unit">°</span></div></div>
+                </div>
+                <div><label for="max-angle" class="block text-sm font-medium">Max Angle</label><div class="input-group"><input type="number" id="max-angle" value="360" class="w-full bg-gray-700 rounded-lg p-3" placeholder="360 for full circle"><span class="input-unit">°</span></div></div>
+                <div><label for="drill-depth" class="block text-sm font-medium">Drill Depth (Z)</label><div class="input-group"><input type="number" id="drill-depth" class="w-full bg-gray-700 rounded-lg p-3" placeholder="e.g., -10"><span class="input-unit">mm</span></div></div>
+            </div>
+        </div>
+        
+        <div class="flex mt-6"><button id="generate-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition">Generate G-Code</button></div>
+        
+        <div id="results-section" class="mt-8 pt-6 border-t border-gray-700 hidden"><div class="flex justify-between items-center mb-4"><h2 class="text-xl font-semibold text-indigo-400">Generated Program</h2><button id="copy-btn" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg transition text-sm">Copy Code</button></div><pre id="gcode-output" class="bg-gray-900 text-white p-4 rounded-lg text-sm whitespace-pre-wrap max-h-96 overflow-y-auto"></pre></div>
+        <div id="error-message" class="mt-4 text-center text-red-400 font-medium hidden"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- GLOBAL STATE ---
+            let currentOperation = 'simple-contour';
+    
+            // --- DOM ELEMENTS ---
+            const generateBtn = document.getElementById('generate-btn');
+            const copyBtn = document.getElementById('copy-btn');
+            const resultsSection = document.getElementById('results-section');
+            const gcodeOutput = document.getElementById('gcode-output');
+            const errorMessage = document.getElementById('error-message');
+            
+            const faceMillingTab = document.getElementById('face-milling-tab');
+            const simpleContourTab = document.getElementById('simple-contour-tab');
+            const pcdTab = document.getElementById('pcd-tab');
+            const faceMillingInputs = document.getElementById('face-milling-inputs');
+            const simpleContourInputs = document.getElementById('simple-contour-inputs');
+            const pcdInputs = document.getElementById('pcd-inputs');
+    
+            // --- EVENT LISTENERS ---
+            faceMillingTab.addEventListener('click', () => switchOperation('face-milling'));
+            simpleContourTab.addEventListener('click', () => switchOperation('simple-contour'));
+            pcdTab.addEventListener('click', () => switchOperation('pcd'));
+            generateBtn.addEventListener('click', generateGCode);
+            copyBtn.addEventListener('click', copyToClipboard);
+    
+            // --- CORE FUNCTIONS ---
+            function switchOperation(op) {
+                currentOperation = op;
+                faceMillingTab.classList.toggle('active', op === 'face-milling');
+                simpleContourTab.classList.toggle('active', op === 'simple-contour');
+                pcdTab.classList.toggle('active', op === 'pcd');
+                faceMillingInputs.classList.toggle('hidden', op !== 'face-milling');
+                simpleContourInputs.classList.toggle('hidden', op !== 'simple-contour');
+                pcdInputs.classList.toggle('hidden', op !== 'pcd');
+                resultsSection.classList.add('hidden');
+                hideError();
+            }
+    
+            function generateGCode() {
+                let program = '';
+                hideError();
+                try {
+                    if (currentOperation === 'face-milling') {
+                        const inputs = getFaceMillingInputs();
+                        const params = calculateFaceMillingParameters(inputs);
+                        program = buildFaceMillingProgram(inputs, params);
+                    } else if (currentOperation === 'simple-contour') {
+                        const inputs = getSimpleContourInputs();
+                        const params = calculateContourParameters(inputs);
+                        program = buildSimpleContourProgram(inputs, params);
+                    } else if (currentOperation === 'pcd') {
+                        const inputs = getPcdInputs();
+                        program = buildPcdProgram(inputs);
+                    }
+                    gcodeOutput.textContent = program;
+                    resultsSection.classList.remove('hidden');
+                } catch (e) {
+                    showError(e.message);
+                }
+            }
+            
+            // --- FACE MILLING ---
+            const fmOriginSelect = document.getElementById('fm-origin-select');
+            function getFaceMillingInputs() {
+                const values = { wx: parseFloat(document.getElementById('fm-workpiece-x').value), wy: parseFloat(document.getElementById('fm-workpiece-y').value), td: parseFloat(document.getElementById('fm-total-depth').value), doc: parseFloat(document.getElementById('fm-depth-of-cut').value), cd: parseFloat(document.getElementById('fm-cutter-diameter').value), so: parseFloat(document.getElementById('fm-stepover').value), sd: parseFloat(document.getElementById('fm-safety-distance').value), origin: fmOriginSelect.value };
+                for (const key in values) { if (key !== 'origin' && (isNaN(values[key]) || values[key] <= 0)) throw new Error(`Invalid Face Milling Input: ${key}`); }
+                if (values.cd >= values.wy) throw new Error('Cutter diameter must be smaller than workpiece width.');
+                return values;
+            }
+            function calculateFaceMillingParameters(inputs) {
+                const spindleSpeed = 2000, feedRate = 800, toolRadius = inputs.cd / 2, stepoverDistance = inputs.cd * (inputs.so / 100);
+                let startX, endX, startY, endY;
+                const halfX = inputs.wx / 2, halfY = inputs.wy / 2;
+                switch (inputs.origin) {
+                    case 'center': startX = -halfX - toolRadius; endX = halfX + toolRadius; startY = -halfY; endY = halfY; break;
+                    case 'top-left': startX = -toolRadius; endX = inputs.wx + toolRadius; startY = 0; endY = -inputs.wy; break;
+                    case 'bottom-right': startX = -inputs.wx - toolRadius; endX = toolRadius; startY = 0; endY = inputs.wy; break;
+                    case 'top-right': startX = -inputs.wx - toolRadius; endX = toolRadius; startY = 0; endY = -inputs.wy; break;
+                    default: startX = -toolRadius; endX = inputs.wx + toolRadius; startY = 0; endY = inputs.wy; break;
+                }
+                return { spindleSpeed, feedRate, stepoverDistance, startX, endX, startY, endY };
+            }
+            function buildFaceMillingProgram(inputs, params) {
+                const { spindleSpeed, feedRate, startX, endX, startY, endY, stepoverDistance } = params;
+                const { td, doc, sd } = inputs;
+                const isYPositive = endY > startY;
+                let code = `O0001 (FACE MILLING)\nG21 G90 G17 G40 G80\n\nT1 M6\nG43 H1 Z${(sd + 50).toFixed(3)}\nM3 S${spindleSpeed}\nM8\n\n#1=0\n#2=${-td.toFixed(3)}\n#3=${-doc.toFixed(3)}\n\nN10\n#1=#1+#3\nIF[#1 LT #2] THEN #1=#2\nG00 Z${sd.toFixed(3)}\nG00 X${startX.toFixed(3)} Y${startY.toFixed(3)}\nG01 Z#1 F${(feedRate / 2).toFixed(0)}\n`;
+                let currentY = startY, direction = 1;
+                while (isYPositive ? currentY <= endY : currentY >= endY) {
+                    code += `G01 X${(direction === 1 ? endX : startX).toFixed(3)} F${feedRate}\n`;
+                    currentY += isYPositive ? stepoverDistance : -stepoverDistance;
+                    if (isYPositive ? currentY <= endY : currentY >= endY) code += `G01 Y${currentY.toFixed(3)}\n`;
+                    direction *= -1;
+                }
+                code += `\nG00 Z${sd.toFixed(3)}\nIF[#1 GE #2] GOTO 10\n\nG00 Z${(sd + 50).toFixed(3)}\nG28 G91 Z0\nG28 X0 Y0\nM5\nM9\nM30\n%`;
+                return code.trim();
+            }
+    
+            // --- SIMPLE CONTOUR ---
+            const scPlaneSelect = document.getElementById('sc-plane-select');
+            const machiningSideContainer = document.getElementById('machining-side-container');
+            const size1Label = document.getElementById('size1-label'), size2Label = document.getElementById('size2-label'), finalDepthLabel = document.getElementById('final-depth-label');
+            const scOriginSelect = document.getElementById('sc-origin-select');
+            const approachLabel = document.getElementById('approach-label');
+    
+            scPlaneSelect.addEventListener('change', updateSimpleContourUI);
+    
+            function updateSimpleContourUI() {
+                const plane = scPlaneSelect.value;
+                const axes = getContourAxes(plane);
+                size1Label.textContent = `Workpiece Size (${axes.p1})`;
+                size2Label.textContent = `Workpiece Size (${axes.p2})`;
+                finalDepthLabel.textContent = `Final Depth (${axes.depth})`;
+                approachLabel.textContent = `${axes.p1}/${axes.p2} Approach`;
+                machiningSideContainer.innerHTML = '';
+                const sides = [`${axes.p1}+`, `${axes.p2}+`, `${axes.p1}-`, `${axes.p2}-`, 'All'];
+                sides.forEach((side) => {
+                    const checkId = `side-${side.toLowerCase().replace('+', 'p').replace('-', 'm')}`;
+                    machiningSideContainer.innerHTML += `<div><input type="checkbox" name="machining-side" id="${checkId}" value="${side}" class="sr-only"><label for="${checkId}" class="checkbox-label block w-full text-center p-3 rounded-lg border-2 border-gray-600 bg-gray-700 cursor-pointer">${side}</label></div>`;
+                });
+                document.getElementById('side-all').addEventListener('change', (e) => {
+                    const isChecked = e.target.checked;
+                    document.querySelectorAll('input[name="machining-side"]').forEach(cb => { if(cb.value !== 'All') cb.checked = isChecked; });
+                });
+            }
+            function getContourAxes(plane) {
+                if (plane === 'G18') return { p1: 'X', p2: 'Z', depth: 'Y' };
+                if (plane === 'G19') return { p1: 'Y', p2: 'Z', depth: 'X' };
+                return { p1: 'X', p2: 'Y', depth: 'Z' };
+            }
+            function getSimpleContourInputs() {
+                const selectedSides = Array.from(document.querySelectorAll('input[name="machining-side"]:checked')).map(cb => cb.value).filter(v => v !== 'All');
+                if (selectedSides.length === 0) throw new Error("Please select at least one machining side.");
+                const values = {
+                    plane: scPlaneSelect.value,
+                    size1: parseFloat(document.getElementById('workpiece-size1').value),
+                    size2: parseFloat(document.getElementById('workpiece-size2').value),
+                    cutterDia: parseFloat(document.getElementById('cutter-diameter').value),
+                    sides: selectedSides,
+                    finalDepth: parseFloat(document.getElementById('final-depth').value),
+                    doc: parseFloat(document.getElementById('depth-of-cut').value),
+                    approachDist: parseFloat(document.getElementById('approach-distance').value),
+                    safetyZ: parseFloat(document.getElementById('safety-z-distance').value),
+                    toolOffset: parseInt(document.getElementById('tool-offset-d').value),
+                    material: document.getElementById('material-select').value,
+                    origin: scOriginSelect.value,
+                    millingType: document.getElementById('milling-type').value,
+                };
+                for (const key in values) { if (!['plane', 'sides', 'material', 'origin', 'millingType'].includes(key) && isNaN(values[key])) throw new Error(`Invalid Simple Contour Input: ${key}`);}
+                if (values.finalDepth > 0) values.finalDepth = -values.finalDepth;
+                if (values.doc < 0) values.doc = -values.doc;
+                return values;
+            }
+            function calculateContourParameters(inputs) {
+                const { material, cutterDia } = inputs;
+                const params = {};
+                let vc, factor; // vc = cutting speed in m/min
+                switch(material) {
+                    case 'inox':       vc = 80;  factor = 0.005; break;
+                    case 'aluminum':   vc = 300; factor = 0.015; break;
+                    case 'titanium':   vc = 40;  factor = 0.004; break;
+                    case 'plastics':   vc = 200; factor = 0.020; break;
+                    default:           vc = 120; factor = 0.01;  break; // Mild Steel
+                }
+                params.rpm = Math.round((vc * 1000) / (Math.PI * cutterDia));
+                params.feed = Math.round(params.rpm * cutterDia * factor);
+                params.feed = Math.max(100, params.feed); // Set a minimum feedrate
+                return params;
+            }
+            
+            function buildSimpleContourProgram(inputs, params) {
+                const { plane, sides, size1, size2, finalDepth, doc, approachDist, safetyZ, toolOffset, origin, millingType, cutterDia } = inputs;
+                const { rpm, feed } = params;
+                const axes = getContourAxes(plane);
+                const cutterRad = cutterDia / 2;
+                let lastPos = {};
+                
+                let p1_min, p1_max, p2_min, p2_max;
+                if (origin === 'center') {
+                    p1_min = -size1 / 2; p1_max = size1 / 2;
+                    p2_min = -size2 / 2; p2_max = size2 / 2;
+                } else { 
+                    p1_min = 0; p1_max = size1;
+                    p2_min = 0; p2_max = size2;
+                    if (origin.includes('right')) { p1_min = -size1; p1_max = 0; }
+                    if (origin.includes('top')) { p2_min = -size2; p2_max = 0; }
+                }
+                
+                let points;
+                let standardCycle;
+
+                // Logic set to "opposite" as requested
+                if (millingType === 'G42') { // CW Path
+                    points = {
+                        [`${axes.p1}+`]: { start: { p1: p1_max, p2: p2_min }, end: { p1: p1_max, p2: p2_max } },
+                        [`${axes.p2}+`]: { start: { p1: p1_max, p2: p2_max }, end: { p1: p1_min, p2: p2_max } },
+                        [`${axes.p1}-`]: { start: { p1: p1_min, p2: p2_max }, end: { p1: p1_min, p2: p2_min } },
+                        [`${axes.p2}-`]: { start: { p1: p1_min, p2: p2_min }, end: { p1: p1_max, p2: p2_min } },
+                    };
+                    standardCycle = [`${axes.p1}+`, `${axes.p2}+`, `${axes.p1}-`, `${axes.p2}-`];
+                } else { // G41 -> CCW Path
+                    points = {
+                        [`${axes.p1}+`]: { start: { p1: p1_max, p2: p2_max }, end: { p1: p1_max, p2: p2_min } },
+                        [`${axes.p2}+`]: { start: { p1: p1_min, p2: p2_max }, end: { p1: p1_max, p2: p2_max } },
+                        [`${axes.p1}-`]: { start: { p1: p1_min, p2: p2_min }, end: { p1: p1_min, p2: p2_max } },
+                        [`${axes.p2}-`]: { start: { p1: p1_max, p2: p2_min }, end: { p1: p1_min, p2: p2_min } },
+                    };
+                    standardCycle = [`${axes.p1}+`, `${axes.p2}-`, `${axes.p1}-`, `${axes.p2}+`];
+                }
+
+                let longestChain = [];
+                if (sides.length > 0) {
+                    for (let i = 0; i < 4; i++) {
+                        let currentChain = [];
+                        for (let j = 0; j < 4; j++) {
+                            let side = standardCycle[(i + j) % 4];
+                            if (sides.includes(side)) {
+                                currentChain.push(side);
+                            } else {
+                                break;
+                            }
+                        }
+                        if (currentChain.length > longestChain.length) {
+                            longestChain = currentChain;
+                        }
+                    }
+                }
+                const unchainedSides = sides.filter(side => !longestChain.includes(side));
+                const orderedSides = [...longestChain, ...unchainedSides];
+
+                let program = `O0002 (SIMPLE CONTOUR)\n${plane} G90 G40 G80\nG54\nT${toolOffset} M6\nS${rpm} M03\nG43 H${toolOffset} G00 ${axes.depth}50.\nM8\n\n`;
+                program += `#1=0\n#2=${finalDepth.toFixed(3)}\n#3=${doc.toFixed(3)}\n#4=${safetyZ.toFixed(3)}\n\n`;
+                program += `N10 (LOOP START)\n#1=#1-#3\nIF[#1 LT #2] THEN #1=#2\n`;
+    
+                for (let i = 0; i < orderedSides.length; i++) {
+                    const currentSide = orderedSides[i];
+                    const prevSide = i > 0 ? orderedSides[i - 1] : null;
+                    const nextSide = i < orderedSides.length - 1 ? orderedSides[i + 1] : null;
+
+                    let { start, end } = points[currentSide];
+                    
+                    const isFirstSideOfChain = (i === 0 || !areSidesAdjacent(prevSide, currentSide, axes, millingType));
+                    const isLastSideOfChain = (i === orderedSides.length - 1 || !areSidesAdjacent(currentSide, nextSide, axes, millingType));
+
+                    if (isFirstSideOfChain) {
+                        start = JSON.parse(JSON.stringify(start)); 
+                        const isP1Constant = (start.p1 === end.p1);
+                        if (isP1Constant) {
+                            const direction = Math.sign(end.p2 - start.p2);
+                            start.p2 -= direction * approachDist;
+                        } else {
+                            const direction = Math.sign(end.p1 - start.p1);
+                            start.p1 -= direction * approachDist;
+                        }
+                    }
+                    if (isLastSideOfChain) {
+                        end = JSON.parse(JSON.stringify(end));
+                        const originalStart = points[currentSide].start;
+                        const isP1Constant = (originalStart.p1 === end.p1);
+                        if (isP1Constant) {
+                            const direction = Math.sign(end.p2 - originalStart.p2);
+                            end.p2 += direction * approachDist;
+                        } else {
+                            const direction = Math.sign(end.p1 - originalStart.p1);
+                            end.p1 += direction * approachDist;
+                        }
+                    }
+                    
+                    if (isFirstSideOfChain) {
+                        program += `\n(MACHINING SIDE ${currentSide})\n`;
+                        let approach_p1 = start.p1, approach_p2 = start.p2;
+                        
+                        const totalClearance = approachDist + cutterRad;
+                        if (currentSide.startsWith(axes.p1)) {
+                            approach_p1 += (currentSide.endsWith('+') ? totalClearance : -totalClearance);
+                        } else {
+                            approach_p2 += (currentSide.endsWith('+') ? totalClearance : -totalClearance);
+                        }
+                        
+                        program += `G00 ${axes.p1}${approach_p1.toFixed(3)} ${axes.p2}${approach_p2.toFixed(3)}\n`;
+                        lastPos = { p1: approach_p1, p2: approach_p2 };
+
+                        program += `G00 ${axes.depth}[#1+#4]\n`;
+                        program += `G01 ${axes.depth}#1 F${feed / 2}\n`;
+                        
+                        let leadInMove = '';
+                        if (start.p1.toFixed(3) !== lastPos.p1.toFixed(3)) leadInMove += `${axes.p1}${start.p1.toFixed(3)} `;
+                        if (start.p2.toFixed(3) !== lastPos.p2.toFixed(3)) leadInMove += `${axes.p2}${start.p2.toFixed(3)} `;
+                        program += `${millingType} D${toolOffset} G01 ${leadInMove}F${feed}\n`;
+                        lastPos = { p1: start.p1, p2: start.p2 };
+                    }
+                    
+                    let mainMove = '';
+                    if (end.p1.toFixed(3) !== lastPos.p1.toFixed(3)) mainMove += `${axes.p1}${end.p1.toFixed(3)} `;
+                    if (end.p2.toFixed(3) !== lastPos.p2.toFixed(3)) mainMove += `${axes.p2}${end.p2.toFixed(3)} `;
+                    if (mainMove.length > 0) program += `G01 ${mainMove.trim()}\n`;
+                    lastPos = { p1: end.p1, p2: end.p2 };
+    
+                    if (isLastSideOfChain) {
+                        let retract_p1 = end.p1, retract_p2 = end.p2;
+                        
+                        const totalClearance = approachDist + cutterRad;
+                        if (currentSide.startsWith(axes.p1)) {
+                            retract_p1 += (currentSide.endsWith('+') ? totalClearance : -totalClearance);
+                        } else {
+                            retract_p2 += (currentSide.endsWith('+') ? totalClearance : -totalClearance);
+                        }
+                        
+                        let retractMove = '';
+                        if (retract_p1.toFixed(3) !== lastPos.p1.toFixed(3)) retractMove += `${axes.p1}${retract_p1.toFixed(3)} `;
+                        if (retract_p2.toFixed(3) !== lastPos.p2.toFixed(3)) retractMove += `${axes.p2}${retract_p2.toFixed(3)} `;
+                        
+                        if(retractMove.length > 0) program += `G40 G01 ${retractMove.trim()}\n`;
+                        lastPos = { p1: retract_p1, p2: retract_p2 };
+
+                        program += `G00 ${axes.depth}[#1+#4]\n`;
+                    }
+                }
+    
+                program += `\nIF[#1 GT #2] GOTO 10\n`;
+                program += `\n(END OF PROGRAM)\nM5\nM9\nG00 ${axes.depth}50.\nG28 G91 ${axes.depth}0\nM30\n%`;
+                return program.trim();
+            }
+    
+            function areSidesAdjacent(side1, side2, axes, millingType) {
+                if (!side1 || !side2) return false;
+                
+                const clockwiseMap = {
+                    [`${axes.p1}+`]: `${axes.p2}+`,
+                    [`${axes.p2}+`]: `${axes.p1}-`,
+                    [`${axes.p1}-`]: `${axes.p2}-`,
+                    [`${axes.p2}-`]: `${axes.p1}+`,
+                };
+
+                const counterClockwiseMap = {
+                    [`${axes.p1}+`]: `${axes.p2}-`,
+                    [`${axes.p2}-`]: `${axes.p1}-`,
+                    [`${axes.p1}-`]: `${axes.p2}+`,
+                    [`${axes.p2}+`]: `${axes.p1}+`,
+                };
+                
+                const sideMap = (millingType === 'G42') ? clockwiseMap : counterClockwiseMap;
+                return sideMap[side1] === side2;
+            }
+    
+            // --- PCD DRILLING ---
+            function getPcdInputs() {
+                const values = { pcd: parseFloat(document.getElementById('pcd-diameter').value), startAngle: parseFloat(document.getElementById('start-angle').value), angleBetween: parseFloat(document.getElementById('angle-between').value), maxAngle: parseFloat(document.getElementById('max-angle').value), depth: parseFloat(document.getElementById('drill-depth').value) };
+                for (const key in values) { if (isNaN(values[key])) throw new Error(`Invalid PCD Input: ${key}`); }
+                if (values.depth > 0) values.depth = -values.depth;
+                return values;
+            }
+            function buildPcdProgram(inputs) {
+                const { pcd, startAngle, angleBetween, maxAngle, depth } = inputs;
+                return `O0014 (PCD DRILLING)\nG54 G17 G90\nM03 S800\n\n#1=${pcd.toFixed(3)}\n#2=${startAngle.toFixed(3)}\n#3=${angleBetween.toFixed(3)}\n#4=${maxAngle.toFixed(3)}\n\nN1\nG69\nG68 X0 Y0 R#2\nG00 X[#1/2] Y0\nG00 Z50.\nG81 Z${depth.toFixed(3)} R5. F100\nG80\nG69\nM01\n#2=#2+#3\nIF[#2 GE 360] GOTO 2\nIF[#2 LE #4] GOTO 1\n\nN2\nG00 Z100.\nM30\n%`;
+            }
+    
+            // --- UTILITY FUNCTIONS ---
+            function copyToClipboard() {
+                const textArea = document.createElement('textarea'); textArea.value = gcodeOutput.textContent;
+                document.body.appendChild(textArea); textArea.select();
+                try { document.execCommand('copy'); copyBtn.textContent = 'Copied!'; setTimeout(() => { copyBtn.textContent = 'Copy Code'; }, 2000); }
+                catch (err) { showError('Failed to copy text.'); }
+                document.body.removeChild(textArea);
+            }
+            function showError(message) { errorMessage.textContent = message; errorMessage.classList.remove('hidden'); resultsSection.classList.add('hidden'); }
+            function hideError() { errorMessage.classList.add('hidden'); }
+            
+            // Initial UI setup
+            switchOperation('simple-contour');
+            updateSimpleContourUI();
+        });
+    </script>
+</body>
+</html>
