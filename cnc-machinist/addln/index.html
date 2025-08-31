@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fanuc Program Editor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .code-editor {
+            font-family: 'Source Code Pro', monospace;
+            background-color: #1a1b26; /* A deep, modern dark blue */
+            border-color: #414868;
+            color: #c0caf5;
+            caret-color: #7aa2f7;
+        }
+        .code-editor::placeholder {
+            color: #565f89;
+        }
+        .btn {
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+        .btn:active {
+            transform: translateY(1px);
+        }
+        #toast {
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200 flex items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-4xl bg-gray-800 p-6 sm:p-8 rounded-2xl shadow-2xl border border-gray-700">
+        
+        <div class="text-center mb-6">
+            <h1 class="text-3xl sm:text-4xl font-bold text-cyan-400">Fanuc G-Code Editor</h1>
+            <p class="text-gray-400 mt-2">Paste your code, then format it with the tools below.</p>
+        </div>
+        
+        <div>
+            <label for="gcode-input" class="sr-only">G-Code Input</label>
+            <textarea 
+                id="gcode-input" 
+                class="code-editor w-full h-96 p-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                placeholder="O0001 (PROGRAM NAME)
+G21 G90 G40 G80
+T01 M06
+S1200 M03
+G00 G54 X0 Y0
+G43 H01 Z50.0
+G01 Z-5.0 F150
+G00 Z50.0
+M30"
+            ></textarea>
+        </div>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+            <button id="renumber-btn" class="btn w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg">
+                <span class="font-mono">N#</span> Renumber Lines
+            </button>
+            <button id="semicolon-btn" class="btn w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-lg">
+                <span class="font-mono">;</span> Add End-of-Block
+            </button>
+            <button id="copy-btn" class="btn w-full bg-gray-600 hover:bg-gray-500 text-white font-bold py-3 px-4 rounded-lg">
+                Copy to Clipboard
+            </button>
+        </div>
+
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-green-500 text-white py-2 px-4 rounded-lg shadow-lg opacity-0 transform translate-y-2">
+        Copied to clipboard!
+    </div>
+
+    <script>
+        const gcodeInput = document.getElementById('gcode-input');
+        const renumberBtn = document.getElementById('renumber-btn');
+        const semicolonBtn = document.getElementById('semicolon-btn');
+        const copyBtn = document.getElementById('copy-btn');
+        const toast = document.getElementById('toast');
+
+        // --- Main Functionality ---
+
+        /**
+         * Adds or replaces line numbers (N-codes) to a G-code program,
+         * skipping the program number line (O...).
+         */
+        renumberBtn.addEventListener('click', () => {
+            const currentCode = gcodeInput.value;
+            if (!currentCode) return;
+
+            const lines = currentCode.split('\n');
+            let lineNumber = 10;
+            const increment = 10;
+            let isProgramNumberFound = false; // Flag to ensure we only skip the first O-number line
+            
+            const renumberedLines = lines.map(line => {
+                const trimmedLine = line.trim();
+
+                // Check for program number (O-number) as the first non-empty line
+                if (!isProgramNumberFound && /^\s*O\d+/.test(trimmedLine)) {
+                    isProgramNumberFound = true;
+                    // Return the line as-is, but without any N-number that might be there
+                    return trimmedLine.replace(/^N\d+\s*/i, '');
+                }
+
+                if (trimmedLine === '') return line;
+
+                // Preserve comments on their own line without numbering
+                if (trimmedLine.startsWith('(') && trimmedLine.endsWith(')')) {
+                    const nMatch = line.match(/^\s*N\d+\s*/i);
+                    if (nMatch) return line.replace(nMatch[0], ''); // Remove N-number from comment-only lines
+                    return line;
+                }
+                
+                // For all other lines, add or replace the N-number
+                const lineWithoutN = trimmedLine.replace(/^N\d+\s*/i, '');
+                
+                if (lineWithoutN === '') return line; // Handle lines that were only an N-number
+
+                const newLine = `N${lineNumber} ${lineWithoutN}`;
+                lineNumber += increment;
+                return newLine;
+            });
+
+            gcodeInput.value = renumberedLines.join('\n');
+            showToast('Lines renumbered!');
+        });
+
+        /**
+         * Adds a semicolon (;) to the end of each non-empty line.
+         */
+        semicolonBtn.addEventListener('click', () => {
+            const currentCode = gcodeInput.value;
+            if (!currentCode) return;
+
+            const lines = currentCode.split('\n');
+
+            const formattedLines = lines.map(line => {
+                const trimmedLine = line.trim();
+                
+                if (trimmedLine === '') return '';
+                if (trimmedLine.endsWith(';')) return line;
+
+                return `${line};`;
+            });
+            
+            gcodeInput.value = formattedLines.join('\n');
+            showToast('End-of-block added!');
+        });
+
+        /**
+         * Copies the content of the text area to the clipboard.
+         */
+        copyBtn.addEventListener('click', () => {
+            const codeToCopy = gcodeInput.value;
+            if (!codeToCopy) return;
+
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = codeToCopy;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            
+            try {
+                document.execCommand('copy');
+                showToast('Copied to clipboard!');
+            } catch (err) {
+                console.error('Failed to copy text: ', err);
+                showToast('Failed to copy!', true);
+            }
+            
+            document.body.removeChild(tempTextArea);
+        });
+        
+        /**
+         * Displays a toast notification.
+         * @param {string} message - The message to display.
+         * @param {boolean} [isError=false] - If true, displays an error-styled toast.
+         */
+        function showToast(message, isError = false) {
+            toast.textContent = message;
+            toast.className = `fixed bottom-5 right-5 text-white py-2 px-4 rounded-lg shadow-lg opacity-0 transform translate-y-2 ${isError ? 'bg-red-500' : 'bg-green-500'}`;
+            
+            requestAnimationFrame(() => {
+                toast.classList.remove('opacity-0', 'translate-y-2');
+            });
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+            }, 2000);
+        }
+
+    </script>
+</body>
+</html>
+
