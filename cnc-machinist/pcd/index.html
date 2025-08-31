@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PCD Coordinate Generator</title>
+    <title>PCD Coordinate & G-Code Generator</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Add jsPDF library for PDF generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         body {
@@ -27,68 +26,126 @@
 </head>
 <body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-4">
 
-    <div class="w-full max-w-md bg-gray-800 p-6 sm:p-8 rounded-2xl shadow-2xl border border-gray-700">
+    <div class="w-full max-w-2xl bg-gray-800 p-6 sm:p-8 rounded-2xl shadow-2xl border border-gray-700">
         
-        <h1 class="text-2xl sm:text-3xl font-bold text-center mb-6 text-teal-400">PCD Coordinate Generator</h1>
+        <h1 class="text-2xl sm:text-3xl font-bold text-center mb-6 text-teal-400">PCD Coordinate & G-Code Generator</h1>
         
-        <div class="space-y-4">
-            <div>
-                <label for="pcd" class="block text-sm font-medium text-gray-300 mb-1">Pitch Circle Diameter (PCD)</label>
-                <div class="input-group"><input type="number" id="pcd" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3" placeholder="e.g., 100"><span class="input-unit">mm</span></div>
-            </div>
-            <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+            <div class="space-y-4">
+                <h2 class="text-lg font-semibold text-gray-300 border-b border-gray-600 pb-2">Hole Pattern</h2>
                 <div>
-                    <label for="start-angle" class="block text-sm font-medium text-gray-300 mb-1">Start Angle</label>
-                    <div class="input-group"><input type="number" id="start-angle" value="0" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3"><span class="input-unit">°</span></div>
+                    <label for="pcd" class="block text-sm font-medium text-gray-300 mb-1">Pitch Circle Diameter (PCD)</label>
+                    <div class="input-group"><input type="number" id="pcd" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3" placeholder="e.g., 100"><span class="input-unit">mm</span></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="start-angle" class="block text-sm font-medium text-gray-300 mb-1">Start Angle</label>
+                        <div class="input-group"><input type="number" id="start-angle" value="0" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3"><span class="input-unit">°</span></div>
+                    </div>
+                    <div>
+                        <label for="last-angle" class="block text-sm font-medium text-gray-300 mb-1">Last Angle</label>
+                        <div class="input-group"><input type="number" id="last-angle" value="360" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3"><span class="input-unit">°</span></div>
+                    </div>
                 </div>
                 <div>
-                    <label for="last-angle" class="block text-sm font-medium text-gray-300 mb-1">Last Angle</label>
-                    <div class="input-group"><input type="number" id="last-angle" value="360" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3"><span class="input-unit">°</span></div>
+                    <label for="num-holes" class="block text-sm font-medium text-gray-300 mb-1">Number of Holes</label>
+                    <input type="number" id="num-holes" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3" placeholder="e.g., 8">
                 </div>
             </div>
-            <div>
-                <label for="num-holes" class="block text-sm font-medium text-gray-300 mb-1">Number of Holes</label>
-                <input type="number" id="num-holes" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3" placeholder="e.g., 8">
-            </div>
-            <div>
-                <label for="plane-select" class="block text-sm font-medium text-gray-300 mb-1">G-Code Plane</label>
-                <select id="plane-select" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3">
-                    <option value="G17">G17 (X,Y)</option>
-                    <option value="G18">G18 (X,Z)</option>
-                    <option value="G19">G19 (Y,Z)</option>
-                </select>
+
+            <div class="space-y-4">
+                 <h2 class="text-lg font-semibold text-gray-300 border-b border-gray-600 pb-2">G-Code Parameters (Fanuc)</h2>
+                <div>
+                    <label for="program-num" class="block text-sm font-medium text-gray-300 mb-1">Program Number</label>
+                    <input type="number" id="program-num" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3" placeholder="e.g., 1001">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                     <div>
+                        <label for="retract-plane" class="block text-sm font-medium text-gray-300 mb-1">Retract Plane (R)</label>
+                         <div class="input-group"><input type="number" id="retract-plane" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3" placeholder="e.g., 2"><span class="input-unit">mm</span></div>
+                    </div>
+                    <div>
+                        <label for="drill-depth" class="block text-sm font-medium text-gray-300 mb-1">Drill Depth (Z)</label>
+                         <div class="input-group"><input type="number" id="drill-depth" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3" placeholder="e.g., -10"><span class="input-unit">mm</span></div>
+                    </div>
+                </div>
+                <div>
+                    <label for="feed-rate" class="block text-sm font-medium text-gray-300 mb-1">Feed Rate (F)</label>
+                    <div class="input-group"><input type="number" id="feed-rate" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3" placeholder="e.g., 150"><span class="input-unit">mm/min</span></div>
+                </div>
+                 <div>
+                    <label for="plane-select" class="block text-sm font-medium text-gray-300 mb-1">Axis for Coordinates</label>
+                    <select id="plane-select" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3">
+                        <option value="G17">G17 (X,Y)</option>
+                        <option value="G18">G18 (X,Z)</option>
+                        <option value="G19">G19 (Y,Z)</option>
+                    </select>
+                </div>
             </div>
         </div>
         
-        <div class="flex flex-col sm:flex-row gap-4 mt-6">
-            <button id="generate-coords-btn" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-4 rounded-lg transition">Generate Coordinates</button>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+            <button id="generate-coords-btn" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-4 rounded-lg transition">Coordinates</button>
+            <button id="generate-program-btn" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 px-4 rounded-lg transition">Generate Program</button>
             <button id="download-pdf-btn" class="w-full bg-gray-600 hover:bg-gray-500 text-white font-bold py-3 px-4 rounded-lg transition">Download PDF</button>
-        </div>
-        
-        <div id="pcd-results" class="mt-8 pt-6 border-t border-gray-700 hidden">
-            <h2 class="text-xl font-semibold text-center text-teal-400 mb-4">Generated Coordinates</h2>
-            <pre id="coordinates-output" class="bg-gray-900 text-white p-4 rounded-lg text-sm whitespace-pre-wrap"></pre>
         </div>
         
         <div id="error-message" class="mt-4 text-center text-red-400 font-medium hidden"></div>
 
+        <div id="pcd-results" class="mt-8 pt-6 border-t border-gray-700 hidden">
+            <h2 class="text-xl font-semibold text-center text-teal-400 mb-4">Generated Coordinates</h2>
+            <pre id="coordinates-output" class="bg-gray-900 text-white p-4 rounded-lg text-sm whitespace-pre-wrap max-h-60 overflow-auto"></pre>
+        </div>
+
+        <div id="gcode-results" class="mt-8 pt-6 border-t border-gray-700 hidden">
+            <h2 class="text-xl font-semibold text-center text-sky-400 mb-4">Generated G-Code (Fanuc)</h2>
+            <pre id="gcode-output" class="bg-gray-900 text-white p-4 rounded-lg text-sm whitespace-pre-wrap max-h-60 overflow-auto"></pre>
+        </div>
+
     </div>
 
     <script>
+        // DOM Elements
         const pcdInput = document.getElementById('pcd');
         const startAngleInput = document.getElementById('start-angle');
         const lastAngleInput = document.getElementById('last-angle');
         const numHolesInput = document.getElementById('num-holes');
         const planeSelect = document.getElementById('plane-select');
+        const programNumInput = document.getElementById('program-num');
+        const retractPlaneInput = document.getElementById('retract-plane');
+        const drillDepthInput = document.getElementById('drill-depth');
+        const feedRateInput = document.getElementById('feed-rate');
+        
         const generateCoordsBtn = document.getElementById('generate-coords-btn');
+        const generateProgramBtn = document.getElementById('generate-program-btn');
         const downloadPdfBtn = document.getElementById('download-pdf-btn');
+        
         const pcdResultsDiv = document.getElementById('pcd-results');
+        const gcodeResultsDiv = document.getElementById('gcode-results');
         const coordinatesOutput = document.getElementById('coordinates-output');
+        const gcodeOutput = document.getElementById('gcode-output');
         const errorMessage = document.getElementById('error-message');
 
+        // Event Listeners
         generateCoordsBtn.addEventListener('click', () => {
-            const { coords, labels } = getPcdData();
-            if (coords) displayCoordinates(coords, labels);
+            const data = getPcdData();
+            if (data.coords) {
+                displayCoordinates(data.coords, data.labels);
+                gcodeResultsDiv.classList.add('hidden'); // Hide other output
+            }
+        });
+
+        generateProgramBtn.addEventListener('click', () => {
+            const data = getPcdData();
+            if (data.coords) {
+                 if (isNaN(data.programNum) || isNaN(data.retractPlane) || isNaN(data.drillDepth) || isNaN(data.feedRate)) {
+                    showError('Please fill all G-Code fields with valid numbers.');
+                    return;
+                }
+                const gcode = generateFanucGCode(data);
+                displayGCode(gcode);
+                pcdResultsDiv.classList.add('hidden'); // Hide other output
+            }
         });
 
         downloadPdfBtn.addEventListener('click', () => {
@@ -98,14 +155,22 @@
             }
         });
 
+        // Functions
         function getPcdData() {
+            // PCD Inputs
             const pcd = parseFloat(pcdInput.value);
             const startAngle = parseFloat(startAngleInput.value);
             const lastAngle = parseFloat(lastAngleInput.value);
             const numHoles = parseInt(numHolesInput.value);
             
+            // G-Code Inputs
+            const programNum = parseInt(programNumInput.value);
+            const retractPlane = parseFloat(retractPlaneInput.value);
+            const drillDepth = parseFloat(drillDepthInput.value);
+            const feedRate = parseFloat(feedRateInput.value);
+            
             if (isNaN(pcd) || isNaN(startAngle) || isNaN(lastAngle) || isNaN(numHoles) || pcd <= 0 || numHoles < 1) {
-                showError('Please fill all PCD fields with valid positive numbers.');
+                showError('Please fill all Hole Pattern fields with valid positive numbers.');
                 return {};
             }
             hideError();
@@ -126,7 +191,7 @@
                 const c2 = radius * Math.sin(rad);
                 coords.push({ c1: c1.toFixed(4), c2: c2.toFixed(4) });
             }
-            return { coords, labels, pcd, startAngle, lastAngle, numHoles, plane };
+            return { coords, labels, pcd, startAngle, lastAngle, numHoles, plane, programNum, retractPlane, drillDepth, feedRate };
         }
 
         function displayCoordinates(coords, labels) {
@@ -139,13 +204,48 @@
             pcdResultsDiv.classList.remove('hidden');
         }
 
+        function displayGCode(gcode) {
+            gcodeOutput.textContent = gcode;
+            gcodeResultsDiv.classList.remove('hidden');
+        }
+
+        function generateFanucGCode(data) {
+            const { coords, labels, programNum, retractPlane, drillDepth, feedRate } = data;
+            let gcode = `O${programNum.toString().padStart(4, '0')} (PCD DRILLING)\n`;
+            gcode += `G21 G90 G17 G54 G40 G80\n`;
+            gcode += `(ADD TOOL CHANGE HERE, e.g., T01 M06)\n`;
+            gcode += `S800 M03\n`;
+            
+            if (coords && coords.length > 0) {
+                const firstCoord = coords[0];
+                
+                // Rapid to first hole location
+                gcode += `G00 ${labels[0]}${firstCoord.c1} ${labels[1]}${firstCoord.c2}\n`;
+                
+                // Apply tool length offset
+                gcode += `G43 Z50.0 H01\n`;
+
+                // Start drilling cycle
+                gcode += `G81 Z${drillDepth.toFixed(3)} R${retractPlane.toFixed(3)} F${feedRate.toFixed(1)}\n`;
+
+                // Process remaining holes
+                const remainingCoords = coords.slice(1);
+                remainingCoords.forEach(c => {
+                    gcode += `${labels[0]}${c.c1} ${labels[1]}${c.c2}\n`;
+                });
+            }
+
+            gcode += `G80\n`;
+            gcode += `G49\n`;
+            gcode += `G00 Z100.0 M05\n`;
+            gcode += `M30\n`;
+
+            return gcode;
+        }
+
         function generateAndDownloadPdf(data) {
             const { jsPDF } = window.jspdf;
-            const doc = new jsPDF({
-                orientation: 'portrait',
-                unit: 'mm',
-                format: 'a4'
-            });
+            const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
             doc.setFontSize(18);
             doc.text('PCD Coordinate Report', 105, 20, { align: 'center' });
@@ -177,7 +277,7 @@
                 }
                 doc.text((i + 1).toString(), 14, yPos);
                 doc.text(c.c1, 40, yPos);
-                doc.text(c.c2, 80, yPos);
+                doc.text(c.c2, 80, y-pos);
                 yPos += 7;
             });
 
