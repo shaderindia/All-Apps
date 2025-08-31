@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CNC Helical Interpolation G-Code Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .input-group { position: relative; }
+        .input-unit { position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 0.875rem; }
+        .tab-btn { transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out; }
+        .tab-btn.active { background-color: #4f46e5; color: white; }
+        .tab-btn:not(.active) { background-color: #374151; color: #d1d5db; }
+        input:disabled { background-color: #374151; color: #6b7280; cursor: not-allowed; border-color: #4b5563; }
+    </style>
+</head>
+<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-2xl bg-gray-800 p-6 sm:p-8 rounded-2xl shadow-2xl border border-gray-700">
+        
+        <h1 class="text-2xl sm:text-3xl font-bold text-center mb-6 text-indigo-400">Helical Interpolation Generator (Fanuc)</h1>
+
+        <div class="flex justify-center mb-6 bg-gray-700 rounded-lg p-1">
+            <button id="id-interpolation-tab" class="tab-btn w-1/2 py-2 rounded-md text-sm font-semibold active">ID Helical Milling</button>
+            <button id="od-interpolation-tab" class="tab-btn w-1/2 py-2 rounded-md text-sm font-semibold">OD Helical Milling</button>
+        </div>
+
+        <div id="interpolation-inputs">
+            <div class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 border border-gray-700 rounded-lg">
+                    <div class="md:col-span-3"><h3 class="text-lg font-semibold text-gray-300">Workpiece & Tool Setup</h3></div>
+                    <div>
+                        <label for="plane-select" class="block text-sm font-medium">Work Plane</label>
+                        <select id="plane-select" class="w-full bg-gray-700 rounded-lg p-3 mt-1">
+                            <option value="G17">G17 (X-Y)</option>
+                            <option value="G18">G18 (X-Z)</option>
+                            <option value="G19">G19 (Y-Z)</option>
+                        </select>
+                    </div>
+                     <div>
+                        <label for="cutter-diameter" class="block text-sm font-medium">Cutter Diameter</label>
+                        <div class="input-group"><input type="number" id="cutter-diameter" class="w-full bg-gray-700 rounded-lg p-3" placeholder="e.g., 10"><span class="input-unit">mm</span></div>
+                    </div>
+                    <div>
+                        <label for="tool-offset-d" class="block text-sm font-medium">Tool Offset (D)</label>
+                        <input type="number" id="tool-offset-d" value="1" class="w-full bg-gray-700 rounded-lg p-3">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border border-gray-700 rounded-lg">
+                    <div class="md:col-span-2"><h3 class="text-lg font-semibold text-gray-300">Feature Geometry</h3></div>
+                    <div class="md:col-span-2 grid grid-cols-2 gap-4">
+                        <div>
+                            <label id="center1-label" for="center1" class="block text-sm font-medium">Center X</label>
+                            <div class="input-group"><input type="number" id="center1" value="0" class="w-full bg-gray-700 rounded-lg p-3"><span class="input-unit">mm</span></div>
+                        </div>
+                        <div>
+                            <label id="center2-label" for="center2" class="block text-sm font-medium">Center Y</label>
+                            <div class="input-group"><input type="number" id="center2" value="0" class="w-full bg-gray-700 rounded-lg p-3"><span class="input-unit">mm</span></div>
+                        </div>
+                    </div>
+                    <div>
+                        <label id="final-diameter-label" for="final-diameter" class="block text-sm font-medium">Final ID Diameter</label>
+                        <div class="input-group"><input type="number" id="final-diameter" class="w-full bg-gray-700 rounded-lg p-3" placeholder="e.g., 50"><span class="input-unit">mm</span></div>
+                    </div>
+                    <div class="flex items-end">
+                        <div class="flex items-center h-full pb-1">
+                             <input type="checkbox" id="use-diameter-macro" class="h-5 w-5 bg-gray-700 border-gray-600 rounded text-indigo-500 focus:ring-indigo-600">
+                             <label for="use-diameter-macro" class="ml-2 text-sm font-medium">Use Macro for Diameter (#500)</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 border border-gray-700 rounded-lg">
+                     <div class="md:col-span-3"><h3 class="text-lg font-semibold text-gray-300">Machining Parameters</h3></div>
+                    <div>
+                        <label id="final-depth-label" for="final-depth" class="block text-sm font-medium">Final Depth (Z)</label>
+                        <div class="input-group"><input type="number" id="final-depth" class="w-full bg-gray-700 rounded-lg p-3" placeholder="e.g., -15"><span class="input-unit">mm</span></div>
+                    </div>
+                    <div>
+                        <label for="pitch" class="block text-sm font-medium">Pitch (Depth per Rev)</label>
+                        <div class="input-group"><input type="number" id="pitch" class="w-full bg-gray-700 rounded-lg p-3" placeholder="e.g., 1.5"><span class="input-unit">mm</span></div>
+                    </div>
+                     <div>
+                        <label id="safety-dist-label" for="safety-distance" class="block text-sm font-medium">Z Safety Distance</label>
+                        <div class="input-group"><input type="number" id="safety-distance" value="5" class="w-full bg-gray-700 rounded-lg p-3"><span class="input-unit">mm</span></div>
+                    </div>
+                    <div>
+                        <label id="xy-safety-dist-label" for="xy-safety-distance" class="block text-sm font-medium">XY Clearance</label>
+                        <div class="input-group"><input type="number" id="xy-safety-distance" value="2" class="w-full bg-gray-700 rounded-lg p-3" placeholder="OD only"><span class="input-unit">mm</span></div>
+                    </div>
+                    <div>
+                        <label for="spindle-speed" class="block text-sm font-medium">Spindle Speed</label>
+                        <div class="input-group"><input type="number" id="spindle-speed" value="3000" class="w-full bg-gray-700 rounded-lg p-3"><span class="input-unit">RPM</span></div>
+                    </div>
+                    <div>
+                        <label for="feed-rate" class="block text-sm font-medium">Feed Rate</label>
+                        <div class="input-group"><input type="number" id="feed-rate" value="500" class="w-full bg-gray-700 rounded-lg p-3"><span class="input-unit">mm/min</span></div>
+                    </div>
+                    <div class="md:col-span-3">
+                        <label for="milling-type" class="block text-sm font-medium">Milling Type</label>
+                        <select id="milling-type" class="w-full bg-gray-700 rounded-lg p-3 mt-1">
+                            <option value="G41">Climb Milling (G41)</option>
+                            <option value="G42">Conventional Milling (G42)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="flex mt-6"><button id="generate-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition">Generate G-Code</button></div>
+        
+        <div id="results-section" class="mt-8 pt-6 border-t border-gray-700 hidden"><div class="flex justify-between items-center mb-4"><h2 class="text-xl font-semibold text-indigo-400">Generated Program</h2><button id="copy-btn" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg transition text-sm">Copy Code</button></div><pre id="gcode-output" class="bg-gray-900 text-white p-4 rounded-lg text-sm whitespace-pre-wrap max-h-96 overflow-y-auto"></pre></div>
+        <div id="error-message" class="mt-4 text-center text-red-400 font-medium hidden"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let currentOperation = 'id-interpolation';
+            const generateBtn = document.getElementById('generate-btn');
+            const copyBtn = document.getElementById('copy-btn');
+            const resultsSection = document.getElementById('results-section');
+            const gcodeOutput = document.getElementById('gcode-output');
+            const errorMessage = document.getElementById('error-message');
+            const idTab = document.getElementById('id-interpolation-tab');
+            const odTab = document.getElementById('od-interpolation-tab');
+            const planeSelect = document.getElementById('plane-select');
+            const finalDiameterLabel = document.getElementById('final-diameter-label');
+            const center1Label = document.getElementById('center1-label');
+            const center2Label = document.getElementById('center2-label');
+            const finalDepthLabel = document.getElementById('final-depth-label');
+            const safetyDistLabel = document.getElementById('safety-dist-label');
+            const xySafetyDistLabel = document.getElementById('xy-safety-dist-label');
+            
+            idTab.addEventListener('click', () => switchOperation('id-interpolation'));
+            odTab.addEventListener('click', () => switchOperation('od-interpolation'));
+            planeSelect.addEventListener('change', updateUI);
+            generateBtn.addEventListener('click', generateGCode);
+            copyBtn.addEventListener('click', copyToClipboard);
+            
+            function switchOperation(op) {
+                currentOperation = op;
+                idTab.classList.toggle('active', op === 'id-interpolation');
+                odTab.classList.toggle('active', op === 'od-interpolation');
+                document.getElementById('xy-safety-distance').disabled = (op !== 'od-interpolation');
+                updateUI();
+                resultsSection.classList.add('hidden');
+                hideError();
+            }
+
+            function updateUI() {
+                const axes = getAxes(planeSelect.value);
+                center1Label.textContent = `Center ${axes.p1}`;
+                center2Label.textContent = `Center ${axes.p2}`;
+                finalDepthLabel.textContent = `Final Depth (${axes.depth})`;
+                safetyDistLabel.textContent = `Z Safety Distance`;
+                xySafetyDistLabel.textContent = `${axes.p1}/${axes.p2} Clearance (OD)`;
+                finalDiameterLabel.textContent = (currentOperation === 'id-interpolation') ? 'Final ID Diameter' : 'Final OD Diameter';
+            }
+            
+            function generateGCode() {
+                hideError();
+                try {
+                    const inputs = getInterpolationInputs();
+                    let program = inputs.useDiaMacro ? buildMacroProgram(inputs) : buildStandardProgram(inputs);
+                    gcodeOutput.textContent = program;
+                    resultsSection.classList.remove('hidden');
+                } catch (e) {
+                    showError(e.message);
+                }
+            }
+
+            function getAxes(plane) {
+                if (plane === 'G18') return { p1: 'X', p2: 'Z', depth: 'Y' };
+                if (plane === 'G19') return { p1: 'Y', p2: 'Z', depth: 'X' };
+                return { p1: 'X', p2: 'Y', depth: 'Z' };
+            }
+
+            function getInterpolationInputs() {
+                const values = {
+                    opType: currentOperation,
+                    plane: planeSelect.value,
+                    cutterDia: parseFloat(document.getElementById('cutter-diameter').value),
+                    toolOffset: parseInt(document.getElementById('tool-offset-d').value),
+                    center1: parseFloat(document.getElementById('center1').value),
+                    center2: parseFloat(document.getElementById('center2').value),
+                    finalDia: parseFloat(document.getElementById('final-diameter').value),
+                    finalDepth: parseFloat(document.getElementById('final-depth').value),
+                    pitch: parseFloat(document.getElementById('pitch').value),
+                    rpm: parseInt(document.getElementById('spindle-speed').value),
+                    feed: parseInt(document.getElementById('feed-rate').value),
+                    safetyDist: parseFloat(document.getElementById('safety-distance').value),
+                    xySafetyDist: parseFloat(document.getElementById('xy-safety-distance').value),
+                    useDiaMacro: document.getElementById('use-diameter-macro').checked,
+                    millingType: document.getElementById('milling-type').value
+                };
+                for (const key in values) {
+                    if (typeof values[key] === 'number' && isNaN(values[key])) {
+                        throw new Error(`Invalid Input: '${key}' is missing or not a number.`);
+                    }
+                }
+                if (values.cutterDia <= 0 || values.finalDia <= 0 || values.pitch <= 0) {
+                     throw new Error('Diameters and Pitch must be positive values.');
+                }
+                if (values.pitch > (values.cutterDia / 2)) {
+                    throw new Error('Safety Error: Pitch should not exceed 50% of Cutter Diameter to avoid excessive tool load.');
+                }
+                if (values.opType === 'id-interpolation' && values.cutterDia >= values.finalDia) {
+                    throw new Error('For ID milling, Cutter Diameter must be smaller than Final Diameter.');
+                }
+                if (values.finalDepth > 0) values.finalDepth = -values.finalDepth;
+                if (values.pitch < 0) values.pitch = -values.pitch;
+                return values;
+            }
+            
+            function buildStandardProgram(inputs) {
+                const { opType, plane, cutterDia, toolOffset, center1, center2, finalDia, finalDepth, pitch, rpm, feed, safetyDist, xySafetyDist, millingType } = inputs;
+                const axes = getAxes(plane);
+                const opName = opType.replace('-', ' ').toUpperCase();
+                const finalRadius = finalDia / 2;
+                const cutterRadius = cutterDia / 2;
+                const toolpathRadius = finalRadius; 
+                let circleCmd, engagePos;
+                
+                if (opType === 'id-interpolation') {
+                    // Standard Climb: G41 + G03, Conventional: G42 + G02
+                    circleCmd = (millingType === 'G41') ? 'G03' : 'G02';
+                } else {
+                    // Standard Climb: G41 + G02, Conventional: G42 + G03
+                    circleCmd = (millingType === 'G41') ? 'G02' : 'G03';
+                }
+
+                let program = `O0014 (HELICAL ${opName})\n`;
+                program += `${plane} G21 G90 G40 G80\n\n`;
+                program += `T${toolOffset} M6\nS${rpm} M3\nG43 H${toolOffset} ${axes.depth}${Math.abs(safetyDist) + 50}\nM8\n\n`;
+                program += `#1=0(CUR_DEPTH) #2=${finalDepth.toFixed(3)}(FIN_DEPTH) #3=${pitch.toFixed(3)}(PITCH)\n\n`;
+                
+                if (opType === 'id-interpolation') {
+                    engagePos = center2 + toolpathRadius;
+                    const preEngagePos = center2; 
+                    program += `G00 ${axes.p1}${center1.toFixed(3)} ${axes.p2}${preEngagePos.toFixed(3)}\n`;
+                    program += `G00 ${axes.depth}${safetyDist.toFixed(3)}\nG01 ${axes.depth}0 F${(feed * 1.5).toFixed(0)}\n`;
+                    program += `G01 ${millingType} D${toolOffset} ${axes.p2}${engagePos.toFixed(3)} F${(feed / 2).toFixed(0)} (ENGAGE FROM CENTER)\n`;
+                } else {
+                    engagePos = center1 - toolpathRadius;
+                    const preEngagePos = engagePos - cutterRadius; 
+                    const safeApproachPos = preEngagePos - xySafetyDist;
+                    program += `G00 ${axes.p1}${safeApproachPos.toFixed(3)} ${axes.p2}${center2.toFixed(3)} (RAPID TO SAFE CLEARANCE)\n`;
+                    program += `G00 ${axes.depth}${safetyDist.toFixed(3)}\nG01 ${axes.depth}0 F${(feed * 1.5).toFixed(0)}\n`;
+                    program += `G01 ${axes.p1}${preEngagePos.toFixed(3)} F${feed} (MOVE TO PRE-ENGAGE)\n`;
+                    program += `G01 ${millingType} D${toolOffset} ${axes.p1}${engagePos.toFixed(3)} F${(feed / 2).toFixed(0)} (ENGAGE MOVE = ${cutterRadius.toFixed(3)})\n`;
+                }
+                
+                program += `\n(--- HELICAL INTERPOLATION ---)\nWHILE[#1 GT #2] DO 1\n#1=#1-#3\nIF[#1 LT #2] THEN #1=#2\n`;
+                let helix_cmd = `${circleCmd} `;
+                if(opType === 'id-interpolation') helix_cmd += `${axes.p1}${center1.toFixed(3)} ${axes.p2}${engagePos.toFixed(3)} ${axes.depth}#1 ${axes.p1==='X'?'I':'J'}0 ${axes.p2==='Y'?'J':'K'}${(-toolpathRadius).toFixed(3)} F${feed}\n`;
+                else helix_cmd += `${axes.p1}${engagePos.toFixed(3)} ${axes.p2}${center2.toFixed(3)} ${axes.depth}#1 ${axes.p1==='X'?'I':'J'}${toolpathRadius.toFixed(3)} ${axes.p2==='Y'?'J':'K'}0 F${feed}\n`;
+                program += `  ${helix_cmd.trim()}\nEND 1\n\n`;
+
+                program += `(--- FINISH PASS ---)\n`;
+                let finish_cmd = `${circleCmd} `;
+                if(opType === 'id-interpolation') finish_cmd += `${axes.p1}${center1.toFixed(3)} ${axes.p2}${engagePos.toFixed(3)} ${axes.p1==='X'?'I':'J'}0 ${axes.p2==='Y'?'J':'K'}${(-toolpathRadius).toFixed(3)} F${(feed/1.5).toFixed(0)}\n`;
+                else finish_cmd += `${axes.p1}${engagePos.toFixed(3)} ${axes.p2}${center2.toFixed(3)} ${axes.p1==='X'?'I':'J'}${toolpathRadius.toFixed(3)} ${axes.p2==='Y'?'J':'K'}0 F${(feed/1.5).toFixed(0)}\n`;
+                program += `${finish_cmd}\n`;
+
+                program += `(--- RETRACT ---)\n`;
+                if (opType === 'id-interpolation') {
+                    program += `G01 G40 ${axes.p2}${center2.toFixed(3)}\n`;
+                } else { 
+                    const preEngagePos = engagePos - cutterRadius;
+                    const safeApproachPos = preEngagePos - xySafetyDist;
+                    program += `G01 G40 ${axes.p1}${preEngagePos.toFixed(3)}\nG00 ${axes.p1}${safeApproachPos.toFixed(3)}\n`;
+                }
+                program += `G00 ${axes.depth}${safetyDist.toFixed(3)}\n\nM5\nM9\nG28 G91 ${axes.depth}0\nM30\n%`;
+                return program;
+            }
+
+            function buildMacroProgram(inputs) {
+                const { opType, plane, cutterDia, toolOffset, center1, center2, finalDia, finalDepth, pitch, rpm, feed, safetyDist, xySafetyDist, millingType } = inputs;
+                const axes = getAxes(plane);
+                const opName = opType.replace('-', ' ').toUpperCase();
+                let circleCmd;
+
+                if (opType === 'id-interpolation') {
+                    circleCmd = (millingType === 'G41') ? 'G03' : 'G02';
+                } else {
+                    circleCmd = (millingType === 'G41') ? 'G02' : 'G03';
+                }
+                
+                let program = `O0015 (MACRO HELICAL ${opName})\n`;
+                program += `${plane} G21 G90 G40 G80\n\n`;
+                program += `T${toolOffset} M6\nS${rpm} M3\nG43 H${toolOffset} ${axes.depth}${Math.abs(safetyDist) + 50}\nM8\n\n`;
+                program += `(--- USER & GEOMETRY MACROS ---)\n#500=${finalDia.toFixed(3)}(FINAL DIAMETER)\n#501=${cutterDia.toFixed(3)}(CUTTER DIAMETER)\n`;
+                program += `#100=${center1.toFixed(3)}(CENTER ${axes.p1})\n#101=${center2.toFixed(3)}(CENTER ${axes.p2})\n#505=${xySafetyDist.toFixed(3)}(OD XY CLEARANCE)\n\n`;
+                program += `(--- CALCULATED MACROS ---)\n#502=[#501/2](CUTTER RADIUS)\n#503=[#500/2](FINAL/TOOLPATH RADIUS)\n\n`;
+                program += `(--- MACHINING MACROS ---)\n#1=0(CUR_DEPTH) #2=${finalDepth.toFixed(3)}(FIN_DEPTH) #3=${pitch.toFixed(3)}(PITCH)\n\n`;
+                
+                if (opType === 'id-interpolation') {
+                    program += `G00 ${axes.p1}#100 ${axes.p2}#101\n`;
+                    program += `G00 ${axes.depth}${safetyDist.toFixed(3)}\nG01 ${axes.depth}0 F${(feed * 1.5).toFixed(0)}\n`;
+                    program += `G01 ${millingType} D${toolOffset} ${axes.p2}[#101+#503] F${(feed / 2).toFixed(0)} (ENGAGE FROM CENTER)\n`;
+                } else {
+                    program += `G00 ${axes.p1}[#100-#503-#502-#505] ${axes.p2}#101 (RAPID TO SAFE CLEARANCE)\n`;
+                    program += `G00 ${axes.depth}${safetyDist.toFixed(3)}\nG01 ${axes.depth}0 F${(feed * 1.5).toFixed(0)}\n`;
+                    program += `G01 ${axes.p1}[#100-#503-#502] F${feed} (MOVE TO PRE-ENGAGE)\n`;
+                    program += `G01 ${millingType} D${toolOffset} ${axes.p1}[#100-#503] F${(feed / 2).toFixed(0)} (ENGAGE MOVE = CUTTER RADIUS)\n`;
+                }
+
+                program += `\n(--- HELICAL INTERPOLATION ---)\nWHILE[#1 GT #2] DO 1\n#1=#1-#3\nIF[#1 LT #2] THEN #1=#2\n`;
+                let helix_cmd = `${circleCmd} `;
+                if(opType === 'id-interpolation') helix_cmd += `${axes.p1}#100 ${axes.p2}[#101+#503] ${axes.depth}#1 ${axes.p1==='X'?'I':'J'}0 ${axes.p2==='Y'?'J':'K'}[-#503] F${feed}\n`;
+                else helix_cmd += `${axes.p1}[#100-#503] ${axes.p2}#101 ${axes.depth}#1 ${axes.p1==='X'?'I':'J'}#503 ${axes.p2==='Y'?'J':'K'}0 F${feed}\n`;
+                program += `  ${helix_cmd.trim()}\nEND 1\n\n`;
+
+                program += `(--- FINISH PASS ---)\n`;
+                let finish_cmd = `${circleCmd} `;
+                if(opType === 'id-interpolation') finish_cmd += `${axes.p1}#100 ${axes.p2}[#101+#503] ${axes.p1==='X'?'I':'J'}0 ${axes.p2==='Y'?'J':'K'}[-#503] F${(feed/1.5).toFixed(0)}\n`;
+                else finish_cmd += `${axes.p1}[#100-#503] ${axes.p2}#101 ${axes.p1==='X'?'I':'J'}#503 ${axes.p2==='Y'?'J':'K'}0 F${(feed/1.5).toFixed(0)}\n`;
+                program += `${finish_cmd}\n`;
+                
+                program += `(--- RETRACT ---)\n`;
+                if (opType === 'id-interpolation') {
+                    program += `G01 G40 ${axes.p2}#101\n`;
+                } else {
+                    program += `G01 G40 ${axes.p1}[#100-#503-#502]\nG00 ${axes.p1}[#100-#503-#502-#505]\n`;
+                }
+                program += `G00 ${axes.depth}${safetyDist.toFixed(3)}\n\nM5\nM9\nG28 G91 ${axes.depth}0\nM30\n%`;
+                return program;
+            }
+
+            function copyToClipboard() {
+                const textArea = document.createElement('textarea'); textArea.value = gcodeOutput.textContent;
+                document.body.appendChild(textArea); textArea.select();
+                try { document.execCommand('copy'); copyBtn.textContent = 'Copied!'; setTimeout(() => { copyBtn.textContent = 'Copy Code'; }, 2000); }
+                catch (err) { showError(err.message); }
+                document.body.removeChild(textArea);
+            }
+            function showError(message) { errorMessage.textContent = message; errorMessage.classList.remove('hidden'); resultsSection.classList.add('hidden'); }
+            function hideError() { errorMessage.classList.add('hidden'); }
+            
+            switchOperation('id-interpolation');
+        });
+    </script>
+</body>
+</html>
