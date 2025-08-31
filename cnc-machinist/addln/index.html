@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fanuc Program Editor</title>
+    <title>Advance Numbering and Add EOB</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet">
     <style>
@@ -38,7 +38,7 @@
     <div class="w-full max-w-4xl bg-gray-800 p-6 sm:p-8 rounded-2xl shadow-2xl border border-gray-700">
         
         <div class="text-center mb-6">
-            <h1 class="text-3xl sm:text-4xl font-bold text-cyan-400">Fanuc G-Code Editor</h1>
+            <h1 class="text-3xl sm:text-4xl font-bold text-cyan-400">Advance Numbering and Add EOB</h1>
             <p class="text-gray-400 mt-2">Paste your code, then format it with the tools below.</p>
         </div>
         
@@ -98,31 +98,27 @@ M30"
             const lines = currentCode.split('\n');
             let lineNumber = 10;
             const increment = 10;
-            let isProgramNumberFound = false; // Flag to ensure we only skip the first O-number line
+            let isProgramNumberFound = false;
             
             const renumberedLines = lines.map(line => {
                 const trimmedLine = line.trim();
 
-                // Check for program number (O-number) as the first non-empty line
                 if (!isProgramNumberFound && /^\s*O\d+/.test(trimmedLine)) {
                     isProgramNumberFound = true;
-                    // Return the line as-is, but without any N-number that might be there
                     return trimmedLine.replace(/^N\d+\s*/i, '');
                 }
 
                 if (trimmedLine === '') return line;
 
-                // Preserve comments on their own line without numbering
                 if (trimmedLine.startsWith('(') && trimmedLine.endsWith(')')) {
                     const nMatch = line.match(/^\s*N\d+\s*/i);
-                    if (nMatch) return line.replace(nMatch[0], ''); // Remove N-number from comment-only lines
+                    if (nMatch) return line.replace(nMatch[0], '');
                     return line;
                 }
                 
-                // For all other lines, add or replace the N-number
                 const lineWithoutN = trimmedLine.replace(/^N\d+\s*/i, '');
                 
-                if (lineWithoutN === '') return line; // Handle lines that were only an N-number
+                if (lineWithoutN === '') return line;
 
                 const newLine = `N${lineNumber} ${lineWithoutN}`;
                 lineNumber += increment;
@@ -154,6 +150,7 @@ M30"
             gcodeInput.value = formattedLines.join('\n');
             showToast('End-of-block added!');
         });
+
 
         /**
          * Copies the content of the text area to the clipboard.
