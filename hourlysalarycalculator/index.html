@@ -998,6 +998,14 @@
             return;
         }
 
+        const employeeName = document.getElementById('employee-name-input').value.trim();
+        const companyName = document.getElementById('company-name').value.trim();
+        
+        if (!employeeName || !companyName) {
+            alert("Please enter both Employee Name and Company Name before saving.");
+            return;
+        }
+
         const hoursData = {};
         document.querySelectorAll('.hours-select').forEach(select => {
             const day = select.dataset.day;
@@ -1012,11 +1020,22 @@
 
         const monthData = {
             hours: hoursData,
-            shifts: shiftData
+            shifts: shiftData,
+            employeeName: employeeName,
+            companyName: companyName,
+            salary: document.getElementById('salary').value,
+            fixedBaseHours: document.getElementById('fixedBaseHours').value,
+            weekendRate: document.getElementById('weekendRate').value,
+            savedDate: new Date().toISOString()
         };
 
-        localStorage.setItem(`calendarData_${monthKey}`, JSON.stringify(monthData));
-        alert(`Data for ${monthKey} saved successfully!`);
+        try {
+            localStorage.setItem(`calendarData_${monthKey}`, JSON.stringify(monthData));
+            alert(`✓ Data for ${monthKey} saved successfully!\n\nEmployee: ${employeeName}\nCompany: ${companyName}`);
+        } catch (error) {
+            console.error('Error saving data:', error);
+            alert('Error saving data. Your browser storage might be full.');
+        }
     }
 
     function loadMonthData() {
@@ -1028,26 +1047,51 @@
 
         const storedData = localStorage.getItem(`calendarData_${monthKey}`);
         if (storedData) {
-            const monthData = JSON.parse(storedData);
+            try {
+                const monthData = JSON.parse(storedData);
 
-            document.querySelectorAll('.hours-select').forEach(select => {
-                const day = select.dataset.day;
-                if (monthData.hours && monthData.hours[day] !== undefined) {
-                    select.value = monthData.hours[day];
-                } else {
-                    select.value = "";
+                // Load employee and company info if available
+                if (monthData.employeeName) {
+                    document.getElementById('employee-name-input').value = monthData.employeeName;
                 }
-            });
+                if (monthData.companyName) {
+                    document.getElementById('company-name').value = monthData.companyName;
+                }
+                if (monthData.salary) {
+                    document.getElementById('salary').value = monthData.salary;
+                }
+                if (monthData.fixedBaseHours) {
+                    document.getElementById('fixedBaseHours').value = monthData.fixedBaseHours;
+                }
+                if (monthData.weekendRate) {
+                    document.getElementById('weekendRate').value = monthData.weekendRate;
+                }
 
-            document.querySelectorAll('.shift-select').forEach(select => {
-                const day = select.dataset.day;
-                if (monthData.shifts && monthData.shifts[day] !== undefined) {
-                    select.value = monthData.shifts[day];
-                } else {
-                    select.value = "";
-                }
-            });
-            recalculateSalary();
+                document.querySelectorAll('.hours-select').forEach(select => {
+                    const day = select.dataset.day;
+                    if (monthData.hours && monthData.hours[day] !== undefined) {
+                        select.value = monthData.hours[day];
+                    } else {
+                        select.value = "";
+                    }
+                });
+
+                document.querySelectorAll('.shift-select').forEach(select => {
+                    const day = select.dataset.day;
+                    if (monthData.shifts && monthData.shifts[day] !== undefined) {
+                        select.value = monthData.shifts[day];
+                    } else {
+                        select.value = "";
+                    }
+                });
+                
+                updateEmployeeInfo();
+                recalculateSalary();
+                console.log(`✓ Loaded saved data for ${monthKey}`);
+            } catch (error) {
+                console.error('Error loading saved data:', error);
+                alert('Error loading saved data. The data might be corrupted.');
+            }
         } else {
             document.querySelectorAll('.hours-select').forEach(select => select.value = "");
             document.querySelectorAll('.shift-select').forEach(select => select.value = "");
@@ -1079,31 +1123,33 @@
         const fixedBaseHours = parseFloat(document.getElementById("fixedBaseHours").value) || 0;
         const weekendRateMultiplier = parseFloat(document.getElementById("weekendRate").value) || 1;
 
-        let totalHours = 0;
-        let weekendHours = 0;
+        let totalWeekdayHours = 0;
+        let totalWeekendHours = 0;
 
         document.querySelectorAll('.hours-select').forEach(select => {
             const hours = parseFloat(select.value) || 0;
             const isWeekend = select.dataset.isWeekend === 'true';
 
-            totalHours += hours;
             if (isWeekend) {
-                weekendHours += hours;
+                totalWeekendHours += hours;
+            } else {
+                totalWeekdayHours += hours;
             }
         });
-
-        const regularHours = totalHours - weekendHours;
 
         let hourlyRate = 0;
         if (fixedBaseHours > 0) {
             hourlyRate = salary / fixedBaseHours;
         }
 
-        const weekendPay = weekendHours * hourlyRate * weekendRateMultiplier;
-        const regularPay = regularHours * hourlyRate;
-        const calculatedSalary = regularPay + weekendPay;
+        // Calculate pay: weekday hours at regular rate, weekend hours at multiplied rate
+        const weekdayPay = totalWeekdayHours * hourlyRate;
+        const weekendPay = totalWeekendHours * hourlyRate * weekendRateMultiplier;
+        const calculatedSalary = weekdayPay + weekendPay;
 
-        document.getElementById("hourly-rate").textContent = `Calculated Hourly Rate: ${hourlyRate.toFixed(2)} RON`;
+        const totalHours = totalWeekdayHours + totalWeekendHours;
+
+        document.getElementById("hourly-rate").textContent = `Hourly Rate: ${hourlyRate.toFixed(2)} RON | Total Hours: ${totalHours} (Weekday: ${totalWeekdayHours}, Weekend: ${totalWeekendHours})`;
         document.getElementById("total-salary").textContent = `Total Monthly Salary: ${calculatedSalary.toFixed(2)} RON`;
         
         convertSalaryToINR(calculatedSalary);
@@ -1251,10 +1297,36 @@
         const employeeName = document.getElementById('employee-name-input').value.trim();
         const companyName = document.getElementById('company-name').value.trim();
         const monthYearValue = document.getElementById('month-year-picker').value;
+        const salary = parseFloat(document.getElementById('salary').value) || 0;
+        const fixedBaseHours = parseFloat(document.getElementById('fixedBaseHours').value) || 0;
 
-        if (!employeeName || !companyName || !monthYearValue) {
-            alert('Please enter Employee Name, Company Name, and select a Month/Year before generating a report.');
+        // Validation
+        if (!employeeName || !companyName) {
+            alert('⚠ Please enter both Employee Name and Company Name before generating a report.');
             return;
+        }
+        
+        if (!monthYearValue) {
+            alert('⚠ Please select a Month and Year before generating a report.');
+            return;
+        }
+        
+        if (salary <= 0 || fixedBaseHours <= 0) {
+            alert('⚠ Please enter valid Base Salary and Fixed Base Hours before generating a report.');
+            return;
+        }
+
+        // Check if any hours are entered
+        let hasHours = false;
+        document.querySelectorAll('.hours-select').forEach(select => {
+            if (parseFloat(select.value) > 0) {
+                hasHours = true;
+            }
+        });
+
+        if (!hasHours) {
+            const proceed = confirm('⚠ No hours have been entered for this month. Do you want to generate a report anyway?');
+            if (!proceed) return;
         }
 
         const reportContentDiv = document.getElementById('report-preview-content');
@@ -1284,13 +1356,7 @@
         const monthName = new Date(year, month - 1).toLocaleString('default', { month: 'long' });
         const daysInMonth = new Date(year, month, 0).getDate();
 
-        let totalHrsOverall = 0;
-        let totalWeightedHours = 0;
-        const standardHoursPerDay = 8; 
-
-        let totalWeekdayOvertimeHours = 0;
-        let totalWeekendOvertimeHours = 0; 
-        let totalRegularHoursForReport = 0; 
+        let totalWeekdayHours = 0;
         let totalWeekendHours = 0; 
         let daysWorked = 0; 
         let daysOff = 0;    
@@ -1333,22 +1399,11 @@
             const hrs = data.hours;
             const shiftType = data.shift;
 
-            let regularHrsToday = Math.min(hrs, standardHoursPerDay);
-            let overtimeHrsToday = Math.max(0, hrs - standardHoursPerDay);
-
-            totalHrsOverall += hrs;
-            totalWeightedHours += hrs * multiplier;
-            totalRegularHoursForReport += regularHrsToday; 
+            // Track weekday vs weekend hours
             if (isWeekend) { 
                 totalWeekendHours += hrs;
-            }
-
-            if (overtimeHrsToday > 0) {
-                if (isWeekend) {
-                    totalWeekendOvertimeHours += overtimeHrsToday; 
-                } else {
-                    totalWeekdayOvertimeHours += overtimeHrsToday;
-                }
+            } else {
+                totalWeekdayHours += hrs;
             }
             
             // Calculate days worked and days off
@@ -1363,7 +1418,7 @@
             
             // Combined string for Date, Day, and Shift Type
             const dateDayShift = `${dateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })} (${dayOfWeek}) - ${shiftType}`;
-            const hoursWorkedDisplay = `${hrs} hrs${overtimeHrsToday > 0 ? ` (+${overtimeHrsToday} OT)` : ''}`;
+            const hoursWorkedDisplay = `${hrs} hrs${isWeekend ? ' (Weekend)' : ''}`;
 
             const rowHtml = `
                 <tr>
@@ -1380,7 +1435,10 @@
             }
         });
 
-        const totalSalaryRON = (totalWeightedHours * hourlyRate).toFixed(2);
+        const totalHours = totalWeekdayHours + totalWeekendHours;
+        const weekdayPay = totalWeekdayHours * hourlyRate;
+        const weekendPay = totalWeekendHours * hourlyRate * weekendRate;
+        const totalSalaryRON = (weekdayPay + weekendPay).toFixed(2);
         const totalSalaryINR = (totalSalaryRON * exchangeRate).toFixed(2);
 
         return `
@@ -1396,14 +1454,14 @@
                     <p><strong>Employee Name:</strong> ${employeeName}</p>
                     <p><strong>Base Salary:</strong> ${salary.toFixed(2)} RON</p>
                     <p><strong>Fixed Base Hours:</strong> ${fixedBaseHours}</p>
-                    <p><strong>Calculated Hourly Rate:</strong> ${hourlyRate.toFixed(2)} RON</p>
+                    <p><strong>Hourly Rate:</strong> ${hourlyRate.toFixed(2)} RON</p>
                     <p><strong>Weekend Multiplier:</strong> ${weekendRate}x</p>
                 </div>
                 <div class="right-section">
-                    <p><strong>Total Hours Worked:</strong> ${totalHrsOverall}</p>
-                    <p><strong>Total Regular Hours (up to 8/day):</strong> ${totalRegularHoursForReport}</p>
-                    <p><strong>Weekday OT Hours:</strong> ${totalWeekdayOvertimeHours}</p>
-                    <p><strong>Total Weekend Hours:</strong> ${totalWeekendHours}</p>
+                    <p><strong>Total Hours Worked:</strong> ${totalHours}</p>
+                    <p><strong>Weekday Hours:</strong> ${totalWeekdayHours}</p>
+                    <p><strong>Weekend Hours:</strong> ${totalWeekendHours}</p>
+                    <p><strong>Days Worked:</strong> ${daysWorked} | <strong>Days Off:</strong> ${daysOff}</p>
                     <p><strong>Total Salary:</strong> ${totalSalaryRON} RON</p>
                     <p><strong>Total Salary:</strong> ${totalSalaryINR} INR</p>
                 </div>
@@ -1440,11 +1498,11 @@
             <div class="report-footer">
                 <div class="left-footer-section">
                     <p><strong>Employee Signature:</strong> ___________________________________________</p>
-                    <p><strong>Date of Salary Received:</strong> ___________________________________</p>
+                    <p><strong>Date:</strong> ___________________________________</p>
                 </div>
                 <div class="right-footer-section">
-                    <p><strong>Days Worked:</strong> ${daysWorked} days</p>
-                    <p><strong>Days Off:</strong> ${daysOff} days</p>
+                    <p><strong>Employer Signature:</strong> ___________________________________________</p>
+                    <p><strong>Date:</strong> ___________________________________</p>
                 </div>
             </div>
         `;
@@ -1470,6 +1528,20 @@
         const reportElement = document.getElementById('report-preview-content');
         const reportScrollableContent = document.getElementById('report-scrollable-content'); 
         
+        // Show loading indicator
+        const modalDownloadBtn = document.getElementById('modal-download-pdf-btn');
+        const modalDownloadJpgBtn = document.getElementById('modal-download-jpg-btn');
+        const originalPdfText = modalDownloadBtn.innerHTML;
+        const originalJpgText = modalDownloadJpgBtn.innerHTML;
+        
+        if (format === 'pdf') {
+            modalDownloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating PDF...';
+            modalDownloadBtn.disabled = true;
+        } else {
+            modalDownloadJpgBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating JPG...';
+            modalDownloadJpgBtn.disabled = true;
+        }
+        
         // Save original styles
         const originalTransform = reportElement.style.transform;
         const originalTransformOrigin = reportElement.style.transformOrigin;
@@ -1479,59 +1551,124 @@
         reportElement.style.transformOrigin = 'top left';
         reportScrollableContent.classList.add('force-two-columns'); 
 
-        const canvas = await html2canvas(reportElement, {
-            scale: 2,
-            useCORS: true,
-            logging: false,
-            width: reportElement.offsetWidth, 
-            height: reportElement.offsetHeight
-        });
+        try {
+            // High-quality canvas rendering with scale 4 for better quality
+            const canvas = await html2canvas(reportElement, {
+                scale: 4, // Increased from 2 to 4 for much better quality
+                useCORS: true,
+                logging: false,
+                width: reportElement.offsetWidth, 
+                height: reportElement.offsetHeight,
+                backgroundColor: '#ffffff',
+                imageTimeout: 0,
+                removeContainer: true,
+                allowTaint: false,
+                letterRendering: true,
+                windowWidth: reportElement.scrollWidth,
+                windowHeight: reportElement.scrollHeight
+            });
 
-        // Restore original styles after capturing
-        reportElement.style.transform = originalTransform;
-        reportElement.style.transformOrigin = originalTransformOrigin;
-        reportScrollableContent.classList.remove('force-two-columns');
+            // Restore original styles after capturing
+            reportElement.style.transform = originalTransform;
+            reportElement.style.transformOrigin = originalTransformOrigin;
+            reportScrollableContent.classList.remove('force-two-columns');
 
-        const employeeName = document.getElementById('employee-name-input').value.trim() || 'Employee';
-        const companyName = document.getElementById('company-name').value.trim() || 'Company';
-        const filenamePrefix = `Salary_Report_${employeeName.replace(/\s/g, '_')}_${companyName.replace(/\s/g, '_')}_${document.getElementById('month-year-picker').value}`;
+            const employeeName = document.getElementById('employee-name-input').value.trim() || 'Employee';
+            const companyName = document.getElementById('company-name').value.trim() || 'Company';
+            const monthYear = document.getElementById('month-year-picker').value;
+            const filenamePrefix = `Salary_Report_${employeeName.replace(/\s/g, '_')}_${companyName.replace(/\s/g, '_')}_${monthYear}`;
 
-        if (format === 'pdf') {
-            const { jsPDF } = window.jspdf;
-            const imgData = canvas.toDataURL('image/jpeg', 1.0); 
+            if (format === 'pdf') {
+                const { jsPDF } = window.jspdf;
+                
+                // Use PNG for better quality in PDF (no JPEG compression artifacts)
+                const imgData = canvas.toDataURL('image/png', 1.0);
 
-            const pdf = new jsPDF('p', 'mm', 'a4');
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = pdf.internal.pageSize.getHeight();
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = pdf.internal.pageSize.getHeight();
 
-            const imgWidth = canvas.width;
-            const imgHeight = canvas.height;
+                // Calculate dimensions to fit A4 with margins
+                const margin = 5; // 5mm margin
+                const availableWidth = pdfWidth - (2 * margin);
+                const availableHeight = pdfHeight - (2 * margin);
 
-            const ratio = pdfWidth / imgWidth;
-            const finalImgHeight = imgHeight * ratio;
+                const imgWidth = canvas.width;
+                const imgHeight = canvas.height;
+                const imgRatio = imgHeight / imgWidth;
 
-            let position = 0;
-            let heightLeft = finalImgHeight;
+                // Calculate scaled dimensions
+                let finalWidth = availableWidth;
+                let finalHeight = availableWidth * imgRatio;
 
-            pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, finalImgHeight);
-            heightLeft -= pdfHeight;
+                // If height exceeds page, scale down
+                if (finalHeight > availableHeight) {
+                    finalHeight = availableHeight;
+                    finalWidth = finalHeight / imgRatio;
+                }
 
-            while (heightLeft >= -1) { 
-                position = heightLeft - pdfHeight; 
-                pdf.addPage();
-                pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, finalImgHeight);
-                heightLeft -= pdfHeight;
+                // Center the image
+                const xOffset = (pdfWidth - finalWidth) / 2;
+                let yOffset = margin;
+
+                // Calculate how many pages we need
+                const totalHeight = (imgHeight / imgWidth) * finalWidth;
+                const pagesNeeded = Math.ceil(totalHeight / availableHeight);
+
+                for (let page = 0; page < pagesNeeded; page++) {
+                    if (page > 0) {
+                        pdf.addPage();
+                    }
+
+                    const sourceY = (page * availableHeight * imgWidth) / finalWidth;
+                    const sourceHeight = Math.min(
+                        (availableHeight * imgWidth) / finalWidth,
+                        imgHeight - sourceY
+                    );
+
+                    // Create a temporary canvas for this page section
+                    const pageCanvas = document.createElement('canvas');
+                    pageCanvas.width = imgWidth;
+                    pageCanvas.height = sourceHeight;
+                    const pageCtx = pageCanvas.getContext('2d');
+                    
+                    pageCtx.drawImage(
+                        canvas,
+                        0, sourceY, imgWidth, sourceHeight,
+                        0, 0, imgWidth, sourceHeight
+                    );
+
+                    const pageImgData = pageCanvas.toDataURL('image/png', 1.0);
+                    const pageHeight = (sourceHeight / imgWidth) * finalWidth;
+
+                    pdf.addImage(pageImgData, 'PNG', xOffset, yOffset, finalWidth, pageHeight, undefined, 'FAST');
+                }
+
+                pdf.save(`${filenamePrefix}.pdf`);
+                alert('PDF downloaded successfully!');
+            } else if (format === 'jpg') {
+                // High-quality JPEG with 0.95 quality
+                const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                const link = document.createElement('a');
+                link.download = `${filenamePrefix}.jpg`;
+                link.href = imgData;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                alert('JPG downloaded successfully!');
             }
-
-            pdf.save(`${filenamePrefix}.pdf`);
-        } else if (format === 'jpg') {
-            const imgData = canvas.toDataURL('image/jpeg', 1.0);
-            const link = document.createElement('a');
-            link.download = `${filenamePrefix}.jpg`;
-            link.href = imgData;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+        } catch (error) {
+            console.error('Error generating report:', error);
+            alert('Error generating report. Please try again.');
+        } finally {
+            // Restore button states
+            if (format === 'pdf') {
+                modalDownloadBtn.innerHTML = originalPdfText;
+                modalDownloadBtn.disabled = false;
+            } else {
+                modalDownloadJpgBtn.innerHTML = originalJpgText;
+                modalDownloadJpgBtn.disabled = false;
+            }
         }
     }
 
