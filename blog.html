@@ -6,16 +6,63 @@
     <title>SHADER7 Blog - Professional Tips & Guides</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/blog-style.css">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
-        .main-nav { background-color: #7c3aed; }
-        .footer-gradient { background: linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #020617 100%); }
         .blog-card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            opacity: 0;
+            transform: translateY(30px);
+            animation: cardFadeIn 0.6s ease forwards;
         }
+        
+        @keyframes cardFadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .blog-card:nth-child(1) { animation-delay: 0.1s; }
+        .blog-card:nth-child(2) { animation-delay: 0.2s; }
+        .blog-card:nth-child(3) { animation-delay: 0.3s; }
+        .blog-card:nth-child(4) { animation-delay: 0.4s; }
+        .blog-card:nth-child(5) { animation-delay: 0.5s; }
+        .blog-card:nth-child(6) { animation-delay: 0.6s; }
+        .blog-card:nth-child(7) { animation-delay: 0.7s; }
+        .blog-card:nth-child(8) { animation-delay: 0.8s; }
+        .blog-card:nth-child(9) { animation-delay: 0.9s; }
+        
         .blog-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            transform: translateY(-12px) rotate(1deg);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+        }
+        
+        .blog-card h2 {
+            transition: color 0.3s ease;
+        }
+        
+        .blog-card:hover h2 {
+            color: #7c3aed;
+        }
+        
+        .blog-header {
+            animation: fadeInScale 0.6s ease;
+        }
+        
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
     </style>
 </head>
@@ -24,7 +71,7 @@
     <nav class="main-nav sticky top-0 z-50 py-4">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between">
-                <a href="/" class="flex items-center"><span class="text-2xl font-bold text-white">🎨 SHADER7</span></a>
+                <a href="/" class="flex items-center transition-transform duration-300 hover:scale-105"><span class="text-2xl font-bold text-white">🎨 SHADER7</span></a>
                 <div class="hidden md:flex space-x-8">
                     <a href="/#tools" class="text-white hover:text-purple-300">Tools</a>
                     <a href="/#about" class="text-white hover:text-purple-300">About</a>
@@ -36,10 +83,10 @@
     </nav>
 
     <!-- Blog Header -->
-    <header class="bg-white shadow-sm">
-        <div class="max-w-7xl mx-auto py-12 px-4 text-center">
-            <h1 class="text-5xl font-extrabold text-gray-900">The SHADER7 Blog</h1>
-            <p class="mt-4 text-xl text-gray-600">Actionable guides and tips for your professional life.</p>
+    <header class="bg-transparent">
+        <div class="max-w-7xl mx-auto py-12 px-4 text-center blog-header">
+            <h1 class="text-5xl font-extrabold text-white">The SHADER7 Blog</h1>
+            <p class="mt-4 text-xl text-white/90">Actionable guides and tips for your professional life.</p>
         </div>
     </header>
 
@@ -150,5 +197,17 @@
             </div>
         </div>
     </footer>
+    
+    <script>
+        // Navbar scroll effect
+        const mainNav = document.querySelector('.main-nav');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 100) {
+                mainNav.classList.add('scrolled');
+            } else {
+                mainNav.classList.remove('scrolled');
+            }
+        });
+    </script>
 </body>
 </html>
