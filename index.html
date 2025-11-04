@@ -65,10 +65,48 @@
             color: #1f2937;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* Animated gradient background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #667eea 100%);
+            background-size: 200% 200%;
+            animation: gradientShift 15s ease infinite;
+            z-index: -1;
+        }
+        
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
         }
         
         .main-nav {
-            background-color: #7c3aed;
+            background-color: rgba(124, 58, 237, 0.95);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .main-nav.scrolled {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Scroll reveal animations */
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        
+        .scroll-reveal.revealed {
+            opacity: 1;
+            transform: translateY(0);
         }
         
         .animate-float {
@@ -80,13 +118,33 @@
             50% { transform: translateY(-20px); }
         }
         
+        /* Enhanced hover effects */
         .hover-lift {
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+        
+        .hover-lift::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 16px;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(22, 163, 74, 0.1) 100%);
+            z-index: -1;
         }
         
         .hover-lift:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
+        }
+        
+        .hover-lift:hover::before {
+            opacity: 1;
         }
         
         .gradient-text {
@@ -94,8 +152,15 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            animation: gradientFlow 3s ease infinite;
         }
         
+        @keyframes gradientFlow {
+            0%, 100% { filter: hue-rotate(0deg); }
+            50% { filter: hue-rotate(10deg); }
+        }
+        
+        /* Enhanced button animations */
         .btn-primary {
             background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
             color: white;
@@ -105,27 +170,75 @@
             transition: all 0.3s ease;
             border: none;
             cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+        }
+        
+        .btn-primary:hover::before {
+            width: 300px;
+            height: 300px;
         }
         
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(34, 197, 94, 0.3);
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 15px 35px rgba(34, 197, 94, 0.4);
         }
         
+        .btn-primary:active {
+            transform: translateY(0) scale(0.98);
+        }
+        
+        /* Stagger animation for cards */
         .tool-card, .blog-card {
             background: white;
             border-radius: 16px;
             padding: 32px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             border: 1px solid rgba(0, 0, 0, 0.05);
+            opacity: 0;
+            transform: translateY(30px);
+            animation: cardFadeIn 0.6s ease forwards;
         }
+        
+        @keyframes cardFadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .tool-card:nth-child(1) { animation-delay: 0.1s; }
+        .tool-card:nth-child(2) { animation-delay: 0.2s; }
+        .tool-card:nth-child(3) { animation-delay: 0.3s; }
+        .tool-card:nth-child(4) { animation-delay: 0.4s; }
+        .tool-card:nth-child(5) { animation-delay: 0.5s; }
+        .tool-card:nth-child(6) { animation-delay: 0.6s; }
+        .tool-card:nth-child(7) { animation-delay: 0.7s; }
+        
+        .blog-card:nth-child(1) { animation-delay: 0.1s; }
+        .blog-card:nth-child(2) { animation-delay: 0.2s; }
+        .blog-card:nth-child(3) { animation-delay: 0.3s; }
         
         .tool-card:hover, .blog-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            transform: translateY(-12px) rotate(1deg);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
         }
         
+        /* Animated feature icons */
         .feature-icon {
             width: 64px;
             height: 64px;
@@ -136,12 +249,20 @@
             justify-content: center;
             margin-bottom: 24px;
             font-size: 24px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .tool-card:hover .feature-icon {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 10px 25px rgba(34, 197, 94, 0.4);
         }
 
+        /* Enhanced mobile menu */
         .mobile-menu {
             transform: translateX(100%);
-            transition: transform 0.3s ease-in-out;
-            background-color: #7c3aed;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background-color: rgba(124, 58, 237, 0.98);
+            backdrop-filter: blur(10px);
         }
         
         .mobile-menu.open {
@@ -151,18 +272,104 @@
         .mobile-menu a {
             color: white !important;
             font-weight: 500;
+            transition: all 0.3s ease;
+            display: block;
+            padding: 12px 0;
+            transform: translateX(20px);
+            opacity: 0;
+        }
+        
+        .mobile-menu.open a {
+            animation: slideInMenuItem 0.4s ease forwards;
+        }
+        
+        .mobile-menu.open a:nth-child(1) { animation-delay: 0.1s; }
+        .mobile-menu.open a:nth-child(2) { animation-delay: 0.15s; }
+        .mobile-menu.open a:nth-child(3) { animation-delay: 0.2s; }
+        .mobile-menu.open a:nth-child(4) { animation-delay: 0.25s; }
+        .mobile-menu.open a:nth-child(5) { animation-delay: 0.3s; }
+        .mobile-menu.open a:nth-child(6) { animation-delay: 0.35s; }
+        
+        @keyframes slideInMenuItem {
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
 
         .mobile-menu a:hover {
             color: #e9d5ff !important;
+            transform: translateX(5px);
         }
         
         .footer-gradient {
             background: linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #020617 100%);
         }
 
+        /* Enhanced modal animations */
+        #terms-modal {
+            transition: all 0.3s ease;
+        }
+        
         #terms-modal.hidden {
             display: none;
+        }
+        
+        #terms-modal:not(.hidden) {
+            animation: modalFadeIn 0.4s ease;
+        }
+        
+        #terms-modal:not(.hidden) > div {
+            animation: modalScaleIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        
+        @keyframes modalScaleIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        /* Pulse animation for CTA */
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+            }
+            50% {
+                box-shadow: 0 0 0 10px rgba(34, 197, 94, 0);
+            }
+        }
+        
+        .animate-pulse-custom {
+            animation: pulse 2s infinite;
+        }
+        
+        /* Smooth scroll behavior */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* Loading state shimmer */
+        @keyframes shimmer {
+            0% {
+                background-position: -1000px 0;
+            }
+            100% {
+                background-position: 1000px 0;
+            }
         }
     </style>
 </head>
@@ -230,7 +437,7 @@
                     Trusted by <strong>45,000+</strong> professionals worldwide. Completely free, forever.
                 </p>
                 <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                    <button class="btn-primary text-lg px-8 py-4" onclick="scrollToTools()">
+                    <button class="btn-primary text-lg px-8 py-4 animate-pulse-custom" onclick="scrollToTools()">
                         Explore Free Tools
                     </button>
                     <button class="bg-purple-500/50 text-white px-8 py-4 rounded-lg font-semibold hover:bg-purple-500/70 transition-all border border-purple-400" onclick="scrollToAbout()">
@@ -490,17 +697,68 @@
             }
         });
 
+        // --- SCROLL ANIMATIONS ---
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('revealed');
+                }
+            });
+        }, observerOptions);
+
+        // Add scroll-reveal class to sections
+        document.addEventListener('DOMContentLoaded', () => {
+            const revealElements = document.querySelectorAll('#tools, #blog, #about');
+            revealElements.forEach(el => {
+                el.classList.add('scroll-reveal');
+                observer.observe(el);
+            });
+
+            // Navbar scroll effect
+            const mainNav = document.querySelector('.main-nav');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 100) {
+                    mainNav.classList.add('scrolled');
+                } else {
+                    mainNav.classList.remove('scrolled');
+                }
+            });
+        });
+
         // --- GENERAL SITE JAVASCRIPT ---
         function scrollToTools() {
-            document.getElementById('tools').scrollIntoView({ behavior: 'smooth' });
+            const toolsSection = document.getElementById('tools');
+            const navHeight = document.querySelector('.main-nav').offsetHeight;
+            const targetPosition = toolsSection.offsetTop - navHeight - 20;
+            
+            window.scrollTo({
+                top: targetPosition,
+                behavior: 'smooth'
+            });
         }
 
         function scrollToAbout() {
-            document.getElementById('about').scrollIntoView({ behavior: 'smooth' });
+            const aboutSection = document.getElementById('about');
+            const navHeight = document.querySelector('.main-nav').offsetHeight;
+            const targetPosition = aboutSection.offsetTop - navHeight - 20;
+            
+            window.scrollTo({
+                top: targetPosition,
+                behavior: 'smooth'
+            });
         }
 
         function openTool(url) {
-            window.location.href = url;
+            // Add a subtle fade effect before navigation
+            document.body.style.opacity = '0.8';
+            setTimeout(() => {
+                window.location.href = url;
+            }, 150);
         }
 
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -508,7 +766,16 @@
                 e.preventDefault();
                 const target = document.querySelector(this.getAttribute('href'));
                 if (target) {
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    const navHeight = document.querySelector('.main-nav').offsetHeight;
+                    const targetPosition = target.offsetTop - navHeight - 20;
+                    
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                    
+                    // Close mobile menu if open
+                    mobileMenu.classList.remove('open');
                 }
             });
         });
@@ -537,6 +804,17 @@
                     localStorage.setItem('shader7_terms_agreed', 'true');
                     termsModal.classList.add('hidden');
                 }
+            });
+        });
+
+        // Add ripple effect to buttons
+        document.querySelectorAll('.btn-primary').forEach(button => {
+            button.addEventListener('mouseenter', function(e) {
+                this.style.transform = 'translateY(-2px) scale(1.05)';
+            });
+            
+            button.addEventListener('mouseleave', function(e) {
+                this.style.transform = 'translateY(0) scale(1)';
             });
         });
     </script>
