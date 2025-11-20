@@ -7,7 +7,6 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://fonts.googleapis.com/css?family=Inter:400,600&display=swap" rel="stylesheet">
-
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
@@ -29,6 +28,9 @@
             width: 100%;
             max-width: 420px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+        .auth-container * {
+            box-sizing: border-box;
         }
         .auth-header {
             text-align: center;
@@ -148,7 +150,7 @@
             </div>
         </div>
 
-        <p style="text-align:right;margin-top:-10px;">
+        <p style="text-align:right;margin:0;">
             <a href="#" onclick="switchTab('forgot');return false;" style="color:#667eea;font-size:13px;">Forgot Password?</a>
         </p>
 
@@ -209,10 +211,11 @@
 
 <script>
 const SUPABASE_URL = "https://wtryahnysabnjdcypihl.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind0cnlhaG55c2FibmpkY3lwaWhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxMTM0NTAsImV4cCI6MjA3NzY4OTQ1MH0.uLi6Nfk8NQ9KmR_Igt9sb_wtQxtujm_lipT6TU3dwjM";
+const SUPABASE_ANON_KEY = "YOUR_ANON_KEY_HERE";
 
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+/* TAB SWITCHER */
 function switchTab(tab) {
     document.querySelectorAll(".auth-form").forEach(f => f.classList.remove("active"));
     document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
@@ -230,6 +233,7 @@ function switchTab(tab) {
     }
 }
 
+/* STATUS HANDLER */
 function showStatus(id, msg, error=false) {
     const el = document.getElementById(id);
     el.textContent = msg;
@@ -239,10 +243,10 @@ function showStatus(id, msg, error=false) {
 /* LOGIN */
 document.getElementById("login-form").addEventListener("submit", async (e)=>{
     e.preventDefault();
-    const email = login-email.value;
-    const pass = login-password.value;
+    const email = document.getElementById("login-email").value;
+    const pass = document.getElementById("login-password").value;
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password: pass });
+    const { error } = await client.auth.signInWithPassword({ email, password: pass });
 
     if (error) return showStatus("login-status", error.message, true);
 
@@ -254,13 +258,14 @@ document.getElementById("login-form").addEventListener("submit", async (e)=>{
 document.getElementById("signup-form").addEventListener("submit", async (e)=>{
     e.preventDefault();
 
-    if (signup-password.value !== signup-password-confirm.value)
+    const email = document.getElementById("signup-email").value;
+    const pass = document.getElementById("signup-password").value;
+    const confirm = document.getElementById("signup-password-confirm").value;
+
+    if (pass !== confirm)
         return showStatus("signup-status","Passwords do not match!",true);
 
-    const { error } = await supabase.auth.signUp({
-        email: signup-email.value,
-        password: signup-password.value
-    });
+    const { error } = await client.auth.signUp({ email, password: pass });
 
     if (error) return showStatus("signup-status", error.message, true);
 
@@ -272,7 +277,9 @@ document.getElementById("signup-form").addEventListener("submit", async (e)=>{
 document.getElementById("forgot-form").addEventListener("submit", async (e)=>{
     e.preventDefault();
 
-    const { error } = await supabase.auth.resetPasswordForEmail(forgot-email.value,{
+    const email = document.getElementById("forgot-email").value;
+
+    const { error } = await client.auth.resetPasswordForEmail(email,{
         redirectTo: "https://shader7.com/photopassportsizepro/reset-password.html"
     });
 
