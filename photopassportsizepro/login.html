@@ -1,91 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Login – Photo Passport Size Pro</title>
 
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        background: #f5f7fa;
+    * {
         margin: 0;
         padding: 0;
+        box-sizing: border-box;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+        height: 100vh;
+        background: linear-gradient(135deg, #4c6ef5, #15aabf);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
         overflow-x: hidden;
     }
 
-    .container {
+    .card {
+        width: 100%;
         max-width: 380px;
-        width: 92%;
-        margin: 30px auto;
-        background: white;
-        padding: 22px;
-        border-radius: 16px;
-        box-shadow: 0 4px 18px rgba(0,0,0,0.1);
-        box-sizing: border-box;
+        background: rgba(255,255,255,0.15);
+        padding: 30px;
+        border-radius: 20px;
+        backdrop-filter: blur(12px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        animation: fadeIn 0.7s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 
     h2 {
         text-align: center;
+        color: white;
+        font-weight: 600;
         margin-bottom: 20px;
     }
 
-    input, button {
+    input {
         width: 100%;
         padding: 14px;
+        border-radius: 12px;
+        border: none;
         margin-top: 12px;
-        border-radius: 10px;
-        border: 1px solid #ccc;
-        font-size: 1rem;
-        box-sizing: border-box;
+        font-size: 15px;
+        outline: none;
+        background: rgba(255,255,255,0.8);
     }
 
     button {
-        background: #007bff;
+        width: 100%;
+        padding: 14px;
+        margin-top: 20px;
+        background: #1c7ed6;
         color: white;
         border: none;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 500;
         cursor: pointer;
-        font-size: 1.1rem;
-        margin-top: 18px;
+        transition: 0.2s;
     }
 
     button:hover {
-        opacity: 0.9;
+        background: #1971c2;
+        transform: translateY(-1px);
     }
 
-    .small-link {
-        display: block;
-        margin-top: 10px;
+    .small {
         text-align: center;
+        display: block;
+        margin-top: 12px;
+        color: white;
         font-size: 0.9rem;
+        text-decoration: underline;
+        cursor: pointer;
     }
 
-    @media(max-width: 480px) {
-        .container {
-            padding: 18px;
-        }
-        input, button {
-            font-size: 1rem;
-        }
+    #status {
+        text-align: center;
+        margin-top: 12px;
+        font-size: 0.95rem;
+        color: #ffdddd;
     }
 </style>
 </head>
 
 <body>
 
-<div class="container">
-    <h2>Login</h2>
+<div class="card">
+    <h2>Welcome Back</h2>
 
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Password">
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Password" />
 
     <button onclick="login()">Login</button>
+    <span class="small" onclick="forgot()">Forgot Password?</span>
 
-    <a class="small-link" href="#" onclick="forgot()">Forgot Password?</a>
-
-    <p id="status" style="margin-top:15px;text-align:center;color:red;"></p>
+    <p id="status"></p>
 </div>
 
 <script>
@@ -98,30 +122,34 @@ const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 async function login() {
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value.trim();
+
     const status = document.getElementById("status");
+    status.textContent = "Please wait...";
 
     const { data, error } = await client.auth.signInWithPassword({ email, password });
 
     if (error) {
-        status.innerText = error.message;
+        status.textContent = error.message;
+        status.style.color = "#ffcccc";
     } else {
-        status.style.color = "green";
-        status.innerText = "Login successful! Redirecting...";
-        window.location.href = "index.html";
+        status.textContent = "Login successful! Redirecting...";
+        status.style.color = "#d4ffd4";
+        setTimeout(() => window.location.href = "index.html", 1200);
     }
 }
 
 async function forgot() {
-    const email = prompt("Enter your email to reset password:");
+    const email = prompt("Enter your email:");
     if (!email) return;
 
-    const { data, error } = await client.auth.resetPasswordForEmail(email, {
+    const status = document.getElementById("status");
+
+    const { error } = await client.auth.resetPasswordForEmail(email, {
         redirectTo: "https://shader7.com/photopassportsizepro/reset-password.html"
     });
 
-    const status = document.getElementById("status");
-    status.style.color = error ? "red" : "green";
-    status.innerText = error ? error.message : "Reset email sent!";
+    status.style.color = error ? "#ffcccc" : "#d4ffd4";
+    status.textContent = error ? error.message : "Reset link sent!";
 }
 </script>
 
