@@ -1,17 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login - Passport Photo Maker</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Passport Photo Maker</title>
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-<link href="https://fonts.googleapis.com/css?family=Inter:400,600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Inter:400,600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<style>
-/* ... same styles as before ... */
-</style>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 20px;
+        }
+        .auth-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+        .auth-header { text-align:center;margin-bottom:30px; }
+        .auth-header i { font-size:48px;color:#667eea; }
+        .auth-header h1 { margin:10px 0;color:#333; }
+
+        .form-tabs { display:flex;gap:10px;margin-bottom:25px;background:#eee;padding:6px;border-radius:10px; }
+        .tab-btn { flex:1;padding:12px;border:none;border-radius:8px;cursor:pointer;background:transparent;font-weight:600;color:#666; }
+        .tab-btn.active { background:white;color:#667eea;box-shadow:0 2px 8px rgba(0,0,0,0.1); }
+
+        .auth-form { display:none; }
+        .auth-form.active { display:block; }
+
+        .form-group { margin-bottom:20px; }
+        .input-wrapper { position:relative; }
+        .input-wrapper i { position:absolute;left:15px;top:50%;transform:translateY(-50%);color:#999; }
+        .form-group input { width:100%;padding:12px 15px 12px 45px;border:2px solid #ddd;border-radius:10px; }
+
+        .submit-btn {
+            width:100%;padding:14px;background:linear-gradient(135deg,#667eea,#764ba2);
+            border:none;border-radius:10px;color:white;font-size:16px;cursor:pointer;margin-top:10px;
+        }
+
+        .status-message { display:none;padding:12px;margin-top:15px;border-radius:8px;text-align:center;font-size:14px; }
+        .status-message.show { display:block; }
+        .error { background:#fee;color:#c33; }
+        .success { background:#efe;color:#3c3; }
+    </style>
 </head>
 
 <body>
@@ -105,22 +148,33 @@
 
 </div>
 
+
 <script>
+/* 🔥 YOUR REAL SUPABASE DETAILS */
 const SUPABASE_URL = "https://wtryahnysabnjdcypihl.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind0cnlhaG55c2FibmpkY3lwaWhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxMTM0NTAsImV4cCI6MjA3NzY4OTQ1MH0.uLi6Nfk8NQ9KmR_Igt9sb_wtQxtujm_lipT6TU3dwjM";
 
 const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-/* TAB SWITCHER */
+/* TABS */
 function switchTab(tab) {
     document.querySelectorAll(".auth-form").forEach(f => f.classList.remove("active"));
     document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-    if (tab === "login") document.getElementById("login-form").classList.add("active");
-    if (tab === "signup") document.getElementById("signup-form").classList.add("active");
-    if (tab === "forgot") document.getElementById("forgot-form").classList.add("active");
+
+    if (tab === "login") {
+        document.getElementById("login-form").classList.add("active");
+        document.querySelectorAll(".tab-btn")[0].classList.add("active");
+    }
+    if (tab === "signup") {
+        document.getElementById("signup-form").classList.add("active");
+        document.querySelectorAll(".tab-btn")[1].classList.add("active");
+    }
+    if (tab === "forgot") {
+        document.getElementById("forgot-form").classList.add("active");
+    }
 }
 
-/* STATUS HANDLER */
+/* STATUS */
 function showStatus(id, msg, error=false) {
     const el = document.getElementById(id);
     el.textContent = msg;
@@ -132,8 +186,11 @@ document.getElementById("login-form").addEventListener("submit", async (e)=>{
     e.preventDefault();
     const email = document.getElementById("login-email").value;
     const pass = document.getElementById("login-password").value;
+
     const { error } = await client.auth.signInWithPassword({ email, password: pass });
+
     if (error) return showStatus("login-status", error.message, true);
+
     showStatus("login-status","Login successful! Redirecting...");
     setTimeout(()=>location.href="index.html",1000);
 });
@@ -141,12 +198,18 @@ document.getElementById("login-form").addEventListener("submit", async (e)=>{
 /* SIGNUP */
 document.getElementById("signup-form").addEventListener("submit", async (e)=>{
     e.preventDefault();
+
     const email = document.getElementById("signup-email").value;
     const pass = document.getElementById("signup-password").value;
     const confirm = document.getElementById("signup-password-confirm").value;
-    if (pass !== confirm) return showStatus("signup-status","Passwords do not match!",true);
+
+    if (pass !== confirm)
+        return showStatus("signup-status","Passwords do not match!",true);
+
     const { error } = await client.auth.signUp({ email, password: pass });
+
     if (error) return showStatus("signup-status", error.message, true);
+
     showStatus("signup-status","Account created! Redirecting...");
     setTimeout(()=>location.href="index.html",1500);
 });
@@ -154,11 +217,15 @@ document.getElementById("signup-form").addEventListener("submit", async (e)=>{
 /* FORGOT PASSWORD */
 document.getElementById("forgot-form").addEventListener("submit", async (e)=>{
     e.preventDefault();
+
     const email = document.getElementById("forgot-email").value;
+
     const { error } = await client.auth.resetPasswordForEmail(email,{
         redirectTo: "https://shader7.com/photopassportsizepro/reset-password.html"
     });
+
     if (error) return showStatus("forgot-status",error.message,true);
+
     showStatus("forgot-status","Reset link sent! Check your email.");
 });
 </script>
