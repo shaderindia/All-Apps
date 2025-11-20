@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Passport Photo Maker — Modern (Glass) UI</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="Create, crop and print passport photos — modern glass UI, mobile-first" />
+
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+  <!-- Cropper -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css"/>
+
+  <!-- Supabase (single include) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    /* Reset & base */
+    :root{
+      --glass-bg: rgba(255,255,255,0.08);
+      --glass-border: rgba(255,255,255,0.12);
+      --glass-strong: rgba(255,255,255,0.14);
+      --accent: #6c8cff;
+      --accent-2: #2ec4b6;
+      --text-on-glass: rgba(255,255,255,0.95);
+      --muted: rgba(255,255,255,0.75);
+      --danger: #ff6b6b;
+      --card-radius: 16px;
+      --shadow-lg: 0 12px 30px rgba(10,10,20,0.35);
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{
+      font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+      background: linear-gradient(135deg,#2b6df6 0%, #18b9c8 60%, #1a2a6c 100%);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      color:var(--text-on-glass);
+      overflow-x:hidden;
+      padding:28px;
+      display:flex;
+      justify-content:center;
+    }
+
+    /* Page container */
+    .page {
+      width:100%;
+      max-width:1200px;
+    }
+
+    /* Header */
+    header.header {
+      display:flex;
+      gap:16px;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:20px;
+    }
+    .brand {
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+    .brand .logo {
+      width:56px;height:56px;border-radius:12px;
+      display:flex;align-items:center;justify-content:center;
+      background:linear-gradient(135deg,rgba(255,255,255,0.06),rgba(255,255,255,0.03));
+      border:1px solid var(--glass-border);
+      backdrop-filter: blur(6px);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+      font-size:22px;
+    }
+    .brand h1{font-size:18px;font-weight:600;letter-spacing:0.2px}
+    .brand p{font-size:12px;color:var(--muted);margin-top:2px}
+
+    .header-actions {
+      display:flex;gap:8px;align-items:center;
+    }
+    .icon-btn {
+      display:inline-flex;align-items:center;justify-content:center;
+      width:44px;height:44px;border-radius:10px;border:1px solid var(--glass-border);
+      background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      color:var(--text-on-glass);
+      cursor:pointer;
+      box-shadow: var(--shadow-lg);
+    }
+    .icon-btn i{font-size:16px}
+
+    /* Main grid */
+    main.grid {
+      display:grid;
+      grid-template-columns: 1fr 420px;
+      gap:20px;
+      align-items:start;
+    }
+
+    /* Make card glass */
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      border-radius:var(--card-radius);
+      border: 1px solid var(--glass-border);
+      padding:18px;
+      box-shadow: var(--shadow-lg);
+      backdrop-filter: blur(10px) saturate(120%);
+      overflow:hidden;
+    }
+
+    /* Upload / Editor */
+    .upload-card h2,
+    .settings-card h2 { font-size:16px; margin-bottom:12px; color:var(--text-on-glass) }
+
+    .upload-area {
+      border: 1px dashed rgba(255,255,255,0.08);
+      border-radius:12px;
+      padding:18px;
+      min-height:180px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-direction:column;
+      gap:12px;
+      text-align:center;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    }
+    .upload-area .placeholder i{font-size:36px;color:rgba(255,255,255,0.9)}
+    .upload-area p{color:var(--muted);font-size:13px}
+
+    .btn {
+      display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;border:none;
+      background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;cursor:pointer;font-weight:600;
+      box-shadow: 0 6px 18px rgba(16,24,40,0.25);
+    }
+    .btn.secondary {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.08);
+      color:var(--text-on-glass);
+      font-weight:500;
+      box-shadow:none;
+    }
+    .btn.ghost {
+      background: rgba(255,255,255,0.03);
+      color:var(--text-on-glass);
+      border: 1px solid rgba(255,255,255,0.04);
+    }
+
+    /* Editor container (shows image + controls) */
+    .editor {
+      margin-top:14px;
+      display:flex;
+      gap:12px;
+      flex-direction:column;
+    }
+    .crop-area {
+      border-radius:10px;
+      overflow:hidden;
+      background: #fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-height:260px;
+    }
+    .crop-area img { max-width:100%; display:block; }
+
+    .toolbar {
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:10px;
+      align-items:center;
+    }
+    .toolbar .color {
+      width:40px;height:40px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);padding:0;
+    }
+
+    /* Settings & Preview panel */
+    .settings-card {
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .controls {
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    .form-row {
+      display:flex;gap:10px;
+      align-items:center;
+    }
+    .form-row .field { flex:1; }
+    .field label { display:block;font-size:12px;color:var(--muted);margin-bottom:6px }
+    .field input, .field select {
+      width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.07); color:var(--text-on-glass);
+      outline:none;
+    }
+
+    .preview {
+      border-radius:12px; padding:12px; background: linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.12));
+      min-height:260px; display:flex;flex-direction:column;gap:12px; align-items:center; justify-content:center;
+    }
+    .preview canvas { max-width:100%; border-radius:8px; background:white; display:block; }
+
+    .download-actions { display:flex; gap:8px; align-items:center; margin-top:8px; flex-wrap:wrap; }
+
+    /* Footer */
+    footer { margin-top:22px; text-align:center; color:rgba(255,255,255,0.9); font-size:13px; }
+
+    /* Modal */
+    .modal-backdrop {
+      position:fixed; inset:0; display:none; align-items:center; justify-content:center;
+      background: linear-gradient(180deg, rgba(0,0,0,0.4), rgba(0,0,0,0.6));
+      z-index:1200;
+    }
+    .modal {
+      width:95%; max-width:640px; border-radius:12px; padding:22px; background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+      border:1px solid rgba(255,255,255,0.08); backdrop-filter: blur(10px);
+    }
+    .modal h3 { margin-bottom:10px }
+    .modal .close { float:right; cursor:pointer; color:var(--muted); }
+
+    /* Small screens */
+    @media (max-width: 980px) {
+      main.grid { grid-template-columns: 1fr; }
+      .preview { min-height:220px }
+      .crop-area { min-height:220px }
+    }
+
+    /* Tiny screens fixes */
+    @media (max-width:420px) {
+      body{padding:16px}
+      .brand h1{font-size:15px}
+      .brand p{display:none}
+      .icon-btn{width:40px;height:40px}
+      .card{padding:14px}
+      .crop-area{min-height:180px}
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+    <!-- Header -->
+    <header class="header">
+      <div class="brand">
+        <div class="logo"><i class="fa fa-passport"></i></div>
+        <div>
+          <h1>Passport Photo Maker</h1>
+          <p>Create & print passport photos — modern glass UI</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button class="icon-btn" id="theme-toggle" title="Toggle theme"><i class="fa fa-moon"></i></button>
+        <button class="icon-btn" id="info-open" title="How to use"><i class="fa fa-info-circle"></i></button>
+        <button class="icon-btn" id="logout-btn" title="Logout"><i class="fa fa-sign-out-alt"></i></button>
+      </div>
+    </header>
+
+    <!-- Main -->
+    <main class="grid">
+      <!-- Left: Upload & Editor -->
+      <section class="card upload-card">
+        <h2><i class="fa fa-image"></i> Upload & Edit</h2>
+
+        <div class="upload-area" id="upload-area">
+          <div class="placeholder">
+            <i class="fa fa-cloud-upload-alt"></i>
+            <p>Click or drag & drop to upload image</p>
+            <div style="margin-top:8px">
+              <button class="btn" id="select-photo-btn"><i class="fa fa-folder-open"></i> Select Photo</button>
+            </div>
+          </div>
+          <input id="photo-upload" type="file" accept="image/*" hidden>
+        </div>
+
+        <!-- Editor (hidden until image loaded) -->
+        <div id="editor" class="editor" style="display:none">
+          <div class="crop-area" id="crop-area">
+            <img id="image-to-crop" alt="Image to crop" style="max-width:100%;display:block"/>
+          </div>
+
+          <div class="toolbar">
+            <button class="btn secondary" id="remove-bg-btn" title="Remove background"><i class="fa fa-magic"></i> Remove BG</button>
+            <input type="color" id="bg-color" class="color" title="Background color" value="#ffffff" style="height:40px;padding:6px;border-radius:8px"/>
+            <button class="btn secondary" id="rotate-left" title="Rotate left"><i class="fa fa-undo"></i></button>
+            <button class="btn secondary" id="rotate-right" title="Rotate right"><i class="fa fa-redo"></i></button>
+            <button class="btn secondary" id="reset-crop" title="Reset crop"><i class="fa fa-sync"></i></button>
+            <button class="btn" id="apply-crop" title="Apply & continue"><i class="fa fa-check"></i> Apply</button>
+          </div>
+
+          <div id="bg-processing" style="display:none; margin-top:12px; text-align:center;">
+            <div style="display:inline-flex;align-items:center;gap:10px">
+              <div class="spinner" style="width:28px;height:28px;border-radius:50%;border:3px solid rgba(255,255,255,0.12);border-top-color:var(--accent);animation:spin 1s linear infinite"></div>
+              <div style="color:var(--muted)">Removing background...</div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- Right: Settings & Preview -->
+      <aside class="card settings-card">
+        <h2><i class="fa fa-sliders-h"></i> Settings & Preview</h2>
+
+        <div class="controls">
+          <div class="form-row">
+            <div class="field">
+              <label for="unit">Unit</label>
+              <select id="unit"><option value="mm">mm</option><option value="inch">inch</option><option value="px">px</option></select>
+            </div>
+            <div class="field">
+              <label for="dpi">DPI</label>
+              <input id="dpi" type="number" value="300" min="72" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="field">
+              <label for="photo-width">Width</label>
+              <input id="photo-width" type="number" value="35" />
+            </div>
+            <div class="field">
+              <label for="photo-height">Height</label>
+              <input id="photo-height" type="number" value="45" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="field">
+              <label for="page-size">Paper</label>
+              <select id="page-size"><option value="a4">A4</option><option value="4r">4R (4"x6")</option><option value="custom">Custom</option></select>
+            </div>
+            <div class="field">
+              <label for="num-photos">Count</label>
+              <input id="num-photos" type="number" value="8" min="1" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="field">
+              <label for="h-spacing">Gap (H)</label>
+              <input id="h-spacing" type="number" value="10" />
+            </div>
+            <div class="field">
+              <label for="v-spacing">Gap (V)</label>
+              <input id="v-spacing" type="number" value="10" />
+            </div>
+          </div>
+
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:6px">
+            <button id="autofix-btn" class="btn"><i class="fa fa-magic"></i> AutoFix</button>
+            <button id="reset-layout-btn" class="btn secondary">Reset</button>
+          </div>
+        </div>
+
+        <div style="margin-top:12px">
+          <h3 style="font-size:14px;color:var(--muted);margin-bottom:8px">Print Preview</h3>
+          <div class="preview" id="preview-panel">
+            <canvas id="output-canvas"></canvas>
+            <div class="download-actions">
+              <select id="format" style="padding:8px;border-radius:8px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.06);color:var(--text-on-glass)">
+                <option value="jpg">JPG</option><option value="png">PNG</option>
+              </select>
+              <button class="btn" id="download-btn"><i class="fa fa-download"></i> Download</button>
+              <button class="btn secondary" id="download-hq-btn"><i class="fa fa-star"></i> HQ</button>
+            </div>
+          </div>
+        </div>
+
+      </aside>
+    </main>
+
+    <footer>
+      <div style="opacity:0.95">© 2025 Nishikant Xalxo — Free Online Passport Photo Maker</div>
+    </footer>
+
+    <!-- Info Modal -->
+    <div class="modal-backdrop" id="info-modal" aria-hidden="true">
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="info-title">
+        <button class="close" id="info-close" aria-label="Close" style="float:right;background:none;border:none;color:var(--muted);font-size:18px"><i class="fa fa-times"></i></button>
+        <h3 id="info-title">How to use</h3>
+        <ul style="margin-top:10px; color:var(--muted); line-height:1.6">
+          <li>Upload a clear photo (JPG/PNG).</li>
+          <li>Use Remove BG for professional background.</li>
+          <li>Crop to frame the face, then Apply.</li>
+          <li>Adjust size, count and spacing. Download for print.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Supabase auth + init (keeps your anon key + project url) -->
+  <script>
+    const SUPABASE_URL = 'https://wtryahnysabnjdcypihl.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind0cnlhaG55c2FibmpkY3lwaWhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxMTM0NTAsImV4cCI6MjA3NzY4OTQ1MH0.uLi6Nfk8NQ9KmR_Igt9sb_wtQxtujm_lipT6TU3dwjM';
+    window.supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // basic auth check for the page (if needed)
+    async function requireAuthRedirect() {
+      try {
+        const { data: { session }, error } = await window.supabase.auth.getSession();
+        if (error) {
+          console.warn('Auth getSession error:', error);
+        }
+        // if not logged in, you might redirect — but keep commented for public pages
+        // if (!session) window.location.href = 'login.html';
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    requireAuthRedirect();
+  </script>
+
+  <!-- Keep your external JS files (make sure they reference element IDs used above) -->
+  <!-- Cropper lib -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+
+  <!-- Your custom scripts: auth.js and script.js (order matters: auth first if it sets up auth) -->
+  <script src="auth.js"></script>
+  <script src="script.js"></script>
+
+  <script>
+    /* UI interactions for modal, file selection & basic binding (safe no-op if your script handles it) */
+    (function(){
+      const fileInput = document.getElementById('photo-upload');
+      const selectBtn = document.getElementById('select-photo-btn');
+      const uploadArea = document.getElementById('upload-area');
+      const editor = document.getElementById('editor');
+      const imageToCrop = document.getElementById('image-to-crop');
+      const infoModal = document.getElementById('info-modal');
+      const infoOpen = document.getElementById('info-open');
+      const infoClose = document.getElementById('info-close');
+      const logoutBtn = document.getElementById('logout-btn');
+
+      // open file dialog
+      selectBtn?.addEventListener('click', ()=> fileInput?.click());
+
+      // drag & drop styling
+      ['dragenter','dragover'].forEach(ev => {
+        uploadArea?.addEventListener(ev, (e)=>{ e.preventDefault(); uploadArea.classList.add('dragging'); });
+      });
+      ['dragleave','drop'].forEach(ev => {
+        uploadArea?.addEventListener(ev, (e)=>{ e.preventDefault(); uploadArea.classList.remove('dragging'); });
+      });
+
+      uploadArea?.addEventListener('drop', (e)=>{
+        const f = e.dataTransfer?.files?.[0];
+        if (f) handleFile(f);
+      });
+
+      fileInput?.addEventListener('change', (e)=> {
+        const f = e.target.files?.[0];
+        if (f) handleFile(f);
+      });
+
+      function handleFile(file){
+        if (!file) return;
+        const url = URL.createObjectURL(file);
+        imageToCrop.src = url;
+        editor.style.display = 'block';
+        // let your script.js / cropper init pick this up — we just ensure UI shows
+      }
+
+      // modal open/close
+      infoOpen?.addEventListener('click', ()=> {
+        infoModal.style.display='flex'; infoModal.setAttribute('aria-hidden','false');
+      });
+      infoClose?.addEventListener('click', ()=> { infoModal.style.display='none'; infoModal.setAttribute('aria-hidden','true'); });
+
+      // logout hook (calls supabase signOut if present)
+      logoutBtn?.addEventListener('click', async ()=>{
+        try {
+          if (window.supabase) {
+            await window.supabase.auth.signOut();
+          }
+        } catch(err){ console.warn(err) }
+        window.location.href = 'login.html';
+      });
+
+      // small spinner animation keyframe append
+      const style = document.createElement('style');
+      style.innerHTML = '@keyframes spin { to { transform: rotate(360deg); } }';
+      document.head.appendChild(style);
+    })();
+  </script>
+</body>
+</html>
