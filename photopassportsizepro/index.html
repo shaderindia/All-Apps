@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Reset Password | Passport Photo Maker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      height: 100vh;
+      display: flex;
+      padding: 20px;
+      justify-content: center;
+      align-items: center;
+    }
+    .box {
+      background: #fff;
+      padding: 25px;
+      width: 100%;
+      max-width: 360px;
+      border-radius: 8px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 12px;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #28a745;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background: #1d7f33;
+    }
+    .msg {
+      text-align: center;
+      margin-top: 10px;
+      font-size: 14px;
+      color: red;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="box">
+  <h2>Reset Password</h2>
+
+  <input id="new-pass" type="password" placeholder="New Password" />
+  <input id="confirm-pass" type="password" placeholder="Confirm Password" />
+
+  <button onclick="resetPassword()">Update Password</button>
+
+  <p id="msg" class="msg"></p>
+</div>
+
+<script>
+  const client = supabase.createClient(
+    "https://wtryahnysabnjdcypihl.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind0cnlhaG55c2FibmpkY3lwaWhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxMTM0NTAsImV4cCI6MjA3NzY4OTQ1MH0.uLi6Nfk8NQ9KmR_Igt9sb_wtQxtujm_lipT6TU3dwjM"
+  );
+
+  async function resetPassword() {
+    let newPass = document.getElementById("new-pass").value;
+    let confirm = document.getElementById("confirm-pass").value;
+
+    if (newPass !== confirm) {
+      document.getElementById("msg").innerText = "Passwords do not match.";
+      return;
+    }
+
+    const { error } = await client.auth.updateUser({
+      password: newPass,
+    });
+
+    if (error) {
+      document.getElementById("msg").innerText = error.message;
+    } else {
+      document.getElementById("msg").style.color = "green";
+      document.getElementById("msg").innerText =
+        "Password updated! Redirecting...";
+
+      setTimeout(() => {
+        window.location.href = "login.html";
+      }, 1500);
+    }
+  }
+</script>
+
+</body>
+</html>
