@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Login - Passport Photo Maker</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css?family=Inter:400,600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ---- Simple polished styles (kept inline for single-file ease) ---- */
+    body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg,#667eea 0%,#764ba2 100%); min-height:100vh; margin:0; display:flex; align-items:center; justify-content:center; padding:20px; }
+    .auth-container { background:rgba(255,255,255,0.95); padding:36px;border-radius:16px; width:100%; max-width:420px; box-shadow:0 8px 30px rgba(0,0,0,0.12); }
+    .auth-header { text-align:center; margin-bottom:18px; }
+    .auth-header i { font-size:44px; color:#667eea; display:block; margin-bottom:8px; }
+    h1 { margin:0; font-size:22px; color:#333; }
+    p.sub { margin:6px 0 0; color:#666; font-size:13px; }
+    .form-tabs { display:flex; gap:8px; background:#f2f2f2; padding:6px; border-radius:8px; margin:18px 0; }
+    .tab-btn { flex:1; border:0; background:transparent; padding:10px; border-radius:6px; cursor:pointer; font-weight:600; color:#666; }
+    .tab-btn.active { background:#fff; color:#667eea; box-shadow:0 2px 8px rgba(0,0,0,0.06); }
+    .auth-form { display:none; }
+    .auth-form.active { display:block; }
+    .form-group { margin-bottom:14px; }
+    label { display:block; margin-bottom:6px; color:#333; font-weight:500; font-size:13px; }
+    .input-wrapper { position:relative; }
+    .input-wrapper i { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#aaa; }
+    input[type="email"], input[type="password"] { width:100%; padding:12px 14px 12px 40px; border:2px solid #e6e6e6; border-radius:10px; font-size:14px; box-sizing:border-box; }
+    input:focus { outline:none; border-color:#667eea; }
+    .submit-btn { width:100%; padding:12px; border-radius:10px; border:0; cursor:pointer; color:#fff; font-weight:600; background:linear-gradient(135deg,#667eea 0%,#764ba2 100%); }
+    .small-ghost { background:transparent; border:2px solid #667eea; color:#667eea; margin-top:10px; }
+    .status-message { margin-top:12px; display:none; padding:10px; border-radius:8px; text-align:center; font-size:14px; }
+    .status-message.show { display:block; }
+    .status-message.error { background:#fee; color:#b22; border:1px solid #fcc; }
+    .status-message.success { background:#efe; color:#197619; border:1px solid #cfc; }
+    .forgot-password { text-align:right; margin-top:-6px; margin-bottom:14px; }
+    .forgot-password a { color:#667eea; text-decoration:none; font-size:13px; }
+    .link { color:#667eea; cursor:pointer; text-decoration:underline; }
+    .loading-spinner { display:inline-block; width:18px; height:18px; border:3px solid rgba(255,255,255,0.4); border-top:3px solid rgba(255,255,255,0.95); border-radius:50%; animation:spin 1s linear infinite; vertical-align:middle; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="auth-container">
+    <div class="auth-header">
+      <i class="fa fa-passport"></i>
+      <h1>Passport Photo Maker</h1>
+      <p class="sub">Sign in or create an account to get started</p>
+    </div>
+
+    <div class="form-tabs" role="tablist">
+      <button class="tab-btn active" id="tab-login">Login</button>
+      <button class="tab-btn" id="tab-signup">Create Account</button>
+    </div>
+
+    <!-- Login -->
+    <form id="login-form" class="auth-form active" autocomplete="on">
+      <div class="form-group">
+        <label for="login-email">Email Address</label>
+        <div class="input-wrapper">
+          <i class="fa fa-envelope"></i>
+          <input id="login-email" type="email" placeholder="you@example.com" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="login-password">Password</label>
+        <div class="input-wrapper">
+          <i class="fa fa-lock"></i>
+          <input id="login-password" type="password" placeholder="Your password" required>
+        </div>
+      </div>
+
+      <div class="forgot-password">
+        <a href="#" id="show-forgot">Forgot Password?</a>
+      </div>
+
+      <button id="login-btn" class="submit-btn" type="submit"><span>Login</span></button>
+      <div id="login-status" class="status-message" role="status"></div>
+    </form>
+
+    <!-- Forgot Password -->
+    <form id="forgot-form" class="auth-form" style="display:none;">
+      <div class="form-group">
+        <label for="forgot-email">Email Address</label>
+        <div class="input-wrapper">
+          <i class="fa fa-envelope"></i>
+          <input id="forgot-email" type="email" placeholder="Enter your email" required>
+        </div>
+      </div>
+
+      <button id="forgot-btn" class="submit-btn" type="submit"><span>Send Reset Link</span></button>
+      <button type="button" class="submit-btn small-ghost" id="back-to-login">Back to Login</button>
+      <div id="forgot-status" class="status-message" role="status"></div>
+    </form>
+
+    <!-- Signup -->
+    <form id="signup-form" class="auth-form" style="display:none;" autocomplete="on">
+      <div class="form-group">
+        <label for="signup-email">Email Address</label>
+        <div class="input-wrapper">
+          <i class="fa fa-envelope"></i>
+          <input id="signup-email" type="email" placeholder="you@example.com" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="signup-password">Password</label>
+        <div class="input-wrapper">
+          <i class="fa fa-lock"></i>
+          <input id="signup-password" type="password" placeholder="Create a password (min 6 chars)" minlength="6" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="signup-password-confirm">Confirm Password</label>
+        <div class="input-wrapper">
+          <i class="fa fa-lock"></i>
+          <input id="signup-password-confirm" type="password" placeholder="Confirm password" minlength="6" required>
+        </div>
+      </div>
+
+      <button id="signup-btn" class="submit-btn" type="submit"><span>Create Account</span></button>
+      <div id="signup-status" class="status-message" role="status"></div>
+    </form>
+  </div>
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    // -------------------------
+    // Replace with your values
+    // -------------------------
+    const SUPABASE_URL = 'https://wtryahnysabnjdcypihl.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind0cnlhaG55c2FibmpkY3lwaWhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxMTM0NTAsImV4cCI6MjA3NzY4OTQ1MH0.uLi6Nfk8NQ9KmR_Igt9sb_wtQxtujm_lipT6TU3dwjM';
+
+    const supabase = supabaseJs.createClient ? supabaseJs.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    // NOTE: CDN exposes "supabase" as global; some bundles expose "supabaseJs". We handle both.
+
+    // ---------- UI helpers ----------
+    function showStatus(id, message, isError=false) {
+      const el = document.getElementById(id);
+      el.textContent = message;
+      el.className = 'status-message show ' + (isError ? 'error' : 'success');
+    }
+    function clearStatus(id) {
+      const el = document.getElementById(id);
+      el.textContent = '';
+      el.className = 'status-message';
+    }
+
+    // ---------- Tabs ----------
+    const tabLogin = document.getElementById('tab-login');
+    const tabSignup = document.getElementById('tab-signup');
+    const loginForm = document.getElementById('login-form');
+    const signupForm = document.getElementById('signup-form');
+    const forgotForm = document.getElementById('forgot-form');
+
+    function showTab(which) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      [loginForm, signupForm, forgotForm].forEach(f => f.classList.remove('active'));
+      loginForm.style.display = signupForm.style.display = forgotForm.style.display = 'none';
+
+      if (which === 'login') {
+        tabLogin.classList.add('active');
+        loginForm.style.display = 'block';
+      } else if (which === 'signup') {
+        tabSignup.classList.add('active');
+        signupForm.style.display = 'block';
+      } else if (which === 'forgot') {
+        // no tab active for forgot
+        forgotForm.style.display = 'block';
+      }
+      // clear statuses
+      clearStatus('login-status');
+      clearStatus('signup-status');
+      clearStatus('forgot-status');
+    }
+
+    tabLogin.addEventListener('click', ()=> showTab('login'));
+    tabSignup.addEventListener('click', ()=> showTab('signup'));
+    document.getElementById('show-forgot').addEventListener('click', (e)=> { e.preventDefault(); showTab('forgot'); });
+    document.getElementById('back-to-login').addEventListener('click', ()=> showTab('login'));
+
+    // ---------- Auth logic ----------
+    // Check logged-in session and redirect if present
+    (async function checkSession() {
+      try {
+        const { data } = await supabase.auth.getSession();
+        if (data?.session) {
+          // already logged in
+          window.location.href = 'index.html';
+        }
+      } catch (err) {
+        console.warn('Session check error', err);
+      }
+    })();
+
+    // LOGIN
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearStatus('login-status');
+      const btn = document.getElementById('login-btn');
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value;
+      if (!email || !password) { showStatus('login-status','Please fill email and password',true); return; }
+      btn.disabled = true;
+      btn.innerHTML = '<span class="loading-spinner"></span>';
+
+      try {
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        showStatus('login-status','Login successful — redirecting...', false);
+        // Redirect to app home
+        setTimeout(()=> window.location.href = 'index.html', 900);
+      } catch (err) {
+        showStatus('login-status', err?.message || 'Login failed', true);
+        btn.disabled = false;
+        btn.innerHTML = '<span>Login</span>';
+      }
+    });
+
+    // SIGNUP
+    document.getElementById('signup-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearStatus('signup-status');
+      const btn = document.getElementById('signup-btn');
+      const email = document.getElementById('signup-email').value.trim();
+      const password = document.getElementById('signup-password').value;
+      const confirm = document.getElementById('signup-password-confirm').value;
+      if (!email || !password || !confirm) { showStatus('signup-status','Please fill all fields', true); return; }
+      if (password !== confirm) { showStatus('signup-status','Passwords do not match', true); return; }
+      if (password.length < 6) { showStatus('signup-status','Password must be at least 6 characters', true); return; }
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="loading-spinner"></span>';
+
+      try {
+        const { data, error } = await supabase.auth.signUp({ email, password });
+        if (error) throw error;
+        showStatus('signup-status','Account created. You may need to confirm your email if required by Supabase.', false);
+        // Optionally auto redirect or prompt user to login
+        setTimeout(()=> { showTab('login'); }, 1200);
+      } catch (err) {
+        showStatus('signup-status', err?.message || 'Signup failed', true);
+        btn.disabled = false;
+        btn.innerHTML = '<span>Create Account</span>';
+      }
+    });
+
+    // FORGOT PASSWORD - sends reset email with redirectTo set to your reset page (Option A)
+    document.getElementById('forgot-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearStatus('forgot-status');
+      const btn = document.getElementById('forgot-btn');
+      const email = document.getElementById('forgot-email').value.trim();
+      if (!email) { showStatus('forgot-status','Please enter your email', true); return; }
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="loading-spinner"></span>';
+
+      try {
+        const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+          // <- IMPORTANT: the exact URL you chose (Option A)
+          redirectTo: "https://shader7.com/photopassportsizepro/reset-password.html"
+        });
+        if (error) throw error;
+        showStatus('forgot-status','Password reset link sent — check your email.', false);
+      } catch (err) {
+        showStatus('forgot-status', err?.message || 'Failed to send reset link', true);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span>Send Reset Link</span>';
+      }
+    });
+
+    // Keyboard UX: press Enter on any input to submit relevant form (browser handles, but forms already have submit buttons)
+  </script>
+</body>
+</html>
