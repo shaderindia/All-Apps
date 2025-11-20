@@ -19,7 +19,6 @@
             margin: 0;
             padding: 20px;
         }
-
         .auth-container {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
@@ -30,7 +29,6 @@
             max-width: 420px;
             animation: slideIn 0.5s ease-out;
         }
-
         @keyframes slideIn {
             from {
                 opacity: 0;
@@ -41,29 +39,24 @@
                 transform: translateY(0);
             }
         }
-
         .auth-header {
             text-align: center;
             margin-bottom: 30px;
         }
-
         .auth-header i {
             font-size: 48px;
             color: #667eea;
             margin-bottom: 10px;
         }
-
         .auth-header h1 {
             font-size: 28px;
             margin: 10px 0;
             color: #333;
         }
-
         .auth-header p {
             color: #666;
             font-size: 14px;
         }
-
         .form-tabs {
             display: flex;
             gap: 10px;
@@ -72,7 +65,6 @@
             padding: 5px;
             border-radius: 10px;
         }
-
         .tab-btn {
             flex: 1;
             padding: 12px;
@@ -84,31 +76,29 @@
             transition: all 0.3s ease;
             color: #666;
         }
-
         .tab-btn.active {
             background: white;
             color: #667eea;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
-
         .auth-form {
             display: none;
         }
-
         .auth-form.active {
             display: block;
             animation: fadeIn 0.3s ease;
         }
-
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
         }
-
         .form-group {
             margin-bottom: 20px;
         }
-
         .form-group label {
             display: block;
             margin-bottom: 8px;
@@ -116,11 +106,9 @@
             font-weight: 500;
             font-size: 14px;
         }
-
         .input-wrapper {
             position: relative;
         }
-
         .input-wrapper i {
             position: absolute;
             left: 15px;
@@ -128,7 +116,6 @@
             transform: translateY(-50%);
             color: #999;
         }
-
         .form-group input {
             width: 100%;
             padding: 12px 15px 12px 45px;
@@ -138,12 +125,10 @@
             transition: all 0.3s ease;
             box-sizing: border-box;
         }
-
         .form-group input:focus {
             outline: none;
             border-color: #667eea;
         }
-
         .submit-btn {
             width: 100%;
             padding: 14px;
@@ -157,18 +142,15 @@
             transition: all 0.3s ease;
             margin-top: 10px;
         }
-
         .submit-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
-
         .submit-btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
             transform: none;
         }
-
         .status-message {
             margin-top: 15px;
             padding: 12px;
@@ -177,24 +159,20 @@
             text-align: center;
             display: none;
         }
-
         .status-message.show {
             display: block;
             animation: fadeIn 0.3s ease;
         }
-
         .status-message.error {
             background: #fee;
             color: #c33;
             border: 1px solid #fcc;
         }
-
         .status-message.success {
             background: #efe;
             color: #3c3;
             border: 1px solid #cfc;
         }
-
         .loading-spinner {
             display: none;
             width: 20px;
@@ -205,28 +183,27 @@
             animation: spin 1s linear infinite;
             margin: 0 auto;
         }
-
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
         }
-
         .forgot-password {
             text-align: right;
             margin-top: -10px;
             margin-bottom: 20px;
         }
-
         .forgot-password a {
             color: #667eea;
             text-decoration: none;
             font-size: 13px;
         }
-
         .forgot-password a:hover {
             text-decoration: underline;
         }
-
         @media (max-width: 480px) {
             .auth-container {
                 padding: 30px 20px;
@@ -244,12 +221,10 @@
             <h1>Passport Photo Maker</h1>
             <p>Sign in to create amazing passport photos</p>
         </div>
-
         <div class="form-tabs">
             <button class="tab-btn active" onclick="switchTab('login')">Login</button>
             <button class="tab-btn" onclick="switchTab('signup')">Create Account</button>
         </div>
-
         <!-- Login Form -->
         <form id="login-form" class="auth-form active">
             <div class="form-group">
@@ -266,12 +241,32 @@
                     <input type="password" id="login-password" placeholder="Enter your password" required>
                 </div>
             </div>
+            <div class="forgot-password">
+                <a href="#" onclick="switchTab('forgot-password'); return false;">Forgot Password?</a>
+            </div>
             <button type="submit" class="submit-btn" id="login-btn">
                 <span>Login</span>
             </button>
             <div id="login-status" class="status-message"></div>
         </form>
-
+        <!-- Forgot Password Form -->
+        <form id="forgot-password-form" class="auth-form">
+            <div class="form-group">
+                <label for="forgot-email">Email Address</label>
+                <div class="input-wrapper">
+                    <i class="fa fa-envelope"></i>
+                    <input type="email" id="forgot-email" placeholder="Enter your email" required>
+                </div>
+            </div>
+            <button type="submit" class="submit-btn" id="forgot-btn">
+                <span>Send Reset Link</span>
+            </button>
+            <button type="button" class="submit-btn" onclick="switchTab('login')"
+                style="background: transparent; border: 2px solid #667eea; color: #667eea; margin-top: 10px;">
+                <span>Back to Login</span>
+            </button>
+            <div id="forgot-status" class="status-message"></div>
+        </form>
         <!-- Signup Form -->
         <form id="signup-form" class="auth-form">
             <div class="form-group">
@@ -285,14 +280,16 @@
                 <label for="signup-password">Password</label>
                 <div class="input-wrapper">
                     <i class="fa fa-lock"></i>
-                    <input type="password" id="signup-password" placeholder="Create a password (min 6 characters)" required minlength="6">
+                    <input type="password" id="signup-password" placeholder="Create a password (min 6 characters)"
+                        required minlength="6">
                 </div>
             </div>
             <div class="form-group">
                 <label for="signup-password-confirm">Confirm Password</label>
                 <div class="input-wrapper">
                     <i class="fa fa-lock"></i>
-                    <input type="password" id="signup-password-confirm" placeholder="Confirm your password" required minlength="6">
+                    <input type="password" id="signup-password-confirm" placeholder="Confirm your password" required
+                        minlength="6">
                 </div>
             </div>
             <button type="submit" class="submit-btn" id="signup-btn">
@@ -301,80 +298,73 @@
             <div id="signup-status" class="status-message"></div>
         </form>
     </div>
-
     <script>
         // Initialize Supabase
         const supabaseUrl = 'https://wtryahnysabnjdcypihl.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind0cnlhaG55c2FibmpkY3lwaWhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxMTM0NTAsImV4cCI6MjA3NzY4OTQ1MH0.uLi6Nfk8NQ9KmR_Igt9sb_wtQxtujm_lipT6TU3dwjM';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-
         // Check if user is already logged in
         supabase.auth.getSession().then(({ data: { session } }) => {
             if (session) {
                 window.location.href = 'index.html';
             }
         });
-
         // Tab switching
         function switchTab(tab) {
             const loginForm = document.getElementById('login-form');
             const signupForm = document.getElementById('signup-form');
+            const forgotForm = document.getElementById('forgot-password-form');
             const tabs = document.querySelectorAll('.tab-btn');
-
+            // Reset all forms
+            loginForm.classList.remove('active');
+            signupForm.classList.remove('active');
+            forgotForm.classList.remove('active');
             tabs.forEach(btn => btn.classList.remove('active'));
-
             if (tab === 'login') {
                 loginForm.classList.add('active');
-                signupForm.classList.remove('active');
                 tabs[0].classList.add('active');
-            } else {
+            } else if (tab === 'signup') {
                 signupForm.classList.add('active');
-                loginForm.classList.remove('active');
                 tabs[1].classList.add('active');
+            } else if (tab === 'forgot-password') {
+                forgotForm.classList.add('active');
+                // No tab active for forgot password
             }
-
             // Clear status messages
             document.getElementById('login-status').classList.remove('show');
             document.getElementById('signup-status').classList.remove('show');
+            document.getElementById('forgot-status').classList.remove('show');
         }
-
         // Show status message
         function showStatus(elementId, message, isError = false) {
             const statusEl = document.getElementById(elementId);
             statusEl.textContent = message;
             statusEl.className = `status-message show ${isError ? 'error' : 'success'}`;
         }
-
         // Login Form Handler
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
             const loginBtn = document.getElementById('login-btn');
-
             loginBtn.disabled = true;
             loginBtn.innerHTML = '<div class="loading-spinner" style="display: block;"></div>';
-
             try {
                 const { data, error } = await supabase.auth.signInWithPassword({
                     email: email,
                     password: password,
                 });
-
                 if (error) throw error;
-
                 showStatus('login-status', 'Login successful! Redirecting...', false);
                 setTimeout(() => {
                     window.location.href = 'index.html';
                 }, 1000);
-
             } catch (error) {
                 showStatus('login-status', error.message, true);
                 loginBtn.disabled = false;
                 loginBtn.innerHTML = '<span>Login</span>';
             }
         });
-
         // Signup Form Handler
         document.getElementById('signup-form').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -382,35 +372,48 @@
             const password = document.getElementById('signup-password').value;
             const confirmPassword = document.getElementById('signup-password-confirm').value;
             const signupBtn = document.getElementById('signup-btn');
-
             // Validate passwords match
             if (password !== confirmPassword) {
                 showStatus('signup-status', 'Passwords do not match!', true);
                 return;
             }
-
             signupBtn.disabled = true;
             signupBtn.innerHTML = '<div class="loading-spinner" style="display: block;"></div>';
-
             try {
                 const { data, error } = await supabase.auth.signUp({
                     email: email,
                     password: password,
                 });
-
                 if (error) throw error;
-
                 showStatus('signup-status', 'Account created successfully! Logging you in...', false);
-                
                 // Auto login after signup
                 setTimeout(() => {
                     window.location.href = 'index.html';
                 }, 1500);
-
             } catch (error) {
                 showStatus('signup-status', error.message, true);
                 signupBtn.disabled = false;
                 signupBtn.innerHTML = '<span>Create Account</span>';
+            }
+        });
+        // Forgot Password Form Handler
+        document.getElementById('forgot-password-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('forgot-email').value;
+            const forgotBtn = document.getElementById('forgot-btn');
+            forgotBtn.disabled = true;
+            forgotBtn.innerHTML = '<div class="loading-spinner" style="display: block;"></div>';
+            try {
+                const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+                    redirectTo: window.location.origin + '/reset-password.html', // You might need to create this page or handle the link
+                });
+                if (error) throw error;
+                showStatus('forgot-status', 'Password reset link sent! Check your email.', false);
+            } catch (error) {
+                showStatus('forgot-status', error.message, true);
+            } finally {
+                forgotBtn.disabled = false;
+                forgotBtn.innerHTML = '<span>Send Reset Link</span>';
             }
         });
     </script>
