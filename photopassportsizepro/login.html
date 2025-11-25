@@ -4,19 +4,12 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Login – Photo Passport Size Pro</title>
-<span class="small" onclick="window.location.href='signup.html'">Create a new account</span>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: 'Poppins', sans-serif;
-    }
-
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Poppins',sans-serif; }
     body {
         height: 100vh;
         background: linear-gradient(135deg, #4c6ef5, #15aabf);
@@ -24,9 +17,7 @@
         justify-content: center;
         align-items: center;
         padding: 20px;
-        overflow-x: hidden;
     }
-
     .card {
         width: 100%;
         max-width: 380px;
@@ -35,20 +26,8 @@
         border-radius: 20px;
         backdrop-filter: blur(12px);
         box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-        animation: fadeIn 0.7s ease;
     }
-
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    h2 {
-        text-align: center;
-        color: white;
-        font-weight: 600;
-        margin-bottom: 20px;
-    }
+    h2 { text-align:center; color:white; margin-bottom:20px; font-weight:600; }
 
     input {
         width: 100%;
@@ -57,8 +36,7 @@
         border: none;
         margin-top: 12px;
         font-size: 15px;
-        outline: none;
-        background: rgba(255,255,255,0.8);
+        background: rgba(255,255,255,0.85);
     }
 
     button {
@@ -70,40 +48,23 @@
         border: none;
         border-radius: 12px;
         font-size: 16px;
-        font-weight: 500;
         cursor: pointer;
-        transition: 0.2s;
-    }
-
-    button:hover {
-        background: #1971c2;
-        transform: translateY(-1px);
-    }
-
-    .button-secondary {
-        background: rgba(255,255,255,0.2);
-        margin-top: 10px;
-    }
-
-    .button-secondary:hover {
-        background: rgba(255,255,255,0.3);
     }
 
     .small {
-        text-align: center;
-        display: block;
-        margin-top: 12px;
-        color: white;
-        font-size: 0.9rem;
-        text-decoration: underline;
-        cursor: pointer;
+        text-align:center;
+        display:block;
+        margin-top:12px;
+        color:white;
+        text-decoration:underline;
+        cursor:pointer;
     }
 
     #status {
-        text-align: center;
-        margin-top: 12px;
-        font-size: 0.95rem;
-        color: #ffdddd;
+        text-align:center;
+        margin-top:12px;
+        color:#ffdddd;
+        font-size:0.95rem;
     }
 </style>
 </head>
@@ -111,69 +72,54 @@
 <body>
 
 <div class="card">
-    <h2>Welcome Back</h2>
+    <h2>Login</h2>
 
     <input type="email" id="email" placeholder="Email" />
     <input type="password" id="password" placeholder="Password" />
 
     <button onclick="login()">Login</button>
-    <button class="button-secondary" onclick="signup()">Create a new account</button>
-    <span class="small" onclick="forgot()">Forgot Password?</span>
+
+    <span class="small" onclick="window.location.href='signup.html'">Create a new account</span>
+    <span class="small" onclick="forgot()">Forgot password?</span>
 
     <p id="status"></p>
 </div>
 
 <script>
-const SUPABASE_URL = "https://wtryahnysabnjdcypihl.supabase.co";
-const SUPABASE_ANON_KEY =
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind0cnlhaG55c2FibmpkY3lwaWhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxMTM0NTAsImV4cCI6MjA3NzY4OTQ1MH0.uLi6Nfk8NQ9KmR_Igt9sb_wtQxtujm_lipT6TU3dwjM";
-
-const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const client = supabase.createClient(
+    "https://wtryahnysabnjdcypihl.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind0cnlhaG55c2FibmpkY3lwaWhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxMTM0NTAsImV4cCI6MjA3NzY4OTQ1MH0.uLi6Nfk8NQ9KmR_Igt9sb_wtQxtujm_lipT6TU3dwjM"
+);
 
 async function login() {
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value.trim();
-
     const status = document.getElementById("status");
-    status.textContent = "Please wait...";
 
-    const { data, error } = await client.auth.signInWithPassword({ email, password });
-
-    if (error) {
-        status.textContent = error.message;
-        status.style.color = "#ffcccc";
-    } else {
-        status.textContent = "Login successful! Redirecting...";
-        status.style.color = "#d4ffd4";
-        setTimeout(() => window.location.href = "index.html", 1200);
+    if (!email || !password) {
+        status.textContent = "Please enter email and password.";
+        return;
     }
-}
 
-async function signup() {
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value.trim();
-
-    const status = document.getElementById("status");
     status.textContent = "Please wait...";
 
-    const { data, error } = await client.auth.signUp({ email, password });
+    const { error } = await client.auth.signInWithPassword({ email, password });
 
     if (error) {
         status.textContent = error.message;
-        status.style.color = "#ffcccc";
     } else {
-        status.textContent = "Sign up successful! Redirecting...";
         status.style.color = "#d4ffd4";
-        setTimeout(() => window.location.href = "index.html", 1200);
+        status.textContent = "Login successful!";
+        setTimeout(() => window.location.href = "index.html", 800);
     }
 }
 
 async function forgot() {
-    const email = prompt("Enter your email:");
+    const email = prompt("Enter your email to reset password:");
     if (!email) return;
-
+    
     const status = document.getElementById("status");
-
+    
     const { error } = await client.auth.resetPasswordForEmail(email, {
         redirectTo: "https://shader7.com/photopassportsizepro/reset-password.html"
     });
