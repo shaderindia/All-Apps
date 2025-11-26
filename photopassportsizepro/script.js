@@ -355,14 +355,17 @@ function initializeApp() {
     return Math.max(72, Math.min(1200, parseInt(els.dpi.value) || 300));
   }
 
+  // Converts a value from the current unit to pixels
+  // DPI only affects physical units (mm, inch), not px
   function toPx(val, unit) {
     const dpi = getDPI();
     val = parseFloat(val) || 0;
     if (unit === 'mm') return (val / 25.4) * dpi;
     if (unit === 'inch') return val * dpi;
-    return val; // px
+    return val; // px - DPI has no effect
   }
 
+  // Converts a pixel value to the current unit for display
   function fromPx(px, unit) {
     const dpi = getDPI();
     if (unit === 'mm') return (px * 25.4) / dpi;
@@ -407,9 +410,9 @@ function initializeApp() {
     const page = getPageSize();
     const count = Math.max(1, parseInt(els.numPhotos.value) || 1);
 
-    // Set canvas size
-    canvas.width = page.w;
-    canvas.height = page.h;
+    // Set canvas size in pixels based on converted physical dimensions
+    canvas.width = Math.round(page.w);
+    canvas.height = Math.round(page.h);
 
     // Fill background
     ctx.fillStyle = isDark ? '#23293b' : '#ffffff';
@@ -422,7 +425,7 @@ function initializeApp() {
     const cols = Math.floor((contentW + dims.gapH) / (dims.w + dims.gapH)) || 1;
     const rows = Math.ceil(count / cols);
 
-    // Auto-center logic
+    // Auto-center logic - only applies if checkbox is explicitly checked
     let startX = dims.marginL;
     let startY = dims.marginT;
 
@@ -524,6 +527,8 @@ function initializeApp() {
   }
 
   // ==== Unit Conversion ====
+  // When changing units, the PIXEL VALUE is preserved. Only the displayed number changes.
+  // Example: 300px → 25.4mm (at 300 DPI) → 300px (when switching back)
   function handleUnitChange() {
     const newUnit = els.unit.value;
     if (newUnit === previousUnit) return;
@@ -542,14 +547,16 @@ function initializeApp() {
       let val = parseFloat(input.value);
       let pxVal = 0;
 
+      // Convert from old unit to pixels
       if (previousUnit === 'mm') pxVal = (val / 25.4) * dpi;
       else if (previousUnit === 'inch') pxVal = val * dpi;
-      else pxVal = val;
+      else pxVal = val; // was already in pixels
 
+      // Convert from pixels to new unit
       let newVal = 0;
       if (newUnit === 'mm') newVal = (pxVal * 25.4) / dpi;
       else if (newUnit === 'inch') newVal = pxVal / dpi;
-      else newVal = pxVal;
+      else newVal = pxVal; // keep as pixels
 
       input.value = (newUnit === 'px') ? Math.round(newVal) : newVal.toFixed(2);
     });
@@ -565,14 +572,16 @@ function initializeApp() {
   }
 
   // ==== Auto-fix Layout ====
+  // Applies 300x400px photo size with 35px gaps/margins
+  // Preserves actual pixel values when converting between units
   function autoFixLayout() {
     const currentUnit = els.unit.value;
     const dpi = getDPI();
     const targets = {
-      w: 300,
-      h: 400,
-      gap: 35,
-      margin: 35
+      w: 300,  // Target width in pixels
+      h: 400,  // Target height in pixels
+      gap: 35, // Target gap in pixels
+      margin: 35 // Target margin in pixels
     };
 
     const convert = (pxVal) => {
@@ -591,7 +600,8 @@ function initializeApp() {
     els.marginTop.value = format(convert(targets.margin));
     els.marginLeft.value = format(convert(targets.margin));
 
-    els.autocenter.checked = true;
+    // Auto-center is NOT forced by auto-fix anymore
+    // It only activates if user manually checks the box
 
     updateCropperAspectRatio();
     renderCanvas();
