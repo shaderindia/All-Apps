@@ -52,9 +52,6 @@ function initializeApp() {
   let bgColor = '#ffffff';
   let previousUnit = 'mm';
 
-  // ==== Constants ====
-  const SCREEN_DPI = 96; // Standard screen DPI for consistent visual display
-
   // ==== Initialization ====
   function init() {
     // Load saved theme
@@ -413,19 +410,13 @@ function initializeApp() {
     const page = getPageSize();
     const count = Math.max(1, parseInt(els.numPhotos.value) || 1);
 
-    // Calculate bitmap size based on DPI (for print quality)
-    // and display size based on screen DPI (for consistent visual appearance)
+    // Calculate scaling factor to normalize DPI (100 DPI should look same as 300 DPI on screen)
     const dpi = getDPI();
-    
-    // Set bitmap size (affects print quality)
-    canvas.width = Math.round(page.w);
-    canvas.height = Math.round(page.h);
+    const dpiScale = REFERENCE_DPI / dpi;
 
-    // Set CSS display size (maintains consistent visual size on screen)
-    // Scale down by dpi/SCREEN_DPI to normalize visual appearance
-    const displayScale = dpi / SCREEN_DPI;
-    canvas.style.width = Math.round(page.w / displayScale) + 'px';
-    canvas.style.height = Math.round(page.h / displayScale) + 'px';
+    // Set canvas size in pixels (affected by DPI normalization)
+    canvas.width = Math.round(page.w * dpiScale);
+    canvas.height = Math.round(page.h * dpiScale);
 
     // Fill background
     ctx.fillStyle = isDark ? '#23293b' : '#ffffff';
@@ -446,15 +437,7 @@ function initializeApp() {
       const totalRowW = cols * dims.w + (cols - 1) * dims.gapH;
       if (cols > 0) startX = (page.w - totalRowW) / 2;
 
-      startX = Math.max(startX, dims.marginL);
       startY = Math.max(startY, dims.marginT);
-
-      if (document.activeElement !== els.marginLeft) {
-        els.marginLeft.value = fromPx(startX, els.unit.value).toFixed(2);
-      }
-      if (document.activeElement !== els.marginTop) {
-        els.marginTop.value = fromPx(startY, els.unit.value).toFixed(2);
-      }
     }
 
     // Get cropped image
@@ -467,32 +450,35 @@ function initializeApp() {
     });
 
     if (!croppedCanvas) {
-      console.log('Cropped canvas is empty');
-      return;
-    }
+      croppedCanvas = new OffscreenCanvas(dims.w, dims.h);
+    croppedCanvas.style.display = 'block';
+    croppedCanvas.style.border = 'none';
+    croppedCanvas.style.margin = 0;
+    croppedCanvas.style.padding = 0;
+    croppedCanvas.style.backgroundSize = '100%';
+    croppedCanvas.style.maxWidth = 'none';
+    croppedCanvas.style.maxHeight = 'none';
+    croppedCanvas.style.overflow = 'hidden';
+    croppedCanvas.style.transformOrigin = 'top left';
+    croppedCanvas.style.transform = `scale(${dpiScale},${dpiScale})`;
+    croppedCanvas.style.position = 'absolute';
+    croppedCanvas.style.top = '0';
+    croppedCanvas.style.left = '0';
+    canvas.appendChild(croppedCanvas);
+    } else {
+      const x = startX + c * (dims.w + dims.gapH);
+      const y = startY + r * (dims.h + dims.gapV);
 
-    // Draw photos
-    let drawn = 0;
-    for (let r = 0; r < rows; r++) {
-      for (let c = 0; c < cols; c++) {
-        if (drawn >= count) break;
+      // Draw image
+      ctx.drawImage(croppedCanvas, x, y, dims.w, dims.h);
 
-        const x = startX + c * (dims.w + dims.gapH);
-        const y = startY + r * (dims.h + dims.gapV);
-
-        // Draw image
-        ctx.drawImage(croppedCanvas, x, y, dims.w, dims.h);
-
-        // Draw border ONLY if "Add Border" is checked
-        if (els.addBorder.checked) {
-          ctx.save();
-          ctx.strokeStyle = '#000000';
-          ctx.lineWidth = 1;
-          ctx.strokeRect(x, y, dims.w, dims.h);
-          ctx.restore();
-        }
-
-        drawn++;
+      // Draw border ONLY if "Add Border" is checked
+      if (els.addBorder.checked) {
+        ctx.save();
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(x, y, dims.w, dims.h);
+        ctx.restore();
       }
     }
 
@@ -500,7 +486,7 @@ function initializeApp() {
     if (els.showCutlines.checked && rows > 0 && cols > 0) {
       ctx.save();
       ctx.lineWidth = 1;
-      ctx.strokeStyle = '#999999';
+      ctx.strokeStyle = '#999';
       ctx.setLineDash([2, 2]);
 
       const hasPhoto = (r, c) => (r * cols + c) < count;
