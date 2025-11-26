@@ -51,7 +51,9 @@ function initializeApp() {
   let isDark = false;
   let bgColor = '#ffffff';
   let previousUnit = 'mm';
-  const REFERENCE_DPI = 300; // Reference DPI for consistent rendering
+
+  // ==== Constants ====
+  const SCREEN_DPI = 96; // Standard screen DPI for consistent visual display
 
   // ==== Initialization ====
   function init() {
@@ -411,20 +413,23 @@ function initializeApp() {
     const page = getPageSize();
     const count = Math.max(1, parseInt(els.numPhotos.value) || 1);
 
-    // Calculate scaling factor to normalize DPI (100 DPI should look same as 300 DPI on screen)
+    // Calculate bitmap size based on DPI (for print quality)
+    // and display size based on screen DPI (for consistent visual appearance)
     const dpi = getDPI();
-    const dpiScale = REFERENCE_DPI / dpi;
+    
+    // Set bitmap size (affects print quality)
+    canvas.width = Math.round(page.w);
+    canvas.height = Math.round(page.h);
 
-    // Set canvas size in CSS pixels (affected by DPI normalization)
-    canvas.width = Math.round(page.w * dpiScale);
-    canvas.height = Math.round(page.h * dpiScale);
-
-    // Scale the context so everything draws correctly
-    ctx.scale(dpiScale, dpiScale);
+    // Set CSS display size (maintains consistent visual size on screen)
+    // Scale down by dpi/SCREEN_DPI to normalize visual appearance
+    const displayScale = dpi / SCREEN_DPI;
+    canvas.style.width = Math.round(page.w / displayScale) + 'px';
+    canvas.style.height = Math.round(page.h / displayScale) + 'px';
 
     // Fill background
     ctx.fillStyle = isDark ? '#23293b' : '#ffffff';
-    ctx.fillRect(0, 0, page.w, page.h);
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Calculate grid layout
     const contentW = page.w - dims.marginL * 2;
