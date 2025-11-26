@@ -52,6 +52,9 @@ function initializeApp() {
   let bgColor = '#ffffff';
   let previousUnit = 'mm';
 
+  // ==== Constants ====
+  const SCREEN_DPI = 96; // Standard screen DPI for consistent visual display
+
   // ==== Initialization ====
   function init() {
     // Load saved theme
@@ -238,6 +241,16 @@ function initializeApp() {
     els.uploadArea.classList.add('hidden');
     els.editorContainer.classList.remove('hidden');
 
+    // Add pulse effect to crop container
+    const cropContainer = document.querySelector('.crop-container');
+    if (cropContainer) {
+      cropContainer.classList.add('pulse-effect');
+      // Remove pulse effect after animation completes (3 pulses * 1.2s each)
+      setTimeout(() => {
+        cropContainer.classList.remove('pulse-effect');
+      }, 3600);
+    }
+
     // Initialize cropper
     startCropper(currentImageURL);
   }
@@ -410,13 +423,16 @@ function initializeApp() {
     const page = getPageSize();
     const count = Math.max(1, parseInt(els.numPhotos.value) || 1);
 
-    // Calculate scaling factor to normalize DPI (100 DPI should look same as 300 DPI on screen)
+    // Calculate bitmap size for print quality
     const dpi = getDPI();
-    const dpiScale = REFERENCE_DPI / dpi;
+    
+    canvas.width = Math.round(page.w);
+    canvas.height = Math.round(page.h);
 
-    // Set canvas size in pixels (affected by DPI normalization)
-    canvas.width = Math.round(page.w * dpiScale);
-    canvas.height = Math.round(page.h * dpiScale);
+    // Normalize DPI for consistent visual display
+    const displayScale = SCREEN_DPI / dpi;
+    canvas.style.width = Math.round(page.w * displayScale) + 'px';
+    canvas.style.height = Math.round(page.h * displayScale) + 'px';
 
     // Fill background
     ctx.fillStyle = isDark ? '#23293b' : '#ffffff';
@@ -450,35 +466,32 @@ function initializeApp() {
     });
 
     if (!croppedCanvas) {
-      croppedCanvas = new OffscreenCanvas(dims.w, dims.h);
-    croppedCanvas.style.display = 'block';
-    croppedCanvas.style.border = 'none';
-    croppedCanvas.style.margin = 0;
-    croppedCanvas.style.padding = 0;
-    croppedCanvas.style.backgroundSize = '100%';
-    croppedCanvas.style.maxWidth = 'none';
-    croppedCanvas.style.maxHeight = 'none';
-    croppedCanvas.style.overflow = 'hidden';
-    croppedCanvas.style.transformOrigin = 'top left';
-    croppedCanvas.style.transform = `scale(${dpiScale},${dpiScale})`;
-    croppedCanvas.style.position = 'absolute';
-    croppedCanvas.style.top = '0';
-    croppedCanvas.style.left = '0';
-    canvas.appendChild(croppedCanvas);
-    } else {
-      const x = startX + c * (dims.w + dims.gapH);
-      const y = startY + r * (dims.h + dims.gapV);
+      console.log('Cropped canvas is empty');
+      return;
+    }
 
-      // Draw image
-      ctx.drawImage(croppedCanvas, x, y, dims.w, dims.h);
+    // Draw photos
+    let drawn = 0;
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        if (drawn >= count) break;
 
-      // Draw border ONLY if "Add Border" is checked
-      if (els.addBorder.checked) {
-        ctx.save();
-        ctx.strokeStyle = '#000';
-        ctx.lineWidth = 1;
-        ctx.strokeRect(x, y, dims.w, dims.h);
-        ctx.restore();
+        const x = startX + c * (dims.w + dims.gapH);
+        const y = startY + r * (dims.h + dims.gapV);
+
+        // Draw image
+        ctx.drawImage(croppedCanvas, x, y, dims.w, dims.h);
+
+        // Draw border ONLY if "Add Border" is checked
+        if (els.addBorder.checked) {
+          ctx.save();
+          ctx.strokeStyle = '#000000';
+          ctx.lineWidth = 1;
+          ctx.strokeRect(x, y, dims.w, dims.h);
+          ctx.restore();
+        }
+
+        drawn++;
       }
     }
 
@@ -486,7 +499,7 @@ function initializeApp() {
     if (els.showCutlines.checked && rows > 0 && cols > 0) {
       ctx.save();
       ctx.lineWidth = 1;
-      ctx.strokeStyle = '#999';
+      ctx.strokeStyle = '#999999';
       ctx.setLineDash([2, 2]);
 
       const hasPhoto = (r, c) => (r * cols + c) < count;
@@ -623,9 +636,23 @@ function initializeApp() {
     const quality = hq ? 1.0 : 0.92;
     const filename = `passport-photo-${Date.now()}.${ext}`;
 
+    const btn = hq ? els.downloadHQBtn : els.downloadBtn;
+    
+    // Store original HTML and disable button
+    const originalHTML = btn.innerHTML;
+    btn.disabled = true;
+    
+    // Add checkmark animation
+    btn.innerHTML = '<i class="fa fa-check checkmark-animation"></i> Downloaded!';
+    btn.classList.add('btn-success'); // Optional: add a success color
+
     els.outputCanvas.toBlob((blob) => {
       if (!blob) {
         alert('Error: Could not generate image. Please try again.');
+        // Reset button state on error
+        btn.innerHTML = originalHTML;
+        btn.disabled = false;
+        btn.classList.remove('btn-success');
         return;
       }
 
@@ -646,15 +673,11 @@ function initializeApp() {
 
     }, mime, quality);
 
-    // Success feedback
-    const btn = hq ? els.downloadHQBtn : els.downloadBtn;
-    const originalHTML = btn.innerHTML;
-    btn.innerHTML = '<i class="fa fa-check"></i> Starting...';
-    btn.disabled = true;
-    
+    // Reset button after animation completes
     setTimeout(() => {
       btn.innerHTML = originalHTML;
       btn.disabled = false;
+      btn.classList.remove('btn-success');
     }, 2000);
   }
 
