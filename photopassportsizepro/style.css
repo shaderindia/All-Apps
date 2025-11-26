@@ -10,6 +10,8 @@
   --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
   --radius: 16px;
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --success: #10b981;
+  --success-hover: #059669;
 }
 
 body.dark {
@@ -325,6 +327,51 @@ h3 {
   }
 }
 
+/* Download Checkmark Animation */
+@keyframes checkmark-pop {
+  0% {
+    transform: scale(0) rotate(-180deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+.checkmark-animation {
+  display: inline-block;
+  animation: checkmark-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Upload Pulse Effect */
+@keyframes gentle-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.02);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.pulse-effect {
+  animation: gentle-pulse 1.2s ease-in-out 3; /* 3 pulses */
+}
+
+.crop-container.pulse-effect {
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+}
+
 /* Split View (Settings & Preview) */
 .split-view {
   display: grid;
@@ -453,6 +500,16 @@ body.dark .btn-secondary {
 
 body.dark .btn-secondary:hover {
   background: rgba(255, 255, 255, 0.2);
+}
+
+/* Success button state */
+.btn-success {
+  background: var(--success) !important;
+  transition: background 0.3s ease;
+}
+
+.btn-success:hover {
+  background: var(--success-hover) !important;
 }
 
 /* Preview Panel */
