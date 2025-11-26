@@ -1540,10 +1540,17 @@
           if (rows > 0) startY = Math.max(0, (page.h - totalColH) / 2);
         }
 
-        // Get cropped image
+        // Get crop data to ensure proper aspect ratio
+        const cropData = cropper.getData(true);
+        const cropAspectRatio = cropData.width / cropData.height;
+        const targetAspectRatio = dims.w / dims.h;
+
+        // Get cropped image - FIX: Let Cropper.js maintain aspect ratio naturally
+        // Instead of forcing both width and height, we specify maxWidth to get high quality
+        // while letting it calculate height proportionally
+        const targetMaxWidth = Math.max(dims.w * 2, 600); // Ensure good quality
         const croppedCanvas = cropper.getCroppedCanvas({
-          width: dims.w * 2,
-          height: dims.h * 2,
+          maxWidth: targetMaxWidth,
           imageSmoothingEnabled: true,
           imageSmoothingQuality: 'high',
           fillColor: bgColor
@@ -1554,7 +1561,7 @@
           return;
         }
 
-        // Draw photos
+        // Draw photos - FIX: Use the actual cropped canvas aspect ratio to prevent stretching
         let drawn = 0;
         for (let r = 0; r < rows; r++) {
           for (let c = 0; c < cols; c++) {
@@ -1563,8 +1570,25 @@
             const x = startX + c * (dims.w + dims.gapH);
             const y = startY + r * (dims.h + dims.gapV);
 
-            // Draw image
-            ctx.drawImage(croppedCanvas, x, y, dims.w, dims.h);
+            // Calculate actual dimensions to maintain aspect ratio
+            const actualAspectRatio = croppedCanvas.width / croppedCanvas.height;
+            let drawWidth = dims.w;
+            let drawHeight = dims.h;
+            
+            if (Math.abs(actualAspectRatio - targetAspectRatio) > 0.01) {
+              // If aspect ratios don't match exactly (due to rounding), fit inside the cell
+              if (actualAspectRatio > targetAspectRatio) {
+                drawHeight = dims.w / actualAspectRatio;
+              } else {
+                drawWidth = dims.h * actualAspectRatio;
+              }
+            }
+
+            // Draw image centered in the cell if aspect ratio doesn't match perfectly
+            const offsetX = (dims.w - drawWidth) / 2;
+            const offsetY = (dims.h - drawHeight) / 2;
+
+            ctx.drawImage(croppedCanvas, x + offsetX, y + offsetY, drawWidth, drawHeight);
 
             // Draw border ONLY if "Add Border" is checked
             if (els.addBorder.checked) {
