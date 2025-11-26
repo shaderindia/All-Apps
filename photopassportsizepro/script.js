@@ -51,6 +51,7 @@ function initializeApp() {
   let isDark = false;
   let bgColor = '#ffffff';
   let previousUnit = 'mm';
+  const REFERENCE_DPI = 300; // Reference DPI for consistent rendering
 
   // ==== Initialization ====
   function init() {
@@ -410,13 +411,20 @@ function initializeApp() {
     const page = getPageSize();
     const count = Math.max(1, parseInt(els.numPhotos.value) || 1);
 
-    // Set canvas size in pixels based on converted physical dimensions
-    canvas.width = Math.round(page.w);
-    canvas.height = Math.round(page.h);
+    // Calculate scaling factor to normalize DPI (100 DPI should look same as 300 DPI on screen)
+    const dpi = getDPI();
+    const dpiScale = REFERENCE_DPI / dpi;
+
+    // Set canvas size in CSS pixels (affected by DPI normalization)
+    canvas.width = Math.round(page.w * dpiScale);
+    canvas.height = Math.round(page.h * dpiScale);
+
+    // Scale the context so everything draws correctly
+    ctx.scale(dpiScale, dpiScale);
 
     // Fill background
     ctx.fillStyle = isDark ? '#23293b' : '#ffffff';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillRect(0, 0, page.w, page.h);
 
     // Calculate grid layout
     const contentW = page.w - dims.marginL * 2;
