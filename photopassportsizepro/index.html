@@ -8,7 +8,7 @@
 
   <!-- Icons & Fonts -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght=400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <!-- Cropper -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
 
@@ -196,12 +196,10 @@
       font-size:clamp(.9rem,2.5vw,1rem);
       color:var(--text-muted);
     }
+
+    /* hide native input, we trigger it via JS */
     #photo-upload {
-      position:absolute;
-      top:0; left:0;
-      width:100%; height:100%;
-      opacity:0;
-      cursor:pointer;
+      display:none;
     }
 
     /* Editor */
@@ -612,7 +610,8 @@
             <i class="fa fa-cloud-upload-alt fa-3x"></i>
             <p>Click or Drag &amp; Drop to Upload Photo</p>
           </div>
-          <input type="file" id="photo-upload" accept="image/*" aria-label="Upload your photo">
+          <!-- accept: typical images + extra extensions -->
+          <input type="file" id="photo-upload" accept="image/*,.webp,.bmp,.tif,.tiff,.avif,.heic,.heif" aria-label="Upload your photo">
         </div>
       </div>
 
@@ -813,7 +812,7 @@
       </button>
       <h2 id="modal-title"><i class="fa fa-info-circle"></i> How to Use</h2>
       <ul>
-        <li>Upload a clear, straight photo (JPG/PNG).</li>
+        <li>Upload a clear, straight photo (JPG/PNG/other supported formats).</li>
         <li>(Optional) Use <b>Remove Background</b> for a clean white background.</li>
         <li>Adjust crop so your face is correctly framed.</li>
         <li>Use <b>Auto-Fix</b> to set 300×400 px photos with 35 px margins &amp; gaps.</li>
@@ -906,6 +905,14 @@
       }
 
       function setupEventListeners() {
+        // Ensure drag & drop works reliably in modern browsers
+        ['dragenter','dragover','dragleave','drop'].forEach(eventName => {
+          els.uploadArea.addEventListener(eventName, e => {
+            e.preventDefault();
+            e.stopPropagation();
+          });
+        });
+
         // Upload & change photo (single click, even for same file)
         function openFilePicker() {
           els.photoUpload.value = ''; // reset so selecting same file triggers change
@@ -924,7 +931,7 @@
 
         els.photoUpload.addEventListener('change', handleFileSelect);
 
-        // Drag & drop
+        // Drag & drop (visual feedback)
         els.uploadArea.addEventListener('dragover', (e) => {
           e.preventDefault();
           els.uploadArea.style.background = 'rgba(99,102,241,0.08)';
@@ -1038,12 +1045,22 @@
       }
 
       function handleFile(file) {
-        if (!file.type.startsWith('image/')) {
-          alert('Please upload an image file (JPG/PNG).');
+        // Allow common image formats (based on extension)
+        const allowedExtensions = [
+          'jpg','jpeg','png','webp','bmp','gif',
+          'tif','tiff','avif','heic','heif'
+        ];
+        const name = file.name || '';
+        const ext = name.includes('.') ? name.split('.').pop().toLowerCase() : '';
+
+        if (!ext || !allowedExtensions.includes(ext)) {
+          alert('Unsupported format. Supported: JPG, PNG, WEBP, BMP, GIF, TIFF, AVIF, HEIC.');
           return;
         }
-        if (file.size > 15 * 1024 * 1024) {
-          alert('File size must be less than 15MB.');
+
+        // Allow a bit larger images for high-res sources
+        if (file.size > 25 * 1024 * 1024) {
+          alert('File too large. Max 25MB.');
           return;
         }
 
@@ -1053,7 +1070,6 @@
         currentImageURL = originalImageURL;
 
         els.editorContainer.classList.remove('hidden');
-        // keep upload area as a "Change" card, no need to hide completely
 
         const cropContainer = document.querySelector('.crop-container');
         if (cropContainer) {
@@ -1091,7 +1107,7 @@
         }
         img.onerror = function () {
           console.error('Image failed to load');
-          alert('Failed to load image. Please try a different file.');
+          alert('Failed to load image. Your browser might not support this format.');
           cleanupImageURLs();
         };
 
@@ -1119,7 +1135,7 @@
             });
           } catch (error) {
             console.error('Cropper initialization error:', error);
-            alert('Failed to initialize cropper. Please try again.');
+            alert('Failed to initialize cropper. Please try again with a different image.');
           }
         }
       }
@@ -1143,7 +1159,7 @@
         if (!currentImageURL && !currentFile) return;
 
         if (!window.crossOriginIsolated) {
-          alert('Background removal requires a secure context (https) and modern browser. The rest of the tool will continue to work.');
+          alert('Background removal requires HTTPS and a modern browser. The rest of the tool will still work fine.');
           return;
         }
 
@@ -1433,7 +1449,7 @@
           }
         }
 
-        // Cutlines: draw lines in the middle of gaps between photos (CORRECTED)
+        // Cutlines: draw lines in the middle of gaps between photos (corrected)
         if (els.showCutlines.checked) {
           ctx.save();
           ctx.strokeStyle = '#9ca3af';
