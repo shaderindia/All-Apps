@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FANUC Work Offsets: G54-G59 vs G10 vs G52 - SHADER7</title>
+    <meta name="description" content"Master FANUC work offsets for multi-part setups. Understand G54-G59, G10, G52 usage and best practices for CNC milling.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; max-width: 800px; margin: 0 auto; padding: 2rem 1rem; line-height: 1.7; color: #1f2937; }
+        h1 { color: #1e293b; }
+        .meta { color: #64748b; margin-bottom: 2rem; }
+        h2 { color: #334155; margin: 2rem 0 1rem; }
+        .method { background: #dbeafe; padding: 1rem; border-radius: 8px; margin: 1rem 0; }
+        .example { background: #f8fafc; padding: 1rem; border: 1px solid #d1d5db; margin: 1rem 0; }
+        code { background: #f1f5f9; padding: 0.2rem 0.4rem; border-radius: 4px; font-family: monospace; }
+        nav { margin-bottom: 2rem; }
+        nav a { color: #2563eb; margin-right: 1rem; }
+        .author-box { background: #e0e7ff; padding: 1rem; border-radius: 8px; margin: 2rem 0; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="blog.html">← Blog</a>
+    <a href="blog-post-14.html">Tool Life Management</a>
+</nav>
+
+<h1>FANUC Work Offsets: G54-G59 vs G10 vs G52</h1>
+<p class="meta">By <strong>Nishikant Xalxo</strong> | FANUC CNC Expert | Updated: January 10, 2025 | 10 min read</p>
+
+<p>Using the wrong work offset on a multi-part fixture cost me 2 hours and a ruined vise jaw. After that mistake, I mastered FANUC's three work offset methods. Here's when to use each one and why.</p>
+
+<h2>Understanding Work Offsets</h2>
+
+<p>Work offsets tell the machine where part zero is located relative to machine zero. FANUC provides three ways to set them:</p>
+<ol>
+    <li><strong>G54-G59:</strong> Standard offsets (6 available)</li>
+    <li><strong>G10:</strong> Programmable offset setting</li>
+    <li><strong>G52:</strong> Local coordinate system shift</li>
+</ol>
+
+<h2>Method 1: G54-G59 (Most Common)</h2>
+
+<p><strong>Usage:</strong> Set on OFFSET page, called in program with G54, G55, etc.</p>
+
+<div class="method">
+    <strong>Best for:</strong> Permanent fixtures, multi-part setups, recurring jobs
+</div>
+
+<div class="example">
+    <strong>Program Example:</strong>
+    <pre><code>O1000 (PART 1)
+G90 G54 G00 X0 Y0   ; Use G54 for part 1
+S2500 M03
+...
+M30
+
+O1001 (PART 2)
+G90 G55 G00 X0 Y0   ; Use G55 for part 2
+S2500 M03
+...
+M30</code></pre>
+</div>
+
+<p><strong>Advantages:</strong></p>
+<ul>
+    <li>Persistent (saved in machine memory)</li>
+    <li>Easy to set via OFFSET page</li>
+    <li>Can be locked with parameter 3290</li>
+</ul>
+
+<h2>Method 2: G10 (Programmable)</h2>
+
+<p><strong>Usage:</strong> Set offset values directly in G-code program</p>
+
+<div class="method">
+    <strong>Best for:</strong> Automated setups, changing offsets in program, safety
+</div>
+
+<div class="example">
+    <strong>Program Example:</strong>
+    <pre><code>O2000 (SET OFFSETS)
+G10 L2 P1 X-250.0 Y-150.0 Z-300.0   ; Set G54
+G10 L2 P2 X-350.0 Y-150.0 Z-300.0   ; Set G55
+G10 L2 P3 X-450.0 Y-150.0 Z-300.0   ; Set G56
+M30
+
+O2001 (MAIN PROGRAM)
+G90 G54 G00 X0 Y0
+...
+G90 G55 G00 X0 Y0
+M30</code></pre>
+</div>
+
+<p><strong>Advantages:</strong></p>
+<ul>
+    <li>Offset values stored with program</li>
+    <li>No manual data entry (reduces errors)</li>
+    <li>Easy to backup and transfer</li>
+</ul>
+
+<p><strong>L2 P#:</strong> P1=G54, P2=G55, ..., P6=G59</p>
+
+<h2>Method 3: G52 (Local Coordinate Shift)</h2>
+
+<p><strong>Usage:</strong> Temporary shift from current work offset</p>
+
+<div class="method">
+    <strong>Best for:</strong> Sub-programs, local adjustments, avoiding offset changes
+</div>
+
+<div class="example">
+    <strong>Program Example:</strong>
+    <pre><code>O3000 (MAIN)
+G90 G54 G00 X0 Y0           ; Start at G54 origin
+G52 X100.0 Y50.0            ; Shift origin +100 X, +50 Y
+G00 X0 Y0                   ; Now at X100 Y50 (relative)
+... (machining operations)
+G52 X0 Y0                   ; Cancel local shift
+G00 X0 Y0                   ; Back to G54 origin
+M30</code></pre>
+</div>
+
+<p><strong>Key Points:</strong></p>
+<ul>
+    <li>G52 shifts from current work offset (G54 + G52 = new origin)</li>
+    <li>Must cancel with G52 X0 Y0</li>
+    <li>Only active in program where used</li>
+    <li>Does not modify G54-G59 values</li>
+</ul>
+
+<h2>Best Practices</h2>
+
+<h3>Multi-Part Fixture Setup</h3>
+
+<p><strong>Recommended approach:</strong></p>
+<ol>
+    <li>Set G54 at fixture corner or reference point</li>
+    <li>Use G55, G56, G57 for individual parts</li>
+    <li>Store in program with G10 for safety</li>
+    <li>Use G52 for local adjustments within part</li>
+</ol>
+
+<div class="example">
+    <strong>Complete Multi-Part Example:</strong>
+    <pre><code>O4000 (SETUP)
+G10 L2 P1 X-250.0 Y-150.0 Z-300.0  ; Fixture reference
+G10 L2 P2 X-300.0 Y-150.0 Z-300.0  ; Part 1
+G10 L2 P3 X-400.0 Y-150.0 Z-300.0  ; Part 2
+G10 L2 P4 X-500.0 Y-150.0 Z-300.0  ; Part 3
+M30
+
+O4001 (MILL PART 1)
+G90 G55 G00 X0 Y0
+G52 X10.0 Y5.0       ; Local shift for this part's datum
+... (machining)
+G52 X0 Y0            ; Cancel local shift
+M30</code></pre>
+</div>
+
+<h2>Common Mistakes</h2>
+
+<div class="method">
+    <strong>Mistake 1: Forgetting to cancel G52</strong>
+    <br>Solution: Always cancel before M30 or next part
+</div>
+
+<div class="method">
+    <strong>Mistake 2: Using G10 without L2</strong>
+    <br>Solution: G10 L2 is required for work offset setting
+</div>
+
+<div class="method">
+    <strong>Mistake 3: Setting offset in wrong units</strong>
+    <br>Solution: Verify G20/G21 matches machine units
+</div>
+
+<h2>Work Offset Protection</h2>
+
+<p>To prevent operators from modifying critical offsets:</p>
+<ul>
+    <li>Parameter 3290#0 = 1 (locks G54 modification)</li>
+    <li>Parameter 3290#1 = 1 (locks G55 modification)</li>
+    <li>...and so on for each offset</li>
+</ul>
+
+<p><strong>Password:</strong> Parameter 3210 (set password to unlock)</p>
+
+<div class="author-box">
+    <strong>About the Author:</strong> Nishikant Xalxo uses G10 for all multi-part setups to ensure repeatability. He locks critical offsets to prevent operator errors. Contact: <a href="mailto:nxdecore@gmail.com">nxdecore@gmail.com</a>
+</div>
+
+<p><strong>All FANUC CNC articles complete.</strong> Next: Finance series</p>
+
+</body>
+</html>
