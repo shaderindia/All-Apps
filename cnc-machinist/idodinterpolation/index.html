@@ -1,17 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Base for your live path -->
-  <base href="/cnc-machinist/idodinterpolation/">
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>ID/OD Helical Interpolation Generator</title>
 
-  <!-- Tailwind + font -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  <!-- Gear favicon (inline SVG data URL) -->
   <link rel="icon" href='data:image/svg+xml;utf8,
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
     <circle cx="128" cy="128" r="36" fill="%23ffffff"/>
@@ -31,6 +27,12 @@
     @keyframes fadeInUp { from {opacity:0; transform: translateY(6px);} to {opacity:1; transform:none;} }
     @keyframes pulseSoft { 0%{transform:scale(1)} 50%{transform:scale(1.02)} 100%{transform:scale(1)} }
     .hint { font-size: 0.8rem; color:#9ca3af }
+    
+    /* Scrollbar styling for code block */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #1f2937; }
+    ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #6b7280; }
   </style>
 </head>
 <body class="bg-gray-900 text-white min-h-screen flex flex-col">
@@ -39,15 +41,14 @@
     <div class="w-full max-w-2xl bg-gray-800 p-6 sm:p-8 rounded-2xl shadow-2xl border border-gray-700 card">
 
       <h1 class="flex items-center justify-center gap-3 text-2xl sm:text-3xl font-bold text-center mb-4 text-indigo-400">
-        <!-- Small inline gear icon -->
         <svg width="26" height="26" viewBox="0 0 256 256" class="opacity-90">
           <circle cx="128" cy="128" r="36" fill="#ffffff"/>
           <path fill="#9aa0a6" d="M232 140v-24l-24-6c-2-6-4-11-7-16l13-21-17-17-21 13c-5-3-10-5-16-7l-6-24h-24l-6 24c-6 2-11 4-16 7l-21-13-17 17 13 21c-3 5-5 10-7 16l-24 6v24l24 6c2 6 4 11 7 16l-13 21 17 17 21-13c5 3 10 5 16 7l6 24h24l6-24c6-2 11-4 16-7l21 13 17-17-13-21c3-5 5-10 7-16l24-6zM128 164a36 36 0 1 1 0-72 36 36 0 0 1 0 72z"/>
         </svg>
-        ID/OD Helical Interpolation Generator
+        ID/OD Helical Interpolation
       </h1>
 
-      <p class="hint text-center mb-4">Tip: I/J/K sign is the <b>opposite</b> of the engage side. (G17 ID G41 → engage +Y, use J -R)</p>
+      <p class="hint text-center mb-4">Tip: I/J/K sign is calculated automatically based on engage side.</p>
 
       <div class="flex justify-center mb-4 bg-gray-700 rounded-lg p-1">
         <button id="id-interpolation-tab" class="tab-btn w-1/2 py-3 rounded-md text-sm font-semibold active">ID Helical Milling</button>
@@ -55,13 +56,12 @@
       </div>
 
       <div id="interpolation-inputs" class="space-y-4">
-        <!-- Workpiece & Tool Setup -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 border border-gray-700 rounded-xl bg-gray-850">
           <div class="md:col-span-3"><h3 class="text-lg font-semibold text-gray-300">Workpiece & Tool Setup</h3></div>
 
           <div>
             <label for="plane-select" class="block text-sm font-medium">Work Plane</label>
-            <select id="plane-select" class="w-full bg-gray-700 rounded-lg p-4 mt-1">
+            <select id="plane-select" class="w-full bg-gray-700 rounded-lg p-4 mt-1 border border-gray-600 focus:border-indigo-500">
               <option value="G17">G17 (X-Y)</option>
               <option value="G18">G18 (X-Z)</option>
               <option value="G19">G19 (Y-Z)</option>
@@ -71,7 +71,7 @@
           <div>
             <label for="cutter-diameter" class="block text-sm font-medium">Cutter Diameter</label>
             <div class="input-group">
-              <input type="text" id="cutter-diameter" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="e.g., 10">
+              <input type="number" id="cutter-diameter" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="e.g., 10">
               <span class="input-unit">mm</span>
             </div>
           </div>
@@ -79,82 +79,80 @@
           <div>
             <label for="program-number" class="block text-sm font-medium">Program Number</label>
             <div class="input-group">
-              <input type="text" id="program-number" value="1001" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <input type="number" id="program-number" value="1001" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500">
               <span class="input-unit">O####</span>
             </div>
           </div>
         </div>
 
-        <!-- Feature Geometry -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border border-gray-700 rounded-xl">
           <div class="md:col-span-2"><h3 class="text-lg font-semibold text-gray-300">Feature Geometry</h3></div>
           <div class="md:col-span-2 grid grid-cols-2 gap-4">
             <div>
               <label id="center1-label" for="center1" class="block text-sm font-medium">Center X</label>
-              <div class="input-group"><input type="text" id="center1" value="0" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500"><span class="input-unit">mm</span></div>
+              <div class="input-group"><input type="number" step="any" id="center1" value="0" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500"><span class="input-unit">mm</span></div>
             </div>
             <div>
               <label id="center2-label" for="center2" class="block text-sm font-medium">Center Y</label>
-              <div class="input-group"><input type="text" id="center2" value="0" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500"><span class="input-unit">mm</span></div>
+              <div class="input-group"><input type="number" step="any" id="center2" value="0" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500"><span class="input-unit">mm</span></div>
             </div>
           </div>
 
           <div>
             <label id="final-diameter-label" for="final-diameter" class="block text-sm font-medium">Final ID Diameter</label>
-            <div class="input-group"><input type="text" id="final-diameter" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="e.g., 50"><span class="input-unit">mm</span></div>
+            <div class="input-group"><input type="number" step="any" id="final-diameter" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="e.g., 50"><span class="input-unit">mm</span></div>
           </div>
 
           <div class="flex items-end">
             <div class="flex items-center h-full pb-1">
               <input type="checkbox" id="use-diameter-macro" class="h-6 w-6 bg-gray-700 border-gray-600 rounded text-indigo-500 focus:ring-indigo-600">
-              <label for="use-diameter-macro" class="ml-2 text-sm font-medium">Use Macro for Diameter (#500)</label>
+              <label for="use-diameter-macro" class="ml-2 text-sm font-medium text-gray-300">Use Macro for Diameter (#500)</label>
             </div>
           </div>
         </div>
 
-        <!-- Machining Parameters -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 border border-gray-700 rounded-xl">
           <div class="md:col-span-3"><h3 class="text-lg font-semibold text-gray-300">Machining Parameters</h3></div>
 
           <div>
             <label id="final-depth-label" for="final-depth" class="block text-sm font-medium">Final Depth (Z)</label>
-            <div class="input-group"><input type="text" id="final-depth" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="e.g., -15"><span class="input-unit">mm</span></div>
+            <div class="input-group"><input type="number" step="any" id="final-depth" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="e.g., -15"><span class="input-unit">mm</span></div>
           </div>
 
           <div>
             <label for="pitch" class="block text-sm font-medium">Pitch (Depth/Rev)</label>
-            <div class="input-group"><input type="text" id="pitch" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="e.g., 1.5"><span class="input-unit">mm</span></div>
+            <div class="input-group"><input type="number" step="any" id="pitch" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="e.g., 1.5"><span class="input-unit">mm</span></div>
           </div>
 
           <div>
             <label for="safety-distance" class="block text-sm font-medium">Z Safety Distance</label>
-            <div class="input-group"><input type="text" id="safety-distance" value="5" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500"><span class="input-unit">mm</span></div>
+            <div class="input-group"><input type="number" step="any" id="safety-distance" value="5" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500"><span class="input-unit">mm</span></div>
           </div>
 
           <div>
             <label id="xy-safety-dist-label" for="xy-safety-distance" class="block text-sm font-medium">XY Clearance</label>
-            <div class="input-group"><input type="text" id="xy-safety-distance" value="2" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500"><span class="input-unit">mm</span></div>
+            <div class="input-group"><input type="number" step="any" id="xy-safety-distance" value="2" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500"><span class="input-unit">mm</span></div>
           </div>
 
           <div>
             <label for="spindle-speed" class="block text-sm font-medium">Spindle Speed</label>
-            <div class="input-group"><input type="text" id="spindle-speed" value="3000" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500"><span class="input-unit">RPM</span></div>
+            <div class="input-group"><input type="number" id="spindle-speed" value="3000" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500"><span class="input-unit">RPM</span></div>
           </div>
 
           <div>
             <label for="feed-rate" class="block text-sm font-medium">Feed Rate</label>
-            <div class="input-group"><input type="text" id="feed-rate" value="500" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500"><span class="input-unit">mm/min</span></div>
+            <div class="input-group"><input type="number" id="feed-rate" value="500" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500"><span class="input-unit">mm/min</span></div>
           </div>
 
           <div class="md:col-span-3 grid grid-cols-2 gap-4">
             <div>
               <label for="tool-offset-d" class="block text-sm font-medium">Tool Offset (D & H)</label>
-              <input type="text" id="tool-offset-d" value="1" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <input type="number" id="tool-offset-d" value="1" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500">
             </div>
 
             <div>
               <label for="milling-type" class="block text-sm font-medium">Milling Type</label>
-              <select id="milling-type" class="w-full bg-gray-700 rounded-lg p-4 mt-1">
+              <select id="milling-type" class="w-full bg-gray-700 rounded-lg p-4 mt-1 border border-gray-600 focus:border-indigo-500">
                 <option value="G41">Climb (G41)</option>
                 <option value="G42">Conventional (G42)</option>
               </select>
@@ -163,31 +161,27 @@
 
           <div class="md:col-span-3 flex items-center pt-2">
             <input type="checkbox" id="add-finish-pass" class="h-6 w-6 bg-gray-700 border-gray-600 rounded text-indigo-500 focus:ring-indigo-600" checked>
-            <label for="add-finish-pass" class="ml-2 text-sm font-medium">Add Finish Pass at Final Depth</label>
+            <label for="add-finish-pass" class="ml-2 text-sm font-medium text-gray-300">Add Finish Pass at Final Depth</label>
           </div>
         </div>
       </div>
 
-      <!-- Action buttons -->
       <div class="mt-6 flex flex-col sm:flex-row gap-3">
-        <button id="generate-btn" class="flex-1 h-12 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.99] text-white font-bold rounded-lg transition">Generate G-Code</button>
-        <button id="download-btn" class="flex-1 h-12 bg-green-600 hover:bg-green-700 active:scale-[0.99] text-white font-bold rounded-lg transition hidden">Download .NC</button>
-        <button id="copy-btn" class="sm:w-32 h-12 bg-gray-700 hover:bg-gray-600 active:scale-[0.99] text-white font-semibold rounded-lg transition">Copy</button>
+        <button id="generate-btn" class="flex-1 h-12 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.99] text-white font-bold rounded-lg transition shadow-lg">Generate G-Code</button>
+        <button id="download-btn" class="flex-1 h-12 bg-green-600 hover:bg-green-700 active:scale-[0.99] text-white font-bold rounded-lg transition shadow-lg hidden">Download .NC</button>
+        <button id="copy-btn" class="sm:w-32 h-12 bg-gray-700 hover:bg-gray-600 active:scale-[0.99] text-white font-semibold rounded-lg transition shadow-lg">Copy</button>
       </div>
 
-      <!-- Results -->
       <div id="results-section" class="mt-6 pt-6 border-t border-gray-700 hidden">
         <h2 class="text-xl font-semibold text-indigo-400 mb-3">Generated G-Code</h2>
-        <pre id="gcode-output" class="bg-gray-900 text-white p-4 rounded-lg text-sm whitespace-pre-wrap max-h-96 overflow-y-auto"></pre>
-        <div id="error-message" class="mt-4 text-center text-red-400 font-medium hidden"></div>
+        <pre id="gcode-output" class="bg-gray-900 text-green-400 p-4 rounded-lg text-sm whitespace-pre-wrap max-h-96 overflow-y-auto font-mono border border-gray-700"></pre>
+        <div id="error-message" class="mt-4 text-center text-red-400 font-medium hidden bg-red-900/20 p-2 rounded"></div>
       </div>
     </div>
   </main>
 
-  <!-- Footer -->
   <footer class="px-4 py-6 text-center text-sm text-gray-400">
-    Built with <span class="inline-block align-middle">⚙️</span> by
-    <a href="https://shader7.com/cnc-machinist/" class="text-indigo-400 hover:text-indigo-300 underline">Shader7 CNC Tools</a>
+    Built with <span class="inline-block align-middle text-indigo-500">⚙️</span> by Shader7 CNC Tools
   </footer>
 
   <script>
@@ -328,7 +322,7 @@
           inputs.useDiaMacro
         );
 
-        // Entry/approach points
+        // Entry/approach points (Calculated in Absolute G90 for approach)
         let engagePoint, safePoint;
         if (inputs.useDiaMacro) {
           if (inputs.opType === 'id-interpolation') {
@@ -351,16 +345,7 @@
           }
         }
 
-        // Endpoint includes BOTH axes
-        const endPoint = inputs.useDiaMacro
-          ? (inputs.opType === 'id-interpolation'
-              ? `${axes.p1}#100 ${engagePoint}`
-              : `${engagePoint} ${axes.p2}#101`)
-          : (inputs.opType === 'id-interpolation'
-              ? `${axes.p1}${inputs.center1.toFixed(3)} ${engagePoint}`
-              : `${engagePoint} ${axes.p2}${inputs.center2.toFixed(3)}`);
-
-        // Program body (pure Fanuc)
+        // Program body (Fanuc)
         let pg = '';
         pg += `${progNumStr} (${opName})\n`;
         pg += `(TOOL DIA:${inputs.cutterDia.toFixed(3)}  TOOL OFFSET:D${inputs.toolOffset}  FEED:${inputs.feed}mm/min  RPM:${inputs.rpm}  PITCH:${inputs.pitch})\n`;
@@ -399,17 +384,21 @@
           pg += `G01 ${inputs.millingType} D${inputs.toolOffset} ${engagePoint} F${(inputs.feed/2).toFixed(0)}\n`;
         }
 
-        // Helical loop
+        // Helical loop - UPDATED TO MIXED G91/G90 TO ENSURE X0 Y0
         pg += `\n(--- HELICAL DESCENT LOOP ---)\n`;
         pg += `WHILE[#1 GT #2] DO 1\n`;
         pg += `  #1=[#1-#3]\n`;
         pg += `  IF[#1 LT #2] THEN #1=#2\n`;
-        pg += `  ${circleCmd} ${endPoint} ${axes.depth}#1 ${arcVectorString} F${inputs.feed}\n`;
+        // G91 used for circle (Full circle = start 0, end 0), G90 for Z depth
+        pg += `  G91 ${circleCmd} ${axes.p1}0 ${axes.p2}0 G90 ${axes.depth}#1 ${arcVectorString} F${inputs.feed}\n`;
         pg += `END 1\n\n`;
 
         if (inputs.addFinishPass) {
           pg += `(--- FINISH PASS ---)\n`;
-          pg += `${circleCmd} ${endPoint} ${arcVectorString} F${Math.max(1, Math.round(inputs.feed/1.5))}\n\n`;
+          pg += `G91 ${circleCmd} ${axes.p1}0 ${axes.p2}0 ${arcVectorString} F${Math.max(1, Math.round(inputs.feed/1.5))}\n`;
+          pg += `G90\n\n`;
+        } else {
+            pg += `G90\n`; 
         }
 
         // Retract
