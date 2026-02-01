@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ID Helical Interpolation Generator (Independent)</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .input-group { position: relative; }
+    .input-unit { position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 0.875rem; }
+    input:disabled, select:disabled { background-color: #374151; color: #6b7280; cursor: not-allowed; border-color: #4b5563; }
+    pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace; }
+    .card { animation: fadeInUp 220ms ease-out both; }
+    @keyframes fadeInUp { from {opacity:0; transform: translateY(6px);} to {opacity:1; transform:none;} }
+    @keyframes pulseSoft { 0%{transform:scale(1)} 50%{transform:scale(1.02)} 100%{transform:scale(1)} }
+    .hint { font-size: 0.85rem; color:#9ca3af }
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #1f2937; }
+    ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #6b7280; }
+  </style>
+</head>
+
+<body class="bg-gray-900 text-white min-h-screen flex flex-col">
+  <main class="flex-1 w-full flex items-center justify-center p-4">
+    <div class="w-full max-w-2xl bg-gray-800 p-6 sm:p-8 rounded-2xl shadow-2xl border border-gray-700 card">
+
+      <h1 class="text-2xl sm:text-3xl font-bold text-center mb-3 text-indigo-400">
+        ID Helical Interpolation (Independent Program)
+      </h1>
+
+      <p class="hint text-center mb-5">
+        Generates a complete program (no subprogram needed). Uses safe helix style:
+        <b>G91 full circle + Z step in the same arc block</b>.
+        Variables used: <b>#30=Diameter</b>, <b>#3=Step/Rev</b>.
+      </p>
+
+      <div id="inputs" class="space-y-4">
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 border border-gray-700 rounded-xl bg-gray-850">
+          <div class="md:col-span-3"><h3 class="text-lg font-semibold text-gray-300">Workpiece & Tool Setup</h3></div>
+
+          <div>
+            <label for="plane-select" class="block text-sm font-medium">Work Plane</label>
+            <select id="plane-select" class="w-full bg-gray-700 rounded-lg p-4 mt-1 border border-gray-600 focus:border-indigo-500" disabled>
+              <option value="G17" selected>G17 (X-Y) (recommended)</option>
+            </select>
+            <p class="hint mt-1">This generator outputs G17 logic (X/Y arc, Z depth).</p>
+          </div>
+
+          <div>
+            <label for="cutter-diameter" class="block text-sm font-medium">Cutter Diameter</label>
+            <div class="input-group">
+              <input type="number" id="cutter-diameter" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="e.g., 50">
+              <span class="input-unit">mm</span>
+            </div>
+          </div>
+
+          <div>
+            <label for="program-number" class="block text-sm font-medium">Program Number</label>
+            <div class="input-group">
+              <input type="number" id="program-number" value="1001" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <span class="input-unit">O####</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border border-gray-700 rounded-xl">
+          <div class="md:col-span-2"><h3 class="text-lg font-semibold text-gray-300">Feature Geometry</h3></div>
+
+          <div class="grid grid-cols-2 gap-4 md:col-span-2">
+            <div>
+              <label for="centerx" class="block text-sm font-medium">Center X</label>
+              <div class="input-group">
+                <input type="number" step="any" id="centerx" value="0" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <span class="input-unit">mm</span>
+              </div>
+            </div>
+            <div>
+              <label for="centery" class="block text-sm font-medium">Center Y</label>
+              <div class="input-group">
+                <input type="number" step="any" id="centery" value="0" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <span class="input-unit">mm</span>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <label for="final-dia" class="block text-sm font-medium">Final ID Diameter → <span class="text-gray-400">#30</span></label>
+            <div class="input-group">
+              <input type="number" step="any" id="final-dia" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="e.g., 500">
+              <span class="input-unit">mm</span>
+            </div>
+          </div>
+
+          <div>
+            <label for="bottom-face" class="block text-sm font-medium">Bottom Circle at Final Depth</label>
+            <select id="bottom-face" class="w-full bg-gray-700 rounded-lg p-4 mt-1 border border-gray-600 focus:border-indigo-500">
+              <option value="1" selected>Yes (finish circle)</option>
+              <option value="0">No</option>
+            </select>
+            <p class="hint mt-1">If enabled, adds one full circle at final depth.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 border border-gray-700 rounded-xl">
+          <div class="md:col-span-3"><h3 class="text-lg font-semibold text-gray-300">Machining Parameters</h3></div>
+
+          <div>
+            <label for="final-depth" class="block text-sm font-medium">Final Depth (Z) → <span class="text-gray-400">#2</span></label>
+            <div class="input-group">
+              <input type="number" step="any" id="final-depth" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="e.g., -15">
+              <span class="input-unit">mm</span>
+            </div>
+          </div>
+
+          <div>
+            <label for="pitch" class="block text-sm font-medium">Step per Rev (Pitch) → <span class="text-gray-400">#3</span></label>
+            <div class="input-group">
+              <input type="number" step="any" id="pitch" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="e.g., 2">
+              <span class="input-unit">mm</span>
+            </div>
+          </div>
+
+          <div>
+            <label for="z-safe" class="block text-sm font-medium">Z Safety Distance</label>
+            <div class="input-group">
+              <input type="number" step="any" id="z-safe" value="50" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <span class="input-unit">mm</span>
+            </div>
+          </div>
+
+          <div>
+            <label for="rpm" class="block text-sm font-medium">Spindle Speed</label>
+            <div class="input-group">
+              <input type="number" id="rpm" value="3000" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <span class="input-unit">RPM</span>
+            </div>
+          </div>
+
+          <div>
+            <label for="run-feed" class="block text-sm font-medium">Run Feed (helix)</label>
+            <div class="input-group">
+              <input type="number" id="run-feed" value="800" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <span class="input-unit">mm/min</span>
+            </div>
+          </div>
+
+          <div>
+            <label for="entry-feed" class="block text-sm font-medium">Entry Feed (comp engage)</label>
+            <div class="input-group">
+              <input type="number" id="entry-feed" value="500" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <span class="input-unit">mm/min</span>
+            </div>
+          </div>
+
+          <div class="md:col-span-3 grid grid-cols-2 gap-4">
+            <div>
+              <label for="offset-num" class="block text-sm font-medium">Tool / Offset Number (D & H)</label>
+              <input type="number" id="offset-num" value="1" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <p class="hint mt-1">Used as <b>Tn</b>, <b>Hn</b>, and <b>D n</b>.</p>
+            </div>
+
+            <div>
+              <label for="comp-type" class="block text-sm font-medium">Cutter Comp</label>
+              <select id="comp-type" class="w-full bg-gray-700 rounded-lg p-4 mt-1 border border-gray-600 focus:border-indigo-500">
+                <option value="G42" selected>G42 (matches your working style)</option>
+                <option value="G41">G41</option>
+              </select>
+              <p class="hint mt-1">Direction also changes automatically (G42→G02, G41→G03).</p>
+            </div>
+          </div>
+
+          <div class="md:col-span-3 grid grid-cols-2 gap-4 mt-2">
+            <div>
+              <label for="first-depth-mode" class="block text-sm font-medium">First Depth (#1)</label>
+              <select id="first-depth-mode" class="w-full bg-gray-700 rounded-lg p-4 mt-1 border border-gray-600 focus:border-indigo-500">
+                <option value="pitch" selected>#1 = -Pitch (recommended)</option>
+                <option value="custom">#1 = Custom</option>
+              </select>
+            </div>
+            <div>
+              <label for="first-depth-custom" class="block text-sm font-medium">Custom First Depth</label>
+              <div class="input-group">
+                <input type="number" step="any" id="first-depth-custom" value="-1" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500" disabled>
+                <span class="input-unit">mm</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="mt-6 flex flex-col sm:flex-row gap-3">
+        <button id="generate-btn" class="flex-1 h-12 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.99] text-white font-bold rounded-lg transition shadow-lg">Generate G-Code</button>
+        <button id="download-btn" class="flex-1 h-12 bg-green-600 hover:bg-green-700 active:scale-[0.99] text-white font-bold rounded-lg transition shadow-lg hidden">Download .NC</button>
+        <button id="copy-btn" class="sm:w-32 h-12 bg-gray-700 hover:bg-gray-600 active:scale-[0.99] text-white font-semibold rounded-lg transition shadow-lg">Copy</button>
+      </div>
+
+      <div id="results-section" class="mt-6 pt-6 border-t border-gray-700 hidden">
+        <h2 class="text-xl font-semibold text-indigo-400 mb-3">Generated Program</h2>
+        <pre id="gcode-output" class="bg-gray-900 text-green-400 p-4 rounded-lg text-sm whitespace-pre-wrap max-h-96 overflow-y-auto font-mono border border-gray-700"></pre>
+        <div id="error-message" class="mt-4 text-center text-red-400 font-medium hidden bg-red-900/20 p-2 rounded"></div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="px-4 py-6 text-center text-sm text-gray-400">
+    Built with ⚙️ by Shader7 CNC Tools
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const generateBtn = document.getElementById('generate-btn');
+      const downloadBtn = document.getElementById('download-btn');
+      const copyBtn = document.getElementById('copy-btn');
+      const resultsSection = document.getElementById('results-section');
+      const gcodeOutput = document.getElementById('gcode-output');
+      const errorMessage = document.getElementById('error-message');
+
+      const firstDepthMode = document.getElementById('first-depth-mode');
+      const firstDepthCustom = document.getElementById('first-depth-custom');
+
+      firstDepthMode.addEventListener('change', () => {
+        firstDepthCustom.disabled = (firstDepthMode.value !== 'custom');
+      });
+
+      generateBtn.addEventListener('click', generateGCode);
+      copyBtn.addEventListener('click', copyToClipboard);
+      downloadBtn.addEventListener('click', downloadGCode);
+
+      function showError(msg) {
+        errorMessage.textContent = msg;
+        errorMessage.classList.remove('hidden');
+        resultsSection.classList.add('hidden');
+      }
+      function hideError() { errorMessage.classList.add('hidden'); }
+
+      function num(id) {
+        const v = parseFloat(document.getElementById(id).value);
+        return Number.isFinite(v) ? v : NaN;
+      }
+      function intNum(id) {
+        const v = parseInt(document.getElementById(id).value, 10);
+        return Number.isFinite(v) ? v : NaN;
+      }
+
+      function getInputs() {
+        const i = {
+          prog: intNum('program-number'),
+          tool: intNum('offset-num'),
+          comp: document.getElementById('comp-type').value,
+
+          cx: num('centerx'),
+          cy: num('centery'),
+
+          cutterDia: num('cutter-diameter'),
+          dia: num('final-dia'),          // #30
+          zFinal: num('final-depth'),     // #2
+          pitch: num('pitch'),            // #3
+
+          zSafe: num('z-safe'),
+          rpm: intNum('rpm'),
+          fEntry: num('entry-feed'),
+          fRun: num('run-feed'),
+
+          bottomFace: intNum('bottom-face'),
+          firstMode: document.getElementById('first-depth-mode').value,
+          firstCustom: num('first-depth-custom')
+        };
+
+        const required = ['prog','tool','cx','cy','cutterDia','dia','zFinal','pitch','zSafe','rpm','fEntry','fRun','bottomFace'];
+        for (const k of required) {
+          if (!Number.isFinite(i[k])) throw new Error(`Invalid input: ${k} must be a number.`);
+        }
+
+        if (i.tool <= 0) throw new Error('Tool/offset number must be positive.');
+        if (i.cutterDia <= 0) throw new Error('Cutter diameter must be positive.');
+        if (i.dia <= 0) throw new Error('Final diameter must be positive.');
+        if (i.pitch <= 0) throw new Error('Pitch must be positive.');
+        if (i.cutterDia >= i.dia) throw new Error('For ID milling, cutter diameter must be smaller than final diameter.');
+        if (i.zSafe < 0) throw new Error('Z Safety must be >= 0.');
+
+        // force negative final depth
+        i.zFinal = -Math.abs(i.zFinal);
+        i.pitch = Math.abs(i.pitch);
+
+        // first depth
+        if (i.firstMode === 'custom') {
+          if (!Number.isFinite(i.firstCustom)) throw new Error('Custom first depth must be a number.');
+          i.zFirst = -Math.abs(i.firstCustom);
+        } else {
+          i.zFirst = -Math.abs(i.pitch);
+        }
+
+        // sanity: first depth must be above final depth (less negative)
+        if (i.zFirst < i.zFinal) throw new Error('First depth (#1) cannot be deeper than final depth (#2).');
+
+        i.bottomFace = (i.bottomFace === 0) ? 0 : 1;
+
+        return i;
+      }
+
+      function buildProgram(i) {
+        // Variables (kept for clarity + match your preference)
+        // #1 first depth, #2 final depth, #30 diameter, #3 step/rev, #4 radius, #15 current depth
+        const circleCmd = (i.comp === 'G42') ? 'G02' : 'G03'; // matches your working style: G42 + G02
+        const radius = i.dia / 2;
+
+        // Engagement move direction:
+        // In your working sub, you used: G42 ... Y-#4 (from center to wall in -Y)
+        // We'll keep that exact behavior to reduce surprises.
+        const engageY = -radius;
+
+        let pg = '';
+        pg += `O${i.prog} (ID HELICAL INTERPOLATION - INDEPENDENT)\n`;
+        pg += `(CENTER X${i.cx.toFixed(3)} Y${i.cy.toFixed(3)}  DIA:${i.dia.toFixed(3)}  TOOL:${i.cutterDia.toFixed(3)})\n`;
+        pg += `(ZFIRST:${i.zFirst.toFixed(3)}  ZFINAL:${i.zFinal.toFixed(3)}  STEP/REV:${i.pitch.toFixed(3)}  COMP:${i.comp}  DIR:${circleCmd})\n`;
+        pg += `G17 G21 G90 G40 G80 G54\n\n`;
+
+        pg += `T${i.tool} M6\n`;
+        pg += `S${i.rpm} M3\n`;
+        pg += `G43 H${i.tool}\n`;
+        pg += `M8\n\n`;
+
+        // Macro vars
+        pg += `(--- VARIABLES ---)\n`;
+        pg += `#1=${i.zFirst.toFixed(3)} (FIRST DEPTH)\n`;
+        pg += `#2=${i.zFinal.toFixed(3)} (FINAL DEPTH)\n`;
+        pg += `#30=${i.dia.toFixed(3)} (DIAMETER)\n`;
+        pg += `#3=${i.pitch.toFixed(3)} (STEP/REV)\n`;
+        pg += `#4=[#30/2] (RADIUS)\n`;
+        pg += `#12=${i.bottomFace} (BOTTOM CIRCLE 1/0)\n`;
+        pg += `#15=#1 (CURRENT DEPTH)\n\n`;
+
+        // Approach
+        pg += `(--- APPROACH ---)\n`;
+        pg += `G00 X${i.cx.toFixed(3)} Y${i.cy.toFixed(3)}\n`;
+        pg += `G00 Z${i.zSafe.toFixed(3)}\n`;
+        pg += `G00 Z[#15+3.0]\n`;          // matches your style: go above first depth
+        pg += `G01 Z#15 F${Math.max(1, Math.round(i.fEntry))}\n`;
+        pg += `G91\n`;
+        pg += `G01 ${i.comp} D${i.tool} X0 Y${engageY.toFixed(3)} F${Math.max(1, Math.round(i.fEntry))}\n\n`;
+
+        // Helix
+        pg += `(--- HELICAL LOOP ---)\n`;
+        pg += `IF[#1 EQ #2] GOTO 120\n`;
+        pg += `N80 ${circleCmd} X0 Y0 I0 J#4 Z-#3 F${Math.max(1, Math.round(i.fRun))}\n`;
+        pg += `#15=[#15-#3]\n`;
+        pg += `IF[#15 GT #2] GOTO 80\n`;
+        pg += `IF[#12 EQ 0] GOTO 130\n`;
+        pg += `N120 ${circleCmd} X0 Y0 I0 J#4\n`;  // bottom circle
+        pg += `N130 G01 G40 X0 Y${(+radius).toFixed(3)}\n`; // leave wall and cancel comp (matches your working exit)
+        pg += `G90\n\n`;
+
+        // Retract
+        pg += `(--- RETRACT ---)\n`;
+        pg += `G00 Z${i.zSafe.toFixed(3)}\n`;
+        pg += `G00 X${i.cx.toFixed(3)} Y${i.cy.toFixed(3)}\n\n`;
+
+        pg += `M5\nM9\n`;
+        pg += `G28 G91 Z0\n`;
+        pg += `M30\n%`;
+
+        return pg;
+      }
+
+      function generateGCode() {
+        hideError();
+        try {
+          const inputs = getInputs();
+          const program = buildProgram(inputs);
+          gcodeOutput.textContent = program;
+          resultsSection.classList.remove('hidden');
+          downloadBtn.classList.remove('hidden');
+          resultsSection.style.animation = 'pulseSoft 300ms ease';
+          setTimeout(() => resultsSection.style.animation = '', 320);
+        } catch (err) {
+          showError(err.message || String(err));
+        }
+      }
+
+      function copyToClipboard() {
+        const text = gcodeOutput.textContent;
+        if (!text) { showError('No program to copy. Generate first.'); return; }
+        navigator.clipboard.writeText(text).then(() => {
+          copyBtn.textContent = 'Copied!';
+          setTimeout(() => { copyBtn.textContent = 'Copy'; }, 1400);
+        }).catch((e) => showError('Copy failed: ' + e));
+      }
+
+      function downloadGCode() {
+        const text = gcodeOutput.textContent;
+        if (!text) { showError('No program to download. Generate first.'); return; }
+        const progNum = document.getElementById('program-number').value || 'program';
+        const filename = `O${progNum}.nc`;
+        const blob = new Blob([text], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      }
+    });
+  </script>
+</body>
+</html>
