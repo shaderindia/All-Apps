@@ -108,6 +108,9 @@
             overflow: hidden;
             border: 3px solid #4f46e5;
             flex-shrink: 0;
+            /* IMPROVEMENT: Force high-quality rendering */
+            image-rendering: -webkit-optimize-contrast; 
+            image-rendering: crisp-edges;
         }
         
         .resume-photo img {
@@ -1088,8 +1091,9 @@
                     format: 'a4'
                 });
 
+                // IMPROVEMENT: Increased scale to 4 for higher photo resolution
                 const canvas = await html2canvas(resumeElement, {
-                    scale: 2, 
+                    scale: 4, 
                     useCORS: true,
                     allowTaint: true,
                     logging: false,
@@ -1117,7 +1121,8 @@
                     }
                 });
 
-                const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                // IMPROVEMENT: Use PNG (lossless) and max quality (1.0)
+                const imgData = canvas.toDataURL('image/png', 1.0);
                 
                 const pdfWidth = pdf.internal.pageSize.getWidth();
                 const pdfHeight = pdf.internal.pageSize.getHeight();
@@ -1130,7 +1135,8 @@
                     if (position !== 0) {
                         pdf.addPage();
                     }
-                    pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight);
+                    // IMPROVEMENT: Changed 'JPEG' to 'PNG' for sharper text and images
+                    pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
                     heightLeft -= pdfHeight;
                     position -= pdfHeight;
                 }
