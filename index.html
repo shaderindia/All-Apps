@@ -7,6 +7,9 @@
     
     <title>SHADER7 - Free Professional Tools | Passport Photos, Resume Builder & Calculators</title>
     <meta name="description" content="Free online professional tools: Create passport photos, build resumes (CV), calculate hourly salary, split expenses, and access CNC machinist resources. No login required.">
+    <meta name="keywords" content="passport photo maker, free resume builder, cv banao, hourly salary calculator, expense splitter, fairshare, receipt maker, cnc machinist tools, shader7, Nishikant Xalxo">
+    <meta name="author" content="Nishikant Xalxo">
+    <meta name="robots" content="index, follow">
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#1e1b4b">
@@ -18,17 +21,33 @@
     <meta property="og:description" content="Instant access to Passport Photo Maker, Salary Calculator, Resume Builder, and more. 100% Free.">
     <meta property="og:image" content="https://shader7.com/og-image.jpg">
 
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://shader7.com/">
+    <meta property="twitter:title" content="SHADER7 - Free Professional Tools">
+    <meta property="twitter:description" content="Create passport photos, calculate salaries, and build CVs for free.">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script async src="https://js.stripe.com/v3/buy-button.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
     <style>
         body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
-        .hero-bg { background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); }
-        .tool-card { transition: all 0.3s ease; }
-        .tool-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); }
-        
-        /* Install Button Animation */
+        .gradient-text {
+            background: linear-gradient(to right, #7c3aed, #db2777);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero-bg {
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+        }
+        .tool-card {
+            transition: all 0.3s ease;
+        }
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+        /* PWA Install Button Animation */
         @keyframes pulse-purple {
             0% { box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.7); }
             70% { box-shadow: 0 0 0 10px rgba(124, 58, 237, 0); }
@@ -45,7 +64,7 @@
         <div class="bg-white rounded-t-xl sm:rounded-xl p-6 max-w-sm w-full shadow-2xl transform transition-all">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-lg font-bold text-gray-900">Install Shader7</h3>
-                <button onclick="closeIosModal()" class="text-gray-400 hover:text-gray-600">
+                <button id="close-ios-modal" class="text-gray-400 hover:text-gray-600">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
@@ -78,14 +97,15 @@
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                         Install App
                     </button>
-                    
-                    <a href="contact.html" class="px-4 py-2 rounded-md bg-indigo-50 text-indigo-700 font-medium hover:bg-indigo-100 transition">Contact</a>
+
+                    <a href="about.html" class="text-gray-600 hover:text-indigo-600 font-medium">About</a>
+                    <a href="contact.html" class="px-4 py-2 rounded-md bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition">Contact</a>
                 </div>
-                <div class="md:hidden flex items-center gap-4">
+                <div class="md:hidden flex items-center gap-3">
                     <button id="install-btn-mobile" class="hidden p-2 rounded-full bg-indigo-100 text-indigo-700 font-bold install-pulse">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                     </button>
-
+                    
                     <button id="mobile-menu-btn" class="text-gray-600 hover:text-gray-900 focus:outline-none">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -117,8 +137,12 @@
                 <a href="#tools" class="px-8 py-3 rounded-full bg-white text-indigo-900 font-bold hover:bg-indigo-50 transition shadow-lg">
                     Explore Tools
                 </a>
+                <a href="cnc-machinist/" class="px-8 py-3 rounded-full border-2 border-indigo-400 text-white font-bold hover:bg-indigo-800 transition">
+                    CNC Resources
+                </a>
             </div>
-             <div class="mt-8 flex justify-center">
+
+            <div class="mt-8 flex justify-center">
                 <stripe-buy-button
                   buy-button-id="buy_btn_1Rjs6FJZJa55yNR0W2x5kwJp"
                   publishable-key="pk_live_51RjrN3JZJa55yNR0fMImGTaoqh5G3xxbLdXn3DXSbY8kHFd7UbTieVsIpt6EXBpjjHdMnsIcdimuV5aYo3BFh9fi00KxlFowXW"
@@ -128,19 +152,171 @@
         </div>
     </header>
 
+    <main id="tools" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Popular Tools</h2>
+            <p class="text-lg text-gray-600">Everything you need to be productive, organized, and professional.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            
+            <article class="tool-card bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 relative">
+                <div class="absolute top-0 right-0 bg-yellow-400 text-yellow-900 text-xs font-bold px-2 py-1 rounded-bl-lg">POPULAR</div>
+                <div class="p-8">
+                    <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center text-2xl mb-4">📸</div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Passport Photo PRO</h3>
+                    <p class="text-gray-600 mb-6 h-12">Professional grade passport photo creator with AI assistance and precise cropping.</p>
+                    <a href="photopassportsizepro/" class="block w-full text-center py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg transition">
+                        Launch Pro Version
+                    </a>
+                </div>
+            </article>
+
+            <article class="tool-card bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
+                <div class="p-8">
+                    <div class="w-12 h-12 bg-pink-100 rounded-lg flex items-center justify-center text-2xl mb-4">📄</div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Resume Builder (CV)</h3>
+                    <p class="text-gray-600 mb-6 h-12">Build a job-winning resume in minutes. Known as "CV Banao" - simple and effective.</p>
+                    <a href="cvbanao/" class="block w-full text-center py-3 bg-white border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-50 font-semibold rounded-lg transition">
+                        Create Resume
+                    </a>
+                </div>
+            </article>
+
+            <article class="tool-card bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
+                <div class="p-8">
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center text-2xl mb-4">💰</div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Hourly Salary Calculator</h3>
+                    <p class="text-gray-600 mb-6 h-12">Convert hourly wages to annual salary, monthly income, and weekly pay instantly.</p>
+                    <a href="hourlysalarycalculator/" class="block w-full text-center py-3 bg-white border-2 border-green-600 text-green-600 hover:bg-green-50 font-semibold rounded-lg transition">
+                        Calculate Now
+                    </a>
+                </div>
+            </article>
+
+            <article class="tool-card bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
+                <div class="p-8">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center text-2xl mb-4">⚖️</div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">SPLIT YOUR BILL WITH FRIENDS FairShare Splitter</h3>
+                    <p class="text-gray-600 mb-6 h-12">Split bills and expenses easily with friends, roommates, or travel partners.</p>
+                    <a href="fairshare/" class="block w-full text-center py-3 bg-gray-50 hover:bg-gray-100 text-gray-800 font-semibold rounded-lg transition">
+                        Split Expenses
+                    </a>
+                </div>
+            </article>
+
+            <article class="tool-card bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
+                <div class="p-8">
+                    <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-2xl mb-4">🖼️</div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">PASSPORT PHOTO CLASSIC APP</h3>
+                    <p class="text-gray-600 mb-6 h-12">The original lightweight tool to format photos for official documents.</p>
+                    <a href="passportsizephoto/" class="block w-full text-center py-3 bg-gray-50 hover:bg-gray-100 text-gray-800 font-semibold rounded-lg transition">
+                        Open Tool
+                    </a>
+                </div>
+            </article>
+
+            <article class="tool-card bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
+                <div class="p-8">
+                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center text-2xl mb-4">🧾</div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Receipt Maker</h3>
+                    <p class="text-gray-600 mb-6 h-12">Generate professional receipts for your business or freelance work.</p>
+                    <a href="receiptpro/" class="block w-full text-center py-3 bg-gray-50 hover:bg-gray-100 text-gray-800 font-semibold rounded-lg transition">
+                        Make Receipt
+                    </a>
+                </div>
+            </article>
+
+        </div>
+    </main>
+
+    <section class="bg-slate-900 text-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between">
+            <div class="mb-8 md:mb-0 md:w-2/3">
+                <h2 class="text-3xl font-bold mb-4">Are you a CNC Machinist?</h2>
+                <p class="text-slate-300 text-lg">We have a dedicated section for G-Code references, Drill charts, and machining calculators tailored for industry professionals.</p>
+            </div>
+            <div>
+                <a href="cnc-machinist/" class="inline-block px-8 py-4 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-lg transition transform hover:scale-105">
+                    Visit CNC Hub
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl font-bold text-gray-900 mb-6">Latest from the Blog</h2>
+            <p class="text-gray-600 mb-10">Tips on career development, CNC machining, and using our tools effectively.</p>
+            
+            <a href="blog.html" class="inline-block px-8 py-3 border-2 border-indigo-600 text-indigo-600 font-bold rounded-lg hover:bg-indigo-50 transition">
+                Read All 15 Articles →
+            </a>
+        </div>
+    </section>
+
+    <footer class="bg-gray-50 border-t border-gray-200 pt-12 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div class="col-span-1 md:col-span-2">
+                    <span class="text-xl font-bold text-indigo-900">SHADER7</span>
+                    <p class="mt-4 text-gray-500 text-sm max-w-md">
+                        Shader7 provides essential digital tools for professionals, students, and businesses. Our mission is to make productivity free and accessible.
+                    </p>
+                    
+                    <div class="mt-6 pt-6 border-t border-gray-100">
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Developed by</p>
+                        <a href="https://instagram.com/nishix_vamp" target="_blank" class="inline-flex items-center group">
+                            <span class="text-gray-900 font-semibold group-hover:text-pink-600 transition-colors">Nishikant Xalxo</span>
+                            <span class="ml-2 px-2 py-0.5 rounded text-xs bg-pink-100 text-pink-700 font-medium group-hover:bg-pink-200 transition-colors">
+                                @nishix_vamp
+                            </span>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-bold text-gray-900 mb-4">Quick Links</h4>
+                    <ul class="space-y-2 text-sm text-gray-600">
+                        <li><a href="photopassportsizepro/" class="hover:text-indigo-600">Passport Photo Pro</a></li>
+                        <li><a href="hourlysalarycalculator/" class="hover:text-indigo-600">Salary Calculator</a></li>
+                        <li><a href="cvbanao/" class="hover:text-indigo-600">CV Builder</a></li>
+                        <li><a href="blog.html" class="hover:text-indigo-600 font-bold text-indigo-600">Read Blog</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-gray-900 mb-4">Contact & Legal</h4>
+                    <ul class="space-y-2 text-sm text-gray-600">
+                        <li><a href="about.html" class="hover:text-indigo-600">About Me</a></li>
+                        <li><a href="contact.html" class="hover:text-indigo-600">Contact</a></li>
+                        <li><a href="privacy-policy.html" class="hover:text-indigo-600">Privacy Policy</a></li>
+                        <li><a href="terms.html" class="hover:text-indigo-600">Terms of Service</a></li>
+                        <li><a href="mailto:nxdecore@gmail.com" class="hover:text-indigo-600 text-xs break-all">nxdecore@gmail.com</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-200 pt-8 text-center text-sm text-gray-400">
+                &copy; <script>document.write(new Date().getFullYear())</script> Shader7. Designed by Nishikant Xalxo.
+            </div>
+        </div>
+    </footer>
+
     <script>
-        // Mobile Menu Logic
+        // --- MOBILE MENU LOGIC ---
         document.getElementById('mobile-menu-btn').addEventListener('click', function() {
             var menu = document.getElementById('mobile-menu');
-            menu.classList.toggle('hidden');
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+            } else {
+                menu.classList.add('hidden');
+            }
         });
 
         // --- PWA INSTALL LOGIC ---
-
         let deferredPrompt;
         const installBtnDesktop = document.getElementById('install-btn-desktop');
         const installBtnMobile = document.getElementById('install-btn-mobile');
         const iosModal = document.getElementById('ios-install-modal');
+        const closeIosBtn = document.getElementById('close-ios-modal');
 
         // Check if device is iOS
         const isIos = () => {
@@ -162,22 +338,22 @@
 
         // Handle Android/PC Install Prompt
         window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent Chrome 67 and earlier from automatically showing the prompt
             e.preventDefault();
+            // Stash the event so it can be triggered later.
             deferredPrompt = e;
-            // Show buttons
+            // Update UI to notify the user they can add to home screen
             installBtnDesktop.classList.remove('hidden');
             installBtnMobile.classList.remove('hidden');
         });
 
-        // Handle iOS specific logic
+        // Handle iOS visibility
         if (isIos() && !isInStandaloneMode()) {
-            // iOS doesn't support 'beforeinstallprompt', so we always show the button
-            // but change its behavior to open the instructions modal
             installBtnDesktop.classList.remove('hidden');
             installBtnMobile.classList.remove('hidden');
         }
 
-        // Click Handler
+        // Click Handler for Install Buttons
         const handleInstallClick = async () => {
             if (isIos()) {
                 // Show iOS instructions
@@ -185,8 +361,11 @@
             } else if (deferredPrompt) {
                 // Show Android/PC Native Prompt
                 deferredPrompt.prompt();
+                // Wait for the user to respond to the prompt
                 const { outcome } = await deferredPrompt.userChoice;
+                // We no longer need the prompt.  Clear it up.
                 deferredPrompt = null;
+                // Hide buttons if accepted
                 if (outcome === 'accepted') {
                     installBtnDesktop.classList.add('hidden');
                     installBtnMobile.classList.add('hidden');
@@ -197,9 +376,19 @@
         installBtnDesktop.addEventListener('click', handleInstallClick);
         installBtnMobile.addEventListener('click', handleInstallClick);
 
-        function closeIosModal() {
-            iosModal.classList.add('hidden');
+        // Close Modal Logic
+        const closeIosModal = () => iosModal.classList.add('hidden');
+        
+        if(closeIosBtn) {
+            closeIosBtn.addEventListener('click', closeIosModal);
         }
+        
+        // Close modal if clicking outside the content area
+        iosModal.addEventListener('click', (e) => {
+            if (e.target === iosModal) {
+                closeIosModal();
+            }
+        });
     </script>
 </body>
 </html>
