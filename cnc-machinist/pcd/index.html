@@ -24,99 +24,101 @@
         }
     </style>
 </head>
-<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-4">
+<body class="bg-gray-900 text-white min-h-screen flex flex-col">
     
-    <header class="relative w-full bg-gray-900 border-b border-gray-700 shadow-sm mb-6">
-         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <header class="w-full bg-gray-900 border-b border-gray-700 shadow-sm z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center h-16">
-              <a href="https://shader7.com" class="flex items-center gap-3 text-indigo-400 hover:text-indigo-300 transition-colors no-underline group">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="group-hover:scale-110 transition-transform" viewBox="0 0 16 16">
-                  <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"/>
-                  <path d="m8 3.293 6 6V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V9.293l6-6Z"/>
-                </svg>
-                <span class="font-bold text-lg tracking-wide">Shader7</span>
-              </a>
+                <a href="https://shader7.com" class="flex items-center gap-3 text-indigo-400 hover:text-indigo-300 transition-colors no-underline group">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="group-hover:scale-110 transition-transform" viewBox="0 0 16 16">
+                        <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"/>
+                        <path d="m8 3.293 6 6V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V9.293l6-6Z"/>
+                    </svg>
+                    <span class="font-bold text-lg tracking-wide">Shader7</span>
+                </a>
             </div>
-          </div>
-        </header>
+        </div>
+    </header>
     
-    <div class="w-full max-w-2xl bg-gray-800 p-6 sm:p-8 rounded-2xl shadow-2xl border border-gray-700">
-        
-        <h1 class="text-2xl sm:text-3xl font-bold text-center mb-6 text-teal-400">PCD Coordinate & G-Code Generator</h1>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-            <div class="space-y-4">
-                <h2 class="text-lg font-semibold text-gray-300 border-b border-gray-600 pb-2">Hole Pattern</h2>
-                <div>
-                    <label for="pcd" class="block text-sm font-medium text-gray-300 mb-1">Pitch Circle Diameter (PCD)</label>
-                    <div class="input-group"><input type="number" id="pcd" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3" placeholder="e.g., 100"><span class="input-unit">mm</span></div>
-                </div>
-                <div class="grid grid-cols-2 gap-4">
+    <main class="flex-1 w-full flex items-center justify-center p-4">
+        <div class="w-full max-w-2xl bg-gray-800 p-6 sm:p-8 rounded-2xl shadow-2xl border border-gray-700">
+            
+            <h1 class="text-2xl sm:text-3xl font-bold text-center mb-6 text-teal-400">PCD Coordinate & G-Code Generator</h1>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+                <div class="space-y-4">
+                    <h2 class="text-lg font-semibold text-gray-300 border-b border-gray-600 pb-2">Hole Pattern</h2>
                     <div>
-                        <label for="start-angle" class="block text-sm font-medium text-gray-300 mb-1">Start Angle</label>
-                        <div class="input-group"><input type="number" id="start-angle" value="0" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3"><span class="input-unit">°</span></div>
+                        <label for="pcd" class="block text-sm font-medium text-gray-300 mb-1">Pitch Circle Diameter (PCD)</label>
+                        <div class="input-group"><input type="number" id="pcd" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3" placeholder="e.g., 100"><span class="input-unit">mm</span></div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="start-angle" class="block text-sm font-medium text-gray-300 mb-1">Start Angle</label>
+                            <div class="input-group"><input type="number" id="start-angle" value="0" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3"><span class="input-unit">°</span></div>
+                        </div>
+                        <div>
+                            <label for="last-angle" class="block text-sm font-medium text-gray-300 mb-1">Last Angle</label>
+                            <div class="input-group"><input type="number" id="last-angle" value="360" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3"><span class="input-unit">°</span></div>
+                        </div>
                     </div>
                     <div>
-                        <label for="last-angle" class="block text-sm font-medium text-gray-300 mb-1">Last Angle</label>
-                        <div class="input-group"><input type="number" id="last-angle" value="360" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3"><span class="input-unit">°</span></div>
+                        <label for="num-holes" class="block text-sm font-medium text-gray-300 mb-1">Number of Holes</label>
+                        <input type="number" id="num-holes" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3" placeholder="e.g., 8">
                     </div>
                 </div>
-                <div>
-                    <label for="num-holes" class="block text-sm font-medium text-gray-300 mb-1">Number of Holes</label>
-                    <input type="number" id="num-holes" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3" placeholder="e.g., 8">
-                </div>
-            </div>
 
-            <div class="space-y-4">
-                 <h2 class="text-lg font-semibold text-gray-300 border-b border-gray-600 pb-2">G-Code Parameters (Fanuc)</h2>
-                <div>
-                    <label for="program-num" class="block text-sm font-medium text-gray-300 mb-1">Program Number</label>
-                    <input type="number" id="program-num" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3" placeholder="e.g., 1001">
-                </div>
-                <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-4">
+                     <h2 class="text-lg font-semibold text-gray-300 border-b border-gray-600 pb-2">G-Code Parameters (Fanuc)</h2>
+                    <div>
+                        <label for="program-num" class="block text-sm font-medium text-gray-300 mb-1">Program Number</label>
+                        <input type="number" id="program-num" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3" placeholder="e.g., 1001">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                         <div>
+                            <label for="retract-plane" class="block text-sm font-medium text-gray-300 mb-1">Retract Plane (R)</label>
+                             <div class="input-group"><input type="number" id="retract-plane" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3" placeholder="e.g., 2"><span class="input-unit">mm</span></div>
+                        </div>
+                        <div>
+                            <label for="drill-depth" class="block text-sm font-medium text-gray-300 mb-1">Drill Depth (Z)</label>
+                             <div class="input-group"><input type="number" id="drill-depth" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3" placeholder="e.g., -10"><span class="input-unit">mm</span></div>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="feed-rate" class="block text-sm font-medium text-gray-300 mb-1">Feed Rate (F)</label>
+                        <div class="input-group"><input type="number" id="feed-rate" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3" placeholder="e.g., 150"><span class="input-unit">mm/min</span></div>
+                    </div>
                      <div>
-                        <label for="retract-plane" class="block text-sm font-medium text-gray-300 mb-1">Retract Plane (R)</label>
-                         <div class="input-group"><input type="number" id="retract-plane" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3" placeholder="e.g., 2"><span class="input-unit">mm</span></div>
+                        <label for="plane-select" class="block text-sm font-medium text-gray-300 mb-1">Axis for Coordinates</label>
+                        <select id="plane-select" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3">
+                            <option value="G17">G17 (X,Y)</option>
+                            <option value="G18">G18 (X,Z)</option>
+                            <option value="G19">G19 (Y,Z)</option>
+                        </select>
                     </div>
-                    <div>
-                        <label for="drill-depth" class="block text-sm font-medium text-gray-300 mb-1">Drill Depth (Z)</label>
-                         <div class="input-group"><input type="number" id="drill-depth" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3" placeholder="e.g., -10"><span class="input-unit">mm</span></div>
-                    </div>
-                </div>
-                <div>
-                    <label for="feed-rate" class="block text-sm font-medium text-gray-300 mb-1">Feed Rate (F)</label>
-                    <div class="input-group"><input type="number" id="feed-rate" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3" placeholder="e.g., 150"><span class="input-unit">mm/min</span></div>
-                </div>
-                 <div>
-                    <label for="plane-select" class="block text-sm font-medium text-gray-300 mb-1">Axis for Coordinates</label>
-                    <select id="plane-select" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3">
-                        <option value="G17">G17 (X,Y)</option>
-                        <option value="G18">G18 (X,Z)</option>
-                        <option value="G19">G19 (Y,Z)</option>
-                    </select>
                 </div>
             </div>
-        </div>
-        
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
-            <button id="generate-coords-btn" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-4 rounded-lg transition">Coordinates</button>
-            <button id="generate-program-btn" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 px-4 rounded-lg transition">Generate Program</button>
-            <button id="download-pdf-btn" class="w-full bg-gray-600 hover:bg-gray-500 text-white font-bold py-3 px-4 rounded-lg transition">Download PDF</button>
-        </div>
-        
-        <div id="error-message" class="mt-4 text-center text-red-400 font-medium hidden"></div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+                <button id="generate-coords-btn" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-4 rounded-lg transition">Coordinates</button>
+                <button id="generate-program-btn" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 px-4 rounded-lg transition">Generate Program</button>
+                <button id="download-pdf-btn" class="w-full bg-gray-600 hover:bg-gray-500 text-white font-bold py-3 px-4 rounded-lg transition">Download PDF</button>
+            </div>
+            
+            <div id="error-message" class="mt-4 text-center text-red-400 font-medium hidden"></div>
 
-        <div id="pcd-results" class="mt-8 pt-6 border-t border-gray-700 hidden">
-            <h2 class="text-xl font-semibold text-center text-teal-400 mb-4">Generated Coordinates</h2>
-            <pre id="coordinates-output" class="bg-gray-900 text-white p-4 rounded-lg text-sm whitespace-pre-wrap max-h-60 overflow-auto"></pre>
-        </div>
+            <div id="pcd-results" class="mt-8 pt-6 border-t border-gray-700 hidden">
+                <h2 class="text-xl font-semibold text-center text-teal-400 mb-4">Generated Coordinates</h2>
+                <pre id="coordinates-output" class="bg-gray-900 text-white p-4 rounded-lg text-sm whitespace-pre-wrap max-h-60 overflow-auto"></pre>
+            </div>
 
-        <div id="gcode-results" class="mt-8 pt-6 border-t border-gray-700 hidden">
-            <h2 class="text-xl font-semibold text-center text-sky-400 mb-4">Generated G-Code (Fanuc)</h2>
-            <pre id="gcode-output" class="bg-gray-900 text-white p-4 rounded-lg text-sm whitespace-pre-wrap max-h-60 overflow-auto"></pre>
-        </div>
+            <div id="gcode-results" class="mt-8 pt-6 border-t border-gray-700 hidden">
+                <h2 class="text-xl font-semibold text-center text-sky-400 mb-4">Generated G-Code (Fanuc)</h2>
+                <pre id="gcode-output" class="bg-gray-900 text-white p-4 rounded-lg text-sm whitespace-pre-wrap max-h-60 overflow-auto"></pre>
+            </div>
 
-    </div>
+        </div>
+    </main>
 
     <script>
         // DOM Elements
@@ -291,7 +293,7 @@
                 }
                 doc.text((i + 1).toString(), 14, yPos);
                 doc.text(c.c1, 40, yPos);
-                doc.text(c.c2, 80, y-pos);
+                doc.text(c.c2, 80, yPos);
                 yPos += 7;
             });
 
