@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Macro B Helical Interpolation (English)</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .input-group { position: relative; }
+    .input-unit { position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 0.875rem; font-weight: 500;}
+    pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace; }
+    .card { animation: fadeInUp 220ms ease-out both; }
+    @keyframes fadeInUp { from {opacity:0; transform: translateY(6px);} to {opacity:1; transform:none;} }
+    @keyframes pulseSoft { 0%{transform:scale(1)} 50%{transform:scale(1.02)} 100%{transform:scale(1)} }
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #1f2937; }
+    ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #6b7280; }
+  </style>
+</head>
+
+<body class="bg-gray-900 text-white min-h-screen flex flex-col">
+  <main class="flex-1 w-full flex items-center justify-center p-4">
+    <div class="w-full max-w-2xl bg-gray-800 p-6 sm:p-8 rounded-2xl shadow-2xl border border-gray-700 card">
+
+      <h1 class="text-2xl sm:text-3xl font-bold text-center mb-2 text-indigo-400">
+        Macro B Helical Interpolation
+      </h1>
+
+      <p class="text-center text-gray-400 text-sm mb-6">
+        Standard Spiral Down (No Chamfer) &mdash; English Comments
+      </p>
+
+      <div class="space-y-4">
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border border-gray-700 rounded-xl">
+          <div class="md:col-span-2"><h3 class="text-lg font-semibold text-gray-300">Dimensions & Depths</h3></div>
+
+          <div>
+            <label for="start-depth" class="block text-sm font-medium">Start Depth (Z) → <span class="text-gray-400">#1</span></label>
+            <div class="input-group">
+              <input type="number" step="any" id="start-depth" value="1.0" class="w-full bg-gray-700 rounded-lg p-4 mt-1 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-lg">
+              <span class="input-unit">Z</span>
+            </div>
+          </div>
+
+          <div>
+            <label for="final-depth" class="block text-sm font-medium">Final Depth (Z) → <span class="text-gray-400">#2</span></label>
+            <div class="input-group">
+              <input type="number" step="any" id="final-depth" value="-15.0" class="w-full bg-gray-700 rounded-lg p-4 mt-1 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-lg">
+              <span class="input-unit">Z</span>
+            </div>
+          </div>
+
+          <div>
+            <label for="diameter" class="block text-sm font-medium">Diameter → <span class="text-gray-400">#3</span></label>
+            <div class="input-group">
+              <input type="number" step="any" id="diameter" value="51.0" class="w-full bg-gray-700 rounded-lg p-4 mt-1 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-lg">
+              <span class="input-unit">mm</span>
+            </div>
+          </div>
+
+          <div>
+            <label for="z-step" class="block text-sm font-medium">Z Pitch (Step Down) → <span class="text-gray-400">#6</span></label>
+            <div class="input-group">
+              <input type="number" step="any" id="z-step" value="0.5" class="w-full bg-gray-700 rounded-lg p-4 mt-1 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-lg">
+              <span class="input-unit">mm</span>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border border-gray-700 rounded-xl">
+          <div class="md:col-span-2"><h3 class="text-lg font-semibold text-gray-300">Tool & Cutting Parameters</h3></div>
+
+          <div>
+            <label for="d-reg" class="block text-sm font-medium">Tool Offset Reg. (D) → <span class="text-gray-400">#7</span></label>
+            <div class="input-group">
+              <input type="number" id="d-reg" value="11" class="w-full bg-gray-700 rounded-lg p-4 mt-1 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-lg">
+              <span class="input-unit">D</span>
+            </div>
+          </div>
+
+          <div>
+            <label for="f-cut" class="block text-sm font-medium">Cutting Feedrate</label>
+            <div class="input-group">
+              <input type="number" id="f-cut" value="500" class="w-full bg-gray-700 rounded-lg p-4 mt-1 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-lg">
+              <span class="input-unit">F</span>
+            </div>
+          </div>
+
+          <div>
+            <label for="safe-z" class="block text-sm font-medium">Safe Retract Z</label>
+            <div class="input-group">
+              <input type="number" id="safe-z" value="200" class="w-full bg-gray-700 rounded-lg p-4 mt-1 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-lg">
+              <span class="input-unit">Z</span>
+            </div>
+          </div>
+          
+          <div>
+            <label for="prog-num" class="block text-sm font-medium">Program Number</label>
+            <div class="input-group">
+              <input type="number" id="prog-num" value="6999" class="w-full bg-gray-700 rounded-lg p-4 mt-1 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-lg">
+              <span class="input-unit">O####</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="mt-6 flex flex-col sm:flex-row gap-3">
+        <button id="generate-btn" class="flex-1 h-14 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.99] text-white text-lg font-bold rounded-xl transition shadow-lg">Generate Macro</button>
+        <button id="download-btn" class="flex-1 h-14 bg-green-600 hover:bg-green-700 active:scale-[0.99] text-white text-lg font-bold rounded-xl transition shadow-lg hidden">Download .NC</button>
+        <button id="copy-btn" class="sm:w-32 h-14 bg-gray-700 hover:bg-gray-600 active:scale-[0.99] text-white text-lg font-semibold rounded-xl transition shadow-lg">Copy</button>
+      </div>
+
+      <div id="results-section" class="mt-6 pt-6 border-t border-gray-700 hidden">
+        <h2 class="text-xl font-semibold text-indigo-400 mb-3">Generated Program</h2>
+        <pre id="gcode-output" class="bg-gray-900 text-green-400 p-4 rounded-lg text-sm whitespace-pre-wrap max-h-96 overflow-y-auto font-mono border border-gray-700 shadow-inner"></pre>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="px-4 py-6 text-center text-sm text-gray-500">
+    Built with ⚙️ by Shader7 CNC Tools
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const generateBtn = document.getElementById('generate-btn');
+      const downloadBtn = document.getElementById('download-btn');
+      const copyBtn = document.getElementById('copy-btn');
+      const resultsSection = document.getElementById('results-section');
+      const gcodeOutput = document.getElementById('gcode-output');
+
+      function num(id) {
+        return parseFloat(document.getElementById(id).value) || 0;
+      }
+
+      function generateGCode() {
+        const progNum = document.getElementById('prog-num').value.padStart(4, '0');
+        const z1 = num('start-depth');
+        const z2 = num('final-depth');
+        const dia = num('diameter');
+        const zStep = num('z-step');
+        const dReg = num('d-reg');
+        const fCut = num('f-cut');
+        const safeZ = num('safe-z');
+
+        let pg = `O${progNum} (HELICAL INTERPOLATION MACRO) ;\n`;
+        pg += `N290 #1=${z1.toFixed(3)} (START Z) ;\n`;
+        pg += `N300 #2=${z2.toFixed(3)} (FINAL Z) ;\n`;
+        pg += `N310 #3=${dia.toFixed(3)} (DIAMETER) ;\n`;
+        pg += `N315 #5=[#3/2] (RADIUS) ;\n`;
+        pg += `N320 #6=${zStep.toFixed(3)} (Z PITCH) ;\n`;
+        pg += `N330 #7=${dReg} (TOOL RADIUS OFFSET REG) ;\n`;
+        pg += `N340 ;\n`;
+        pg += `N350 G90 G0 X0 Y0 (CENTER POSITION) ;\n`;
+        pg += `N355 G0 Z[#1+2.0] (SAFE APPROACH) ;\n`;
+        pg += `N360 G0 Z#1 (START Z POSITION) ;\n`;
+        pg += `N365 G91 (INCREMENTAL MODE FOR HELIX) ;\n`;
+        pg += `N370 G1 G41 D#7 X#5 F${fCut} (ENGAGE COMP) ;\n`;
+        pg += `N380 WHILE[#1 GT #2] DO 1 ;\n`;
+        pg += `N390 G03 X0 Y0 Z-#6 I-#5 J0 F${fCut} (HELICAL DOWN) ;\n`;
+        pg += `N400 #1=#1-#6 (UPDATE VIRTUAL Z) ;\n`;
+        pg += `N410 END 1 ;\n`;
+        pg += `N420 (--- BOTTOM CLEANING PASS ---) ;\n`;
+        pg += `N430 G03 X0 Y0 I-#5 J0 (FINAL FLAT CIRCLE) ;\n`;
+        pg += `N440 G1 G40 X-#5 F${(fCut*2).toFixed(0)} (DISENGAGE TO CENTER) ;\n`;
+        pg += `N450 G90 (RETURN TO ABSOLUTE) ;\n`;
+        pg += `N460 G0 Z${safeZ} ;\n`;
+        pg += `N470 M0 ;\n%`;
+
+        gcodeOutput.textContent = pg;
+        resultsSection.classList.remove('hidden');
+        downloadBtn.classList.remove('hidden');
+        
+        // Pulse animation
+        resultsSection.style.animation = 'none';
+        setTimeout(() => { resultsSection.style.animation = 'pulseSoft 300ms ease'; }, 10);
+      }
+
+      function copyToClipboard() {
+        const text = gcodeOutput.textContent;
+        if (!text) return;
+        navigator.clipboard.writeText(text).then(() => {
+          copyBtn.textContent = 'Copied!';
+          copyBtn.classList.add('bg-green-600', 'hover:bg-green-700');
+          copyBtn.classList.remove('bg-gray-700', 'hover:bg-gray-600');
+          setTimeout(() => { 
+            copyBtn.textContent = 'Copy'; 
+            copyBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
+            copyBtn.classList.add('bg-gray-700', 'hover:bg-gray-600');
+          }, 1500);
+        });
+      }
+
+      function downloadGCode() {
+        const text = gcodeOutput.textContent;
+        if (!text) return;
+        const progNum = document.getElementById('prog-num').value || '6999';
+        const blob = new Blob([text], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `O${progNum}.nc`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      generateBtn.addEventListener('click', generateGCode);
+      copyBtn.addEventListener('click', copyToClipboard);
+      downloadBtn.addEventListener('click', downloadGCode);
+    });
+  </script>
+</body>
+</html>
