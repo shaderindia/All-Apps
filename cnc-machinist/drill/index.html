@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CNC Drill & Tap Calculator (Safe)</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #0f172a;
+    color: #e5e7eb;
+    padding: 20px;
+}
+.container {
+    max-width: 540px;
+    margin: auto;
+    background: #020617;
+    padding: 20px;
+    border-radius: 10px;
+}
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+label {
+    display: block;
+    margin-top: 12px;
+    font-size: 14px;
+}
+input, select, button {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border-radius: 5px;
+    border: none;
+    font-size: 14px;
+}
+button {
+    background: #22c55e;
+    color: #022c22;
+    font-weight: bold;
+    margin-top: 20px;
+    cursor: pointer;
+}
+button:hover {
+    background: #16a34a;
+}
+.result {
+    margin-top: 20px;
+    background: #020617;
+    padding: 15px;
+    border-radius: 8px;
+}
+.result span {
+    display: block;
+    margin-top: 6px;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+<h2>CNC Drill & Tap Feed–Speed Calculator</h2>
+
+<label>Operation</label>
+<select id="operation">
+    <option value="drill">Drilling</option>
+    <option value="tap">Tapping (Rigid)</option>
+</select>
+
+<label>Tool Diameter (mm)</label>
+<input type="number" id="diameter" step="0.1" placeholder="e.g. 30">
+
+<label>Tool Material</label>
+<select id="toolMaterial">
+    <option value="hss">HSS</option>
+    <option value="hssco">HSS-Co</option>
+    <option value="carbide">Carbide</option>
+</select>
+
+<label>Work Material</label>
+<select id="workMaterial">
+    <option value="mild">Mild Steel</option>
+    <option value="alloy">Alloy Steel</option>
+    <option value="stainless">Stainless Steel</option>
+    <option value="aluminum">Aluminum</option>
+</select>
+
+<label>Hole Depth (mm)</label>
+<input type="number" id="depth" placeholder="e.g. 50">
+
+<button onclick="calculate()">Calculate</button>
+
+<div class="result" id="result"></div>
+</div>
+
+<script>
+const metricPitch = [
+ {d:3,p:0.5},{d:4,p:0.7},{d:5,p:0.8},{d:6,p:1.0},
+ {d:8,p:1.25},{d:10,p:1.5},{d:12,p:1.75},
+ {d:16,p:2.0},{d:20,p:2.5},{d:24,p:3.0},
+ {d:30,p:3.5},{d:36,p:4.0},{d:42,p:4.5}
+];
+
+function getPitch(d){
+    let closest = metricPitch.reduce((a,b)=>
+        Math.abs(b.d-d)<Math.abs(a.d-d)?b:a
+    );
+    return closest.p;
+}
+
+function calculate(){
+    const op = document.getElementById("operation").value;
+    const D = parseFloat(document.getElementById("diameter").value);
+    const tool = document.getElementById("toolMaterial").value;
+    const mat = document.getElementById("workMaterial").value;
+
+    if(!D){ alert("Enter tool diameter"); return; }
+
+    let V = 0;
+
+    const drillSpeed = {
+        mild:{hss:22,hssco:28,carbide:80},
+        alloy:{hss:18,hssco:24,carbide:70},
+        stainless:{hss:14,hssco:20,carbide:60},
+        aluminum:{hss:60,hssco:80,carbide:200}
+    };
+
+    const tapSpeed = {
+        mild:{hss:6,hssco:8,carbide:18},
+        alloy:{hss:5,hssco:7,carbide:15},
+        stainless:{hss:4,hssco:6,carbide:12},
+        aluminum:{hss:10,hssco:12,carbide:30}
+    };
+
+    V = (op==="drill") ? drillSpeed[mat][tool] : tapSpeed[mat][tool];
+
+    let rpm = Math.round((1000*V)/(Math.PI*D));
+    let feed = 0;
+    let extra = "";
+
+    if(op==="drill"){
+        let f_rev = (D>20)?0.25:0.18;
+        feed = Math.round(rpm*f_rev);
+    } else {
+        let pitch = getPitch(D);
+        feed = Math.round(rpm*pitch);
+        extra = `<span><b>Auto Pitch:</b> ${pitch} mm (ISO Coarse)</span>`;
+    }
+
+    document.getElementById("result").innerHTML = `
+        <span><b>RPM:</b> ${rpm}</span>
+        <span><b>Feed:</b> ${feed} mm/min</span>
+        ${extra}
+        <span><b>Cutting Speed:</b> ${V} m/min</span>
+        <span><b>Note:</b> SAFE CNC starting values</span>
+    `;
+}
+</script>
+
+</body>
+</html>
