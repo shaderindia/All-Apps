@@ -1,100 +1,255 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>CNC Drill & Tap Calculator (Safe)</title>
-<style>
-body {
-    font-family: Arial, sans-serif;
-    background: #0f172a;
-    color: #e5e7eb;
-    padding: 20px;
-}
-.container {
-    max-width: 540px;
-    margin: auto;
-    background: #020617;
-    padding: 20px;
-    border-radius: 10px;
-}
-h2 {
-    text-align: center;
-    margin-bottom: 20px;
-}
-label {
-    display: block;
-    margin-top: 12px;
-    font-size: 14px;
-}
-input, select, button {
-    width: 100%;
-    padding: 8px;
-    margin-top: 5px;
-    border-radius: 5px;
-    border: none;
-    font-size: 14px;
-}
-button {
-    background: #22c55e;
-    color: #022c22;
-    font-weight: bold;
-    margin-top: 20px;
-    cursor: pointer;
-}
-button:hover {
-    background: #16a34a;
-}
-.result {
-    margin-top: 20px;
-    background: #020617;
-    padding: 15px;
-    border-radius: 8px;
-}
-.result span {
-    display: block;
-    margin-top: 6px;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CNC Drill & Tap Calculator</title>
+    <style>
+        :root {
+            --bg-page: #0f172a;
+            --bg-card: #1e293b;
+            --bg-input: #020617;
+            --primary: #22c55e;
+            --primary-hover: #16a34a;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --warning: #facc15;
+            --min-color: #3b82f6;
+            --max-color: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg-page);
+            color: var(--text-main);
+            padding: 20px;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .main-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h2 {
+            text-align: center;
+            color: var(--primary);
+            margin-bottom: 25px;
+            font-size: 1.8rem;
+        }
+
+        /* Responsive Grid: Stacks on mobile, 2 columns on iPad/Desktop */
+        .app-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .app-container {
+                grid-template-columns: 1fr 1fr;
+                gap: 30px;
+            }
+        }
+
+        .panel {
+            background: var(--bg-card);
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* Large touch targets for mobile */
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg-input);
+            color: var(--text-main);
+            font-size: 1rem; /* 16px prevents iOS auto-zoom */
+            transition: border-color 0.2s;
+            appearance: none; /* Cleaner look for selects */
+        }
+
+        /* Custom dropdown arrow for selects */
+        select {
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2394a3b8%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat, repeat;
+            background-position: right .7em top 50%, 0 0;
+            background-size: .65em auto, 100%;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: #022c22;
+            font-weight: 700;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        /* Results Styling */
+        .results-header {
+            color: var(--text-main);
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+        }
+
+        .result-card {
+            background: var(--bg-input);
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .result-card.min { border-left-color: var(--min-color); }
+        .result-card.max { border-left-color: var(--max-color); }
+
+        .result-card-info h4 {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .result-card-info p {
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .result-card-extra {
+            text-align: right;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .warn-box {
+            background: rgba(250, 204, 21, 0.1);
+            border: 1px solid rgba(250, 204, 21, 0.3);
+            color: var(--warning);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .empty-state {
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 40px;
+            font-style: italic;
+        }
+    </style>
 </head>
 <body>
 
-<div class="container">
-<h2>CNC Drill & Tap Feed–Speed Calculator</h2>
+<div class="main-wrapper">
+    <h2>CNC Feed & Speed Calculator</h2>
 
-<label>Operation</label>
-<select id="operation">
-    <option value="drill">Drilling</option>
-    <option value="tap">Tapping (Rigid)</option>
-</select>
+    <div class="app-container">
+        <div class="panel">
+            <div class="form-group">
+                <label>Operation</label>
+                <select id="operation">
+                    <option value="drill">Drilling</option>
+                    <option value="tap">Tapping (Rigid)</option>
+                </select>
+            </div>
 
-<label>Tool Diameter (mm)</label>
-<input type="number" id="diameter" step="0.1" placeholder="e.g. 30">
+            <div class="form-group">
+                <label>Tool Diameter (mm)</label>
+                <input type="number" id="diameter" step="0.1" placeholder="e.g. 6">
+            </div>
 
-<label>Tool Material</label>
-<select id="toolMaterial">
-    <option value="hss">HSS</option>
-    <option value="hssco">HSS-Co</option>
-    <option value="carbide">Carbide</option>
-</select>
+            <div class="form-group">
+                <label>Tool Material</label>
+                <select id="toolMaterial">
+                    <option value="hss">HSS</option>
+                    <option value="hssco">HSS-Co</option>
+                    <option value="carbide">Carbide</option>
+                </select>
+            </div>
 
-<label>Work Material</label>
-<select id="workMaterial">
-    <option value="mild">Mild Steel</option>
-    <option value="alloy">Alloy Steel</option>
-    <option value="stainless">Stainless Steel</option>
-    <option value="aluminum">Aluminum</option>
-</select>
+            <div class="form-group">
+                <label>Work Material</label>
+                <select id="workMaterial">
+                    <option value="mild">Mild Steel</option>
+                    <option value="alloy">Alloy Steel</option>
+                    <option value="stainless">Stainless Steel</option>
+                    <option value="aluminum">Aluminum</option>
+                </select>
+            </div>
 
-<label>Hole Depth (mm)</label>
-<input type="number" id="depth" placeholder="e.g. 50">
+            <div class="form-group">
+                <label>Hole Depth (mm) <span style="font-weight:normal; font-size:0.8rem;">(Optional)</span></label>
+                <input type="number" id="depth" placeholder="e.g. 20">
+            </div>
 
-<button onclick="calculate()">Calculate</button>
+            <button onclick="calculate()">Calculate Parameters</button>
+        </div>
 
-<div class="result" id="result"></div>
+        <div class="panel">
+            <div id="result">
+                <div class="empty-state">Enter tool parameters and click calculate to see results.</div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
-const metricPitch = [
+// ISO metric coarse pitch table
+const pitchTable = [
  {d:3,p:0.5},{d:4,p:0.7},{d:5,p:0.8},{d:6,p:1.0},
  {d:8,p:1.25},{d:10,p:1.5},{d:12,p:1.75},
  {d:16,p:2.0},{d:20,p:2.5},{d:24,p:3.0},
@@ -102,10 +257,18 @@ const metricPitch = [
 ];
 
 function getPitch(d){
-    let closest = metricPitch.reduce((a,b)=>
+    return pitchTable.reduce((a,b)=>
         Math.abs(b.d-d)<Math.abs(a.d-d)?b:a
-    );
-    return closest.p;
+    ).p;
+}
+
+// Correct industrial drill feed per rev
+function drillFeedPerRev(d){
+    if (d <= 5) return 0.07;
+    if (d <= 8) return 0.10;
+    if (d <= 12) return 0.14;
+    if (d <= 20) return 0.18;
+    return 0.25;
 }
 
 function calculate(){
@@ -113,47 +276,127 @@ function calculate(){
     const D = parseFloat(document.getElementById("diameter").value);
     const tool = document.getElementById("toolMaterial").value;
     const mat = document.getElementById("workMaterial").value;
+    const depth = parseFloat(document.getElementById("depth").value) || 0;
 
-    if(!D){ alert("Enter tool diameter"); return; }
+    if(!D){ 
+        alert("Please enter a tool diameter."); 
+        document.getElementById("diameter").focus();
+        return; 
+    }
 
-    let V = 0;
-
-    const drillSpeed = {
+    // Cutting speeds (m/min)
+    const drillV = {
         mild:{hss:22,hssco:28,carbide:80},
         alloy:{hss:18,hssco:24,carbide:70},
         stainless:{hss:14,hssco:20,carbide:60},
         aluminum:{hss:60,hssco:80,carbide:200}
     };
 
-    const tapSpeed = {
+    const tapV = {
         mild:{hss:6,hssco:8,carbide:18},
         alloy:{hss:5,hssco:7,carbide:15},
         stainless:{hss:4,hssco:6,carbide:12},
         aluminum:{hss:10,hssco:12,carbide:30}
     };
 
-    V = (op==="drill") ? drillSpeed[mat][tool] : tapSpeed[mat][tool];
+    const V = (op==="drill") ? drillV[mat][tool] : tapV[mat][tool];
 
-    let rpm = Math.round((1000*V)/(Math.PI*D));
-    let feed = 0;
-    let extra = "";
+    const rpmStd = Math.round((1000 * V) / (Math.PI * D));
+    const rpmMin = Math.round(rpmStd * 0.6);
+    const rpmMax = Math.round(rpmStd * 1.2);
 
-    if(op==="drill"){
-        let f_rev = (D>20)?0.25:0.18;
-        feed = Math.round(rpm*f_rev);
+    let html = "";
+
+    if(op === "drill"){
+        const f_rev = drillFeedPerRev(D);
+        
+        // Smart warning: Peck drilling recommended if depth > 3xD
+        let peckWarning = "";
+        if (depth >= (D * 3)) {
+            peckWarning = `<div class="warn-box">⚠️ Depth is >3x Diameter. Use peck drilling (G83/G73).</div>`;
+        }
+
+        html = `
+        <h3 class="results-header">Drilling Results</h3>
+        
+        <div class="result-card min">
+            <div class="result-card-info">
+                <h4>Minimum</h4>
+                <p>${rpmMin} RPM</p>
+            </div>
+            <div class="result-card-extra">
+                F ${Math.round(rpmMin*f_rev)} mm/min
+            </div>
+        </div>
+
+        <div class="result-card std">
+            <div class="result-card-info">
+                <h4>Standard (Recommended)</h4>
+                <p>${rpmStd} RPM</p>
+            </div>
+            <div class="result-card-extra">
+                F ${Math.round(rpmStd*f_rev)} mm/min
+            </div>
+        </div>
+
+        <div class="result-card max">
+            <div class="result-card-info">
+                <h4>Max Safe</h4>
+                <p>${rpmMax} RPM</p>
+            </div>
+            <div class="result-card-extra">
+                F ${Math.round(rpmMax*f_rev)} mm/min
+            </div>
+        </div>
+
+        <div style="margin-top: 15px; font-size: 0.9rem; color: var(--text-muted);">
+            <strong>Calculated Feed/Rev:</strong> ${f_rev} mm/rev
+        </div>
+        ${peckWarning}
+        `;
     } else {
-        let pitch = getPitch(D);
-        feed = Math.round(rpm*pitch);
-        extra = `<span><b>Auto Pitch:</b> ${pitch} mm (ISO Coarse)</span>`;
+        const pitch = getPitch(D);
+
+        html = `
+        <h3 class="results-header">Tapping Results (M${D}x${pitch})</h3>
+        
+        <div class="result-card min">
+            <div class="result-card-info">
+                <h4>Minimum</h4>
+                <p>${rpmMin} RPM</p>
+            </div>
+            <div class="result-card-extra">
+                F ${rpmMin*pitch} mm/min
+            </div>
+        </div>
+
+        <div class="result-card std">
+            <div class="result-card-info">
+                <h4>Standard (Recommended)</h4>
+                <p>${rpmStd} RPM</p>
+            </div>
+            <div class="result-card-extra">
+                F ${rpmStd*pitch} mm/min
+            </div>
+        </div>
+
+        <div class="result-card max">
+            <div class="result-card-info">
+                <h4>Max Safe</h4>
+                <p>${rpmMax} RPM</p>
+            </div>
+            <div class="result-card-extra">
+                F ${rpmMax*pitch} mm/min
+            </div>
+        </div>
+
+        <div class="warn-box">
+            ⚠️ Values are for Rigid Tapping only (G84). Ensure pitch matches your tap.
+        </div>
+        `;
     }
 
-    document.getElementById("result").innerHTML = `
-        <span><b>RPM:</b> ${rpm}</span>
-        <span><b>Feed:</b> ${feed} mm/min</span>
-        ${extra}
-        <span><b>Cutting Speed:</b> ${V} m/min</span>
-        <span><b>Note:</b> SAFE CNC starting values</span>
-    `;
+    document.getElementById("result").innerHTML = html;
 }
 </script>
 
