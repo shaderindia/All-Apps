@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CNC Drill & Tap Calculator</title>
+    <title>CNC Drill & Tap Calculator | Shader7</title>
     <style>
         :root {
             --bg-page: #0f172a;
@@ -39,37 +39,78 @@
             margin: 0 auto;
         }
 
-        /* Home Button Styles */
-        .top-nav {
-            margin-bottom: 20px;
+        /* Unified App Header / Banner */
+        .app-header {
+            background: linear-gradient(135deg, #1e293b, #020617);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 15px 20px 25px 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
         }
 
-        .home-btn {
+        .header-nav {
+            width: 100%;
+            display: flex;
+            justify-content: flex-start;
+            margin-bottom: 5px;
+        }
+
+        .back-link {
             display: inline-flex;
             align-items: center;
             gap: 6px;
             text-decoration: none;
             color: var(--text-muted);
-            background: var(--bg-card);
-            padding: 8px 16px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
             font-size: 0.9rem;
             font-weight: 500;
-            transition: all 0.2s ease;
+            transition: color 0.2s ease;
+            padding: 4px 8px;
+            margin-left: -8px; /* Aligns visually with the edge */
+            border-radius: 6px;
         }
 
-        .home-btn:hover {
+        .back-link:hover {
             color: var(--text-main);
-            background: var(--bg-input);
-            border-color: var(--text-muted);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .back-link svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+
+        .header-branding {
+            text-align: center;
+        }
+
+        .header-branding h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            margin-bottom: 4px;
+            color: #ffffff;
+            text-transform: uppercase;
+        }
+
+        .header-branding h1 span {
+            color: var(--primary);
+        }
+
+        .header-branding p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin: 0;
         }
 
         h2 {
             text-align: center;
             color: var(--primary);
             margin-bottom: 25px;
-            font-size: 1.8rem;
+            font-size: 1.5rem;
         }
 
         /* Responsive Grid: Stacks on mobile, 2 columns on iPad/Desktop */
@@ -116,7 +157,7 @@
             color: var(--text-main);
             font-size: 1rem; /* 16px prevents iOS auto-zoom */
             transition: border-color 0.2s;
-            appearance: none; /* Cleaner look for selects */
+            appearance: none;
         }
 
         /* Custom dropdown arrow for selects */
@@ -221,13 +262,20 @@
 <body>
 
 <div class="main-wrapper">
-    <div class="top-nav">
-        <a href="https://shader7.com" class="home-btn">
-            &#8592; Back to shader7.com
-        </a>
-    </div>
+    <header class="app-header">
+        <div class="header-nav">
+            <a href="https://shader7.com" class="back-link">
+                <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"></path></svg>
+                Back to shader7.com
+            </a>
+        </div>
+        <div class="header-branding">
+            <h1>SHADER<span>7</span></h1>
+            <p>Advanced CNC Tools & Resources</p>
+        </div>
+    </header>
 
-    <h2>CNC Feed & Speed Calculator</h2>
+    <h2>Feed & Speed Calculator</h2>
 
     <div class="app-container">
         <div class="panel">
@@ -342,7 +390,6 @@ function calculate(){
     if(op === "drill"){
         const f_rev = drillFeedPerRev(D);
         
-        // Smart warning: Peck drilling recommended if depth > 3xD
         let peckWarning = "";
         if (depth >= (D * 3)) {
             peckWarning = `<div class="warn-box">⚠️ Depth is >3x Diameter. Use peck drilling (G83/G73).</div>`;
