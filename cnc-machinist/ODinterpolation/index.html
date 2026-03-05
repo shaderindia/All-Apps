@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OD Interpolation Macro Generator</title>
+  <style>
+    body { font-family: system-ui, Arial, sans-serif; margin: 18px; }
+    .wrap { max-width: 980px; margin: 0 auto; }
+    
+    /* Shader7 Banner Styles */
+    .banner {
+      display: block;
+      background: #1a73e8;
+      color: #fff;
+      text-align: center;
+      padding: 16px;
+      text-decoration: none;
+      font-size: 22px;
+      font-weight: 700;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      letter-spacing: 1px;
+      transition: background 0.2s ease;
+    }
+    .banner:hover { background: #1557b0; }
+
+    h1 { font-size: 20px; margin: 0 0 12px; }
+    
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(240px, 1fr));
+      gap: 12px;
+      align-items: start;
+    }
+    label { display: block; font-size: 13px; margin-bottom: 6px; font-weight: 500;}
+    
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #bbb;
+      border-radius: 8px;
+      font-size: 14px;
+      box-sizing: border-box;
+      background: #fff;
+    }
+    
+    .row { background: #f6f7f8; padding: 12px; border-radius: 10px; }
+    .actions { display: flex; gap: 10px; margin: 12px 0; flex-wrap: wrap; }
+    
+    button {
+      padding: 10px 14px;
+      border: 0;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: opacity 0.2s;
+    }
+    button:hover { opacity: 0.9; }
+    button.primary { background: #1a73e8; color: #fff; }
+    button.secondary { background: #e8eaed; color: #333; }
+    
+    .out {
+      width: 100%;
+      min-height: 360px;
+      padding: 12px;
+      border: 1px solid #bbb;
+      border-radius: 10px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      font-size: 13px;
+      white-space: pre;
+      overflow: auto;
+      box-sizing: border-box;
+      background: #fafafa;
+    }
+    
+    .note { font-size: 12px; color: #444; margin-top: 6px; }
+    .error { color: #b00020; font-size: 13px; margin: 8px 0 0; font-weight: bold;}
+    
+    /* Credits Style */
+    .credits {
+      text-align: center;
+      margin-top: 24px;
+      font-size: 14px;
+      color: #555;
+    }
+    .credits a {
+      color: #e1306c; /* Instagram brand color */
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .credits a:hover { text-decoration: underline; }
+
+    @media (max-width: 720px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    
+    <a href="https://shader7.com" target="_blank" class="banner">
+      Shader7 OD INTERPOLATION
+    </a>
+
+    <h1>OD Interpolation Macro Generator</h1>
+
+    <div class="grid">
+      <div class="row">
+        <label for="progNum">Program Number</label>
+        <input id="progNum" type="number" step="1" value="17" />
+        <div class="note">Output will pad to 5 digits (e.g. 17 → 00017)</div>
+      </div>
+
+      <div class="row">
+        <label for="endCode">End Program Code</label>
+        <select id="endCode">
+          <option value="M01" selected>M01 (Optional Stop)</option>
+          <option value="M00">M00 (Program Stop)</option>
+          <option value="M30">M30 (End of Program)</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <label for="x">X coordinate (#16)</label>
+        <input id="x" type="number" step="any" value="1665" />
+      </div>
+
+      <div class="row">
+        <label for="y">Y coordinate (#17)</label>
+        <input id="y" type="number" step="any" value="-1557.5" />
+      </div>
+
+      <div class="row">
+        <label for="firstDepth">First depth (#1)</label>
+        <input id="firstDepth" type="number" step="any" value="0" />
+      </div>
+
+      <div class="row">
+        <label for="finalDepth">Final depth (#2)</label>
+        <input id="finalDepth" type="number" step="any" value="-0.5" />
+      </div>
+
+      <div class="row">
+        <label for="doc">Depth of cut (#3)</label>
+        <input id="doc" type="number" step="any" value="0.5" />
+      </div>
+
+      <div class="row">
+        <label for="diaMake">Diameter to make (#30)</label>
+        <input id="diaMake" type="number" step="any" value="220" />
+      </div>
+
+      <div class="row">
+        <label for="cutterDia">Cutter diameter (will convert to radius #5)</label>
+        <input id="cutterDia" type="number" step="any" value="125" />
+        <div class="note">Example: 125mm cutter → radius #5 = 62.5</div>
+      </div>
+
+      <div class="row">
+        <label for="safety">Safety engage (#8)</label>
+        <input id="safety" type="number" step="any" value="0" />
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="primary" id="generateBtn">Generate Program</button>
+      <button class="secondary" id="copyBtn">Copy to Clipboard</button>
+      <button class="secondary" id="downloadBtn">Download .txt</button>
+    </div>
+
+    <div id="err" class="error"></div>
+
+    <textarea id="output" class="out" spellcheck="false"></textarea>
+
+    <div class="note" id="endNote">
+      This outputs your custom OD INTERPOLATION and ends at your selected M-code.
+      Validate on your control/simulator before cutting.
+    </div>
+
+    <div class="credits">
+      Created by <a href="https://www.instagram.com/nishix_vamp" target="_blank">@nishix_vamp</a>
+    </div>
+
+  </div>
+
+<script>
+  function n(v) {
+    const num = Number(v);
+    return Number.isFinite(num) ? num : NaN;
+  }
+
+  function fmt(num) {
+    if (!Number.isFinite(num)) return "NaN";
+    const s = String(num);
+    if (s.includes("e") || s.includes("E")) {
+      return num.toFixed(6).replace(/\.?0+$/, "");
+    }
+    return s;
+  }
+
+  function buildProgram(params) {
+    const pNum = String(params.progNum).padStart(5, '0');
+    const X16 = params.x;
+    const Y17 = params.y;
+    const first = params.firstDepth;
+    const final = params.finalDepth;
+    const doc = params.doc;
+    const diaMake = params.diaMake;
+    const cutterDia = params.cutterDia;
+    const safety = params.safety;
+    const endCode = params.endCode;
+
+    // Macro values
+    const rMake = diaMake / 2;        // #4
+    const cutterR = cutterDia / 2;    // #5
+    const J7 = rMake + cutterR;       // #7
+    const Y6 = cutterR + rMake + safety; // #6
+
+    // Build EXACT layout with dynamic program number and end code
+    return (
+`${pNum} (OD INTERPOLATION);
+
+(1ST);
+G40 G80 G49 G90 G54 G17 ;
+M141 S550 ;
+M103 ;
+
+#16=${fmt(X16)} (X) ;
+#17=${fmt(Y17)} (Y) ;
+
+#1=${fmt(first)} (FIRST DEPTH) ;
+#2=${fmt(final)} (FINAL DEPTH) ;
+#30=${fmt(diaMake)} (DIA) (DIA TO MAKE) ;
+#3=${fmt(doc)} (DEPTH OF CUT) ;
+#4=[#30/2] ;
+#5=${fmt(cutterR)} (CUTTER RADIUS) ;
+#7=#4+#5 ;
+#6=#5+#4+#8 ;
+#8=${fmt(safety)} (SAFETY ENGAGE) ;
+#12=#1 ;
+#15=#1 ;
+
+G52 X#16 Y#17 ;
+G0 X0 Y0 ;
+G43 G0 Z50 ;
+X0 Y#6 ;
+Z#15 ;
+G91 G01 Y-#8 F1000 ;
+IF[#1 EQ #2] GOTO 120 ;
+N80 G03 X0 Y0 Z-#3 I0 J-#7 ;
+
+G03 X0 Y0 I0 J-#7 ;
+#15=[#15-#3] ;
+IF[#15 GT #2] GOTO 80 ;
+IF[#12 EQ 0] GOTO 130 ;
+N120 G03 X0 Y0 I0 J-#7 ;
+N130 G01 G40 X0 Y#8 ;
+G90 G0 Z300 ;
+G52 X0 Y0 ;
+M5 ;
+M9 ;
+${endCode} ;
+`
+    );
+  }
+
+  function validate(params) {
+    const errs = [];
+
+    // Basic numeric checks
+    for (const [k, v] of Object.entries(params)) {
+      if (k !== 'endCode' && !Number.isFinite(v)) errs.push(`${k} must be a number`);
+    }
+
+    if (Number.isFinite(params.progNum) && params.progNum < 0) {
+      errs.push("Program number cannot be negative");
+    }
+    if (Number.isFinite(params.doc) && params.doc <= 0) {
+      errs.push("Depth of cut (#3) must be > 0");
+    }
+    if (Number.isFinite(params.diaMake) && params.diaMake <= 0) {
+      errs.push("Diameter to make (#30) must be > 0");
+    }
+    if (Number.isFinite(params.cutterDia) && params.cutterDia <= 0) {
+      errs.push("Cutter diameter must be > 0");
+    }
+
+    if (Number.isFinite(params.firstDepth) && Number.isFinite(params.finalDepth)) {
+      if (params.finalDepth > params.firstDepth) {
+        errs.push("Final depth (#2) is greater than first depth (#1). If cutting down in Z-, final depth is usually <= first.");
+      }
+    }
+
+    return errs;
+  }
+
+  function getParams() {
+    return {
+      progNum: parseInt(document.getElementById("progNum").value, 10),
+      endCode: document.getElementById("endCode").value,
+      x: n(document.getElementById("x").value),
+      y: n(document.getElementById("y").value),
+      firstDepth: n(document.getElementById("firstDepth").value),
+      finalDepth: n(document.getElementById("finalDepth").value),
+      doc: n(document.getElementById("doc").value),
+      diaMake: n(document.getElementById("diaMake").value),
+      cutterDia: n(document.getElementById("cutterDia").value),
+      safety: n(document.getElementById("safety").value)
+    };
+  }
+
+  function generate() {
+    const params = getParams();
+    const errs = validate(params);
+    const errEl = document.getElementById("err");
+    const outEl = document.getElementById("output");
+
+    if (errs.length) {
+      errEl.textContent = errs.join(" • ");
+      outEl.value = "";
+      return;
+    }
+
+    errEl.textContent = "";
+    outEl.value = buildProgram(params);
+  }
+
+  async function copyOut() {
+    const out = document.getElementById("output").value;
+    if (!out.trim()) return;
+    try {
+      await navigator.clipboard.writeText(out);
+    } catch {
+      const ta = document.getElementById("output");
+      ta.focus();
+      ta.select();
+      document.execCommand("copy");
+    }
+  }
+
+  function downloadOut() {
+    const out = document.getElementById("output").value;
+    const params = getParams();
+    if (!out.trim()) return;
+    
+    // dynamically generate the filename with the selected program number
+    const pNum = String(params.progNum).padStart(5, '0');
+    const fileName = `OD_INTERPOLATION_${pNum}.txt`;
+
+    const blob = new Blob([out], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  document.getElementById("generateBtn").addEventListener("click", generate);
+  document.getElementById("copyBtn").addEventListener("click", copyOut);
+  document.getElementById("downloadBtn").addEventListener("click", downloadOut);
+
+  // Auto-generate once on load
+  generate();
+</script>
+</body>
+</html>
