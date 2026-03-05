@@ -1,612 +1,402 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>ID/OD Helical Interpolation Generator (Independent)</title>
-
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OD / ID Interpolation Macro Generator</title>
   <style>
-    body { font-family: 'Inter', sans-serif; }
-    .input-group { position: relative; }
-    .input-unit { position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 0.875rem; }
-    pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace; }
-    .card { animation: fadeInUp 220ms ease-out both; }
-    @keyframes fadeInUp { from {opacity:0; transform: translateY(6px);} to {opacity:1; transform:none;} }
-    @keyframes pulseSoft { 0%{transform:scale(1)} 50%{transform:scale(1.02)} 100%{transform:scale(1)} }
-    .hint { font-size: 0.85rem; color:#9ca3af }
-    .tab-btn { transition: all 150ms ease-in-out; }
-    .tab-btn.active { background-color: #4f46e5; color: white; transform: translateY(-1px); }
-    .tab-btn:not(.active) { background-color: #374151; color: #d1d5db; }
-    input:disabled, select:disabled { background-color: #374151; color: #6b7280; cursor: not-allowed; border-color: #4b5563; }
-    ::-webkit-scrollbar { width: 8px; height: 8px; }
-    ::-webkit-scrollbar-track { background: #1f2937; }
-    ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: #6b7280; }
+    body { font-family: system-ui, Arial, sans-serif; margin: 18px; }
+    .wrap { max-width: 980px; margin: 0 auto; }
+
+    .banner {
+      display: block;
+      background: linear-gradient(135deg, #1a73e8 0%, #0056d2 100%);
+      color: #fff;
+      text-align: center;
+      padding: 18px;
+      text-decoration: none;
+      font-size: 24px;
+      font-weight: 800;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      letter-spacing: 1.5px;
+      box-shadow: 0 4px 15px rgba(26, 115, 232, 0.3);
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+    }
+    
+    .banner:hover {
+      filter: brightness(1.1);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(26, 115, 232, 0.4);
+    }
+
+    h1 { font-size: 20px; margin: 0 0 12px; }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(240px,1fr));
+      gap:12px;align-items:start;
+    }
+    label{ display:block;font-size:13px;margin-bottom:6px;font-weight:500; }
+
+    input,select{
+      width:100%;padding:10px;border:1px solid #bbb;border-radius:8px;
+      font-size:14px;box-sizing:border-box;background:#fff;
+    }
+
+    .row{ background:#f6f7f8;padding:12px;border-radius:10px; }
+    .actions{ display:flex;gap:10px;margin:12px 0;flex-wrap:wrap; }
+
+    button{
+      padding:10px 14px;border:0;border-radius:10px;cursor:pointer;
+      font-weight:600;transition:opacity .2s;
+    }
+    button:hover{ opacity:.9; }
+    button.primary{ background:#1a73e8;color:#fff; }
+    button.secondary{ background:#e8eaed;color:#333; }
+
+    .out{
+      width:100%;min-height:420px;padding:12px;border:1px solid #bbb;
+      border-radius:10px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+      font-size:13px;white-space:pre;overflow:auto;box-sizing:border-box;background:#fafafa;
+    }
+
+    .note{ font-size:12px;color:#444;margin-top:6px; }
+    .error{ color:#b00020;font-size:13px;margin:8px 0 0;font-weight:bold; }
+
+    .credits{ text-align:center;margin-top:24px;font-size:14px;color:#555; }
+    .credits a{ color:#e1306c;text-decoration:none;font-weight:bold; }
+    .credits a:hover{ text-decoration:underline; }
+
+    @media (max-width:720px){ .grid{ grid-template-columns:1fr; } }
   </style>
 </head>
+<body>
+  <div class="wrap">
+    <a href="https://shader7.com" target="_blank" class="banner">⚙️ Shader7 OD / ID INTERPOLATION</a>
+    <h1>OD / ID Interpolation Macro Generator</h1>
 
-<body class="bg-gray-900 text-white min-h-screen flex flex-col"><header class="relative w-full bg-gray-900 border-b border-gray-700 shadow-sm mb-6">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex items-center h-16">
-      <a href="https://shader7.com" class="flex items-center gap-3 text-indigo-400 hover:text-indigo-300 transition-colors no-underline group">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="group-hover:scale-110 transition-transform" viewBox="0 0 16 16">
-          <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"/>
-          <path d="m8 3.293 6 6V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V9.293l6-6Z"/>
-        </svg>
-        <span class="font-bold text-lg tracking-wide">Shader7</span>
-      </a>
+    <div class="grid">
+      <div class="row">
+        <label for="mode">Mode</label>
+        <select id="mode">
+          <option value="OD" selected>OD (Outside Diameter)</option>
+          <option value="ID">ID (Inside Diameter)</option>
+        </select>
+        <div class="note">ID mode matches your N29/N35/N36 program.</div>
+      </div>
+
+      <div class="row">
+        <label for="progNum">Program Number (O####)</label>
+        <input id="progNum" type="number" step="1" value="1" />
+        <div class="note">Default O0001. Example: 30 → O0030</div>
+      </div>
+
+      <div class="row">
+        <label for="spindleMode">Spindle Mode</label>
+        <select id="spindleMode">
+          <option value="gear" selected>M141 S550 + M103 (Gear Head)</option>
+          <option value="m03">M03 S550 (Standard Spindle)</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <label for="endCode">End Program Code</label>
+        <select id="endCode">
+          <option value="M01">M01 (Optional Stop)</option>
+          <option value="M0" selected>M0 (Program Stop)</option>
+          <option value="M00">M00 (Program Stop)</option>
+          <option value="M30">M30 (End of Program)</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <label for="x">X coordinate (#16)</label>
+        <input id="x" type="number" step="any" value="0" />
+      </div>
+
+      <div class="row">
+        <label for="y">Y coordinate (#17)</label>
+        <input id="y" type="number" step="any" value="0" />
+      </div>
+
+      <div class="row">
+        <label for="firstDepth">First depth (#1)</label>
+        <input id="firstDepth" type="number" step="any" value="0" />
+      </div>
+
+      <div class="row">
+        <label for="finalDepth">Final depth (#2)</label>
+        <input id="finalDepth" type="number" step="any" value="-0.50" />
+      </div>
+
+      <div class="row">
+        <label for="doc">Depth of cut (#3)</label>
+        <input id="doc" type="number" step="any" value="0.05" />
+      </div>
+
+      <div class="row">
+        <label for="diaMake">Diameter to make (#30)</label>
+        <input id="diaMake" type="number" step="any" value="500" />
+      </div>
+
+      <div class="row">
+        <label for="cutterR">Cutter radius (#5)</label>
+        <input id="cutterR" type="number" step="any" value="50" />
+        <div class="note">Enter cutter <b>radius</b> (matches your ID example).</div>
+      </div>
+
+      <div class="row" id="odSafetyRow">
+        <label for="safety">Safety engage (#8) (OD only)</label>
+        <input id="safety" type="number" step="any" value="0" />
+      </div>
+
+      <div class="row">
+        <label for="feed">Feed (F)</label>
+        <input id="feed" type="number" step="any" value="1000" />
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="primary" id="generateBtn">Generate Program</button>
+      <button class="secondary" id="copyBtn">Copy to Clipboard</button>
+      <button class="secondary" id="downloadBtn">Download .txt</button>
+    </div>
+
+    <div id="err" class="error"></div>
+    <textarea id="output" class="out" spellcheck="false"></textarea>
+
+    <div class="note">
+      Output starts with <b>%</b> and ends with <b>%</b>. Program header is <b>O####</b>.
+      Validate on your control/simulator before cutting.
+    </div>
+
+    <div class="credits">
+      Created by <a href="https://www.instagram.com/nishix_vamp" target="_blank">@nishix_vamp</a>
     </div>
   </div>
-</header>
-  <main class="flex-1 w-full flex items-center justify-center p-4">
-    <div class="w-full max-w-2xl bg-gray-800 p-6 sm:p-8 rounded-2xl shadow-2xl border border-gray-700 card">
 
-      <h1 class="text-2xl sm:text-3xl font-bold text-center mb-3 text-indigo-400">
-        ID/OD Helical Interpolation (Independent Program)
-      </h1>
+<script>
+  function n(v){ const num = Number(v); return Number.isFinite(num) ? num : NaN; }
 
-      <p class="hint text-center mb-4">
-        Supports <b>ID</b>/<b>OD</b>, <b>G17/G18/G19</b>, depth directions <b>+→-</b> or <b>-→+</b>,
-        and cutter comp <b>G41/G42</b>. No subprogram. OD start point is:
-        <b>OD radius + cutter radius + clearance</b>.
-      </p>
+  function fmt(num){
+    if(!Number.isFinite(num)) return "NaN";
+    const s = String(num);
+    if(s.includes("e") || s.includes("E")) return num.toFixed(6).replace(/\.?0+$/,"");
+    return s;
+  }
 
-      <!-- ID/OD Tabs -->
-      <div class="flex justify-center mb-4 bg-gray-700 rounded-lg p-1">
-        <button id="tab-id" class="tab-btn w-1/2 py-3 rounded-md text-sm font-semibold active">ID Interpolation</button>
-        <button id="tab-od" class="tab-btn w-1/2 py-3 rounded-md text-sm font-semibold">OD Interpolation</button>
-      </div>
+  function padO(num){
+    return "O" + String(num).padStart(4,'0');
+  }
 
-      <div class="space-y-4">
+  function getSpindleCode(spindleMode){
+    if(spindleMode === "gear"){
+      return `M141 S550 ;
+M103 ;`;
+    }
+    return `M03 S550 ;`;
+  }
 
-        <!-- Setup -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 border border-gray-700 rounded-xl">
-          <div class="md:col-span-3"><h3 class="text-lg font-semibold text-gray-300">Workpiece & Tool Setup</h3></div>
+  function buildOD(p){
+    // OD macro format (no "(1ST)")
+    return (
+`%
+${padO(p.progNum)} (OD INTERPOLATION);
 
-          <div>
-            <label for="plane-select" class="block text-sm font-medium">Work Plane</label>
-            <select id="plane-select" class="w-full bg-gray-700 rounded-lg p-4 mt-1 border border-gray-600 focus:border-indigo-500">
-              <option value="G17" selected>G17 (X-Y, depth Z)</option>
-              <option value="G18">G18 (X-Z, depth Y)</option>
-              <option value="G19">G19 (Y-Z, depth X)</option>
-            </select>
-          </div>
+G40 G80 G49 G90 G54 G17 ;
+${getSpindleCode(p.spindleMode)}
 
-          <div>
-            <label for="cutter-diameter" class="block text-sm font-medium">Cutter Diameter</label>
-            <div class="input-group">
-              <input type="number" step="any" id="cutter-diameter" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="e.g., 50.0">
-              <span class="input-unit">mm</span>
-            </div>
-          </div>
+#16=${fmt(p.x)} (X) ;
+#17=${fmt(p.y)} (Y) ;
 
-          <div>
-            <label for="program-number" class="block text-sm font-medium">Program Number</label>
-            <div class="input-group">
-              <input type="number" id="program-number" value="1001" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-              <span class="input-unit">O####</span>
-            </div>
-          </div>
-        </div>
+#1=${fmt(p.firstDepth)} (FIRST DEPTH) ;
+#2=${fmt(p.finalDepth)} (FINAL DEPTH) ;
+#30=${fmt(p.diaMake)} (DIA) (DIA TO MAKE) ;
+#3=${fmt(p.doc)} (DEPTH OF CUT) ;
+#4=[#30/2] ;
+#5=${fmt(p.cutterR)} (CUTTER RADIUS) ;
+#7=#4+#5 ;
+#6=#5+#4+#8 ;
+#8=${fmt(p.safety)} (SAFETY ENGAGE) ;
+#12=#1 ;
+#15=#1 ;
 
-        <!-- Geometry -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border border-gray-700 rounded-xl">
-          <div class="md:col-span-2"><h3 class="text-lg font-semibold text-gray-300">Feature Geometry</h3></div>
+G52 X#16 Y#17 ;
+G0 X0 Y0 ;
+G43 G0 Z50 ;
+X0 Y#6 ;
+Z#15 ;
+G91 G01 Y-#8 F${fmt(p.feed)} ;
+IF[#1 EQ #2] GOTO 120 ;
+N80 G03 X0 Y0 Z-#3 I0 J-#7 ;
 
-          <div class="grid grid-cols-2 gap-4 md:col-span-2">
-            <div>
-              <label id="center1-label" for="center1" class="block text-sm font-medium">Center X</label>
-              <div class="input-group">
-                <input type="number" step="any" id="center1" value="0.0" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                <span class="input-unit">mm</span>
-              </div>
-            </div>
-            <div>
-              <label id="center2-label" for="center2" class="block text-sm font-medium">Center Y</label>
-              <div class="input-group">
-                <input type="number" step="any" id="center2" value="0.0" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                <span class="input-unit">mm</span>
-              </div>
-            </div>
-          </div>
+G03 X0 Y0 I0 J-#7 ;
+#15=[#15-#3] ;
+IF[#15 GT #2] GOTO 80 ;
+IF[#12 EQ 0] GOTO 130 ;
+N120 G03 X0 Y0 I0 J-#7 ;
+N130 G01 G40 X0 Y#8 ;
+G90 G0 Z300 ;
+G52 X0 Y0 ;
+M5 ;
+M9 ;
+${p.endCode} ;
+%
+`
+    );
+  }
 
-          <div>
-            <label id="final-dia-label" for="final-dia" class="block text-sm font-medium">Final ID Diameter → <span class="text-gray-400">#30</span></label>
-            <div class="input-group">
-              <input type="number" step="any" id="final-dia" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="e.g., 500.0">
-              <span class="input-unit">mm</span>
-            </div>
-          </div>
+  function buildID(p){
+    // ID macro EXACTLY like user-provided format (no safety engage, N29/N35/N36)
+    return (
+`%
+${padO(p.progNum)} (ID INTERPOLATION);
 
-          <div>
-            <label for="bottom-face" class="block text-sm font-medium">Finish Circle at Final Depth</label>
-            <select id="bottom-face" class="w-full bg-gray-700 rounded-lg p-4 mt-1 border border-gray-600 focus:border-indigo-500">
-              <option value="1" selected>Yes (one full circle)</option>
-              <option value="0">No</option>
-            </select>
-          </div>
+G40 G80 G49 G90 G54 G17 ;
+${getSpindleCode(p.spindleMode)}
 
-          <!-- OD Only -->
-          <div id="od-clearance-wrap" class="md:col-span-2 hidden">
-            <label id="od-clearance-label" for="od-clearance" class="block text-sm font-medium">OD Clearance (radial)</label>
-            <div class="input-group">
-              <input type="number" step="any" id="od-clearance" value="5.0" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-              <span class="input-unit">mm</span>
-            </div>
-            <p class="hint mt-1">OD start point = OD radius + cutter radius + this clearance (along the 2nd plane axis).</p>
-          </div>
-        </div>
+#16=${fmt(p.x)} (X) ;
+#17=${fmt(p.y)} (Y) ;
 
-        <!-- Machining -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 border border-gray-700 rounded-xl">
-          <div class="md:col-span-3"><h3 class="text-lg font-semibold text-gray-300">Machining Parameters</h3></div>
+#1=${fmt(p.firstDepth)} (FIRST DEPTH) ;
+#2=${fmt(p.finalDepth)} (FINAL DEPTH) ;
+#30=${fmt(p.diaMake)} (DIA TO MAKE) ;
+#3=${fmt(p.doc)} (DEPTH OF CUT) ;
+#4=[#30/2] ;
+#5=${fmt(p.cutterR)} (CUTTER RADIUS) ;
+#6=#4-#5 ;
+#12=#1 ;
+#15=#1 ;
 
-          <div>
-            <label id="final-depth-label" for="final-depth" class="block text-sm font-medium">Final Depth (Z)</label>
-            <div class="input-group">
-              <input type="number" step="any" id="final-depth" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="e.g., -15.0">
-              <span class="input-unit">mm</span>
-            </div>
-          </div>
+G52 X#16 Y#17 ;
+G0 X0 Y0 ;
+G43 G0 Z50 ;
+Z#15 ;
+G91 G01 Y#6 F${fmt(p.feed)} ;
+IF[#1 EQ #2] GOTO 35 ;
+N29 G03 X0 Y0 Z-#3 I0 J-#6 ;
+G03 X0 Y0 I0 J-#6 ;
+#15=[#15-#3] ;
+IF[#15 GT #2] GOTO 29 ;
+IF[#12 EQ 0] GOTO 36 ;
+N35 G03 X0 Y0 I0 J-#6 ;
+N36 G01 G40 X0 Y0 ;
+G90 G0 Z300 ;
+G52 X0 Y0 ;
+M5 ;
+${p.endCode} ;
+%
+`
+    );
+  }
 
-          <div>
-            <label for="pitch" class="block text-sm font-medium">Step per Rev (Pitch) → <span class="text-gray-400">#3</span></label>
-            <div class="input-group">
-              <input type="number" step="any" id="pitch" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="e.g., 2.0">
-              <span class="input-unit">mm</span>
-            </div>
-          </div>
+  function validate(p){
+    const errs = [];
 
-          <div>
-            <label id="safe-depth-label" for="safe-depth" class="block text-sm font-medium">Safety Position (distance)</label>
-            <div class="input-group">
-              <input type="number" step="any" id="safe-depth" value="50.0" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-              <span class="input-unit">mm</span>
-            </div>
-            <p class="hint mt-1">+→- : safety is +distance.  -→+ : safety is -distance.</p>
-          </div>
+    for(const [k,v] of Object.entries(p)){
+      if(k === "mode" || k === "endCode" || k === "spindleMode") continue;
+      if(!Number.isFinite(v)) errs.push(`${k} must be a number`);
+    }
 
-          <div>
-            <label for="depth-direction" class="block text-sm font-medium">Depth Direction</label>
-            <select id="depth-direction" class="w-full bg-gray-700 rounded-lg p-4 mt-1 border border-gray-600 focus:border-indigo-500">
-              <option value="pos-to-neg" selected>+ → - (Down)</option>
-              <option value="neg-to-pos">- → + (Up)</option>
-            </select>
-          </div>
+    if(Number.isFinite(p.progNum) && p.progNum < 0) errs.push("Program number cannot be negative");
+    if(Number.isFinite(p.doc) && p.doc <= 0) errs.push("Depth of cut (#3) must be > 0");
+    if(Number.isFinite(p.diaMake) && p.diaMake <= 0) errs.push("Diameter to make (#30) must be > 0");
+    if(Number.isFinite(p.cutterR) && p.cutterR <= 0) errs.push("Cutter radius (#5) must be > 0");
+    if(Number.isFinite(p.feed) && p.feed <= 0) errs.push("Feed must be > 0");
 
-          <div>
-            <label for="comp-type" class="block text-sm font-medium">Cutter Compensation</label>
-            <select id="comp-type" class="w-full bg-gray-700 rounded-lg p-4 mt-1 border border-gray-600 focus:border-indigo-500">
-              <option value="G41">G41</option>
-              <option value="G42" selected>G42</option>
-            </select>
-          </div>
-
-          <div>
-            <label for="rpm" class="block text-sm font-medium">Spindle Speed</label>
-            <div class="input-group">
-              <input type="number" id="rpm" value="3000" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-              <span class="input-unit">RPM</span>
-            </div>
-          </div>
-
-          <div>
-            <label for="run-feed" class="block text-sm font-medium">Run Feed (helix)</label>
-            <div class="input-group">
-              <input type="number" id="run-feed" value="800" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-              <span class="input-unit">mm/min</span>
-            </div>
-          </div>
-
-          <div>
-            <label for="entry-feed" class="block text-sm font-medium">Entry Feed (comp engage)</label>
-            <div class="input-group">
-              <input type="number" id="entry-feed" value="500" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-              <span class="input-unit">mm/min</span>
-            </div>
-          </div>
-
-          <div class="md:col-span-3 grid grid-cols-2 gap-4">
-            <div>
-              <label for="offset-num" class="block text-sm font-medium">Tool / Offset Number (D & H)</label>
-              <input type="number" id="offset-num" value="1" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            </div>
-
-            <div>
-              <label for="first-depth-mode" class="block text-sm font-medium">First Depth</label>
-              <select id="first-depth-mode" class="w-full bg-gray-700 rounded-lg p-4 mt-1 border border-gray-600 focus:border-indigo-500">
-                <option value="pitch" selected>First = one step</option>
-                <option value="custom">Custom first depth</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="md:col-span-3">
-            <label for="first-depth-custom" class="block text-sm font-medium">Custom First Depth Value</label>
-            <div class="input-group">
-              <input type="number" step="any" id="first-depth-custom" value="-2.0" class="w-full bg-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500" disabled>
-              <span class="input-unit">mm</span>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      <div class="mt-6 flex flex-col sm:flex-row gap-3">
-        <button id="generate-btn" class="flex-1 h-12 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.99] text-white font-bold rounded-lg transition shadow-lg">Generate G-Code</button>
-        <button id="download-btn" class="flex-1 h-12 bg-green-600 hover:bg-green-700 active:scale-[0.99] text-white font-bold rounded-lg transition shadow-lg hidden">Download .NC</button>
-        <button id="copy-btn" class="sm:w-32 h-12 bg-gray-700 hover:bg-gray-600 active:scale-[0.99] text-white font-semibold rounded-lg transition shadow-lg">Copy</button>
-      </div>
-
-      <div id="results-section" class="mt-6 pt-6 border-t border-gray-700 hidden">
-        <h2 class="text-xl font-semibold text-indigo-400 mb-3">Generated Program</h2>
-        <pre id="gcode-output" class="bg-gray-900 text-green-400 p-4 rounded-lg text-sm whitespace-pre-wrap max-h-96 overflow-y-auto font-mono border border-gray-700"></pre>
-        <div id="error-message" class="mt-4 text-center text-red-400 font-medium hidden bg-red-900/20 p-2 rounded"></div>
-      </div>
-
-    </div>
-  </main>
-
-  <footer class="px-4 py-6 text-center text-sm text-gray-400">
-    Built with ⚙️ by Shader7 CNC Tools
-  </footer>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // Tabs
-      const tabId = document.getElementById('tab-id');
-      const tabOd = document.getElementById('tab-od');
-      let opType = 'ID'; // 'ID' or 'OD'
-
-      // UI refs
-      const planeSelect = document.getElementById('plane-select');
-      const depthDirSelect = document.getElementById('depth-direction');
-      const compSelect = document.getElementById('comp-type');
-
-      const generateBtn = document.getElementById('generate-btn');
-      const downloadBtn = document.getElementById('download-btn');
-      const copyBtn = document.getElementById('copy-btn');
-      const resultsSection = document.getElementById('results-section');
-      const gcodeOutput = document.getElementById('gcode-output');
-      const errorMessage = document.getElementById('error-message');
-
-      const firstDepthMode = document.getElementById('first-depth-mode');
-      const firstDepthCustom = document.getElementById('first-depth-custom');
-
-      const odClearWrap = document.getElementById('od-clearance-wrap');
-      const finalDiaLabel = document.getElementById('final-dia-label');
-
-      tabId.addEventListener('click', () => setOp('ID'));
-      tabOd.addEventListener('click', () => setOp('OD'));
-
-      planeSelect.addEventListener('change', updateLabels);
-      firstDepthMode.addEventListener('change', () => {
-        firstDepthCustom.disabled = (firstDepthMode.value !== 'custom');
-      });
-
-      generateBtn.addEventListener('click', generateGCode);
-      copyBtn.addEventListener('click', copyToClipboard);
-      downloadBtn.addEventListener('click', downloadGCode);
-
-      function setOp(newOp) {
-        opType = newOp;
-        tabId.classList.toggle('active', opType === 'ID');
-        tabOd.classList.toggle('active', opType === 'OD');
-
-        odClearWrap.classList.toggle('hidden', opType !== 'OD');
-        finalDiaLabel.textContent = (opType === 'ID')
-          ? 'Final ID Diameter → #30'
-          : 'Final OD Diameter → #30';
-
-        updateLabels();
-        resultsSection.classList.add('hidden');
-        hideError();
+    if(p.mode === "ID"){
+      const pathR = (p.diaMake/2) - p.cutterR; // #6
+      if(Number.isFinite(pathR) && pathR <= 0){
+        errs.push("ID too small for this cutter: (#30/2 - #5) must be > 0");
       }
+    }
 
-      function getAxes(plane) {
-        if (plane === 'G18') return { p1: 'X', p2: 'Z', depth: 'Y', arc1: 'I', arc2: 'K' };
-        if (plane === 'G19') return { p1: 'Y', p2: 'Z', depth: 'X', arc1: 'J', arc2: 'K' };
-        return { p1: 'X', p2: 'Y', depth: 'Z', arc1: 'I', arc2: 'J' };
+    if(Number.isFinite(p.firstDepth) && Number.isFinite(p.finalDepth)){
+      if(p.finalDepth > p.firstDepth){
+        errs.push("Final depth (#2) is greater than first depth (#1). If cutting down in Z-, final depth is usually <= first.");
       }
+    }
 
-      function updateLabels() {
-        const axes = getAxes(planeSelect.value);
-        document.getElementById('center1-label').textContent = `Center ${axes.p1}`;
-        document.getElementById('center2-label').textContent = `Center ${axes.p2}`;
-        document.getElementById('final-depth-label').textContent = `Final Depth (${axes.depth})`;
-        document.getElementById('safe-depth-label').textContent = `${axes.depth} Safety Position (distance)`;
-        document.getElementById('od-clearance-label').textContent = `OD Clearance (radial along ${axes.p2})`;
-      }
+    return errs;
+  }
 
-      function showError(msg) {
-        errorMessage.textContent = msg;
-        errorMessage.classList.remove('hidden');
-        resultsSection.classList.add('hidden');
-      }
-      function hideError() { errorMessage.classList.add('hidden'); }
+  function getParams(){
+    return {
+      mode: document.getElementById("mode").value,
+      progNum: parseInt(document.getElementById("progNum").value, 10),
+      spindleMode: document.getElementById("spindleMode").value,
+      endCode: document.getElementById("endCode").value,
+      x: n(document.getElementById("x").value),
+      y: n(document.getElementById("y").value),
+      firstDepth: n(document.getElementById("firstDepth").value),
+      finalDepth: n(document.getElementById("finalDepth").value),
+      doc: n(document.getElementById("doc").value),
+      diaMake: n(document.getElementById("diaMake").value),
+      cutterR: n(document.getElementById("cutterR").value),
+      safety: n(document.getElementById("safety").value),
+      feed: n(document.getElementById("feed").value)
+    };
+  }
 
-      function num(id) {
-        const v = parseFloat(document.getElementById(id).value);
-        return Number.isFinite(v) ? v : NaN;
-      }
-      function intNum(id) {
-        const v = parseInt(document.getElementById(id).value, 10);
-        return Number.isFinite(v) ? v : NaN;
-      }
+  function generate(){
+    const p = getParams();
+    const errs = validate(p);
 
-      // Arc direction by op + comp:
-      // ID: G41->G03, G42->G02
-      // OD: G41->G02, G42->G03
-      function circleCmdFor(op, comp) {
-        if (op === 'ID') return (comp === 'G41') ? 'G03' : 'G02';
-        return (comp === 'G41') ? 'G02' : 'G03';
-      }
+    // Show/hide OD safety row
+    document.getElementById("odSafetyRow").style.display = (p.mode === "OD") ? "block" : "none";
 
-      // Engage side along p2:
-      // ID: G41 engages +p2, G42 engages -p2
-      // OD: G41 engages -p2, G42 engages +p2
-      function engageSignP2For(op, comp) {
-        if (op === 'ID') return (comp === 'G41') ? +1 : -1;
-        return (comp === 'G41') ? -1 : +1;
-      }
+    const errEl = document.getElementById("err");
+    const outEl = document.getElementById("output");
 
-      function getInputs() {
-        const axes = getAxes(planeSelect.value);
-        const depthDir = depthDirSelect.value;
-        const dirSign = (depthDir === 'pos-to-neg') ? -1 : +1;
+    if(errs.length){
+      errEl.textContent = errs.join(" • ");
+      outEl.value = "";
+      return;
+    }
+    errEl.textContent = "";
+    outEl.value = (p.mode === "ID") ? buildID(p) : buildOD(p);
+  }
 
-        const i = {
-          opType,
-          plane: planeSelect.value,
-          axes,
-          dirSign,
+  async function copyOut(){
+    const out = document.getElementById("output").value;
+    if(!out.trim()) return;
+    try{
+      await navigator.clipboard.writeText(out);
+    }catch{
+      const ta = document.getElementById("output");
+      ta.focus(); ta.select();
+      document.execCommand("copy");
+    }
+  }
 
-          prog: intNum('program-number'),
-          tool: intNum('offset-num'),
-          comp: compSelect.value,
+  function downloadOut(){
+    const out = document.getElementById("output").value;
+    const p = getParams();
+    if(!out.trim()) return;
 
-          c1: num('center1'),
-          c2: num('center2'),
+    const blob = new Blob([out], {type:"text/plain;charset=utf-8"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${p.mode}_INTERPOLATION_${padO(p.progNum)}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
 
-          cutterDia: num('cutter-diameter'),
-          dia: num('final-dia'),
+  document.getElementById("generateBtn").addEventListener("click", generate);
+  document.getElementById("copyBtn").addEventListener("click", copyOut);
+  document.getElementById("downloadBtn").addEventListener("click", downloadOut);
 
-          depthFinalUser: num('final-depth'),
-          pitch: num('pitch'),
+  // auto-generate when switching
+  document.getElementById("mode").addEventListener("change", generate);
+  document.getElementById("spindleMode").addEventListener("change", generate);
+  document.getElementById("endCode").addEventListener("change", generate);
 
-          safeDepthUser: num('safe-depth'),
-
-          odClear: num('od-clearance'),
-
-          rpm: intNum('rpm'),
-          fEntry: num('entry-feed'),
-          fRun: num('run-feed'),
-
-          bottomFace: intNum('bottom-face'),
-
-          firstMode: document.getElementById('first-depth-mode').value,
-          firstCustom: num('first-depth-custom')
-        };
-
-        const required = ['prog','tool','c1','c2','cutterDia','dia','depthFinalUser','pitch','safeDepthUser','rpm','fEntry','fRun','bottomFace'];
-        for (const k of required) {
-          if (!Number.isFinite(i[k])) throw new Error(`Invalid input: ${k} must be a number.`);
-        }
-        if (i.opType === 'OD' && !Number.isFinite(i.odClear)) throw new Error('OD clearance must be a number.');
-
-        if (i.tool <= 0) throw new Error('Tool/offset number must be positive.');
-        if (i.cutterDia <= 0) throw new Error('Cutter diameter must be positive.');
-        if (i.dia <= 0) throw new Error('Final diameter must be positive.');
-        if (i.pitch <= 0) throw new Error('Pitch must be positive.');
-        if (i.safeDepthUser < 0) throw new Error('Safety distance must be positive (we apply sign automatically).');
-        if (i.opType === 'ID' && i.cutterDia >= i.dia) throw new Error('For ID, cutter diameter must be smaller than final diameter.');
-        if (i.opType === 'OD' && i.odClear < 0) throw new Error('OD clearance must be >= 0.');
-
-        i.pitch = Math.abs(i.pitch);
-
-        // Final depth sign forced to match selected direction
-        i.depthFinal = i.dirSign * Math.abs(i.depthFinalUser);
-
-        // First depth
-        if (i.firstMode === 'custom') {
-          if (!Number.isFinite(i.firstCustom)) throw new Error('Custom first depth must be a number.');
-          i.depthFirst = i.dirSign * Math.abs(i.firstCustom);
-        } else {
-          i.depthFirst = i.dirSign * i.pitch;
-        }
-
-        // Sanity order
-        if (i.dirSign === -1) {
-          if (i.depthFirst < i.depthFinal) throw new Error('First depth cannot be deeper than final depth (+→-).');
-        } else {
-          if (i.depthFirst > i.depthFinal) throw new Error('First depth cannot be higher than final depth (-→+).');
-        }
-
-        i.bottomFace = (i.bottomFace === 0) ? 0 : 1;
-
-        // Arc depth word and clean update expression (NO "+-")
-        i.arcDepthWord = (i.dirSign === -1) ? '-#3' : '#3';
-        i.updateExpr  = (i.dirSign === -1) ? '-#3' : '+#3';
-
-        // Clean approach offset
-        i.approachOffset = (i.dirSign === -1) ? '+3.0' : '-3.0';
-
-        // Safety/retract sign: +→- => +safe, -→+ => -safe
-        i.safeSigned = (i.dirSign === -1) ? +Math.abs(i.safeDepthUser) : -Math.abs(i.safeDepthUser);
-
-        // ID/OD arc direction and engage side based on comp
-        i.circleCmd = circleCmdFor(i.opType, i.comp);
-        i.engageSignP2 = engageSignP2For(i.opType, i.comp);
-
-        return i;
-      }
-
-      function buildProgram(i) {
-        const { p1, p2, depth, arc1, arc2 } = i.axes;
-
-        const partRad = i.dia / 2;         // OD/ID radius
-        const cutterRad = i.cutterDia / 2; // cutter radius
-
-        // Boundary point on the feature radius (relative from center)
-        const boundaryP2 = i.engageSignP2 * partRad;
-
-        // Arc center vector depends on start point:
-        // If start at +R -> center offset arc2 = -R
-        // If start at -R -> center offset arc2 = +R
-        const centerSign = (i.engageSignP2 === +1) ? -1 : +1;
-        const arcCenter = `${arc1}0 ${arc2}${centerSign === -1 ? '-' : ''}#4`;
-
-        // OD: start outside at (part radius + cutter radius + clearance)
-        const odStartP2 = i.engageSignP2 * (partRad + cutterRad + Math.abs(i.odClear || 0));
-
-        // Lead-out distance:
-        // ID: move back to centerline: -boundaryP2
-        // OD: move outward by clearance+cutterRad (so you exit safely)
-        const leadOutP2 = (i.opType === 'OD')
-          ? (i.engageSignP2 * (cutterRad + Math.abs(i.odClear || 0)))
-          : (-boundaryP2);
-
-        let pg = '';
-        pg += `O${i.prog} (${i.opType} HELICAL INTERPOLATION - INDEPENDENT)\n`;
-        pg += `(PLANE:${i.plane}  CENTER ${p1}${i.c1.toFixed(3)} ${p2}${i.c2.toFixed(3)}  ${i.opType} DIA:${i.dia.toFixed(3)}  TOOL:${i.cutterDia.toFixed(3)})\n`;
-        pg += `(${depth}FIRST:${i.depthFirst.toFixed(3)}  ${depth}FINAL:${i.depthFinal.toFixed(3)}  STEP/REV:${i.pitch.toFixed(3)}  DEPTH DIR:${(i.dirSign===-1)?'+→-':'-→+'}  COMP:${i.comp}  DIR:${i.circleCmd})\n`;
-        pg += `(SAFETY ${depth}:${i.safeSigned.toFixed(3)} (AUTO SIGNED))\n`;
-        if (i.opType === 'OD') {
-          pg += `(OD START = RAD(${partRad.toFixed(3)}) + CUTTER_RAD(${cutterRad.toFixed(3)}) + CLEAR(${Math.abs(i.odClear||0).toFixed(3)}) )\n`;
-        }
-        pg += `${i.plane} G21 G90 G40 G80 G54\n\n`;
-
-        pg += `T${i.tool} M6\n`;
-        pg += `S${i.rpm} M3\n`;
-        pg += `G43 H${i.tool}\n`;
-        pg += `M8\n\n`;
-
-        pg += `(--- VARIABLES (FOR READABILITY) ---)\n`;
-        pg += `#1=${i.depthFirst.toFixed(3)} (FIRST DEPTH)\n`;
-        pg += `#2=${i.depthFinal.toFixed(3)} (FINAL DEPTH)\n`;
-        pg += `#30=${i.dia.toFixed(3)} (DIAMETER)\n`;
-        pg += `#3=${i.pitch.toFixed(3)} (STEP/REV)\n`;
-        pg += `#4=[#30/2] (RADIUS)\n`;
-        pg += `#12=${i.bottomFace} (BOTTOM CIRCLE 1/0)\n`;
-        pg += `#15=#1 (CURRENT DEPTH)\n\n`;
-
-        // SAFE ORDER:
-        // Always do XY RAPIDS at SAFE depth, never at cutting depth.
-        pg += `(--- APPROACH ---)\n`;
-        pg += `G00 ${p1}${i.c1.toFixed(3)} ${p2}${i.c2.toFixed(3)}\n`;
-        pg += `G00 ${depth}${i.safeSigned.toFixed(3)}\n`;
-
-        if (i.opType === 'OD') {
-          // OD: go outside FIRST while at safe Z, then go down, then comp engage to boundary
-          pg += `G00 ${p1}${i.c1.toFixed(3)} ${p2}${(i.c2 + odStartP2).toFixed(3)}\n`;
-          pg += `G00 ${depth}[#15${i.approachOffset}]\n`;
-          pg += `G01 ${depth}#15 F${Math.max(1, Math.round(i.fEntry))}\n`;
-          pg += `G01 ${i.comp} D${i.tool} ${p2}${(i.c2 + boundaryP2).toFixed(3)} F${Math.max(1, Math.round(i.fEntry))}\n`;
-          pg += `G91\n`;
-        } else {
-          // ID: go down at center, then incremental engage to boundary
-          pg += `G00 ${depth}[#15${i.approachOffset}]\n`;
-          pg += `G01 ${depth}#15 F${Math.max(1, Math.round(i.fEntry))}\n`;
-          pg += `G91\n`;
-          pg += `G01 ${i.comp} D${i.tool} ${p1}0 ${p2}${boundaryP2.toFixed(3)} F${Math.max(1, Math.round(i.fEntry))}\n`;
-        }
-
-        pg += `\n(--- HELICAL LOOP ---)\n`;
-        pg += `IF[#1 EQ #2] GOTO 120\n`;
-        pg += `N80 ${i.circleCmd} ${p1}0 ${p2}0 ${depth}${i.arcDepthWord} ${arcCenter} F${Math.max(1, Math.round(i.fRun))}\n`;
-        pg += `#15=[#15${i.updateExpr}]\n`;
-
-        if (i.dirSign === -1) {
-          pg += `IF[#15 GT #2] GOTO 80\n`;
-        } else {
-          pg += `IF[#15 LT #2] GOTO 80\n`;
-        }
-
-        pg += `IF[#12 EQ 0] GOTO 130\n`;
-        pg += `N120 ${i.circleCmd} ${p1}0 ${p2}0 ${arcCenter}\n`;
-
-        // Lead-out and cancel comp (still in G91)
-        pg += `N130 G01 G40 ${p1}0 ${p2}${leadOutP2.toFixed(3)}\n`;
-        pg += `G90\n\n`;
-
-        pg += `(--- RETRACT ---)\n`;
-        pg += `G00 ${depth}${i.safeSigned.toFixed(3)}\n`;
-        pg += `G00 ${p1}${i.c1.toFixed(3)} ${p2}${i.c2.toFixed(3)}\n\n`;
-
-        pg += `M5\nM9\n`;
-        pg += `G28 G91 ${depth}0\n`;
-        pg += `M30\n%`;
-
-        return pg;
-      }
-
-      function generateGCode() {
-        hideError();
-        try {
-          const inputs = getInputs();
-          const program = buildProgram(inputs);
-          gcodeOutput.textContent = program;
-          resultsSection.classList.remove('hidden');
-          downloadBtn.classList.remove('hidden');
-          resultsSection.style.animation = 'pulseSoft 300ms ease';
-          setTimeout(() => resultsSection.style.animation = '', 320);
-        } catch (err) {
-          showError(err.message || String(err));
-        }
-      }
-
-      function copyToClipboard() {
-        const text = gcodeOutput.textContent;
-        if (!text) { showError('No program to copy. Generate first.'); return; }
-        navigator.clipboard.writeText(text).then(() => {
-          copyBtn.textContent = 'Copied!';
-          setTimeout(() => { copyBtn.textContent = 'Copy'; }, 1400);
-        }).catch((e) => showError('Copy failed: ' + e));
-      }
-
-      function downloadGCode() {
-        const text = gcodeOutput.textContent;
-        if (!text) { showError('No program to download. Generate first.'); return; }
-        const progNum = document.getElementById('program-number').value || 'program';
-        const filename = `O${progNum}.nc`;
-        const blob = new Blob([text], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        URL.revokeObjectURL(url);
-      }
-
-      // Init
-      function updateLabels() {
-        const axes = getAxes(planeSelect.value);
-        document.getElementById('center1-label').textContent = `Center ${axes.p1}`;
-        document.getElementById('center2-label').textContent = `Center ${axes.p2}`;
-        document.getElementById('final-depth-label').textContent = `Final Depth (${axes.depth})`;
-        document.getElementById('safe-depth-label').textContent = `${axes.depth} Safety Position (distance)`;
-        document.getElementById('od-clearance-label').textContent = `OD Clearance (radial along ${axes.p2})`;
-      }
-
-      function setOp(newOp) {
-        opType = newOp;
-        tabId.classList.toggle('active', opType === 'ID');
-        tabOd.classList.toggle('active', opType === 'OD');
-        odClearWrap.classList.toggle('hidden', opType !== 'OD');
-        finalDiaLabel.textContent = (opType === 'ID') ? 'Final ID Diameter → #30' : 'Final OD Diameter → #30';
-        updateLabels();
-        resultsSection.classList.add('hidden');
-        hideError();
-      }
-
-      updateLabels();
-      setOp('ID');
-    });
-  </script>
+  generate();
+</script>
 </body>
 </html>
