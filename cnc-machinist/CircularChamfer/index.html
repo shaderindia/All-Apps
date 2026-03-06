@@ -1,261 +1,455 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Macro B Circular Chamfer Generator</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Circular Chamfer Macro Generator</title>
 
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f172a;
+  --panel:#111827;
+  --panel2:#1f2937;
+  --border:#374151;
+  --text:#ffffff;
+  --muted:#9ca3af;
+  --green:#22c55e;
+  --indigo:#4f46e5;
+  --indigo-hover:#4338ca;
+  --success:#16a34a;
+  --success-hover:#15803d;
+  --gray:#374151;
+  --gray-hover:#4b5563;
+}
 
-  <style>
-    body { font-family: 'Inter', sans-serif; }
-    .input-group { position: relative; }
-    .input-unit { position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 0.875rem; font-weight: 500;}
-    pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace; }
-    .card { animation: fadeInUp 220ms ease-out both; }
-    @keyframes fadeInUp { from {opacity:0; transform: translateY(6px);} to {opacity:1; transform:none;} }
-    @keyframes pulseSoft { 0%{transform:scale(1)} 50%{transform:scale(1.02)} 100%{transform:scale(1)} }
-    ::-webkit-scrollbar { width: 8px; height: 8px; }
-    ::-webkit-scrollbar-track { background: #1f2937; }
-    ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: #6b7280; }
-  </style>
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:linear-gradient(180deg,#111827 0%,#0f172a 100%);
+  color:var(--text);
+  padding:24px;
+}
+
+.container{
+  max-width:1100px;
+  margin:auto;
+}
+
+h1{
+  margin:0 0 10px 0;
+  font-size:clamp(28px,4vw,40px);
+}
+
+.subtitle{
+  color:var(--muted);
+  margin-bottom:24px;
+}
+
+.layout{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+}
+
+.panel{
+  background:rgba(17,24,39,.96);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:20px;
+  box-shadow:0 12px 30px rgba(0,0,0,.25);
+}
+
+.panel h2{
+  margin:0 0 16px 0;
+  font-size:18px;
+}
+
+.form-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px 16px;
+}
+
+.field{
+  display:flex;
+  flex-direction:column;
+}
+
+.field.full{
+  grid-column:1 / -1;
+}
+
+label{
+  margin-bottom:6px;
+  font-size:14px;
+  color:#d1d5db;
+  font-weight:600;
+}
+
+input, select{
+  width:100%;
+  padding:12px 14px;
+  background:var(--panel2);
+  border:1px solid var(--border);
+  border-radius:10px;
+  color:var(--text);
+  font-size:15px;
+  outline:none;
+}
+
+input:focus, select:focus{
+  border-color:#6366f1;
+  box-shadow:0 0 0 3px rgba(99,102,241,.18);
+}
+
+.select-wrap{
+  position:relative;
+}
+
+.select-wrap select{
+  appearance:none;
+  -webkit-appearance:none;
+  -moz-appearance:none;
+  padding-right:42px;
+  cursor:pointer;
+}
+
+.select-wrap::after{
+  content:"▼";
+  position:absolute;
+  right:14px;
+  top:50%;
+  transform:translateY(-50%);
+  pointer-events:none;
+  color:var(--muted);
+  font-size:12px;
+}
+
+.actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:18px;
+}
+
+button{
+  padding:12px 18px;
+  border:none;
+  border-radius:10px;
+  font-weight:bold;
+  cursor:pointer;
+  color:white;
+  font-size:14px;
+}
+
+.generate{background:var(--indigo);}
+.generate:hover{background:var(--indigo-hover);}
+
+.download{background:var(--success);}
+.download:hover{background:var(--success-hover);}
+
+.copy{background:var(--gray);}
+.copy:hover{background:var(--gray-hover);}
+
+.output-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-bottom:12px;
+}
+
+.status{
+  color:var(--muted);
+  font-size:13px;
+}
+
+.notice{
+  margin-top:12px;
+  color:#cbd5e1;
+  font-size:12px;
+}
+
+pre{
+  background:#000;
+  color:var(--green);
+  padding:20px;
+  border-radius:12px;
+  border:1px solid #1f2937;
+  margin-top:0;
+  white-space:pre-wrap;
+  word-break:break-word;
+  min-height:650px;
+  overflow:auto;
+  font-size:14px;
+  line-height:1.5;
+}
+
+@media (max-width: 900px){
+  .layout{
+    grid-template-columns:1fr;
+  }
+
+  .form-grid{
+    grid-template-columns:1fr;
+  }
+
+  pre{
+    min-height:360px;
+  }
+}
+
+@media (max-width: 520px){
+  body{
+    padding:16px;
+  }
+
+  .panel{
+    padding:16px;
+  }
+
+  button{
+    width:100%;
+  }
+}
+</style>
 </head>
 
-<body class="bg-gray-900 text-white min-h-screen flex flex-col"><header class="relative w-full bg-gray-900 border-b border-gray-700 shadow-sm mb-6">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex items-center h-16">
-      <a href="https://shader7.com" class="flex items-center gap-3 text-indigo-400 hover:text-indigo-300 transition-colors no-underline group">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="group-hover:scale-110 transition-transform" viewBox="0 0 16 16">
-          <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"/>
-          <path d="m8 3.293 6 6V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V9.293l6-6Z"/>
-        </svg>
-        <span class="font-bold text-lg tracking-wide">Shader7</span>
-      </a>
+<body>
+
+<div class="container">
+  <h1>Circular Chamfer Macro Generator</h1>
+  <div class="subtitle">Ready-to-use CNC macro generator with fixed dropdown, responsive layout, and live G-code update.</div>
+
+  <div class="layout">
+    <div class="panel">
+      <h2>Macro Settings</h2>
+
+      <div class="form-grid">
+        <div class="field">
+          <label for="start-depth">Start Depth (#1)</label>
+          <input id="start-depth" type="number" step="any" value="1">
+        </div>
+
+        <div class="field">
+          <label for="final-depth">Final Depth (#2)</label>
+          <input id="final-depth" type="number" step="any" value="-15">
+        </div>
+
+        <div class="field">
+          <label for="diameter">Base Diameter (#3)</label>
+          <input id="diameter" type="number" step="any" value="51">
+        </div>
+
+        <div class="field">
+          <label for="angle">Chamfer Angle (#4)</label>
+          <input id="angle" type="number" step="any" value="45">
+        </div>
+
+        <div class="field">
+          <label for="z-step">Z Step (#6)</label>
+          <input id="z-step" type="number" step="any" value="0.5">
+        </div>
+
+        <div class="field">
+          <label for="d-reg">Tool Offset Register (#7)</label>
+          <input id="d-reg" type="number" step="1" value="11">
+        </div>
+
+        <div class="field">
+          <label for="f-cut">Cut Feedrate</label>
+          <input id="f-cut" type="number" step="any" value="500">
+        </div>
+
+        <div class="field">
+          <label for="f-retract">Retract Feedrate</label>
+          <input id="f-retract" type="number" step="any" value="1000">
+        </div>
+
+        <div class="field">
+          <label for="safe-z">Safe Z</label>
+          <input id="safe-z" type="number" step="any" value="200">
+        </div>
+
+        <div class="field">
+          <label for="prog-num">Program Number</label>
+          <input id="prog-num" type="number" step="1" value="6999">
+        </div>
+
+        <div class="field full">
+          <label for="spindle">Spindle Command</label>
+          <div class="select-wrap">
+            <select id="spindle">
+              <option value="M141 S500; M103;">M141 S500; M103;</option>
+              <option value="M03 S500;">M03 S500;</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="generate" onclick="generate()">Generate Macro</button>
+        <button class="download" onclick="downloadFile()">Download .NC</button>
+        <button class="copy" onclick="copyCode()">Copy</button>
+      </div>
+
+      <div class="notice">
+        Verify the output on your machine control before running production code.
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="output-header">
+        <h2 style="margin:0;">Generated Code</h2>
+        <div class="status" id="status">Ready</div>
+      </div>
+      <pre id="output"></pre>
     </div>
   </div>
-</header>
-  <main class="flex-1 w-full flex items-center justify-center p-4">
-    <div class="w-full max-w-2xl bg-gray-800 p-6 sm:p-8 rounded-2xl shadow-2xl border border-gray-700 card">
+</div>
 
-      <h1 class="text-2xl sm:text-3xl font-bold text-center mb-2 text-indigo-400">
-        Macro B Circular Chamfer
-      </h1>
+<script>
+function val(id){
+  return parseFloat(document.getElementById(id).value) || 0;
+}
 
-      <p class="text-center text-gray-400 text-sm mb-6">
-        Generates your specific WHILE loop program using G91 incremental engage/disengage.
-      </p>
+function setStatus(msg){
+  document.getElementById("status").textContent = msg;
+}
 
-      <div class="space-y-4">
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border border-gray-700 rounded-xl">
-          <div class="md:col-span-2"><h3 class="text-lg font-semibold text-gray-300">Dimensions & Depths</h3></div>
+function round3(n){
+  return Math.round((n + Number.EPSILON) * 1000) / 1000;
+}
 
-          <div>
-            <label for="start-depth" class="block text-sm font-medium">Start Depth (Prima intrare) → <span class="text-gray-400">#1</span></label>
-            <div class="input-group">
-              <input type="number" step="any" id="start-depth" value="1.0" class="w-full bg-gray-700 rounded-lg p-4 mt-1 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-lg">
-              <span class="input-unit">Z</span>
-            </div>
-          </div>
+function generate(){
+  const prog = String(document.getElementById("prog-num").value || "0").padStart(4, "0");
 
-          <div>
-            <label for="final-depth" class="block text-sm font-medium">Final Depth (Ultima intrare) → <span class="text-gray-400">#2</span></label>
-            <div class="input-group">
-              <input type="number" step="any" id="final-depth" value="-15.0" class="w-full bg-gray-700 rounded-lg p-4 mt-1 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-lg">
-              <span class="input-unit">Z</span>
-            </div>
-          </div>
+  let z1 = val("start-depth");
+  const z2 = val("final-depth");
+  const dia = val("diameter");
+  const ang = val("angle");
+  const zStep = val("z-step");
+  const dReg = val("d-reg");
+  const fCut = val("f-cut");
+  const fRet = val("f-retract");
+  const safeZ = val("safe-z");
+  const spindle = document.getElementById("spindle").value;
 
-          <div>
-            <label for="diameter" class="block text-sm font-medium">Base Diameter (Diametru) → <span class="text-gray-400">#3</span></label>
-            <div class="input-group">
-              <input type="number" step="any" id="diameter" value="51.0" class="w-full bg-gray-700 rounded-lg p-4 mt-1 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-lg">
-              <span class="input-unit">mm</span>
-            </div>
-          </div>
+  if(zStep <= 0){
+    document.getElementById("output").textContent = "(ERROR: Z STEP MUST BE GREATER THAN 0)";
+    setStatus("Fix Z step");
+    return;
+  }
 
-          <div>
-            <label for="angle" class="block text-sm font-medium">Chamfer Angle (Unghi) → <span class="text-gray-400">#4</span></label>
-            <div class="input-group">
-              <input type="number" step="any" id="angle" value="45.0" class="w-full bg-gray-700 rounded-lg p-4 mt-1 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-lg">
-              <span class="input-unit">deg</span>
-            </div>
-          </div>
-        </div>
+  if(dia <= 0){
+    document.getElementById("output").textContent = "(ERROR: BASE DIAMETER MUST BE GREATER THAN 0)";
+    setStatus("Fix diameter");
+    return;
+  }
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border border-gray-700 rounded-xl">
-          <div class="md:col-span-2"><h3 class="text-lg font-semibold text-gray-300">Tool & Cutting Parameters</h3></div>
+  if(z1 <= z2){
+    document.getElementById("output").textContent = "(ERROR: START DEPTH MUST BE GREATER THAN FINAL DEPTH FOR THIS MACRO)";
+    setStatus("Fix depths");
+    return;
+  }
 
-          <div>
-            <label for="z-step" class="block text-sm font-medium">Z Step (Pas pe Z) → <span class="text-gray-400">#6</span></label>
-            <div class="input-group">
-              <input type="number" step="any" id="z-step" value="0.5" class="w-full bg-gray-700 rounded-lg p-4 mt-1 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-lg">
-              <span class="input-unit">mm</span>
-            </div>
-          </div>
+  let gcode = "";
 
-          <div>
-            <label for="d-reg" class="block text-sm font-medium">Tool Offset Reg. (Corectie Raza) → <span class="text-gray-400">#7</span></label>
-            <div class="input-group">
-              <input type="number" id="d-reg" value="11" class="w-full bg-gray-700 rounded-lg p-4 mt-1 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-lg">
-              <span class="input-unit">D</span>
-            </div>
-          </div>
+  gcode += `%\n`;
+  gcode += `O${prog} (CIRCULAR CHAMFER MACRO)\n`;
+  gcode += `G40 G0 G90 G54 G17;\n`;
+  gcode += `${spindle}\n`;
 
-          <div>
-            <label for="f-cut" class="block text-sm font-medium">Cutting Feedrate</label>
-            <div class="input-group">
-              <input type="number" id="f-cut" value="500" class="w-full bg-gray-700 rounded-lg p-4 mt-1 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-lg">
-              <span class="input-unit">F</span>
-            </div>
-          </div>
+  gcode += `#1=${round3(z1)} (FIRST Z ENTRY)\n`;
+  gcode += `#2=${round3(z2)} (FINAL Z DEPTH)\n`;
+  gcode += `#3=${round3(dia)} (BASE DIAMETER)\n`;
+  gcode += `#4=${round3(ang)} (CHAMFER ANGLE)\n`;
+  gcode += `#6=${round3(zStep)} (Z STEP PER PASS)\n`;
+  gcode += `#7=${round3(dReg)} (TOOL OFFSET REGISTER)\n`;
 
-          <div>
-            <label for="f-retract" class="block text-sm font-medium">Disengage Feedrate</label>
-            <div class="input-group">
-              <input type="number" id="f-retract" value="1000" class="w-full bg-gray-700 rounded-lg p-4 mt-1 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-lg">
-              <span class="input-unit">F</span>
-            </div>
-          </div>
+  gcode += `G90 G0 X0 Y0 (MOVE TO CENTER)\n`;
+  gcode += `G0 Z[#1+2.] (SAFE APPROACH)\n`;
 
-          <div>
-            <label for="safe-z" class="block text-sm font-medium">Safe Retract Z</label>
-            <div class="input-group">
-              <input type="number" id="safe-z" value="200" class="w-full bg-gray-700 rounded-lg p-4 mt-1 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-lg">
-              <span class="input-unit">Z</span>
-            </div>
-          </div>
-          
-          <div>
-            <label for="prog-num" class="block text-sm font-medium">Program Number</label>
-            <div class="input-group">
-              <input type="number" id="prog-num" value="6999" class="w-full bg-gray-700 rounded-lg p-4 mt-1 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-lg">
-              <span class="input-unit">O####</span>
-            </div>
-          </div>
-        </div>
+  gcode += `WHILE[#1 GT #2] DO1\n`;
+  gcode += `#9=ABS[#1-#2] (DISTANCE TO BASE)\n`;
+  gcode += `#5=[[#3/2]+[#9*TAN[#4]]] (CURRENT RADIUS)\n`;
+  gcode += `G90 G1 Z#1 F${round3(fCut)}\n`;
+  gcode += `G91 G1 G41 D#7 X#5 F${round3(fCut)}\n`;
+  gcode += `G03 X0 Y0 I-#5 J0\n`;
+  gcode += `G1 G40 X-#5 F${round3(fRet)}\n`;
+  gcode += `#1=#1-#6 (NEXT PASS)\n`;
+  gcode += `END1\n`;
 
-      </div>
+  gcode += `(FINAL PASS)\n`;
+  gcode += `#1=#2\n`;
+  gcode += `#5=[#3/2]\n`;
+  gcode += `G90 G1 Z#1 F${round3(fCut)}\n`;
+  gcode += `G91 G1 G41 D#7 X#5 F${round3(fCut)}\n`;
+  gcode += `G03 X0 Y0 I-#5 J0\n`;
+  gcode += `G1 G40 X-#5 F${round3(fRet)}\n`;
 
-      <div class="mt-6 flex flex-col sm:flex-row gap-3">
-        <button id="generate-btn" class="flex-1 h-14 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.99] text-white text-lg font-bold rounded-xl transition shadow-lg">Generate Macro</button>
-        <button id="download-btn" class="flex-1 h-14 bg-green-600 hover:bg-green-700 active:scale-[0.99] text-white text-lg font-bold rounded-xl transition shadow-lg hidden">Download .NC</button>
-        <button id="copy-btn" class="sm:w-32 h-14 bg-gray-700 hover:bg-gray-600 active:scale-[0.99] text-white text-lg font-semibold rounded-xl transition shadow-lg">Copy</button>
-      </div>
+  gcode += `G90 G0 Z${round3(safeZ)} (SAFE RETRACT)\n`;
+  gcode += `M0\n`;
+  gcode += `%\n`;
 
-      <div id="results-section" class="mt-6 pt-6 border-t border-gray-700 hidden">
-        <h2 class="text-xl font-semibold text-indigo-400 mb-3">Generated Program</h2>
-        <pre id="gcode-output" class="bg-gray-900 text-green-400 p-4 rounded-lg text-sm whitespace-pre-wrap max-h-96 overflow-y-auto font-mono border border-gray-700 shadow-inner"></pre>
-      </div>
+  document.getElementById("output").textContent = gcode;
+  setStatus("Macro generated");
+}
 
-    </div>
-  </main>
+function copyCode(){
+  const text = document.getElementById("output").textContent;
 
-  <footer class="px-4 py-6 text-center text-sm text-gray-500">
-    Built with ⚙️ by Shader7 CNC Tools
-  </footer>
+  if(!text.trim()){
+    setStatus("Nothing to copy");
+    return;
+  }
 
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const generateBtn = document.getElementById('generate-btn');
-      const downloadBtn = document.getElementById('download-btn');
-      const copyBtn = document.getElementById('copy-btn');
-      const resultsSection = document.getElementById('results-section');
-      const gcodeOutput = document.getElementById('gcode-output');
+  navigator.clipboard.writeText(text)
+    .then(() => setStatus("Copied to clipboard"))
+    .catch(() => setStatus("Copy failed"));
+}
 
-      function num(id) {
-        return parseFloat(document.getElementById(id).value) || 0;
-      }
+function downloadFile(){
+  const text = document.getElementById("output").textContent;
+  const prog = document.getElementById("prog-num").value || "0000";
 
-      function generateGCode() {
-        const progNum = document.getElementById('prog-num').value.padStart(4, '0');
-        const z1 = num('start-depth');
-        const z2 = num('final-depth');
-        const dia = num('diameter');
-        const ang = num('angle');
-        const zStep = num('z-step');
-        const dReg = num('d-reg');
-        const fCut = num('f-cut');
-        const fRet = num('f-retract');
-        const safeZ = num('safe-z');
+  if(!text.trim()){
+    setStatus("Generate code first");
+    return;
+  }
 
-        let pg = `O${progNum} (CIRCULAR CHAMFER MACRO) ;\n`;
-        pg += `N290 #1=${z1.toFixed(3)} (PRIMA INTRARE Z) ;\n`;
-        pg += `N300 #2=${z2.toFixed(3)} (ULTIMA INTRARE Z) ;\n`;
-        pg += `N310 #3=${dia.toFixed(3)} (DIAMETRU DE PRELUCRAT LA BAZA) ;\n`;
-        pg += `N315 #4=${ang.toFixed(3)} (UNGHI TESITURA IN GRADE) ;\n`;
-        pg += `N320 #6=${zStep.toFixed(3)} (PAS PE Z) ;\n`;
-        pg += `N330 #7=${dReg} (REGISTRU CORECTIE RAZA SCULA) ;\n`;
-        pg += `N340 ;\n`;
-        pg += `N345 G90 G0 X0 Y0 (POZITIONARE PE CENTRU) ;\n`;
-        pg += `N350 G0 Z[#1+2.0] (APROPIERE SIGURANTA) ;\n`;
-        pg += `N360 ;\n`;
-        pg += `N370 WHILE[#1 GT #2] DO 1 ;\n`;
-        pg += `N375 #9=ABS[#1-#2] (DISTANTA PANA LA BAZA) ;\n`;
-        pg += `N380 #5=[[#3/2]+[#9*TAN[#4]]] (CALCUL RAZA PAS CURENT) ;\n`;
-        pg += `N390 G90 G1 Z#1 F${fCut} (COBORARE LA Z CURENT) ;\n`;
-        pg += `N400 G91 G1 G41 D#7 X#5 F${fCut} (ANGAJARE CORECTIE INCREMENTAL) ;\n`;
-        pg += `N410 G03 X0 Y0 I-#5 J0 F${fCut} (FREZARE CERC COMPLET) ;\n`;
-        pg += `N420 G1 G40 X-#5 F${fRet} (DEGANGAJARE INCREMENTAL PE CENTRU) ;\n`;
-        pg += `N430 #1=#1-#6 (ACTUALIZARE Z PENTRU URMATORUL PAS) ;\n`;
-        pg += `N440 END 1 ;\n`;
-        pg += `N450 ;\n`;
-        pg += `N460 (--- PASUL FINAL LA BAZA EXACTA ---) ;\n`;
-        pg += `N470 #1=#2 (FORTAM Z LA ADANCIMEA FINALA) ;\n`;
-        pg += `N480 #5=[#3/2] (RAZA LA BAZA ESTE EXACT JUMATATE) ;\n`;
-        pg += `N490 G90 G1 Z#1 F${fCut} ;\n`;
-        pg += `N500 G91 G1 G41 D#7 X#5 F${fCut} ;\n`;
-        pg += `N510 G03 X0 Y0 I-#5 J0 F${fCut} ;\n`;
-        pg += `N520 G1 G40 X-#5 F${fRet} ;\n`;
-        pg += `N530 ;\n`;
-        pg += `N540 G90 G0 Z${safeZ} ;\n`;
-        pg += `N550 M0 ;\n%`;
+  const blob = new Blob([text], {type:"text/plain"});
+  const url = URL.createObjectURL(blob);
 
-        gcodeOutput.textContent = pg;
-        resultsSection.classList.remove('hidden');
-        downloadBtn.classList.remove('hidden');
-        
-        // Pulse animation
-        resultsSection.style.animation = 'none';
-        setTimeout(() => { resultsSection.style.animation = 'pulseSoft 300ms ease'; }, 10);
-      }
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `O${prog}.nc`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
 
-      function copyToClipboard() {
-        const text = gcodeOutput.textContent;
-        if (!text) return;
-        navigator.clipboard.writeText(text).then(() => {
-          copyBtn.textContent = 'Copied!';
-          copyBtn.classList.add('bg-green-600', 'hover:bg-green-700');
-          copyBtn.classList.remove('bg-gray-700', 'hover:bg-gray-600');
-          setTimeout(() => { 
-            copyBtn.textContent = 'Copy'; 
-            copyBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
-            copyBtn.classList.add('bg-gray-700', 'hover:bg-gray-600');
-          }, 1500);
-        });
-      }
+  URL.revokeObjectURL(url);
+  setStatus("NC file downloaded");
+}
 
-      function downloadGCode() {
-        const text = gcodeOutput.textContent;
-        if (!text) return;
-        const progNum = document.getElementById('prog-num').value || '6999';
-        const blob = new Blob([text], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `O${progNum}.nc`;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        URL.revokeObjectURL(url);
-      }
+function enableLiveUpdate(){
+  const inputs = document.querySelectorAll("input, select");
 
-      generateBtn.addEventListener('click', generateGCode);
-      copyBtn.addEventListener('click', copyToClipboard);
-      downloadBtn.addEventListener('click', downloadGCode);
-    });
-  </script>
+  inputs.forEach(el => {
+    el.addEventListener("input", generate);
+    el.addEventListener("change", generate);
+  });
+}
+
+window.addEventListener("load", () => {
+  enableLiveUpdate();
+  generate();
+});
+</script>
+
 </body>
 </html>
