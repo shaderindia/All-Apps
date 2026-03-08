@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bet Settlement Calculator</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+        :root { 
+            --primary: #6366f1; 
+            --secondary: #ec4899;
+            --success: #10b981;
+            --danger: #f43f5e;
+            --text: #1e293b; 
+        }
+
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            color: var(--text); 
+            padding: 20px; 
+            max-width: 850px; 
+            margin: 0 auto; 
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            min-height: 100vh;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 { 
+            text-align: center; 
+            color: white; 
+            text-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+        }
+
+        .card { 
+            background: rgba(255, 255, 255, 0.9); 
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 25px; 
+            border-radius: 16px; 
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); 
+            margin-bottom: 25px; 
+            border: 1px solid rgba(255,255,255,0.5);
+            animation: slideIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        h2 { color: var(--primary); margin-top: 0; display: flex; align-items: center; gap: 10px; }
+        h3 { color: var(--secondary); margin-top: 0; }
+
+        input[type="text"], input[type="number"], select { 
+            padding: 12px; 
+            border: 2px solid #e2e8f0; 
+            border-radius: 8px; 
+            font-size: 16px; 
+            margin-right: 10px; 
+            margin-bottom: 10px; 
+            width: calc(100% - 160px); 
+            max-width: 300px;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+        
+        input:focus, select:focus { outline: none; border-color: var(--primary); }
+
+        button { 
+            background: linear-gradient(135deg, var(--primary), #818cf8); 
+            color: white; 
+            border: none; 
+            padding: 12px 24px; 
+            border-radius: 8px; 
+            font-size: 16px; 
+            font-weight: 600;
+            cursor: pointer; 
+            transition: all 0.3s ease; 
+            margin-bottom: 10px;
+            box-shadow: 0 4px 6px rgba(99, 102, 241, 0.3);
+        }
+        
+        button:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(99, 102, 241, 0.4); }
+        button:active { transform: translateY(1px); }
+
+        .btn-secondary { background: linear-gradient(135deg, #64748b, #94a3b8); box-shadow: 0 4px 6px rgba(100, 116, 139, 0.3); }
+        .btn-success { background: linear-gradient(135deg, var(--success), #34d399); box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3); }
+        .btn-danger { background: linear-gradient(135deg, var(--danger), #fb7185); padding: 8px 15px; font-size: 14px; box-shadow: 0 4px 6px rgba(244, 63, 94, 0.3); float: right; margin:0; }
+
+        .bet-round { 
+            border-left: 5px solid var(--secondary); 
+            margin-bottom: 20px; 
+            background: linear-gradient(to right, #fdf2f8, #ffffff); 
+            padding: 20px; 
+            border-radius: 0 12px 12px 0; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            animation: slideIn 0.4s ease-out;
+        }
+
+        .player-bet-row { display: flex; align-items: center; margin-bottom: 15px; clear: both; flex-wrap: wrap;}
+        .player-bet-row label { width: 150px; font-weight: 600; color: #475569; }
+
+        .tag { 
+            background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+            color: white;
+            padding: 8px 16px; 
+            border-radius: 20px; 
+            font-size: 15px; 
+            margin: 5px; 
+            display: inline-block; 
+            font-weight: 600; 
+            box-shadow: 0 2px 4px rgba(14, 165, 233, 0.3);
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .settlement-item { 
+            padding: 15px; 
+            background: linear-gradient(to right, #dcfce7, #f0fdf4); 
+            border-left: 5px solid #10b981; 
+            border-radius: 8px; 
+            margin-bottom: 10px; 
+            font-weight: 600; 
+            color: #166534; 
+            font-size: 1.1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .hidden { display: none !important; }
+        
+        #printable-results { 
+            padding: 30px; 
+            background: white; 
+            border-radius: 12px; 
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+        }
+        
+        .controls-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+        
+        ul { list-style-type: none; padding-left: 0; }
+        li { padding: 8px; background: #f8fafc; margin-bottom: 5px; border-radius: 6px; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+    <h1>🏆 Bet Settlement Calculator</h1>
+
+    <div class="card" id="setup-section">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+            <h2>👥 1. Add Players</h2>
+            <button class="btn-secondary" onclick="loadGame()">📂 Load Save</button>
+        </div>
+        <p style="font-size: 14px; color: #64748b; margin-top: 0;">Type names separated by commas (e.g. John, Sarah).</p>
+        
+        <div style="display: flex; align-items: center; flex-wrap: wrap;">
+            <input type="text" id="new-player-name" placeholder="Enter player names..." onkeypress="handleKeyPress(event)">
+            <button onclick="addPlayer()">✨ Add</button>
+        </div>
+        
+        <div id="player-list" style="margin-top: 15px; margin-bottom: 15px;"></div>
+        
+        <hr style="border-top: 1px dashed #cbd5e1; margin: 20px 0;">
+        <button class="btn-success" style="width: 100%; font-size: 1.1rem;" onclick="startBetting()">Lock Names & Start Betting ➔</button>
+    </div>
+
+    <div class="card hidden" id="betting-section">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+            <h2>🎲 2. Betting Rounds</h2>
+            <button class="btn-secondary" onclick="saveGame()">💾 Save</button>
+        </div>
+        <div id="rounds-container"></div>
+        <button onclick="addBetRound()" style="background: linear-gradient(135deg, #a855f7, #d946ef);">+ Add Next Bet</button>
+        <hr style="border-top: 1px dashed #cbd5e1; margin: 20px 0;">
+        <button class="btn-success" style="width: 100%; font-size: 1.2rem; padding: 15px;" onclick="generateReport()">🚀 Generate Report</button>
+    </div>
+
+    <div class="card hidden" id="results-section">
+        <div id="printable-results">
+            <h2 style="color: #1e293b; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">📊 Final Report</h2>
+            <div id="balances-container"></div>
+            <h3 style="color: #6366f1; margin-top: 25px;">💸 Settlement Plan (Who owes whom):</h3>
+            <div id="settlements-container"></div>
+        </div>
+        <div class="controls-row">
+            <button class="btn-success" style="flex: 1;" id="download-btn" onclick="downloadReport()">📥 Download PDF</button>
+            <button class="btn-secondary" onclick="document.getElementById('results-section').classList.add('hidden')">⬅ Edit Bets</button>
+            <button class="btn-danger" style="float:none;" onclick="clearDataAndReload()">Reset</button>
+        </div>
+    </div>
+
+    <script>
+        let players = [];
+        let roundCount = 0;
+
+        function handleKeyPress(e) { if (e.key === 'Enter') addPlayer(); }
+
+        function addPlayer() {
+            const input = document.getElementById('new-player-name');
+            const names = input.value.split(',').map(n => n.trim()).filter(n => n !== '');
+            let addedAny = false;
+
+            names.forEach(name => {
+                if (name && !players.includes(name)) {
+                    players.push(name);
+                    addedAny = true;
+                }
+            });
+
+            if (addedAny) {
+                input.value = '';
+                renderPlayers();
+            }
+        }
+
+        function renderPlayers() {
+            const list = document.getElementById('player-list');
+            list.innerHTML = players.map(p => `<span class="tag">👤 ${p}</span>`).join('');
+        }
+
+        function startBetting() {
+            if (players.length < 2) {
+                alert("Please add at least 2 players!");
+                return;
+            }
+            document.getElementById('setup-section').classList.add('hidden');
+            document.getElementById('betting-section').classList.remove('hidden');
+            if (document.querySelectorAll('.bet-round').length === 0) addBetRound(); 
+        }
+
+        function addBetRound(amountVal = '', winnerVal = '') {
+            roundCount++;
+            const currentId = roundCount;
+            
+            const container = document.getElementById('rounds-container');
+            const roundDiv = document.createElement('div');
+            roundDiv.className = 'bet-round';
+            roundDiv.id = `round-${currentId}`;
+            roundDiv.setAttribute('data-round-id', currentId);
+            
+            let html = `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="margin: 0;">🔥 Round ${currentId}</h3>
+                <button class="btn-danger" onclick="removeRound(${currentId})">❌</button>
+            </div>
+            <div class="player-bet-row">
+                <label>💰 Amount (each):</label>
+                <input type="number" min="0" placeholder="e.g. 10" class="round-bet-input" data-round="${currentId}" value="${amountVal}">
+            </div>
+            <div class="player-bet-row">
+                <label style="color: #6366f1;">🏆 Winner:</label>
+                <select class="winner-select" data-round="${currentId}">
+                    <option value="" disabled ${!winnerVal ? 'selected' : ''}>Choose...</option>
+                    ${players.map(p => `<option value="${p}" ${winnerVal === p ? 'selected' : ''}>${p}</option>`).join('')}
+                </select>
+            </div>`;
+
+            roundDiv.innerHTML = html;
+            container.appendChild(roundDiv);
+        }
+
+        function removeRound(id) {
+            const roundEl = document.getElementById(`round-${id}`);
+            if (roundEl) roundEl.remove();
+        }
+
+        function generateReport() {
+            const rounds = document.querySelectorAll('.bet-round');
+            if (rounds.length === 0) { alert("Add a bet first!"); return; }
+
+            for (let round of rounds) {
+                const rId = round.getAttribute('data-round-id');
+                if (!document.querySelector(`.winner-select[data-round="${rId}"]`).value || !document.querySelector(`.round-bet-input[data-round="${rId}"]`).value) {
+                    alert("Fill in all bet amounts and winners!");
+                    return;
+                }
+            }
+
+            let balances = {};
+            players.forEach(p => balances[p] = 0);
+
+            rounds.forEach(round => {
+                const rId = round.getAttribute('data-round-id');
+                const winner = document.querySelector(`.winner-select[data-round="${rId}"]`).value;
+                const betAmount = parseFloat(document.querySelector(`.round-bet-input[data-round="${rId}"]`).value) || 0;
+                const totalPot = betAmount * players.length;
+
+                players.forEach(p => {
+                    if (p === winner) balances[p] += (totalPot - betAmount);
+                    else balances[p] -= betAmount;
+                });
+            });
+
+            displayResults(balances);
+            triggerConfetti(); 
+        }
+
+        function displayResults(balances) {
+            document.getElementById('results-section').classList.remove('hidden');
+            
+            const balContainer = document.getElementById('balances-container');
+            let balHtml = `<p style="font-size: 1.1rem; color:#475569;"><strong>Net Standings:</strong></p><ul>`;
+            players.forEach(p => {
+                const bal = balances[p];
+                const color = bal >= 0 ? '#10b981' : '#f43f5e';
+                const icon = bal >= 0 ? '📈' : '📉';
+                balHtml += `<li style="color: ${color}; border-left: 4px solid ${color};">${icon} ${p}: ${bal >= 0 ? '+' : ''}${bal.toFixed(2)}</li>`;
+            });
+            balHtml += `</ul>`;
+            balContainer.innerHTML = balHtml;
+
+            let debtors = [], creditors = [];
+            for (let p in balances) {
+                if (balances[p] < -0.01) debtors.push({name: p, amount: Math.abs(balances[p])});
+                else if (balances[p] > 0.01) creditors.push({name: p, amount: balances[p]});
+            }
+
+            debtors.sort((a, b) => b.amount - a.amount);
+            creditors.sort((a, b) => b.amount - a.amount);
+
+            const setContainer = document.getElementById('settlements-container');
+            let setHtml = '';
+            let i = 0, j = 0;
+            
+            while (i < debtors.length && j < creditors.length) {
+                let d = debtors[i], c = creditors[j];
+                let min = Math.min(d.amount, c.amount);
+
+                setHtml += `<div class="settlement-item">➡️ <span><strong>${d.name}</strong> gives <strong>${c.name}</strong> : ${min.toFixed(2)}</span></div>`;
+                d.amount -= min; c.amount -= min;
+
+                if (d.amount < 0.01) i++;
+                if (c.amount < 0.01) j++;
+            }
+
+            if(setHtml === '') setHtml = `<div class="settlement-item" style="background: #f1f5f9; border-left: 5px solid #94a3b8; color: #475569;">🤝 No one owes anything! Perfectly tied.</div>`;
+            setContainer.innerHTML = setHtml;
+            
+            setTimeout(() => { document.getElementById('results-section').scrollIntoView({ behavior: 'smooth' }); }, 100);
+        }
+
+        // --- THE FINAL iOS FIX ---
+        function downloadReport() {
+            if (typeof html2pdf === 'undefined') {
+                alert("PDF engine loading. Try again in a second.");
+                return;
+            }
+
+            const btn = document.getElementById('download-btn');
+            const originalText = btn.innerText;
+            btn.innerText = "⏳ Generating...";
+
+            // 1. Create a clean HTML container for the PDF
+            const pdfContainer = document.createElement('div');
+            
+            // 2. We MUST attach it to the screen so iOS camera can "see" it.
+            // We hide it behind everything else with z-index so it doesn't look weird to you.
+            pdfContainer.style.position = 'absolute';
+            pdfContainer.style.top = '0';
+            pdfContainer.style.left = '0';
+            pdfContainer.style.width = '800px'; 
+            pdfContainer.style.padding = '40px';
+            pdfContainer.style.fontFamily = 'Helvetica, Arial, sans-serif';
+            pdfContainer.style.background = '#ffffff';
+            pdfContainer.style.zIndex = '-9999';
+
+            const balHtml = document.getElementById('balances-container').innerHTML;
+            const setHtml = document.getElementById('settlements-container').innerHTML;
+
+            pdfContainer.innerHTML = `
+                <h1 style="color: #6366f1; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; text-align: left; text-shadow: none;">📊 Bet Settlement Report</h1>
+                <div style="margin-top: 20px; font-size: 16px;">
+                    ${balHtml}
+                </div>
+                <div style="margin-top: 30px; font-size: 16px;">
+                    <h3 style="color: #6366f1;">💸 Settlement Plan:</h3>
+                    ${setHtml}
+                </div>
+            `;
+
+            // Append it to the body (This is the crucial step iOS requires)
+            document.body.appendChild(pdfContainer);
+
+            const opt = {
+                margin:       0.5,
+                filename:     'Betting_Report.pdf',
+                image:        { type: 'jpeg', quality: 1 },
+                html2canvas:  { 
+                    scale: 2, 
+                    backgroundColor: '#ffffff',
+                    useCORS: true,
+                    windowWidth: 800 // Forces the canvas width
+                },
+                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+            
+            // Wait 100ms for the browser to physically render the hidden element before photographing
+            setTimeout(() => {
+                html2pdf().set(opt).from(pdfContainer).save().then(() => {
+                    // Clean it up after it downloads
+                    document.body.removeChild(pdfContainer);
+                    btn.innerText = originalText;
+                }).catch(err => {
+                    alert("Error generating PDF. Please try again.");
+                    document.body.removeChild(pdfContainer);
+                    btn.innerText = originalText;
+                });
+            }, 100);
+        }
+
+        function triggerConfetti() {
+            var duration = 3 * 1000;
+            var animationEnd = Date.now() + duration;
+            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+            function randomInRange(min, max) { return Math.random() * (max - min) + min; }
+
+            var interval = setInterval(function() {
+                var timeLeft = animationEnd - Date.now();
+                if (timeLeft <= 0) return clearInterval(interval);
+                var particleCount = 50 * (timeLeft / duration);
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+            }, 250);
+        }
+
+        function saveGame() {
+            const rounds = document.querySelectorAll('.bet-round');
+            const roundData = [];
+            rounds.forEach(round => {
+                const rId = round.getAttribute('data-round-id');
+                roundData.push({
+                    amount: document.querySelector(`.round-bet-input[data-round="${rId}"]`).value,
+                    winner: document.querySelector(`.winner-select[data-round="${rId}"]`).value
+                });
+            });
+            localStorage.setItem('betGameSave', JSON.stringify({ players, rounds: roundData, roundCount }));
+            alert("✅ Game saved successfully!");
+        }
+
+        function loadGame() {
+            const savedDataStr = localStorage.getItem('betGameSave');
+            if (!savedDataStr) { alert("No saved game found!"); return; }
+
+            const gameState = JSON.parse(savedDataStr);
+            players = gameState.players;
+            roundCount = gameState.roundCount;
+
+            renderPlayers();
+            document.getElementById('setup-section').classList.add('hidden');
+            document.getElementById('betting-section').classList.remove('hidden');
+            document.getElementById('rounds-container').innerHTML = '';
+            
+            gameState.rounds.forEach(r => addBetRound(r.amount, r.winner));
+            alert("📂 Game loaded!");
+        }
+
+        function clearDataAndReload() {
+            if(confirm("⚠️ Are you sure? This clears the screen.")) location.reload();
+        }
+    </script>
+</body>
+</html>
