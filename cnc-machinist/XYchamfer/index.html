@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>90-Degree Chamfer Generator</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #111827; color: #ffffff; }
         .input-group { position: relative; }
@@ -14,34 +14,35 @@
         .side-cb:checked + label { background-color: #4f46e5; border-color: #6366f1; color: white; }
         .side-cb + label { transition: all 0.2s; }
         input:focus, select:focus { outline: 2px solid #6366f1; border-color: transparent; }
+        .bg-gray-750 { background-color: #1f2937; }
     </style>
 </head>
-<body class="flex flex-col items-center justify-start min-h-screen">
-    
-    <header class="w-full bg-gray-900 border-b border-gray-700 shadow-sm z-50">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center h-16">
-          <a href="https://shader7.com" class="flex items-center gap-3 text-indigo-400 hover:text-indigo-300 transition-colors no-underline group">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="group-hover:scale-110 transition-transform" viewBox="0 0 16 16">
-              <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"/>
-              <path d="m8 3.293 6 6V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V9.293l6-6Z"/>
-            </svg>
-            <span class="font-bold text-lg tracking-wide">Shader7</span>
-          </a>
+<body class="flex flex-col items-center justify-start min-h-screen p-4">
+
+    <header class="w-full bg-gray-900 border-b border-gray-700 shadow-sm z-50 mb-6 rounded-xl">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center h-16">
+                <a href="https://shader7.com" class="flex items-center gap-3 text-indigo-400 hover:text-indigo-300 transition-colors no-underline group">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="group-hover:scale-110 transition-transform" viewBox="0 0 16 16">
+                        <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"/>
+                        <path d="m8 3.293 6 6V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V9.293l6-6Z"/>
+                    </svg>
+                    <span class="font-bold text-lg tracking-wide">Shader7</span>
+                </a>
+            </div>
         </div>
-      </div>
     </header>
-    
-<div class="w-full max-w-4xl bg-gray-800 p-6 sm:p-8 rounded-2xl shadow-2xl border border-gray-700">
-        
+
+    <div class="w-full max-w-4xl bg-gray-800 p-6 sm:p-8 rounded-2xl shadow-2xl border border-gray-700">
         <h1 class="text-3xl font-bold text-center mb-2 text-indigo-400">Chamfer Generator (90° Entry/Exit)</h1>
         <p class="text-gray-400 text-center text-sm mb-8">
-            <b>Strategy:</b> Inside-Out Motion. 
-            <b>Entry/Exit:</b> Perpendicular (90°) to the cut direction using Safety Offset (#7).
+            <b>Strategy:</b> Inside-Out Motion.
+            <b>Entry/Exit:</b> Perpendicular (90°) to cut direction using Safety Offset (#7).
+            <br>
+            <b>Logic:</b> Opposite sides are finished one full side at a time, then retract, then move to the other side.
         </p>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            
             <div class="space-y-6">
                 <div class="bg-gray-750 border border-gray-600 p-5 rounded-xl">
                     <h3 class="text-indigo-300 font-semibold mb-4 border-b border-gray-600 pb-2">1. Part Geometry & Origin</h3>
@@ -84,7 +85,7 @@
                             <label for="side-top" class="block p-2 rounded border border-gray-600 bg-gray-900 cursor-pointer hover:bg-gray-700 select-none">+Y (Top)</label>
                         </div>
                         <div></div>
-                        
+
                         <div>
                             <input type="checkbox" id="side-left" class="side-cb hidden">
                             <label for="side-left" class="block p-2 rounded border border-gray-600 bg-gray-900 cursor-pointer hover:bg-gray-700 select-none">-X (Left)</label>
@@ -100,12 +101,13 @@
                         <div></div>
                         <div>
                             <input type="checkbox" id="side-bottom" class="side-cb hidden">
-                            <label for="side-bottom" class="block p-2 rounded border border-gray-600 bg-gray-900 cursor-pointer hover:bg-gray-700 select-none">-Y (Btm)</label>
+                            <label for="side-bottom" class="block p-2 rounded border border-gray-600 bg-gray-900 cursor-pointer hover:bg-gray-700 select-none">-Y (Bottom)</label>
                         </div>
                         <div></div>
                     </div>
-                    <div class="mt-3 text-center">
-                         <button id="select-all-btn" class="text-xs text-indigo-400 hover:text-indigo-300 underline">Select All</button>
+                    <div class="mt-3 text-center flex justify-center gap-4">
+                        <button id="select-all-btn" class="text-xs text-indigo-400 hover:text-indigo-300 underline" type="button">Select All</button>
+                        <button id="clear-all-btn" class="text-xs text-red-400 hover:text-red-300 underline" type="button">Clear All</button>
                     </div>
                 </div>
             </div>
@@ -116,70 +118,115 @@
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium mb-1"><span class="var-badge">#1</span>Start Z</label>
-                            <div class="input-group"><input type="number" id="start-z" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2 text-white" value="0"><span class="input-unit">mm</span></div>
+                            <div class="input-group">
+                                <input type="number" id="start-z" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2 text-white" value="0">
+                                <span class="input-unit">mm</span>
+                            </div>
                         </div>
                         <div>
                             <label class="block text-sm font-medium mb-1"><span class="var-badge">#2</span>Final Z</label>
-                            <div class="input-group"><input type="number" id="final-z" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2 text-white" value="-14.0"><span class="input-unit">mm</span></div>
+                            <div class="input-group">
+                                <input type="number" id="final-z" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2 text-white" value="-14.0">
+                                <span class="input-unit">mm</span>
+                            </div>
                         </div>
                         <div>
                             <label class="block text-sm font-medium mb-1"><span class="var-badge">#3</span>DOC</label>
-                            <div class="input-group"><input type="number" id="doc" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2 text-white" value="2.0"><span class="input-unit">mm</span></div>
+                            <div class="input-group">
+                                <input type="number" id="doc" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2 text-white" value="2.0">
+                                <span class="input-unit">mm</span>
+                            </div>
                         </div>
                         <div>
                             <label class="block text-sm font-medium mb-1"><span class="var-badge">#4</span>Angle</label>
-                            <div class="input-group"><input type="number" id="angle" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2 text-white" value="45"><span class="input-unit">deg</span></div>
+                            <div class="input-group">
+                                <input type="number" id="angle" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2 text-white" value="45">
+                                <span class="input-unit">deg</span>
+                            </div>
                         </div>
                         <div>
                             <label class="block text-sm font-medium mb-1"><span class="var-badge">#5</span>Tool Dia</label>
-                            <div class="input-group"><input type="number" id="tool-dia" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2 text-white" value="50"><span class="input-unit">mm</span></div>
+                            <div class="input-group">
+                                <input type="number" id="tool-dia" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2 text-white" value="50">
+                                <span class="input-unit">mm</span>
+                            </div>
                         </div>
                         <div>
                             <label class="block text-sm font-medium mb-1"><span class="var-badge">#6</span>Safety</label>
-                            <div class="input-group"><input type="number" id="safety" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2 text-white" value="5"><span class="input-unit">mm</span></div>
+                            <div class="input-group">
+                                <input type="number" id="safety" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2 text-white" value="5">
+                                <span class="input-unit">mm</span>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="bg-gray-750 border border-gray-600 p-5 rounded-xl">
-                    <h3 class="text-indigo-300 font-semibold mb-4 border-b border-gray-600 pb-2">4. Tool & Feed</h3>
+                    <h3 class="text-indigo-300 font-semibold mb-4 border-b border-gray-600 pb-2">4. Tool, Feed & Direction</h3>
                     <div class="grid grid-cols-2 gap-4">
-                        <div><label class="block text-sm font-medium mb-1">Tool No.</label><input type="number" id="tool-num" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2 text-white" value="1"></div>
-                        <div><label class="block text-sm font-medium mb-1">Offset D</label><input type="number" id="tool-offset-d" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2 text-white" value="1"></div>
-                        <div><label class="block text-sm font-medium mb-1">Feed</label><input type="number" id="feed" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2 text-white" value="800"></div>
-                        <div><label class="block text-sm font-medium mb-1">RPM</label><input type="number" id="rpm" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2 text-white" value="3000"></div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Tool No.</label>
+                            <input type="number" id="tool-num" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2 text-white" value="1">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Offset D</label>
+                            <input type="number" id="tool-offset-d" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2 text-white" value="1">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Feed</label>
+                            <input type="number" id="feed" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2 text-white" value="800">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">RPM</label>
+                            <input type="number" id="rpm" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2 text-white" value="3000">
+                        </div>
+                        <div class="col-span-2">
+                            <label class="block text-sm font-medium mb-1">Cut Direction Mode</label>
+                            <select id="cut-mode" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2.5 text-white">
+                                <option value="single">Single Direction</option>
+                                <option value="double" selected>Double Direction (Return Also Cuts)</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-        </div>
-        
         <div class="flex mt-8">
-            <button id="generate-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition shadow-lg text-lg">Generate 90° Entry/Exit G-Code</button>
+            <button id="generate-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition shadow-lg text-lg" type="button">Generate G-Code</button>
         </div>
-        
-        <div id="results-section" class="mt-8 hidden animate-fade-in">
+
+        <div id="results-section" class="mt-8 hidden">
             <div class="flex justify-between items-center mb-2">
                 <h2 class="text-lg font-semibold text-gray-300">G-Code Program</h2>
-                <button id="copy-btn" class="text-xs bg-gray-700 hover:bg-gray-600 text-white py-1 px-3 rounded transition">Copy</button>
+                <button id="copy-btn" class="text-xs bg-gray-700 hover:bg-gray-600 text-white py-1 px-3 rounded transition" type="button">Copy</button>
             </div>
             <pre id="gcode-output" class="bg-black text-green-400 p-4 rounded-lg text-sm whitespace-pre-wrap font-mono border border-gray-700 max-h-96 overflow-y-auto shadow-inner"></pre>
         </div>
-        
+
         <div id="error-message" class="mt-4 text-center text-red-400 font-medium hidden"></div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const generateBtn = document.getElementById('generate-btn');
             const copyBtn = document.getElementById('copy-btn');
             const gcodeOutput = document.getElementById('gcode-output');
             const resultsSection = document.getElementById('results-section');
             const errorMessage = document.getElementById('error-message');
             const selectAllBtn = document.getElementById('select-all-btn');
+            const clearAllBtn = document.getElementById('clear-all-btn');
 
             selectAllBtn.addEventListener('click', () => {
-                ['side-top','side-bottom','side-left','side-right'].forEach(id => document.getElementById(id).checked = true);
+                ['side-top', 'side-bottom', 'side-left', 'side-right'].forEach(id => {
+                    document.getElementById(id).checked = true;
+                });
+            });
+
+            clearAllBtn.addEventListener('click', () => {
+                ['side-top', 'side-bottom', 'side-left', 'side-right'].forEach(id => {
+                    document.getElementById(id).checked = false;
+                });
             });
 
             generateBtn.addEventListener('click', () => {
@@ -197,144 +244,375 @@
                 }
             });
 
-            copyBtn.addEventListener('click', () => {
-                const ta = document.createElement('textarea');
-                ta.value = gcodeOutput.textContent;
-                document.body.appendChild(ta);
-                ta.select();
-                document.execCommand('copy');
-                document.body.removeChild(ta);
-                const originalText = copyBtn.textContent;
+            copyBtn.addEventListener('click', async () => {
+                try {
+                    await navigator.clipboard.writeText(gcodeOutput.textContent);
+                } catch {
+                    const ta = document.createElement('textarea');
+                    ta.value = gcodeOutput.textContent;
+                    document.body.appendChild(ta);
+                    ta.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(ta);
+                }
+
+                const oldText = copyBtn.textContent;
                 copyBtn.textContent = 'Copied!';
-                setTimeout(() => copyBtn.textContent = originalText, 1500);
+                setTimeout(() => copyBtn.textContent = oldText, 1500);
             });
 
             function getInputs() {
                 const val = (id) => parseFloat(document.getElementById(id).value);
+
                 const inputs = {
-                    x: val('part-x'), y: val('part-y'), origin: document.getElementById('origin-pos').value,
-                    tNum: parseInt(document.getElementById('tool-num').value), dOffset: parseInt(document.getElementById('tool-offset-d').value),
-                    rpm: val('rpm'), feed: val('feed'),
-                    startZ: val('start-z'), finalZ: val('final-z'), doc: val('doc'), angle: val('angle'), toolDia: val('tool-dia'), safety: val('safety'),
-                    sides: { top: document.getElementById('side-top').checked, right: document.getElementById('side-right').checked, bottom: document.getElementById('side-bottom').checked, left: document.getElementById('side-left').checked }
+                    x: val('part-x'),
+                    y: val('part-y'),
+                    origin: document.getElementById('origin-pos').value,
+                    cutMode: document.getElementById('cut-mode').value,
+                    tNum: parseInt(document.getElementById('tool-num').value, 10),
+                    dOffset: parseInt(document.getElementById('tool-offset-d').value, 10),
+                    rpm: val('rpm'),
+                    feed: val('feed'),
+                    startZ: val('start-z'),
+                    finalZ: val('final-z'),
+                    doc: val('doc'),
+                    angle: val('angle'),
+                    toolDia: val('tool-dia'),
+                    safety: val('safety'),
+                    sides: {
+                        top: document.getElementById('side-top').checked,
+                        right: document.getElementById('side-right').checked,
+                        bottom: document.getElementById('side-bottom').checked,
+                        left: document.getElementById('side-left').checked
+                    }
                 };
-                for (let k in inputs) if (k!=='sides' && k!=='origin' && isNaN(inputs[k])) throw new Error("Invalid number in field: " + k);
-                if (!inputs.sides.top && !inputs.sides.bottom && !inputs.sides.left && !inputs.sides.right) throw new Error("Select at least one side.");
+
+                for (let k in inputs) {
+                    if (k !== 'sides' && k !== 'origin' && k !== 'cutMode' && isNaN(inputs[k])) {
+                        throw new Error("Invalid number in field: " + k);
+                    }
+                }
+
+                if (!inputs.sides.top && !inputs.sides.bottom && !inputs.sides.left && !inputs.sides.right) {
+                    throw new Error("Select at least one side.");
+                }
+                if (inputs.x <= 0 || inputs.y <= 0) throw new Error("Part dimensions must be positive.");
                 if (inputs.doc <= 0) throw new Error("DOC must be positive.");
+                if (inputs.toolDia <= 0) throw new Error("Tool diameter must be positive.");
+                if (inputs.safety < 0) throw new Error("Safety must be zero or positive.");
+                if (inputs.angle <= 0 || inputs.angle >= 90) throw new Error("Angle must be between 0 and 90 degrees.");
+                if (inputs.finalZ >= inputs.startZ) throw new Error("Final Z must be lower than Start Z.");
+                if (inputs.feed <= 0 || inputs.rpm <= 0) throw new Error("Feed and RPM must be positive.");
+
                 return inputs;
             }
 
             function generateChamferProgram(p) {
-                // 1. Calculate Base Coordinates (Origin Logic)
                 let xMin, xMax, yMin, yMax, originLabel = "";
-                switch(p.origin) {
-                    case 'center': xMin = -p.x/2; xMax = p.x/2; yMin = -p.y/2; yMax = p.y/2; originLabel = "CENTER"; break;
-                    case 'bl': xMin = 0; xMax = p.x; yMin = 0; yMax = p.y; originLabel = "BOTTOM LEFT"; break;
-                    case 'tr': xMin = -p.x; xMax = 0; yMin = -p.y; yMax = 0; originLabel = "TOP RIGHT"; break;
-                    case 'tl': xMin = 0; xMax = p.x; yMin = -p.y; yMax = 0; originLabel = "TOP LEFT"; break;
-                    case 'br': xMin = -p.x; xMax = 0; yMin = 0; yMax = p.y; originLabel = "BOTTOM RIGHT"; break;
+
+                switch (p.origin) {
+                    case 'center':
+                        xMin = -p.x / 2;
+                        xMax = p.x / 2;
+                        yMin = -p.y / 2;
+                        yMax = p.y / 2;
+                        originLabel = "CENTER";
+                        break;
+                    case 'bl':
+                        xMin = 0;
+                        xMax = p.x;
+                        yMin = 0;
+                        yMax = p.y;
+                        originLabel = "BOTTOM LEFT";
+                        break;
+                    case 'tr':
+                        xMin = -p.x;
+                        xMax = 0;
+                        yMin = -p.y;
+                        yMax = 0;
+                        originLabel = "TOP RIGHT";
+                        break;
+                    case 'tl':
+                        xMin = 0;
+                        xMax = p.x;
+                        yMin = -p.y;
+                        yMax = 0;
+                        originLabel = "TOP LEFT";
+                        break;
+                    case 'br':
+                    default:
+                        xMin = -p.x;
+                        xMax = 0;
+                        yMin = 0;
+                        yMax = p.y;
+                        originLabel = "BOTTOM RIGHT";
+                        break;
                 }
 
-                // 2. Chain Logic (Find Start Index)
-                const sides = [p.sides.bottom, p.sides.right, p.sides.top, p.sides.left];
-                let chains = [], currentChain = [], startIdx = 0;
-                
-                if (sides.every(s => s)) chains.push([0, 1, 2, 3]);
-                else {
-                    for(let i=0; i<4; i++) { if (sides[i] && !sides[(i+3)%4]) { startIdx = i; break; } }
-                    for(let i=0; i<4; i++) {
-                        let idx = (startIdx + i) % 4;
-                        if (sides[idx]) currentChain.push(idx);
-                        else if (currentChain.length) { chains.push(currentChain); currentChain = []; }
+                const fmt = (n, d = 3) => Number(n).toFixed(d);
+
+                const selected = [
+                    p.sides.bottom, // 0
+                    p.sides.right,  // 1
+                    p.sides.top,    // 2
+                    p.sides.left    // 3
+                ];
+
+                function buildChains(sideState) {
+                    const active = [];
+                    for (let i = 0; i < 4; i++) {
+                        if (sideState[i]) active.push(i);
                     }
-                    if (currentChain.length) chains.push(currentChain);
+
+                    if (active.length === 0) return [];
+                    if (active.length === 4) return [[0, 1, 2, 3]];
+
+                    // Opposite Y sides: top then bottom
+                    if (sideState[2] && sideState[0] && !sideState[1] && !sideState[3]) {
+                        return [[2], [0]];
+                    }
+
+                    // Opposite X sides: right then left
+                    if (sideState[1] && sideState[3] && !sideState[0] && !sideState[2]) {
+                        return [[1], [3]];
+                    }
+
+                    const chains = [];
+                    const visited = [false, false, false, false];
+
+                    for (let i = 0; i < 4; i++) {
+                        if (!sideState[i] || visited[i]) continue;
+
+                        const prev = sideState[(i + 3) % 4];
+                        if (prev) continue;
+
+                        const chain = [i];
+                        visited[i] = true;
+
+                        let idx = (i + 1) % 4;
+                        while (sideState[idx] && !visited[idx]) {
+                            chain.push(idx);
+                            visited[idx] = true;
+                            idx = (idx + 1) % 4;
+                        }
+
+                        chains.push(chain);
+                    }
+
+                    for (let i = 0; i < 4; i++) {
+                        if (sideState[i] && !visited[i]) {
+                            chains.push([i]);
+                            visited[i] = true;
+                        }
+                    }
+
+                    return chains.length ? chains : [active];
                 }
 
-                // 3. Program Header
-                let code = `%\nO1002 (90-DEG CHAMFER)\n(ORIGIN: ${originLabel})\n(STRATEGY: INSIDE-OUT)\n(ENTRY: 90 DEG PERPENDICULAR)\n\n`;
-                code += `G21 G90 G40 G80 G17\nG54\n\n`;
-                
+                const chains = buildChains(selected);
+
+                const passes = [];
+                let z = p.startZ;
+                while (z > p.finalZ) {
+                    z -= p.doc;
+                    if (z < p.finalZ) z = p.finalZ;
+                    passes.push(z);
+                }
+
+                function getApproachAndEngage(startSide, reverse) {
+                    const comp = reverse ? `G42 D${p.dOffset}` : `G41 D${p.dOffset}`;
+
+                    if (startSide === 0) { // Bottom
+                        const sx = reverse ? '#102' : '#101';
+                        return {
+                            approach: `X${sx} Y[#113 - #7]`,
+                            engage: `G01 ${comp} Y#113`
+                        };
+                    }
+
+                    if (startSide === 1) { // Right
+                        const sy = reverse ? '#104' : '#103';
+                        return {
+                            approach: `X[#112 + #7] Y${sy}`,
+                            engage: `G01 ${comp} X#112`
+                        };
+                    }
+
+                    if (startSide === 2) { // Top
+                        const sx = reverse ? '#101' : '#102';
+                        return {
+                            approach: `X${sx} Y[#114 + #7]`,
+                            engage: `G01 ${comp} Y#114`
+                        };
+                    }
+
+                    if (startSide === 3) { // Left
+                        const sy = reverse ? '#103' : '#104';
+                        return {
+                            approach: `X[#111 - #7] Y${sy}`,
+                            engage: `G01 ${comp} X#111`
+                        };
+                    }
+
+                    throw new Error("Invalid start side.");
+                }
+
+                function getTarget(side, isLast, reverse) {
+                    if (!reverse) {
+                        if (side === 0) return isLast ? `X#102` : `X#112`;
+                        if (side === 1) return isLast ? `Y#104` : `Y#114`;
+                        if (side === 2) return isLast ? `X#101` : `X#111`;
+                        if (side === 3) return isLast ? `Y#103` : `Y#113`;
+                    } else {
+                        if (side === 0) return isLast ? `X#101` : `X#111`;
+                        if (side === 1) return isLast ? `Y#103` : `Y#113`;
+                        if (side === 2) return isLast ? `X#102` : `X#112`;
+                        if (side === 3) return isLast ? `Y#104` : `Y#114`;
+                    }
+
+                    throw new Error("Invalid side.");
+                }
+
+                function getDisengage(lastSide) {
+                    if (lastSide === 0) return `Y[#113 - #7]`;
+                    if (lastSide === 1) return `X[#112 + #7]`;
+                    if (lastSide === 2) return `Y[#114 + #7]`;
+                    if (lastSide === 3) return `X[#111 - #7]`;
+                    throw new Error("Invalid last side.");
+                }
+
+                function buildSegments() {
+                    const segments = [];
+
+                    // More than one chain:
+                    // finish all passes on one chain first, then next chain
+                    if (chains.length > 1) {
+                        chains.forEach((baseChain, chainIndex) => {
+                            passes.forEach((passZ, passIndex) => {
+                                const reversePass = (p.cutMode === 'double') ? (passIndex % 2 === 1) : false;
+                                const chain = reversePass ? [...baseChain].reverse() : [...baseChain];
+                                const startSide = chain[0];
+                                const lastSide = chain[chain.length - 1];
+                                const ae = getApproachAndEngage(startSide, reversePass);
+
+                                segments.push({
+                                    passIndex,
+                                    chainIndex,
+                                    z: passZ,
+                                    reverse: reversePass,
+                                    chain: [...chain],
+                                    approach: ae.approach,
+                                    engage: ae.engage,
+                                    disengage: getDisengage(lastSide)
+                                });
+                            });
+                        });
+                    } else {
+                        passes.forEach((passZ, passIndex) => {
+                            const reversePass = (p.cutMode === 'double') ? (passIndex % 2 === 1) : false;
+                            const baseChain = chains[0];
+                            const chain = reversePass ? [...baseChain].reverse() : [...baseChain];
+                            const startSide = chain[0];
+                            const lastSide = chain[chain.length - 1];
+                            const ae = getApproachAndEngage(startSide, reversePass);
+
+                            segments.push({
+                                passIndex,
+                                chainIndex: 0,
+                                z: passZ,
+                                reverse: reversePass,
+                                chain: [...chain],
+                                approach: ae.approach,
+                                engage: ae.engage,
+                                disengage: getDisengage(lastSide)
+                            });
+                        });
+                    }
+
+                    return segments;
+                }
+
+                function needRetractBetween(prev, curr) {
+                    if (!prev) return true;
+                    return prev.chainIndex !== curr.chainIndex;
+                }
+
+                const segments = buildSegments();
+                if (!segments.length) throw new Error("No cutting segments generated.");
+
+                let code = `%\n`;
+                code += `O1002 (90-DEG CHAMFER)\n`;
+                code += `(ORIGIN: ${originLabel})\n`;
+                code += `(STRATEGY: INSIDE-OUT)\n`;
+                code += `(ENTRY/EXIT: 90 DEG PERPENDICULAR)\n`;
+                code += `(MODE: ${p.cutMode === 'double' ? 'DOUBLE DIRECTION' : 'SINGLE DIRECTION'})\n`;
+                code += `(OPPOSITE SIDES: COMPLETE ONE SIDE FULLY, RETRACT, THEN NEXT)\n\n`;
+
+                code += `G21 G90 G40 G80 G17\n`;
+                code += `G54\n\n`;
+
                 code += `(--- MACRO VARS ---)\n`;
-                code += `#1=${p.startZ.toFixed(3)} (START Z)\n#2=${p.finalZ.toFixed(3)} (FINAL Z)\n#3=${p.doc.toFixed(3)} (DOC)\n`;
-                code += `#4=${p.angle.toFixed(1)} (ANGLE)\n#5=${p.toolDia.toFixed(3)} (DIA)\n#6=${p.safety.toFixed(3)} (SAFETY)\n\n`;
-                
+                code += `#1=${fmt(p.startZ)} (START Z)\n`;
+                code += `#2=${fmt(p.finalZ)} (FINAL Z)\n`;
+                code += `#3=${fmt(p.doc)} (DOC)\n`;
+                code += `#4=${fmt(p.angle, 1)} (ANGLE)\n`;
+                code += `#5=${fmt(p.toolDia)} (DIA)\n`;
+                code += `#6=${fmt(p.safety)} (SAFETY)\n\n`;
+
                 code += `(--- RAW STOCK LIMITS ---)\n`;
-                code += `#101=${xMin.toFixed(3)} (MIN X)\n#102=${xMax.toFixed(3)} (MAX X)\n#103=${yMin.toFixed(3)} (MIN Y)\n#104=${yMax.toFixed(3)} (MAX Y)\n\n`;
-                
-                code += `T${p.tNum} M06\nS${p.rpm} M03\nG43 H${p.tNum} Z50.0\nM08\n\n`;
+                code += `#101=${fmt(xMin)} (MIN X)\n`;
+                code += `#102=${fmt(xMax)} (MAX X)\n`;
+                code += `#103=${fmt(yMin)} (MIN Y)\n`;
+                code += `#104=${fmt(yMax)} (MAX Y)\n\n`;
 
-                // 4. Main Loop
-                code += `(--- LOOP START ---)\nWHILE [#1 GT #2] DO 1\n`;
-                code += `  #1 = #1 - #3\n  IF [#1 LT #2] THEN #1 = #2\n`;
-                code += `  #8 = [ABS[#2] - ABS[#1]] / TAN[#4] (OFFSET)\n`;
-                code += `  #7 = [#5 / 2] + #6 (SAFETY OFFSET)\n\n`;
-                
-                code += `  (OFFSET BOX)\n`;
-                code += `  #111 = #101 + #8\n  #112 = #102 - #8\n  #113 = #103 + #8\n  #114 = #104 - #8\n\n`;
+                code += `T${p.tNum} M06\n`;
+                code += `S${fmt(p.rpm, 0)} M03\n`;
+                code += `G43 H${p.tNum} Z50.0\n`;
+                code += `M08\n\n`;
 
-                chains.forEach((chain, cIndex) => {
-                    let startSide = chain[0];
-                    let approach = "", engage = "";
+                code += `(--- COMMON CALCS ---)\n`;
+                code += `#7=[#5 / 2] + #6 (SAFETY OFFSET)\n\n`;
 
-                    // 90 DEGREE ENTRY LOGIC
-                    // We align with the start coordinate of the cut, but offset PERPENDICULARLY by #7.
-                    
-                    if (startSide === 0) { // Bottom (Cut X+) -> Perpendicular is Y-
-                         // Start X is #101 (Raw). Cut line is Y #113 (Inner).
-                         // Approach: X#101, Y[#113 - #7] (Below cut line)
-                         approach = `X#101 Y[#113 - #7]`;
-                         engage = `G01 G41 D${p.dOffset} Y#113`; // Move Y+ to cut line
-                    }
-                    else if (startSide === 1) { // Right (Cut Y+) -> Perpendicular is X+
-                         // Start Y is #103 (Raw). Cut line is X #112 (Inner).
-                         // Approach: X[#112 + #7], Y#103 (Right of cut line)
-                         approach = `X[#112 + #7] Y#103`;
-                         engage = `G01 G41 D${p.dOffset} X#112`; // Move X- to cut line
-                    }
-                    else if (startSide === 2) { // Top (Cut X-) -> Perpendicular is Y+
-                         // Start X is #102 (Raw). Cut line is Y #114 (Inner).
-                         // Approach: X#102, Y[#114 + #7] (Above cut line)
-                         approach = `X#102 Y[#114 + #7]`;
-                         engage = `G01 G41 D${p.dOffset} Y#114`; // Move Y- to cut line
-                    }
-                    else if (startSide === 3) { // Left (Cut Y-) -> Perpendicular is X-
-                         // Start Y is #104 (Raw). Cut line is X #111 (Inner).
-                         // Approach: X[#111 - #7], Y#104 (Left of cut line)
-                         approach = `X[#111 - #7] Y#104`;
-                         engage = `G01 G41 D${p.dOffset} X#111`; // Move X+ to cut line
-                    }
-                    
-                    if (chains.length > 1 || cIndex === 0) code += `  G00 Z50.0\n`;
-                    code += `  G00 ${approach}\n`;
-                    code += `  G00 Z#1\n`;
-                    code += `  ${engage} F${p.feed}\n`; // 90 Deg Engage
+                segments.forEach((seg, i) => {
+                    const prev = i > 0 ? segments[i - 1] : null;
+                    const retract = needRetractBetween(prev, seg);
 
-                    // Cutting Loop
-                    chain.forEach((side, idx) => {
-                        let isLast = (idx === chain.length - 1);
-                        let target = "";
-                        
-                        if (side === 0) target = isLast ? `X#102` : `X#112`; // Btm -> Right
-                        else if (side === 1) target = isLast ? `Y#104` : `Y#114`; // Right -> Top
-                        else if (side === 2) target = isLast ? `X#101` : `X#111`; // Top -> Left
-                        else if (side === 3) target = isLast ? `Y#103` : `Y#113`; // Left -> Btm
-                        
-                        code += `  G01 ${target}\n`;
+                    code += `(================ SEGMENT ${i + 1} / PASS ${seg.passIndex + 1} / CHAIN ${seg.chainIndex + 1} / ${seg.reverse ? 'REVERSE' : 'FORWARD'} ================)\n`;
+                    code += `#1=${fmt(seg.z)}\n`;
+                    code += `#8=[ABS[#2] - ABS[#1]] / TAN[#4] (OFFSET)\n`;
+                    code += `#111=#101 + #8\n`;
+                    code += `#112=#102 - #8\n`;
+                    code += `#113=#103 + #8\n`;
+                    code += `#114=#104 - #8\n\n`;
+
+                    if (i === 0 || retract) {
+                        code += `(SAFE APPROACH)\n`;
+                        if (i !== 0) code += `G00 Z50.0\n`;
+                        code += `G00 ${seg.approach}\n`;
+                    } else {
+                        code += `(SAME CHAIN NEXT PASS)\n`;
+                        code += `G00 ${seg.approach}\n`;
+                    }
+
+                    code += `G00 Z#1\n`;
+                    code += `${seg.engage} F${fmt(p.feed, 0)}\n`;
+
+                    seg.chain.forEach((side, idx) => {
+                        const isLast = idx === seg.chain.length - 1;
+                        code += `G01 ${getTarget(side, isLast, seg.reverse)}\n`;
                     });
 
-                    // 90 DEGREE EXIT LOGIC
-                    let lastSide = chain[chain.length-1];
-                    let disengage = "";
-                    
-                    if (lastSide === 0) disengage = `Y[#113 - #7]`; // Move Y- (Down)
-                    if (lastSide === 1) disengage = `X[#112 + #7]`; // Move X+ (Right)
-                    if (lastSide === 2) disengage = `Y[#114 + #7]`; // Move Y+ (Up)
-                    if (lastSide === 3) disengage = `X[#111 - #7]`; // Move X- (Left)
-
-                    code += `  G01 G40 ${disengage}\n\n`;
+                    code += `G01 G40 ${seg.disengage}\n\n`;
                 });
 
-                code += `END 1\n\nG00 Z50.0\nM09\nM05\nG91 G28 Z0\nG28 X0 Y0\nM30\n%`;
+                code += `G00 Z50.0\n`;
+                code += `M09\n`;
+                code += `M05\n`;
+                code += `G91 G28 Z0\n`;
+                code += `G28 X0 Y0\n`;
+                code += `M30\n`;
+                code += `%`;
+
                 return code;
             }
         });
