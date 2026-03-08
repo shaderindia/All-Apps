@@ -6,6 +6,7 @@
     <title>Bet Settlement Calculator</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
     <style>
@@ -16,6 +17,7 @@
             --secondary: #ec4899;
             --success: #10b981;
             --danger: #f43f5e;
+            --warning: #f59e0b;
             --text: #1e293b; 
         }
 
@@ -99,6 +101,7 @@
 
         .btn-secondary { background: linear-gradient(135deg, #64748b, #94a3b8); box-shadow: 0 4px 6px rgba(100, 116, 139, 0.3); }
         .btn-success { background: linear-gradient(135deg, var(--success), #34d399); box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3); }
+        .btn-warning { background: linear-gradient(135deg, var(--warning), #fbbf24); box-shadow: 0 4px 6px rgba(245, 158, 11, 0.3); color: #fff;}
         .btn-danger { background: linear-gradient(135deg, var(--danger), #fb7185); padding: 8px 15px; font-size: 14px; box-shadow: 0 4px 6px rgba(244, 63, 94, 0.3); float: right; margin:0; }
 
         .bet-round { 
@@ -151,7 +154,8 @@
             box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
         }
         
-        .controls-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+        .controls-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; width: 100%; }
+        .controls-row button { flex: 1; min-width: 140px; margin-bottom: 10px; }
         
         ul { list-style-type: none; padding-left: 0; }
         li { padding: 8px; background: #f8fafc; margin-bottom: 5px; border-radius: 6px; font-weight: 600; }
@@ -164,9 +168,9 @@
     <div class="card" id="setup-section">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
             <h2>👥 1. Add Players</h2>
-            <button class="btn-secondary" onclick="loadGame()">📂 Load Save</button>
+            <button class="btn-secondary" style="margin-bottom:0;" onclick="loadGame()">📂 Load Save</button>
         </div>
-        <p style="font-size: 14px; color: #64748b; margin-top: 0;">Type names separated by commas (e.g. John, Sarah).</p>
+        <p style="font-size: 14px; color: #64748b; margin-top: 5px;">Type names separated by commas (e.g. John, Sarah).</p>
         
         <div style="display: flex; align-items: center; flex-wrap: wrap;">
             <input type="text" id="new-player-name" placeholder="Enter player names..." onkeypress="handleKeyPress(event)">
@@ -182,9 +186,9 @@
     <div class="card hidden" id="betting-section">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
             <h2>🎲 2. Betting Rounds</h2>
-            <button class="btn-secondary" onclick="saveGame()">💾 Save</button>
+            <button class="btn-secondary" style="margin-bottom:0;" onclick="saveGame()">💾 Save</button>
         </div>
-        <div id="rounds-container"></div>
+        <div id="rounds-container" style="margin-top: 15px;"></div>
         <button onclick="addBetRound()" style="background: linear-gradient(135deg, #a855f7, #d946ef);">+ Add Next Bet</button>
         <hr style="border-top: 1px dashed #cbd5e1; margin: 20px 0;">
         <button class="btn-success" style="width: 100%; font-size: 1.2rem; padding: 15px;" onclick="generateReport()">🚀 Generate Report</button>
@@ -194,11 +198,17 @@
         <div id="printable-results">
             <h2 style="color: #1e293b; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">📊 Final Report</h2>
             <div id="balances-container"></div>
-            <h3 style="color: #6366f1; margin-top: 25px;">💸 Settlement Plan (Who owes whom):</h3>
+            <h3 style="color: #6366f1; margin-top: 25px;">💸 Settlement Plan:</h3>
             <div id="settlements-container"></div>
         </div>
+        
+        <hr style="border-top: 1px dashed #cbd5e1; margin: 20px 0;">
+        
         <div class="controls-row">
-            <button class="btn-success" style="flex: 1;" id="download-btn" onclick="downloadReport()">📥 Download PDF</button>
+            <button class="btn-success" id="download-btn" onclick="downloadReport()">📄 Save PDF</button>
+            <button class="btn-warning" id="download-jpg-btn" onclick="downloadJPG()">🖼️ Save JPG</button>
+        </div>
+        <div class="controls-row">
             <button class="btn-secondary" onclick="document.getElementById('results-section').classList.add('hidden')">⬅ Edit Bets</button>
             <button class="btn-danger" style="float:none;" onclick="clearDataAndReload()">Reset</button>
         </div>
@@ -354,35 +364,22 @@
             setTimeout(() => { document.getElementById('results-section').scrollIntoView({ behavior: 'smooth' }); }, 100);
         }
 
-        // --- THE FINAL iOS FIX ---
-        function downloadReport() {
-            if (typeof html2pdf === 'undefined') {
-                alert("PDF engine loading. Try again in a second.");
-                return;
-            }
-
-            const btn = document.getElementById('download-btn');
-            const originalText = btn.innerText;
-            btn.innerText = "⏳ Generating...";
-
-            // 1. Create a clean HTML container for the PDF
-            const pdfContainer = document.createElement('div');
-            
-            // 2. We MUST attach it to the screen so iOS camera can "see" it.
-            // We hide it behind everything else with z-index so it doesn't look weird to you.
-            pdfContainer.style.position = 'absolute';
-            pdfContainer.style.top = '0';
-            pdfContainer.style.left = '0';
-            pdfContainer.style.width = '800px'; 
-            pdfContainer.style.padding = '40px';
-            pdfContainer.style.fontFamily = 'Helvetica, Arial, sans-serif';
-            pdfContainer.style.background = '#ffffff';
-            pdfContainer.style.zIndex = '-9999';
+        // --- HELPER: Create Clean Background Container ---
+        function createCleanContainer() {
+            const container = document.createElement('div');
+            container.style.position = 'absolute';
+            container.style.top = '0';
+            container.style.left = '0';
+            container.style.width = '800px'; 
+            container.style.padding = '40px';
+            container.style.fontFamily = 'Helvetica, Arial, sans-serif';
+            container.style.background = '#ffffff';
+            container.style.zIndex = '-9999';
 
             const balHtml = document.getElementById('balances-container').innerHTML;
             const setHtml = document.getElementById('settlements-container').innerHTML;
 
-            pdfContainer.innerHTML = `
+            container.innerHTML = `
                 <h1 style="color: #6366f1; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; text-align: left; text-shadow: none;">📊 Bet Settlement Report</h1>
                 <div style="margin-top: 20px; font-size: 16px;">
                     ${balHtml}
@@ -392,33 +389,80 @@
                     ${setHtml}
                 </div>
             `;
+            return container;
+        }
 
-            // Append it to the body (This is the crucial step iOS requires)
+        // --- PDF DOWNLOAD ---
+        function downloadReport() {
+            if (typeof html2pdf === 'undefined') {
+                alert("PDF engine loading. Try again in a second.");
+                return;
+            }
+
+            const btn = document.getElementById('download-btn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = "⏳ Wait...";
+
+            const pdfContainer = createCleanContainer();
             document.body.appendChild(pdfContainer);
 
             const opt = {
                 margin:       0.5,
                 filename:     'Betting_Report.pdf',
                 image:        { type: 'jpeg', quality: 1 },
-                html2canvas:  { 
-                    scale: 2, 
-                    backgroundColor: '#ffffff',
-                    useCORS: true,
-                    windowWidth: 800 // Forces the canvas width
-                },
+                html2canvas:  { scale: 2, backgroundColor: '#ffffff', useCORS: true, windowWidth: 800 },
                 jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
             };
             
-            // Wait 100ms for the browser to physically render the hidden element before photographing
             setTimeout(() => {
                 html2pdf().set(opt).from(pdfContainer).save().then(() => {
-                    // Clean it up after it downloads
                     document.body.removeChild(pdfContainer);
-                    btn.innerText = originalText;
+                    btn.innerHTML = originalText;
                 }).catch(err => {
-                    alert("Error generating PDF. Please try again.");
+                    alert("Error generating PDF.");
                     document.body.removeChild(pdfContainer);
-                    btn.innerText = originalText;
+                    btn.innerHTML = originalText;
+                });
+            }, 100);
+        }
+
+        // --- NEW: JPG DOWNLOAD ---
+        function downloadJPG() {
+            if (typeof html2canvas === 'undefined') {
+                alert("Image engine loading. Try again in a second.");
+                return;
+            }
+
+            const btn = document.getElementById('download-jpg-btn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = "⏳ Wait...";
+
+            const imgContainer = createCleanContainer();
+            document.body.appendChild(imgContainer);
+
+            setTimeout(() => {
+                html2canvas(imgContainer, {
+                    scale: 2, 
+                    backgroundColor: '#ffffff',
+                    useCORS: true,
+                    windowWidth: 800
+                }).then(canvas => {
+                    // Convert canvas to JPG data
+                    const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                    
+                    // Create a temporary invisible link to trigger the download
+                    const link = document.createElement('a');
+                    link.download = 'Betting_Report.jpg';
+                    link.href = imgData;
+                    link.click();
+                    
+                    // Clean up
+                    document.body.removeChild(imgContainer);
+                    btn.innerHTML = originalText;
+                }).catch(err => {
+                    alert("Error generating JPG.");
+                    document.body.removeChild(imgContainer);
+                    btn.innerHTML = originalText;
                 });
             }, 100);
         }
