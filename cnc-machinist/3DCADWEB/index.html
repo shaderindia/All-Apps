@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>3D Parametric Modeler Pro - Perfect Edge Modifiers</title>
+    <title>3D Parametric Modeler Pro</title>
     <style>
         :root {
             --bg: #121212;
@@ -42,10 +42,22 @@
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100%;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background: var(--bg); color: var(--text); overflow: hidden;
+            background: var(--bg); color: var(--text); overflow: hidden; display: flex; flex-direction: column;
         }
 
-        #app { display: flex; width: 100%; height: 100%; flex-direction: row; }
+        #mobile-header {
+            display: none; align-items: center; background: var(--panel-bg);
+            border-bottom: 1px solid var(--border); padding: 12px 16px;
+            z-index: 15; box-shadow: 0 2px 10px var(--shadow);
+        }
+        #mobile-header h2 { margin: 0 0 0 12px; font-size: 1.1rem; font-weight: 600; color: var(--text); }
+        #btn-open-menu {
+            background: var(--primary); color: #fff; border: none; border-radius: 6px;
+            padding: 8px 12px; font-weight: 600; font-size: 0.9rem; cursor: pointer;
+            display: flex; align-items: center; gap: 6px;
+        }
+
+        #app { display: flex; width: 100%; height: 100%; flex-direction: row; flex: 1; overflow: hidden; }
         
         #viewport { flex: 1; position: relative; height: 100%; }
         canvas { display: block; width: 100%; height: 100%; touch-action: none; outline: none; }
@@ -68,7 +80,7 @@
         
         .form-group { margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; }
         .form-group label { font-size: 0.85rem; font-weight: 500; width: 45%; }
-        .form-group input[type="number"], .form-group select {
+        .form-group input[type="number"], .form-group input[type="text"], .form-group select {
             width: 50%; padding: 8px; border: 1px solid var(--border); border-radius: 6px;
             font-size: 0.85rem; background: var(--input-bg); color: var(--text); outline: none; transition: border-color 0.2s;
         }
@@ -83,9 +95,9 @@
         .edge-grid-header:first-child { margin-top: 0; }
         .edge-grid select { width: 100%; font-size: 0.75rem; padding: 4px; border: 1px solid var(--border); border-radius: 4px; background: var(--panel-bg); color: var(--text);}
 
-        .btn-group { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+        .btn-group { display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap; }
         button {
-            flex: 1; min-width: 45%; padding: 10px; font-size: 0.85rem; font-weight: 600;
+            flex: 1; min-width: 48%; padding: 10px; font-size: 0.85rem; font-weight: 600;
             border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s;
             display: flex; align-items: center; justify-content: center; gap: 5px;
         }
@@ -117,31 +129,22 @@
         .dim-y { color: #55ff55; font-weight: bold; }
         .dim-z { color: #5555ff; font-weight: bold; }
         
-        #mobile-toggle, #mobile-overlay { display: none; }
+        #mobile-overlay { display: none; }
         
         @media (max-width: 768px) {
-            #app { flex-direction: column; }
+            #mobile-header { display: flex; }
             #ui-panel {
-                position: absolute; bottom: 0; left: 0; width: 100%; height: 65vh;
-                border-right: none; border-top: 1px solid var(--border); border-radius: 16px 16px 0 0;
-                transform: translateY(100%); padding-bottom: max(20px, env(safe-area-inset-bottom));
+                position: fixed; top: 0; left: 0; width: 320px; max-width: 85vw; height: 100%;
+                transform: translateX(-100%); border-right: 1px solid var(--border);
+                z-index: 30; transition: transform 0.3s ease;
             }
-            #ui-panel.open { transform: translateY(0); }
-            
-            #mobile-toggle {
-                display: flex; position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);
-                z-index: 20; padding: 12px 24px; border-radius: 30px; box-shadow: 0 4px 12px var(--shadow);
-                background: var(--primary); color: #fff; font-weight: 600; font-size: 1rem; border: none;
-            }
-            #mobile-toggle.hidden-btn { display: none !important; }
+            #ui-panel.open { transform: translateX(0); }
             
             #mobile-overlay {
                 position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-                background: rgba(0,0,0,0.4); z-index: 9; opacity: 0; pointer-events: none; transition: opacity 0.3s;
+                background: rgba(0,0,0,0.5); z-index: 25; opacity: 0; pointer-events: none; transition: opacity 0.3s;
             }
             #mobile-overlay.active { display: block; opacity: 1; pointer-events: auto; }
-            .header { padding-top: 20px; border-radius: 16px 16px 0 0; }
-            .header::before { content: ''; position: absolute; top: 8px; left: 50%; transform: translateX(-50%); width: 40px; height: 4px; background: var(--border); border-radius: 2px; }
         }
 
         ::-webkit-scrollbar { width: 6px; }
@@ -153,21 +156,25 @@
     <script type="importmap">
     {
         "imports": {
-            "three": "https://esm.sh/three@0.160.0",
-            "three/addons/": "https://esm.sh/three@0.160.0/examples/jsm/",
-            "three-csg-ts": "https://esm.sh/three-csg-ts@3.2.0"
+            "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
+            "three-csg-ts": "https://esm.sh/three-csg-ts@3.2.0?external=three"
         }
     }
     </script>
 </head>
 <body>
+    <div id="mobile-header">
+        <button id="btn-open-menu">☰ Menu</button>
+        <h2>Modeler Pro</h2>
+    </div>
 
     <div id="app">
         <div id="mobile-overlay"></div>
         
         <div id="ui-panel">
             <div class="header">
-                <h2>Modeler Pro (mm)</h2>
+                <h2>Properties</h2>
                 <div>
                     <button class="icon-btn" id="btn-theme" title="Toggle Theme">🌓</button>
                     <button class="icon-btn" id="btn-close-mobile" style="display: none;">✕</button>
@@ -193,19 +200,20 @@
                 <div class="form-group">
                     <label>Shape Type</label>
                     <select id="base-shape">
-                        <option value="block">Block</option>
-                        <option value="cylinder">Cylinder</option>
+                        <option value="none">None (Empty)</option>
+                        <option value="block">Box (Per-Edge)</option>
+                        <option value="cylinder">Polygon / Cylinder</option>
                     </select>
                 </div>
                 
-                <div id="base-block-controls">
+                <div id="base-block-controls" class="hidden">
                     <div class="form-group"><label>Width (X) (mm)</label><input type="number" id="base-x" value="100" step="1"></div>
                     <div class="form-group"><label>Depth (Y) (mm)</label><input type="number" id="base-y" value="100" step="1"></div>
                     <div class="form-group"><label>Height (Z) (mm)</label><input type="number" id="base-z" value="50" step="1"></div>
                     
                     <div class="form-group">
                         <label>Edge Size (mm)</label>
-                        <input type="number" id="base-edge-val" value="10" step="1" min="0">
+                        <input type="number" id="base-edge-val" value="5" step="1" min="0">
                     </div>
                     <div id="base-corners-group" class="edge-grid">
                         <div class="edge-grid-header">Vertical Edges</div>
@@ -230,6 +238,7 @@
 
                 <div id="base-cyl-controls" class="hidden">
                     <div class="form-group"><label>Radius (mm)</label><input type="number" id="base-r" value="50" step="1"></div>
+                    <div class="form-group"><label>Sides</label><input type="number" id="base-sides" value="4" step="1" min="3"></div>
                     <div class="form-group"><label>Height (Z) (mm)</label><input type="number" id="base-cyl-h" value="50" step="1"></div>
                     <div class="form-group">
                         <label>Rim Modifier</label>
@@ -239,6 +248,10 @@
                             <option value="chamfer">Chamfer</option>
                         </select>
                     </div>
+                    <div class="form-group hidden" id="base-cyl-mod-val-group">
+                        <label>Mod Size (mm)</label>
+                        <input type="number" id="base-cyl-edge-val" value="5" step="1" min="0">
+                    </div>
                 </div>
             </div>
 
@@ -246,8 +259,9 @@
                 <h3>Add Shape Elements</h3>
                 <div class="btn-group">
                     <button class="btn-primary" id="btn-add-feat-box">+ Box</button>
-                    <button class="btn-primary" id="btn-add-feat-cyl">+ Cylinder</button>
+                    <button class="btn-primary" id="btn-add-feat-cyl">+ Polygon</button>
                     <button class="btn-primary" id="btn-add-feat-sphere">+ Sphere</button>
+                    <button class="btn-primary" id="btn-add-feat-text">+ Text</button>
                 </div>
             </div>
 
@@ -265,33 +279,55 @@
                 <div class="form-group">
                     <label>Shape</label>
                     <select id="feat-shape">
+                        <option value="cylinder">Polygon / Cylinder</option>
                         <option value="box">Box</option>
-                        <option value="cylinder">Cylinder</option>
                         <option value="sphere">Sphere</option>
+                        <option value="text">Text (Engrave)</option>
                     </select>
                 </div>
 
                 <div class="form-group" id="feat-axis-group">
                     <label>Orientation</label>
                     <select id="feat-axis">
-                        <option value="z">Z-Axis (Vertical)</option>
-                        <option value="x">X-Axis (Horizontal)</option>
-                        <option value="y">Y-Axis (Depth)</option>
+                        <option value="z">Z-Axis (Top/Bottom)</option>
+                        <option value="x">X-Axis (Sides)</option>
+                        <option value="y">Y-Axis (Front/Back)</option>
                     </select>
                 </div>
 
-                <div class="form-group"><label>Pos X (mm)</label><input type="number" id="feat-pos-x" step="1"></div>
-                <div class="form-group"><label>Pos Y (mm)</label><input type="number" id="feat-pos-y" step="1"></div>
-                <div class="form-group"><label>Pos Z (mm)</label><input type="number" id="feat-pos-z" step="1"></div>
+                <div class="form-group"><label>Pos X (mm)</label><input type="number" id="feat-pos-x" step="0.5"></div>
+                <div class="form-group"><label>Pos Y (mm)</label><input type="number" id="feat-pos-y" step="0.5"></div>
+                <div class="form-group"><label>Pos Z (mm)</label><input type="number" id="feat-pos-z" step="0.5"></div>
 
-                <div id="feat-dim-r" class="form-group"><label>Radius (mm)</label><input type="number" id="feat-radius" step="1" min="1"></div>
-                <div id="feat-dim-w" class="form-group hidden"><label>Width (X) (mm)</label><input type="number" id="feat-w" step="1" min="1"></div>
-                <div id="feat-dim-d" class="form-group hidden"><label>Depth (Y) (mm)</label><input type="number" id="feat-d" step="1" min="1"></div>
-                <div id="feat-dim-h" class="form-group"><label>Height (Z) (mm)</label><input type="number" id="feat-height" step="1" min="1"></div>
+                <div class="form-group"><label>Rot X (°)</label><input type="number" id="feat-rot-x" step="5"></div>
+                <div class="form-group"><label>Rot Y (°)</label><input type="number" id="feat-rot-y" step="5"></div>
+                <div class="form-group"><label>Rot Z (°)</label><input type="number" id="feat-rot-z" step="5"></div>
+
+                <div id="feat-dim-r" class="form-group"><label>Radius (mm)</label><input type="number" id="feat-radius" step="0.5" min="0.1"></div>
+                <div id="feat-dim-sides" class="form-group"><label>Sides</label><input type="number" id="feat-sides" step="1" min="3"></div>
+                <div id="feat-dim-w" class="form-group hidden"><label>Width (X) (mm)</label><input type="number" id="feat-w" step="0.5" min="0.1"></div>
+                <div id="feat-dim-d" class="form-group hidden"><label>Depth (Y) (mm)</label><input type="number" id="feat-d" step="0.5" min="0.1"></div>
+                <div id="feat-dim-h" class="form-group"><label>Extrude/Depth (mm)</label><input type="number" id="feat-height" step="0.5" min="0.1"></div>
+
+                <div id="feat-text-controls" class="hidden">
+                    <div class="form-group"><label>Text</label><input type="text" id="feat-text-str"></div>
+                    <div class="form-group">
+                        <label>Font</label>
+                        <select id="feat-text-font">
+                            <option value="helvetiker_regular">Helvetiker Regular</option>
+                            <option value="helvetiker_bold">Helvetiker Bold</option>
+                            <option value="optimer_regular">Optimer</option>
+                            <option value="gentilis_regular">Gentilis</option>
+                            <option value="droid_sans_regular">Droid Sans</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Text Size (mm)</label><input type="number" id="feat-text-size" step="0.5" min="1"></div>
+                    <div class="form-group"><label>Letter Spacing (mm)</label><input type="number" id="feat-text-spacing" step="0.1" value="1"></div>
+                </div>
 
                 <div class="form-group hidden" id="feat-mod-val-group">
                     <label id="feat-mod-label">Mod Size (mm)</label>
-                    <input type="number" id="feat-mod-val" step="1" min="0">
+                    <input type="number" id="feat-mod-val" step="0.5" min="0">
                 </div>
 
                 <div id="feat-box-edges" class="edge-grid hidden">
@@ -326,8 +362,6 @@
                 <button class="btn-danger" id="btn-delete-feat" style="width: 100%; margin-top: 10px;">Delete Element</button>
             </div>
         </div>
-
-        <button id="mobile-toggle">⚙️ Edit Model</button>
         
         <div id="viewport">
             <div id="dim-tooltip" class="hidden">
@@ -344,24 +378,26 @@
         import { TransformControls } from 'three/addons/controls/TransformControls.js';
         import { STLExporter } from 'three/addons/exporters/STLExporter.js';
         import { CSG } from 'three-csg-ts';
+        import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+        import { FontLoader } from 'three/addons/loaders/FontLoader.js';
+        import * as BufferGeometryUtils from 'three/addons/utils/BufferGeometryUtils.js';
 
         const EDGE_IDS = ['vFL','vFR','vBL','vBR','tF','tB','tL','tR','bF','bB','bL','bR'];
 
         let state = {
             base: { 
-                shape: 'block', 
+                shape: 'none', 
                 x: 100, y: 100, z: 50, 
-                radius: 50, height: 50, 
-                edgeVal: 10,
-                cylMod: 'none', 
+                radius: 50, height: 50, sides: 4,
+                edgeVal: 5, cylMod: 'none', cylModVal: 5,
                 edges: {
-                    vFL: 'fillet', vFR: 'chamfer', vBL: 'none', vBR: 'none',
+                    vFL: 'none', vFR: 'none', vBL: 'none', vBR: 'none',
                     tF: 'none', tB: 'none', tL: 'none', tR: 'none',
                     bF: 'none', bB: 'none', bL: 'none', bR: 'none'
                 }
             },
             features: [],
-            selectedId: 'base',
+            selectedId: null,
             wireframe: false,
             theme: 'dark'
         };
@@ -425,6 +461,9 @@
         const dimLinesGroup = new THREE.Group();
         scene.add(dimLinesGroup);
 
+        const fontLoader = new FontLoader();
+        const fontCache = {};
+
         const transformControl = new TransformControls(camera, renderer.domElement);
         transformControl.size = 1.5;
         let isDraggingGizmo = false;
@@ -463,36 +502,45 @@
 
         function generateUniqueId() { return Math.random().toString(36).substring(2, 9); }
 
-        function createModifiedCylinder(radius, height, mod, val) {
+        function createModifiedCylinder(radius, height, sides, mod, val) {
             val = Math.min(val, radius - 0.001, height / 2 - 0.001);
+            let geo;
+            
             if (mod === 'none' || val <= 0) {
-                return new THREE.CylinderGeometry(radius, radius, height, 32); 
-            }
-            const pts = [];
-            if (mod === 'chamfer') {
+                geo = new THREE.CylinderGeometry(radius, radius, height, sides);
+            } else {
+                const pts = [];
+                pts.push(new THREE.Vector2(0, -height/2));
                 pts.push(new THREE.Vector2(0, -height/2));
                 pts.push(new THREE.Vector2(radius - val, -height/2));
-                pts.push(new THREE.Vector2(radius, -height/2 + val));
-                pts.push(new THREE.Vector2(radius, height/2 - val));
+                pts.push(new THREE.Vector2(radius - val, -height/2)); 
+
+                if (mod === 'chamfer') {
+                    pts.push(new THREE.Vector2(radius, -height/2 + val));
+                    pts.push(new THREE.Vector2(radius, -height/2 + val));
+                    pts.push(new THREE.Vector2(radius, height/2 - val));
+                    pts.push(new THREE.Vector2(radius, height/2 - val));
+                } else if (mod === 'fillet') {
+                    for(let i=0; i<=90; i+=10) {
+                        let radA = (i - 90) * Math.PI / 180;
+                        pts.push(new THREE.Vector2(radius - val + val * Math.cos(radA), -height/2 + val + val * Math.sin(radA)));
+                    }
+                    pts.push(new THREE.Vector2(radius, height/2 - val));
+                    pts.push(new THREE.Vector2(radius, height/2 - val));
+                    for(let i=0; i<=90; i+=10) {
+                        let radA = i * Math.PI / 180;
+                        pts.push(new THREE.Vector2(radius - val + val * Math.cos(radA), height/2 - val + val * Math.sin(radA)));
+                    }
+                }
+                pts.push(new THREE.Vector2(radius - val, height/2));
                 pts.push(new THREE.Vector2(radius - val, height/2));
                 pts.push(new THREE.Vector2(0, height/2));
-            } else if (mod === 'fillet') {
-                pts.push(new THREE.Vector2(0, -height/2));
-                pts.push(new THREE.Vector2(radius - val, -height/2));
-                for(let i=0; i<=90; i+=10) {
-                    let radA = (i - 90) * Math.PI / 180;
-                    pts.push(new THREE.Vector2(radius - val + val * Math.cos(radA), -height/2 + val + val * Math.sin(radA)));
-                }
-                pts.push(new THREE.Vector2(radius, height/2 - val));
-                for(let i=0; i<=90; i+=10) {
-                    let radA = i * Math.PI / 180;
-                    pts.push(new THREE.Vector2(radius - val + val * Math.cos(radA), height/2 - val + val * Math.sin(radA)));
-                }
-                pts.push(new THREE.Vector2(radius - val, height/2));
                 pts.push(new THREE.Vector2(0, height/2));
+
+                geo = new THREE.LatheGeometry(pts, sides);
             }
-            let geo = new THREE.LatheGeometry(pts, 32);
-            if (mod === 'chamfer') { geo = geo.toNonIndexed(); geo.computeVertexNormals(); }
+            geo.rotateY(Math.PI / sides);
+            if (sides < 20) { geo = geo.toNonIndexed(); geo.computeVertexNormals(); }
             return geo; 
         }
 
@@ -566,6 +614,22 @@
         }
 
         function buildModel() {
+            let fontsReady = true;
+            state.features.forEach(feat => {
+                if (feat.shape === 'text') {
+                    const fName = feat.font || 'helvetiker_bold';
+                    if (!fontCache[fName]) {
+                        fontsReady = false;
+                        fontLoader.load(`https://unpkg.com/three@0.160.0/examples/fonts/${fName}.typeface.json`, 
+                            (font) => { fontCache[fName] = font; buildModel(); },
+                            undefined,
+                            (err) => { console.error("Font error", err); fontCache[fName] = "error"; buildModel(); }
+                        );
+                    }
+                }
+            });
+            if (!fontsReady) return;
+
             if (mainMesh) { scene.remove(mainMesh); mainMesh.geometry.dispose(); }
             
             transformControl.detach(); 
@@ -577,79 +641,157 @@
             }
 
             const b = state.base;
-            gridHelper.position.z = b.shape === 'block' ? -b.z / 2 : -b.height / 2;
+            const bX = Math.max(0.1, b.x || 100);
+            const bY = Math.max(0.1, b.y || 100);
+            const bZ = Math.max(0.1, b.z || 50);
+            const bR = Math.max(0.1, b.radius || 50);
+            const bH = Math.max(0.1, b.height || 50);
+            const bSides = Math.max(3, b.sides || 4);
+            const bEdgeVal = Math.max(0, b.edgeVal || 0);
+            const bCylModVal = Math.max(0, b.cylModVal || 0);
+
+            if (b.shape === 'none') {
+                gridHelper.position.z = 0;
+            } else {
+                gridHelper.position.z = b.shape === 'block' ? -bZ / 2 : -bH / 2;
+            }
             gridHelper.position.y = 0;
 
             try {
-                let resultCSG;
+                let resultCSG = null;
 
-                // 1. BASE GEOMETRY
                 if (b.shape === 'block') {
-                    let baseMesh = new THREE.Mesh(new THREE.BoxGeometry(b.x, b.y, b.z));
+                    let baseMesh = new THREE.Mesh(new THREE.BoxGeometry(bX, bY, bZ));
                     baseMesh.updateMatrixWorld();
-                    resultCSG = CSG.fromMesh(baseMesh);
-                    
-                    let limit = Math.min(b.x, b.y, b.z) / 2.01;
-                    resultCSG = applyEdgeModifiersToCSG(resultCSG, b.x, b.y, b.z, b.edges, Math.min(b.edgeVal, limit));
-                } else {
-                    let cylGeo = createModifiedCylinder(b.radius, b.height, b.cylMod, b.edgeVal);
+                    let baseCSG = CSG.fromMesh(baseMesh);
+                    let limit = Math.min(bX, bY, bZ) / 2.01;
+                    resultCSG = applyEdgeModifiersToCSG(baseCSG, bX, bY, bZ, b.edges, Math.min(bEdgeVal, limit));
+                } else if (b.shape === 'cylinder') {
+                    let cylGeo = createModifiedCylinder(bR, bH, bSides, b.cylMod, bCylModVal);
                     cylGeo.rotateX(Math.PI / 2);
                     let cylMesh = new THREE.Mesh(cylGeo);
                     cylMesh.updateMatrixWorld();
                     resultCSG = CSG.fromMesh(cylMesh);
                 }
 
-                // 2. ADD CUSTOM FEATURES
                 state.features.forEach(feat => {
                     let featCSG;
                     let ghostGeo;
+                    let configuredMesh;
+                    
+                    let featW = Math.max(0.1, feat.w || 50);
+                    let featD = Math.max(0.1, feat.d || 50);
+                    let featH = Math.max(0.1, feat.h || 5); 
+                    let featR = Math.max(0.1, feat.r || 20);
+                    let featSides = Math.max(3, feat.sides || 4);
+                    let featModVal = Math.max(0, feat.modVal || 0);
                     
                     if (feat.shape === 'box') {
-                        let baseFeatMesh = new THREE.Mesh(new THREE.BoxGeometry(feat.w, feat.d, feat.h));
+                        let baseFeatMesh = new THREE.Mesh(new THREE.BoxGeometry(featW, featD, featH));
                         baseFeatMesh.updateMatrixWorld();
                         let tempCSG = CSG.fromMesh(baseFeatMesh);
-                        let limit = Math.min(feat.w, feat.d, feat.h) / 2.01;
-                        tempCSG = applyEdgeModifiersToCSG(tempCSG, feat.w, feat.d, feat.h, feat.edges, Math.min(feat.modVal, limit));
+                        let limit = Math.min(featW, featD, featH) / 2.01;
+                        tempCSG = applyEdgeModifiersToCSG(tempCSG, featW, featD, featH, feat.edges || {}, Math.min(featModVal, limit));
                         
-                        let tempMesh = CSG.toMesh(tempCSG, new THREE.Matrix4(), materialSolid);
-                        tempMesh.position.set(feat.x, feat.y, feat.z);
-                        tempMesh.updateMatrixWorld();
-                        featCSG = CSG.fromMesh(tempMesh);
-                        
-                        // Exact ghost geometry
-                        ghostGeo = tempMesh.geometry.clone();
+                        configuredMesh = CSG.toMesh(tempCSG, new THREE.Matrix4(), materialSolid);
+                        ghostGeo = configuredMesh.geometry.clone();
+
                     } else if (feat.shape === 'sphere') {
-                        ghostGeo = new THREE.SphereGeometry(feat.r, 32, 16);
-                        let sphMesh = new THREE.Mesh(ghostGeo);
-                        sphMesh.position.set(feat.x, feat.y, feat.z);
-                        sphMesh.updateMatrixWorld();
-                        featCSG = CSG.fromMesh(sphMesh);
-                    } else { // Cylinder
+                        ghostGeo = new THREE.SphereGeometry(featR, 32, 16);
+                        configuredMesh = new THREE.Mesh(ghostGeo);
+                        
+                    } else if (feat.shape === 'text') {
+                        const fontName = feat.font || 'helvetiker_bold';
+                        const font = fontCache[fontName];
+                        let tStr = typeof feat.textStr !== 'undefined' ? feat.textStr : 'ENGRAVE';
+                        if (tStr.trim() === '') tStr = ' '; 
+                        let tSize = Math.max(0.1, feat.textSize || 15);
+                        let tSpacing = typeof feat.textSpacing !== 'undefined' ? feat.textSpacing : 1;
+                        
+                        if (tStr === ' ' || font === "error") {
+                            ghostGeo = new THREE.BoxGeometry(0.1, 0.1, 0.1); 
+                        } else {
+                            let charGeometries = [];
+                            let currentX = 0;
+                            
+                            for (let i = 0; i < tStr.length; i++) {
+                                if (tStr[i] === ' ') {
+                                    currentX += tSize * 0.4 + tSpacing; 
+                                    continue;
+                                }
+                                let charGeo = new TextGeometry(tStr[i], {
+                                    font: font, size: tSize, height: featH, depth: featH,
+                                    curveSegments: 3, bevelEnabled: false
+                                });
+                                charGeo.computeBoundingBox();
+                                const bBox = charGeo.boundingBox;
+                                const charW = bBox.max.x - bBox.min.x;
+                                
+                                charGeo.translate(currentX - bBox.min.x, 0, 0);
+                                charGeometries.push(charGeo);
+                                currentX += charW + tSpacing;
+                            }
+                            
+                            if (charGeometries.length > 0) {
+                                ghostGeo = BufferGeometryUtils.mergeGeometries(charGeometries);
+                            } else {
+                                ghostGeo = new THREE.BoxGeometry(0.1, 0.1, 0.1);
+                            }
+                        }
+
+                        ghostGeo.computeBoundingBox();
+                        const fullBox = ghostGeo.boundingBox;
+                        let xOffset = 0, yOffset = 0, zOffset = 0;
+                        if (fullBox && fullBox.max.x !== -Infinity) {
+                            xOffset = -0.5 * (fullBox.max.x + fullBox.min.x);
+                            yOffset = -0.5 * (fullBox.max.y + fullBox.min.y);
+                            zOffset = -0.5 * (fullBox.max.z + fullBox.min.z);
+                        }
+                        ghostGeo.translate(xOffset, yOffset, zOffset);
+                        configuredMesh = new THREE.Mesh(ghostGeo);
+
+                    } else { // Polygon/Cylinder
                         let cylGeo;
                         if (feat.type === 'solid') {
-                            cylGeo = createModifiedCylinder(feat.r, feat.h, feat.mod, feat.modVal);
+                            cylGeo = createModifiedCylinder(featR, featH, featSides, feat.mod, featModVal);
                         } else {
-                            cylGeo = new THREE.CylinderGeometry(feat.r, feat.r, feat.h, 32);
+                            cylGeo = new THREE.CylinderGeometry(featR, featR, featH, featSides);
+                            cylGeo.rotateY(Math.PI / featSides);
+                            if (featSides < 20) { cylGeo = cylGeo.toNonIndexed(); cylGeo.computeVertexNormals(); }
                         }
                         ghostGeo = cylGeo.clone();
-                        
-                        let cylMesh = new THREE.Mesh(cylGeo);
-                        if (feat.axis === 'z') cylMesh.rotation.x = Math.PI / 2; 
-                        else if (feat.axis === 'x') cylMesh.rotation.z = -Math.PI / 2; 
-                        cylMesh.position.set(feat.x, feat.y, feat.z);
-                        cylMesh.updateMatrixWorld();
-                        featCSG = CSG.fromMesh(cylMesh);
+                        configuredMesh = new THREE.Mesh(cylGeo);
+                    }
 
-                        // Hole top modifier
-                        if (feat.type === 'hole' && feat.mod !== 'none' && feat.modVal > 0) {
-                            let coneGeo = new THREE.CylinderGeometry(feat.r + feat.modVal, feat.r, feat.modVal, 32);
-                            let topCone = new THREE.Mesh(coneGeo);
-                            let dir = new THREE.Vector3(0, 1, 0).applyEuler(cylMesh.rotation);
-                            topCone.position.copy(cylMesh.position).add(dir.clone().multiplyScalar(feat.h / 2));
-                            topCone.rotation.copy(cylMesh.rotation);
-                            topCone.updateMatrixWorld();
-                            featCSG = featCSG.union(CSG.fromMesh(topCone));
-                        }
+                    // Apply Base Axis Orientation
+                    if (feat.shape === 'cylinder') {
+                        if (feat.axis === 'z') configuredMesh.rotation.x = Math.PI / 2; 
+                        else if (feat.axis === 'x') configuredMesh.rotation.z = -Math.PI / 2; 
+                    } else if (feat.shape === 'text') {
+                        if (feat.axis === 'y') configuredMesh.rotation.x = Math.PI / 2; 
+                        else if (feat.axis === 'x') { configuredMesh.rotation.y = Math.PI / 2; configuredMesh.rotation.x = Math.PI / 2; }
+                    }
+
+                    // Apply Custom User Euler Rotation
+                    configuredMesh.rotateX(THREE.MathUtils.degToRad(feat.rx || 0));
+                    configuredMesh.rotateY(THREE.MathUtils.degToRad(feat.ry || 0));
+                    configuredMesh.rotateZ(THREE.MathUtils.degToRad(feat.rz || 0));
+
+                    configuredMesh.position.set(feat.x, feat.y, feat.z);
+                    configuredMesh.updateMatrixWorld();
+                    featCSG = CSG.fromMesh(configuredMesh);
+
+                    if (feat.shape === 'cylinder' && feat.type === 'hole' && feat.mod !== 'none' && featModVal > 0) {
+                        let coneGeo = new THREE.CylinderGeometry(featR + featModVal, featR, featModVal, featSides);
+                        coneGeo.rotateY(Math.PI / featSides);
+                        if (featSides < 20) { coneGeo = coneGeo.toNonIndexed(); coneGeo.computeVertexNormals(); }
+                        
+                        let topCone = new THREE.Mesh(coneGeo);
+                        let dir = new THREE.Vector3(0, 1, 0).applyEuler(configuredMesh.rotation);
+                        topCone.position.copy(configuredMesh.position).add(dir.clone().multiplyScalar(featH / 2));
+                        topCone.rotation.copy(configuredMesh.rotation);
+                        topCone.updateMatrixWorld();
+                        featCSG = featCSG.union(CSG.fromMesh(topCone));
                     }
 
                     let isSelected = state.selectedId === feat.id;
@@ -659,39 +801,34 @@
                     });
                     
                     let ghostMesh = new THREE.Mesh(ghostGeo, ghostMat);
-                    
-                    // Only rotate Cylinder ghost mesh (Boxes are naturally aligned)
-                    if (feat.shape === 'cylinder') {
-                        if (feat.axis === 'z') ghostMesh.rotation.x = Math.PI / 2; 
-                        else if (feat.axis === 'x') ghostMesh.rotation.z = -Math.PI / 2; 
-                    }
-                    
-                    ghostMesh.position.set(feat.x, feat.y, feat.z);
+                    ghostMesh.position.copy(configuredMesh.position);
+                    ghostMesh.rotation.copy(configuredMesh.rotation);
                     ghostMesh.userData.id = feat.id;
                     ghostGroup.add(ghostMesh);
 
                     if (isSelected) transformControl.attach(ghostMesh);
 
-                    if (feat.type === 'hole') {
-                        resultCSG = resultCSG.subtract(featCSG);
+                    if (!resultCSG) {
+                        if (feat.type === 'solid') resultCSG = featCSG;
                     } else {
-                        resultCSG = resultCSG.union(featCSG);
+                        if (feat.type === 'hole') resultCSG = resultCSG.subtract(featCSG);
+                        else resultCSG = resultCSG.union(featCSG);
                     }
                 });
 
-                mainMesh = CSG.toMesh(resultCSG, new THREE.Matrix4(), materialSolid);
-                mainMesh.castShadow = true; mainMesh.receiveShadow = true;
-                
-                if (state.wireframe) {
-                    const edges = new THREE.EdgesGeometry(mainMesh.geometry);
-                    const line = new THREE.LineSegments(edges, materialWireframe);
-                    mainMesh.add(line);
+                if (resultCSG) {
+                    mainMesh = CSG.toMesh(resultCSG, new THREE.Matrix4(), materialSolid);
+                    mainMesh.castShadow = true; mainMesh.receiveShadow = true;
+                    if (state.wireframe) {
+                        const edges = new THREE.EdgesGeometry(mainMesh.geometry);
+                        const line = new THREE.LineSegments(edges, materialWireframe);
+                        mainMesh.add(line);
+                    }
+                    mainMesh.userData.id = 'base';
+                    scene.add(mainMesh);
                 }
 
-                mainMesh.userData.id = 'base';
-                scene.add(mainMesh);
-
-                if(state.selectedId === 'base') {
+                if(state.selectedId === 'base' && mainMesh) {
                     materialSolid.emissive.setHex(0x222222);
                     transformControl.detach();
                 } else {
@@ -791,22 +928,33 @@
             if (state.base.shape === 'block') {
                 document.getElementById('base-block-controls').classList.remove('hidden');
                 document.getElementById('base-cyl-controls').classList.add('hidden');
-            } else {
+            } else if (state.base.shape === 'cylinder') {
                 document.getElementById('base-block-controls').classList.add('hidden');
                 document.getElementById('base-cyl-controls').classList.remove('hidden');
+            } else {
+                document.getElementById('base-block-controls').classList.add('hidden');
+                document.getElementById('base-cyl-controls').classList.add('hidden');
             }
 
             const b = state.base;
             document.getElementById('base-shape').value = b.shape;
-            document.getElementById('base-x').value = b.x;
-            document.getElementById('base-y').value = b.y;
-            document.getElementById('base-z').value = b.z;
-            document.getElementById('base-r').value = b.radius;
-            document.getElementById('base-cyl-h').value = b.height;
-            document.getElementById('base-edge-val').value = b.edgeVal;
-            document.getElementById('base-cyl-mod').value = b.cylMod;
+            document.getElementById('base-x').value = b.x || 100;
+            document.getElementById('base-y').value = b.y || 100;
+            document.getElementById('base-z').value = b.z || 50;
+            document.getElementById('base-r').value = b.radius || 50;
+            document.getElementById('base-sides').value = b.sides || 4;
+            document.getElementById('base-cyl-h').value = b.height || 50;
+            document.getElementById('base-edge-val').value = b.edgeVal || 0;
+            document.getElementById('base-cyl-mod').value = b.cylMod || 'none';
+            document.getElementById('base-cyl-edge-val').value = b.cylModVal || 0;
 
-            EDGE_IDS.forEach(e => { document.getElementById(`b-${e}`).value = b.edges[e]; });
+            if (b.cylMod !== 'none') {
+                document.getElementById('base-cyl-mod-val-group').classList.remove('hidden');
+            } else {
+                document.getElementById('base-cyl-mod-val-group').classList.add('hidden');
+            }
+
+            EDGE_IDS.forEach(e => { document.getElementById(`b-${e}`).value = b.edges[e] || 'none'; });
 
             const panelBase = document.getElementById('panel-base');
             panelBase.style.borderLeft = state.selectedId === 'base' ? '4px solid var(--primary)' : 'none';
@@ -822,13 +970,25 @@
                     document.getElementById('feat-pos-x').value = feat.x;
                     document.getElementById('feat-pos-y').value = feat.y;
                     document.getElementById('feat-pos-z').value = feat.z;
-                    document.getElementById('feat-radius').value = feat.r;
-                    document.getElementById('feat-height').value = feat.h;
-                    document.getElementById('feat-w').value = feat.w;
-                    document.getElementById('feat-d').value = feat.d;
-                    document.getElementById('feat-mod-val').value = feat.modVal;
+                    
+                    document.getElementById('feat-rot-x').value = feat.rx || 0;
+                    document.getElementById('feat-rot-y').value = feat.ry || 0;
+                    document.getElementById('feat-rot-z').value = feat.rz || 0;
+
+                    document.getElementById('feat-radius').value = feat.r || 20;
+                    document.getElementById('feat-sides').value = feat.sides || 4;
+                    document.getElementById('feat-height').value = feat.h || 5;
+                    document.getElementById('feat-w').value = feat.w || 50;
+                    document.getElementById('feat-d').value = feat.d || 50;
+                    document.getElementById('feat-mod-val').value = feat.modVal || 0;
+                    
+                    document.getElementById('feat-text-str').value = typeof feat.textStr !== 'undefined' ? feat.textStr : 'ENGRAVE';
+                    document.getElementById('feat-text-font').value = feat.font || 'helvetiker_bold';
+                    document.getElementById('feat-text-size').value = feat.textSize || 15;
+                    document.getElementById('feat-text-spacing').value = typeof feat.textSpacing !== 'undefined' ? feat.textSpacing : 1;
 
                     const dimR = document.getElementById('feat-dim-r');
+                    const dimSides = document.getElementById('feat-dim-sides');
                     const dimH = document.getElementById('feat-dim-h');
                     const dimW = document.getElementById('feat-dim-w');
                     const dimD = document.getElementById('feat-dim-d');
@@ -837,35 +997,47 @@
                     const boxEdges = document.getElementById('feat-box-edges');
                     const cylMods = document.getElementById('feat-cyl-mods');
                     const axisGroup = document.getElementById('feat-axis-group');
+                    const textGroup = document.getElementById('feat-text-controls');
 
                     if (feat.shape === 'box') {
                         dimR.classList.add('hidden');
+                        dimSides.classList.add('hidden');
                         dimH.querySelector('label').innerText = 'Height (Z) (mm)';
                         dimH.classList.remove('hidden'); dimW.classList.remove('hidden'); dimD.classList.remove('hidden');
                         
-                        axisGroup.classList.add('hidden'); // Do not rotate boxes
+                        textGroup.classList.add('hidden');
                         modGroup.classList.remove('hidden');
                         document.getElementById('feat-mod-label').innerText = 'Edge Size (mm)';
                         boxEdges.classList.remove('hidden');
                         cylMods.classList.add('hidden');
                         
-                        EDGE_IDS.forEach(e => { document.getElementById(`f-${e}`).value = feat.edges[e]; });
+                        EDGE_IDS.forEach(e => { document.getElementById(`f-${e}`).value = (feat.edges && feat.edges[e]) ? feat.edges[e] : 'none'; });
                         
                     } else if (feat.shape === 'sphere') {
                         dimR.classList.remove('hidden');
+                        dimSides.classList.add('hidden');
                         dimH.classList.add('hidden'); dimW.classList.add('hidden'); dimD.classList.add('hidden');
-                        axisGroup.classList.add('hidden'); 
+                        textGroup.classList.add('hidden');
                         modGroup.classList.add('hidden'); boxEdges.classList.add('hidden'); cylMods.classList.add('hidden');
-                    } else { // cylinder
+                    } else if (feat.shape === 'text') {
+                        dimR.classList.add('hidden');
+                        dimSides.classList.add('hidden');
+                        dimH.querySelector('label').innerText = 'Extrude Depth (mm)';
+                        dimH.classList.remove('hidden'); dimW.classList.add('hidden'); dimD.classList.add('hidden');
+                        
+                        textGroup.classList.remove('hidden');
+                        modGroup.classList.add('hidden'); boxEdges.classList.add('hidden'); cylMods.classList.add('hidden');
+                    } else { // Polygon/Cylinder
                         dimR.classList.remove('hidden');
+                        dimSides.classList.remove('hidden');
                         dimH.querySelector('label').innerText = 'Height (Z) (mm)';
                         dimH.classList.remove('hidden'); dimW.classList.add('hidden'); dimD.classList.add('hidden');
                         
-                        axisGroup.classList.remove('hidden'); // Cylinders need rotation
+                        textGroup.classList.add('hidden');
                         boxEdges.classList.add('hidden');
                         cylMods.classList.remove('hidden');
                         
-                        document.getElementById('feat-mod').value = feat.mod;
+                        document.getElementById('feat-mod').value = feat.mod || 'none';
                         if (feat.mod !== 'none') {
                             modGroup.classList.remove('hidden');
                             document.getElementById('feat-mod-label').innerText = feat.type === 'hole' ? 'Cut Depth (mm)' : 'Edge Size (mm)';
@@ -882,38 +1054,56 @@
 
         addChangeListener('ui-wireframe', t => state.wireframe = t.checked);
         addChangeListener('base-shape', t => state.base.shape = t.value);
-        addInputListener('base-x', t => state.base.x = parseFloat(t.value) || 1);
-        addInputListener('base-y', t => state.base.y = parseFloat(t.value) || 1);
-        addInputListener('base-z', t => state.base.z = parseFloat(t.value) || 1);
-        addInputListener('base-r', t => state.base.radius = parseFloat(t.value) || 1);
-        addInputListener('base-cyl-h', t => state.base.height = parseFloat(t.value) || 1);
-        addInputListener('base-edge-val', t => state.base.edgeVal = parseFloat(t.value) || 0);
+        addInputListener('base-x', t => state.base.x = parseFloat(t.value));
+        addInputListener('base-y', t => state.base.y = parseFloat(t.value));
+        addInputListener('base-z', t => state.base.z = parseFloat(t.value));
+        addInputListener('base-r', t => state.base.radius = parseFloat(t.value));
+        addInputListener('base-sides', t => state.base.sides = parseInt(t.value));
+        addInputListener('base-cyl-h', t => state.base.height = parseFloat(t.value));
+        addInputListener('base-edge-val', t => state.base.edgeVal = parseFloat(t.value));
         addChangeListener('base-cyl-mod', t => state.base.cylMod = t.value);
+        addInputListener('base-cyl-edge-val', t => state.base.cylModVal = parseFloat(t.value));
 
         EDGE_IDS.forEach(edge => {
             addChangeListener(`b-${edge}`, t => state.base.edges[edge] = t.value);
             addChangeListener(`f-${edge}`, t => {
                 const f = state.features.find(feat => feat.id === state.selectedId);
-                if (f) f.edges[edge] = t.value;
+                if (f) {
+                    if (!f.edges) f.edges = {}; 
+                    f.edges[edge] = t.value;
+                }
             });
         });
 
-        function addFeature(shape, type) {
+        function addFeature(shape) {
             const id = generateUniqueId();
-            const startZ = state.base.shape === 'block' ? state.base.z/2 : state.base.height/2;
+            
+            let startZ = 0;
+            if (state.base.shape === 'block') startZ = state.base.z / 2;
+            else if (state.base.shape === 'cylinder') startZ = state.base.height / 2;
+            
+            let type = shape === 'text' ? 'hole' : 'solid';
+            let initialZ = 0;
+            if (state.base.shape !== 'none') {
+                initialZ = shape === 'text' ? startZ : (type === 'solid' ? startZ + 25 : 0);
+            }
+            
             state.features.push({ 
                 id, type, shape, axis: 'z', 
-                x: 0, y: 0, z: type === 'solid' ? startZ + 25 : 0, 
-                r: 20, h: 50, w: 50, d: 50, 
+                x: 0, y: 0, z: initialZ, 
+                rx: 0, ry: 0, rz: 0,
+                r: 20, sides: shape === 'cylinder' ? 64 : 4, h: shape === 'text' ? 5 : 50, w: 50, d: 50, 
                 mod: 'none', modVal: 5,
+                textStr: 'ENGRAVE', font: 'helvetiker_bold', textSize: 15, textSpacing: 1,
                 edges: { vFL:'none',vFR:'none',vBL:'none',vBR:'none',tF:'none',tB:'none',tL:'none',tR:'none',bF:'none',bB:'none',bL:'none',bR:'none' }
             });
             state.selectedId = id; updateUI(); buildModel();
         }
 
-        document.getElementById('btn-add-feat-box').addEventListener('click', () => addFeature('box', 'solid'));
-        document.getElementById('btn-add-feat-cyl').addEventListener('click', () => addFeature('cylinder', 'solid'));
-        document.getElementById('btn-add-feat-sphere').addEventListener('click', () => addFeature('sphere', 'solid'));
+        document.getElementById('btn-add-feat-box').addEventListener('click', () => addFeature('box'));
+        document.getElementById('btn-add-feat-cyl').addEventListener('click', () => addFeature('cylinder'));
+        document.getElementById('btn-add-feat-sphere').addEventListener('click', () => addFeature('sphere'));
+        document.getElementById('btn-add-feat-text').addEventListener('click', () => addFeature('text'));
 
         const updateFeat = (k, pFunc) => (t) => {
             const f = state.features.find(f => f.id === state.selectedId);
@@ -926,16 +1116,25 @@
         addInputListener('feat-pos-x', updateFeat('x', parseFloat));
         addInputListener('feat-pos-y', updateFeat('y', parseFloat));
         addInputListener('feat-pos-z', updateFeat('z', parseFloat));
+        addInputListener('feat-rot-x', updateFeat('rx', parseFloat));
+        addInputListener('feat-rot-y', updateFeat('ry', parseFloat));
+        addInputListener('feat-rot-z', updateFeat('rz', parseFloat));
         addInputListener('feat-radius', updateFeat('r', parseFloat));
+        addInputListener('feat-sides', updateFeat('sides', parseInt));
         addInputListener('feat-height', updateFeat('h', parseFloat));
         addInputListener('feat-w', updateFeat('w', parseFloat));
         addInputListener('feat-d', updateFeat('d', parseFloat));
         addChangeListener('feat-mod', updateFeat('mod'));
         addInputListener('feat-mod-val', updateFeat('modVal', parseFloat));
+        
+        addInputListener('feat-text-str', updateFeat('textStr'));
+        addChangeListener('feat-text-font', updateFeat('font'));
+        addInputListener('feat-text-size', updateFeat('textSize', parseFloat));
+        addInputListener('feat-text-spacing', updateFeat('textSpacing', parseFloat));
 
         document.getElementById('btn-delete-feat').addEventListener('click', () => {
             state.features = state.features.filter(f => f.id !== state.selectedId);
-            state.selectedId = 'base'; updateUI(); buildModel();
+            state.selectedId = null; updateUI(); buildModel();
         });
 
         document.getElementById('btn-theme').addEventListener('click', () => {
@@ -982,9 +1181,9 @@
         });
 
         const uiPanel = document.getElementById('ui-panel');
-        const mobileToggle = document.getElementById('mobile-toggle');
-        const mobileOverlay = document.getElementById('mobile-overlay');
+        const btnOpenMenu = document.getElementById('btn-open-menu');
         const btnCloseMobile = document.getElementById('btn-close-mobile');
+        const mobileOverlay = document.getElementById('mobile-overlay');
 
         function toggleMobileUI(forceOpen = false) {
             if(window.innerWidth > 768) return;
@@ -1000,7 +1199,7 @@
             }
         }
 
-        mobileToggle.addEventListener('click', () => toggleMobileUI(true));
+        btnOpenMenu.addEventListener('click', () => toggleMobileUI(true));
         mobileOverlay.addEventListener('click', () => toggleMobileUI(false));
         btnCloseMobile.addEventListener('click', () => toggleMobileUI(false));
 
