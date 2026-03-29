@@ -27,8 +27,12 @@
     <meta property="twitter:title" content="SHADER7 - Free Professional Tools">
     <meta property="twitter:description" content="Create passport photos, calculate salaries, and build CVs for free.">
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://js.stripe.com">
+
     <script src="https://cdn.tailwindcss.com"></script>
-    <script async src="https://js.stripe.com/v3/buy-button.js"></script>
+    <script defer src="https://js.stripe.com/v3/buy-button.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
     <style>
@@ -54,23 +58,23 @@
 </head>
 <body class="bg-gray-50 text-gray-800">
 
-    <div id="ios-install-modal" class="fixed inset-0 z-[60] hidden bg-black bg-opacity-50 flex items-end sm:items-center justify-center p-4">
+    <div id="ios-install-modal" class="fixed inset-0 z-[60] hidden bg-black bg-opacity-50 flex items-end sm:items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="modal-title">
         <div class="bg-white rounded-t-xl sm:rounded-xl p-6 max-w-sm w-full shadow-2xl transform transition-all">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-bold text-gray-900">Install Shader7</h3>
-                <button id="close-ios-modal" class="text-gray-400 hover:text-gray-600">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                <h3 id="modal-title" class="text-lg font-bold text-gray-900">Install Shader7</h3>
+                <button id="close-ios-modal" aria-label="Close installation instructions" class="text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded">
+                    <svg aria-hidden="true" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
             <p class="text-gray-600 mb-4 text-sm">Install this app on your iPhone/iPad for the best experience:</p>
             <ol class="space-y-3 text-sm text-gray-800">
                 <li class="flex items-center gap-3">
                     <span class="flex-shrink-0 w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center font-bold text-xs">1</span>
-                    <span>Tap the <strong>Share</strong> button <svg class="w-5 h-5 inline text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg></span>
+                    <span>Tap the <strong>Share</strong> button <svg aria-hidden="true" class="w-5 h-5 inline text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg></span>
                 </li>
                 <li class="flex items-center gap-3">
                     <span class="flex-shrink-0 w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center font-bold text-xs">2</span>
-                    <span>Scroll down and tap <strong>Add to Home Screen</strong> <svg class="w-5 h-5 inline text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg></span>
+                    <span>Scroll down and tap <strong>Add to Home Screen</strong> <svg aria-hidden="true" class="w-5 h-5 inline text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg></span>
                 </li>
             </ol>
         </div>
@@ -88,7 +92,7 @@
                     <a href="blog.html" class="text-gray-600 hover:text-indigo-600 font-medium transition">Blog</a>
                     
                     <button id="install-btn-desktop" class="hidden px-4 py-2 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-medium hover:opacity-90 transition shadow-md flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        <svg aria-hidden="true" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                         Install App
                     </button>
 
@@ -96,12 +100,12 @@
                     <a href="contact.html" class="px-4 py-2 rounded-md bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition">Contact</a>
                 </div>
                 <div class="md:hidden flex items-center gap-3">
-                    <button id="install-btn-mobile" class="hidden p-2 rounded-full bg-indigo-100 text-indigo-700 font-bold install-pulse">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    <button id="install-btn-mobile" aria-label="Install Shader7 App" class="hidden p-2 rounded-full bg-indigo-100 text-indigo-700 font-bold install-pulse focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <svg aria-hidden="true" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                     </button>
                     
-                    <button id="mobile-menu-btn" class="text-gray-600 hover:text-gray-900 focus:outline-none">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <button id="mobile-menu-btn" aria-label="Toggle Navigation Menu" aria-expanded="false" class="text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded p-1">
+                        <svg aria-hidden="true" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
                     </button>
@@ -136,9 +140,9 @@
                 </a>
             </div>
 
-            <div class="mt-12 flex flex-col items-center justify-center bg-white/10 backdrop-blur-sm p-6 rounded-2xl border border-white/20 max-w-lg mx-auto shadow-xl">
+            <div class="mt-12 flex flex-col items-center justify-center bg-white/10 backdrop-blur-sm p-6 rounded-2xl border border-white/20 max-w-lg mx-auto shadow-xl min-h-[140px]">
                 <p class="text-sm md:text-base text-indigo-50 font-medium mb-4 flex items-center gap-2">
-                    <svg class="w-5 h-5 text-pink-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg>
+                    <svg aria-hidden="true" class="w-5 h-5 text-pink-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg>
                     Support independent development & keep Shader7 ad-free!
                 </p>
                 <stripe-buy-button
@@ -154,18 +158,18 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
                 <div class="p-6">
-                    <div class="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto text-2xl mb-4 shadow-sm">🔒</div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">Privacy First</h3>
+                    <div class="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto text-2xl mb-4 shadow-sm" aria-hidden="true">🔒</div>
+                    <h2 class="text-xl font-bold text-gray-900 mb-2">Privacy First</h2>
                     <p class="text-gray-600 text-sm leading-relaxed">No personal data stored. Our tools utilize client-side processing, meaning everything runs securely inside your browser.</p>
                 </div>
                 <div class="p-6">
-                    <div class="w-14 h-14 bg-pink-50 text-pink-600 rounded-2xl flex items-center justify-center mx-auto text-2xl mb-4 shadow-sm">⚡</div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">100% Free</h3>
+                    <div class="w-14 h-14 bg-pink-50 text-pink-600 rounded-2xl flex items-center justify-center mx-auto text-2xl mb-4 shadow-sm" aria-hidden="true">⚡</div>
+                    <h2 class="text-xl font-bold text-gray-900 mb-2">100% Free</h2>
                     <p class="text-gray-600 text-sm leading-relaxed">No hidden paywalls, no forced subscriptions, and absolutely no mandatory account creation or logins required.</p>
                 </div>
                 <div class="p-6">
-                    <div class="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto text-2xl mb-4 shadow-sm">🛠️</div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">Professional Grade</h3>
+                    <div class="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto text-2xl mb-4 shadow-sm" aria-hidden="true">🛠️</div>
+                    <h2 class="text-xl font-bold text-gray-900 mb-2">Professional Grade</h2>
                     <p class="text-gray-600 text-sm leading-relaxed">Built to industry standards for modern makers, freelancers, and engineers who need accuracy and speed.</p>
                 </div>
             </div>
@@ -182,7 +186,7 @@
             <article class="tool-card bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 relative">
                 <div class="absolute top-0 right-0 bg-yellow-400 text-yellow-900 text-xs font-bold px-3 py-1 rounded-bl-lg shadow-sm">POPULAR</div>
                 <div class="p-8">
-                    <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center text-2xl mb-4">📸</div>
+                    <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center text-2xl mb-4" aria-hidden="true">📸</div>
                     <h3 class="text-xl font-bold text-gray-900 mb-2">Passport Photo PRO</h3>
                     <p class="text-gray-600 mb-6 h-12 text-sm">Professional grade passport photo creator with AI assistance and precise cropping.</p>
                     <a href="photopassportsizepro/" class="block w-full text-center py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg transition shadow-sm">
@@ -193,7 +197,7 @@
 
             <article class="tool-card bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
                 <div class="p-8">
-                    <div class="w-12 h-12 bg-pink-100 rounded-lg flex items-center justify-center text-2xl mb-4">📄</div>
+                    <div class="w-12 h-12 bg-pink-100 rounded-lg flex items-center justify-center text-2xl mb-4" aria-hidden="true">📄</div>
                     <h3 class="text-xl font-bold text-gray-900 mb-2">Resume Builder (CV)</h3>
                     <p class="text-gray-600 mb-6 h-12 text-sm">Build a job-winning resume in minutes. Known as "CV Banao" - simple and effective.</p>
                     <a href="cvbanao/" class="block w-full text-center py-3 bg-white border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-50 font-semibold rounded-lg transition">
@@ -204,7 +208,7 @@
 
             <article class="tool-card bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
                 <div class="p-8">
-                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center text-2xl mb-4">💰</div>
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center text-2xl mb-4" aria-hidden="true">💰</div>
                     <h3 class="text-xl font-bold text-gray-900 mb-2">Hourly Salary Calculator</h3>
                     <p class="text-gray-600 mb-6 h-12 text-sm">Convert hourly wages to annual salary, monthly income, and weekly pay instantly.</p>
                     <a href="hourlysalarycalculator/" class="block w-full text-center py-3 bg-white border-2 border-green-600 text-green-600 hover:bg-green-50 font-semibold rounded-lg transition">
@@ -215,7 +219,7 @@
 
             <article class="tool-card bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
                 <div class="p-8">
-                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center text-2xl mb-4">⚖️</div>
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center text-2xl mb-4" aria-hidden="true">⚖️</div>
                     <h3 class="text-xl font-bold text-gray-900 mb-2">FairShare Splitter</h3>
                     <p class="text-gray-600 mb-6 h-12 text-sm">Split bills and expenses easily with friends, roommates, or travel partners.</p>
                     <a href="fairshare/" class="block w-full text-center py-3 bg-gray-50 hover:bg-gray-100 text-gray-800 font-semibold rounded-lg transition border border-gray-200">
@@ -226,7 +230,7 @@
 
             <article class="tool-card bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
                 <div class="p-8">
-                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center text-2xl mb-4">🧾</div>
+                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center text-2xl mb-4" aria-hidden="true">🧾</div>
                     <h3 class="text-xl font-bold text-gray-900 mb-2">Receipt Maker</h3>
                     <p class="text-gray-600 mb-6 h-12 text-sm">Generate professional PDF receipts for your business or freelance work.</p>
                     <a href="receiptpro/" class="block w-full text-center py-3 bg-gray-50 hover:bg-gray-100 text-gray-800 font-semibold rounded-lg transition border border-gray-200">
@@ -237,7 +241,7 @@
 
              <article class="tool-card bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
                 <div class="p-8">
-                    <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center text-2xl mb-4">📈</div>
+                    <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center text-2xl mb-4" aria-hidden="true">📈</div>
                     <h3 class="text-xl font-bold text-gray-900 mb-2">Trading Mastery</h3>
                     <p class="text-gray-600 mb-6 h-12 text-sm">Professional trading guides and calculators for market analysis.</p>
                     <a href="bcal/" class="block w-full text-center py-3 bg-gray-50 hover:bg-gray-100 text-gray-800 font-semibold rounded-lg transition border border-gray-200">
@@ -252,7 +256,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between">
             <div class="mb-8 md:mb-0 md:w-2/3">
                 <h2 class="text-3xl font-bold mb-4 flex items-center gap-3">
-                    <span class="text-orange-500">⚙️</span> Are you a CNC Machinist?
+                    <span class="text-orange-500" aria-hidden="true">⚙️</span> Are you a CNC Machinist?
                 </h2>
                 <p class="text-slate-300 text-lg">We have a dedicated hub for G-Code references, Drill charts, PCD generation, and machining calculators tailored for industry professionals.</p>
             </div>
@@ -272,7 +276,7 @@
                     <p class="text-gray-600">Guides, tips, and professional resources.</p>
                 </div>
                 <a href="blog.html" class="inline-flex items-center gap-2 text-indigo-600 font-bold hover:text-indigo-800 transition">
-                    View All 15 Articles <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                    View All 15 Articles <svg aria-hidden="true" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
                 </a>
             </div>
             
@@ -312,7 +316,7 @@
                     
                     <div class="mt-6 pt-6 border-t border-gray-100">
                         <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Developed by</p>
-                        <a href="https://instagram.com/nishix_vamp" target="_blank" class="inline-flex items-center group">
+                        <a href="https://instagram.com/nishix_vamp" target="_blank" rel="noopener noreferrer" class="inline-flex items-center group">
                             <span class="text-gray-900 font-semibold group-hover:text-pink-600 transition-colors">Nishikant Xalxo</span>
                             <span class="ml-2 px-2 py-0.5 rounded text-xs bg-pink-100 text-pink-700 font-medium group-hover:bg-pink-200 transition-colors">
                                 @nishix_vamp
@@ -350,10 +354,14 @@
         // MOBILE MENU LOGIC
         document.getElementById('mobile-menu-btn').addEventListener('click', function() {
             var menu = document.getElementById('mobile-menu');
+            var isExpanded = this.getAttribute('aria-expanded') === 'true';
+            
             if (menu.classList.contains('hidden')) {
                 menu.classList.remove('hidden');
+                this.setAttribute('aria-expanded', 'true');
             } else {
                 menu.classList.add('hidden');
+                this.setAttribute('aria-expanded', 'false');
             }
         });
 
