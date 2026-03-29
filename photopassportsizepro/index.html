@@ -1,0 +1,1621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <meta name="theme-color" content="#6366f1">
+
+  <title>Free Passport Photo Maker | Crop & Print Online - SHADER7</title>
+  <meta name="description" content="Create, crop, and format passport, visa, and ID photos online for free. Download print-ready templates for A4 and 4R paper. No signup or data stored.">
+  <meta name="author" content="Nishikant Xalxo">
+  <meta name="robots" content="index, follow">
+  
+  <link rel="canonical" href="https://shader7.com/photopassportsizepro/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Shader7">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:url" content="https://shader7.com/photopassportsizepro/">
+  <meta property="og:title" content="Free Passport Photo Maker | Crop & Print Online">
+  <meta property="og:description" content="Create, crop, and format passport, visa, and ID photos online for free. Download print-ready templates.">
+  <meta property="og:image" content="https://shader7.com/og-image.jpg">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@nishix_vamp">
+  <meta name="twitter:creator" content="@nishix_vamp">
+  <meta name="twitter:url" content="https://shader7.com/photopassportsizepro/">
+  <meta name="twitter:title" content="Free Passport Photo Maker | Crop & Print Online">
+  <meta name="twitter:description" content="Create, crop, and format passport, visa, and ID photos online for free. Download print-ready templates.">
+  <meta name="twitter:image" content="https://shader7.com/og-image.jpg">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Passport Photo PRO",
+    "url": "https://shader7.com/photopassportsizepro/",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "All",
+    "offers": {
+      "@type": "Offer",
+      "price": "0.00",
+      "priceCurrency": "USD"
+    },
+    "description": "A free, client-side passport and ID photo creator. Crop images to exact government dimensions and generate print-ready A4 or 4R sheets.",
+    "creator": {
+      "@type": "Person",
+      "name": "Nishikant Xalxo",
+      "url": "https://instagram.com/nishix_vamp"
+    }
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"></noscript>
+  
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"></noscript>
+
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css"></noscript>
+
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --bg-gradient: linear-gradient(135deg,#f5f7fa 0%,#c3cfe2 100%);
+      --glass-bg: rgba(255,255,255,0.75);
+      --glass-border: rgba(255,255,255,0.5);
+      --text-main: #1f2937;
+      --text-muted: #6b7280;
+      --shadow: 0 8px 32px 0 rgba(31,38,135,0.15);
+      --radius: 16px;
+      --transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+      --success: #10b981;
+      --success-hover: #059669;
+    }
+    body.dark {
+      --primary: #818cf8;
+      --primary-hover: #6366f1;
+      --bg-gradient: linear-gradient(135deg,#1f2937 0%,#111827 100%);
+      --glass-bg: rgba(17,24,39,0.8);
+      --glass-border: rgba(148,163,184,0.35);
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --shadow: 0 12px 32px 0 rgba(0,0,0,0.6);
+    }
+
+    * { box-sizing:border-box; margin:0; padding:0; }
+    html,body { max-width:100%; overflow-x:hidden; }
+    html { -webkit-text-size-adjust:100%; -webkit-tap-highlight-color:transparent; }
+    body {
+      font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+      background:var(--bg-gradient);
+      background-attachment:fixed;
+      color:var(--text-main);
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      transition:background .3s,color .3s;
+    }
+    .sr-only {
+      position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+      overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border-width:0;
+    }
+
+    /* Header */
+    .header-glass {
+      background:var(--glass-bg);
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+      border-bottom:1px solid var(--glass-border);
+      padding:clamp(.75rem,2vw,1.5rem) clamp(1rem,3vw,2rem);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      position:sticky;
+      top:0;
+      z-index:100;
+      box-shadow:var(--shadow);
+      flex-wrap:wrap;
+      gap:1rem;
+    }
+    .header-content { flex:1; min-width:0; }
+    .header-title {
+      font-size:clamp(1.2rem,4vw,1.6rem);
+      font-weight:700;
+      color:var(--primary);
+      display:flex;
+      align-items:center;
+      gap:.5rem;
+      flex-wrap:wrap;
+    }
+    .header-title i {
+      padding:.35rem;
+      border-radius:999px;
+      background:rgba(99,102,241,0.12);
+    }
+    .header-badge {
+      background:var(--primary);
+      color:#fff;
+      font-size:.75rem;
+      padding:.1rem .45rem;
+      border-radius:999px;
+    }
+    .header-sub {
+      font-size:clamp(.8rem,2vw,.9rem);
+      color:var(--text-muted);
+      margin-top:.25rem;
+    }
+    .header-nav {
+      display:flex;
+      gap:.5rem;
+    }
+    .nav-btn {
+      background:transparent;
+      border:none;
+      color:var(--text-main);
+      font-size:1.2rem;
+      cursor:pointer;
+      padding:.5rem;
+      border-radius:999px;
+      transition:background .15s,transform .07s;
+      min-height:44px;
+      min-width:44px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .nav-btn:hover { background:rgba(0,0,0,0.05); }
+    body.dark .nav-btn:hover { background:rgba(255,255,255,0.1); }
+    .nav-btn:active { transform:scale(0.94); }
+
+    /* Layout main */
+    main {
+      flex:1;
+      padding:clamp(1rem,3vw,2rem);
+      max-width:1200px;
+      margin:0 auto;
+      width:100%;
+    }
+    .text-center { text-align:center; }
+    .text-lg { font-size:clamp(1rem,2.5vw,1.1rem); }
+    .mb-8 { margin-bottom:clamp(1rem,3vw,2rem); }
+
+    .card {
+      background:var(--glass-bg);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      border:1px solid var(--glass-border);
+      border-radius:var(--radius);
+      padding:clamp(1.5rem,3vw,2rem);
+      margin-bottom:clamp(1.5rem,3vw,2rem);
+      box-shadow:var(--shadow);
+    }
+    h2 {
+      font-size:clamp(1.1rem,3vw,1.25rem);
+      margin-bottom:1.3rem;
+      color:var(--primary);
+      border-bottom:1px solid var(--glass-border);
+      padding-bottom:.55rem;
+      display:flex;
+      align-items:center;
+      gap:.5rem;
+    }
+    h2 i {
+      font-size:1rem;
+    }
+    h3 {
+      font-size:clamp(.95rem,2.5vw,1rem);
+      margin-bottom:.85rem;
+      color:var(--text-main);
+      font-weight:600;
+    }
+
+    /* Upload */
+    .upload-wrapper { width:100%; max-width:100%; overflow:hidden; }
+    .upload-area {
+      border:2px dashed var(--primary);
+      border-radius:var(--radius);
+      padding:clamp(2rem,5vw,3rem) clamp(1rem,3vw,2rem);
+      text-align:center;
+      cursor:pointer;
+      transition:background .2s,border-color .2s,transform .07s;
+      position:relative;
+      width:100%;
+      max-width:100%;
+    }
+    .upload-area:hover {
+      background:rgba(99,102,241,.04);
+      border-color:var(--primary-hover);
+    }
+    .upload-area:active {
+      transform:scale(.97);
+    }
+    .upload-placeholder i {
+      color:var(--primary);
+      margin-bottom:1rem;
+      font-size:clamp(2rem,5vw,2.7rem);
+    }
+    .upload-placeholder p {
+      font-size:clamp(.9rem,2.5vw,1rem);
+      color:var(--text-muted);
+    }
+
+    /* hide native input, we trigger it via JS */
+    #photo-upload {
+      display:none;
+    }
+
+    /* Editor */
+    #editor-container { margin-top:1.5rem; }
+    .editor-toolbar-wrapper { padding:0 .5rem 1rem; width:100%; overflow:hidden; }
+    .editor-toolbar {
+      display:flex;
+      gap:.5rem;
+      margin-bottom:1rem;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .color-picker-wrapper {
+      width:40px;
+      height:40px;
+      border-radius:999px;
+      overflow:hidden;
+      border:2px solid var(--glass-border);
+      cursor:pointer;
+      position:relative;
+      flex-shrink:0;
+    }
+    #bg-color-picker {
+      width:150%;
+      height:150%;
+      position:absolute;
+      top:-25%;
+      left:-25%;
+      border:none;
+      padding:0;
+      cursor:pointer;
+    }
+    .crop-container {
+      max-height:500px;
+      background:#000;
+      border-radius:12px;
+      overflow:hidden;
+    }
+    #image-to-crop {
+      max-width:100%;
+      display:block;
+    }
+
+    .processing-overlay {
+      position:absolute;
+      inset:0;
+      background:rgba(0,0,0,.68);
+      color:#fff;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      border-radius:var(--radius);
+      z-index:20;
+    }
+    .spinner {
+      width:38px;
+      height:38px;
+      border:4px solid rgba(255,255,255,.28);
+      border-top-color:#fff;
+      border-radius:50%;
+      animation:spin 1s linear infinite;
+      margin-bottom:1rem;
+    }
+    @keyframes spin { to { transform:rotate(360deg); } }
+
+    .pulse-effect {
+      animation:gentle-pulse 1.2s ease-in-out 3;
+    }
+    @keyframes gentle-pulse {
+      0% { transform:scale(1); box-shadow:none; }
+      50% { transform:scale(1.01); box-shadow:0 0 18px rgba(129,140,248,.4); }
+      100% { transform:scale(1); box-shadow:none; }
+    }
+
+    /* Controls & preview */
+    .split-view {
+      display:grid;
+      grid-template-columns:1.05fr .95fr;
+      gap:clamp(1rem,3vw,2rem);
+    }
+    .settings-group {
+      margin-bottom:1.3rem;
+      padding-bottom:1.3rem;
+      border-bottom:1px solid var(--glass-border);
+    }
+    .settings-group:last-child { border-bottom:none; }
+    .form-row {
+      display:flex;
+      gap:1rem;
+      margin-bottom:.9rem;
+      flex-wrap:wrap;
+    }
+    .form-group {
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      min-width:0;
+    }
+    .form-group label {
+      font-size:.85rem;
+      margin-bottom:.35rem;
+      color:var(--text-muted);
+    }
+
+    input[type="number"], select {
+      background:rgba(255,255,255,.75);
+      border:1px solid var(--glass-border);
+      padding:.5rem .55rem;
+      border-radius:8px;
+      color:var(--text-main);
+      font-family:inherit;
+      font-size:16px !important;
+      width:100%;
+      min-width:0;
+      transition:border-color .16s,box-shadow .16s,background .16s;
+    }
+    body.dark input[type="number"],
+    body.dark select {
+      background:rgba(17,24,39,.8);
+    }
+    input[type="number"]:focus,
+    select:focus {
+      outline:none;
+      border-color:var(--primary);
+      box-shadow:0 0 0 1px rgba(99,102,241,.55);
+    }
+
+    .checkbox-row {
+      display:flex;
+      flex-wrap:wrap;
+      gap:.75rem 1.2rem;
+      margin-top:.25rem;
+    }
+    .checkbox-item {
+      display:flex;
+      align-items:center;
+      gap:.4rem;
+      font-size:.85rem;
+      color:var(--text-muted);
+    }
+
+    .btn-main,
+    .btn-secondary {
+      padding:.6rem 1.2rem;
+      border-radius:999px;
+      border:none;
+      cursor:pointer;
+      font-weight:600;
+      font-size:.9rem;
+      display:inline-flex;
+      gap:.5rem;
+      align-items:center;
+      justify-content:center;
+      min-height:44px;
+      min-width:44px;
+      transition:var(--transition);
+      white-space:nowrap;
+    }
+    .btn-main {
+      background:var(--primary);
+      color:#fff;
+      box-shadow:0 10px 25px rgba(79,70,229,.35);
+    }
+    .btn-main:hover {
+      background:var(--primary-hover);
+      transform:translateY(-1px);
+      box-shadow:0 16px 35px rgba(79,70,229,.45);
+    }
+    .btn-main:active {
+      transform:translateY(0) scale(.98);
+      box-shadow:0 8px 20px rgba(79,70,229,.35);
+    }
+    .btn-secondary {
+      background:rgba(255,255,255,.9);
+      color:var(--text-main);
+      border:1px solid var(--glass-border);
+    }
+    body.dark .btn-secondary {
+      background:rgba(17,24,39,.85);
+    }
+    .btn-secondary:hover {
+      background:#fff;
+      transform:translateY(-1px);
+    }
+    body.dark .btn-secondary:hover {
+      background:rgba(31,41,55,1);
+    }
+    .btn-success {
+      background:var(--success) !important;
+      box-shadow:0 10px 28px rgba(16,185,129,.45) !important;
+    }
+    .btn-success:hover {
+      background:var(--success-hover) !important;
+    }
+
+    .btn-pill-group {
+      display:flex;
+      flex-wrap:wrap;
+      gap:.5rem;
+    }
+
+    .preview-panel { display:flex; flex-direction:column; }
+    .canvas-wrapper {
+      background:#e5e7eb;
+      border:1px solid var(--glass-border);
+      border-radius:12px;
+      overflow:hidden;
+      margin-bottom:1rem;
+      min-height:300px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:1rem;
+    }
+    body.dark .canvas-wrapper {
+      background:#111827;
+    }
+    #output-canvas {
+      display:block;
+      max-width:100%;
+      height:auto !important;
+      box-shadow:0 4px 10px rgba(15,23,42,.45);
+      border-radius:4px;
+    }
+
+    .download-actions {
+      display:flex;
+      gap:.75rem;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .download-actions select {
+      width:auto;
+      min-width:90px;
+    }
+
+    .hidden { display:none !important; }
+
+    /* Footer */
+    footer {
+      text-align:center;
+      padding:clamp(1.5rem,3vw,2rem);
+      color:var(--text-muted);
+      font-size:.9rem;
+    }
+    footer a {
+      color:var(--primary);
+      text-decoration:none;
+      transition:color .16s;
+    }
+    footer a:hover { color:var(--primary-hover); }
+    .footer-links {
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:center;
+      gap:.9rem;
+      margin: .6rem 0;
+    }
+
+    /* Modal */
+    .modal-glass {
+      position:fixed;
+      inset:0;
+      background:rgba(15,23,42,.6);
+      backdrop-filter:blur(4px);
+      z-index:1000;
+      display:none;
+      justify-content:center;
+      align-items:center;
+    }
+    .modal-glass.active { display:flex; }
+    .modal-content {
+      background:var(--glass-bg);
+      padding:1.75rem 1.9rem;
+      border-radius:18px;
+      max-width:480px;
+      width:90%;
+      max-height:90vh;
+      overflow-y:auto;
+      position:relative;
+      box-shadow:var(--shadow);
+      border:1px solid var(--glass-border);
+      font-size:.9rem;
+    }
+    .modal-content h2 {
+      border:none;
+      padding-bottom:.25rem;
+      margin-bottom:.75rem;
+    }
+    .modal-content ul {
+      padding-left:1.1rem;
+    }
+    .modal-content li {
+      margin-bottom:.4rem;
+    }
+    .close-btn {
+      position:absolute;
+      top:.8rem;
+      right:.8rem;
+      background:none;
+      border:none;
+      cursor:pointer;
+      color:var(--text-muted);
+      padding:.4rem;
+      border-radius:999px;
+      min-height:32px;
+      min-width:32px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      transition:background .15s;
+    }
+    .close-btn:hover {
+      background:rgba(148,163,184,.25);
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .split-view {
+        grid-template-columns:1fr;
+      }
+    }
+    @media (max-width:768px) {
+      .header-glass {
+        flex-direction:column;
+        align-items:flex-start;
+      }
+      .header-content { width:100%; }
+      .header-nav {
+        width:100%;
+        justify-content:flex-end;
+      }
+      main { padding:1rem; }
+      .card { padding:1.4rem; }
+      .upload-area { padding:1.9rem 1rem; }
+      .editor-toolbar { justify-content:flex-start; }
+      .download-actions {
+        flex-direction:column;
+        align-items:stretch;
+      }
+      .download-actions > * {
+        width:100%;
+      }
+    }
+    @media (max-width:480px) {
+      .header-title { font-size:1.1rem; }
+      .upload-area { padding:1.5rem .65rem; }
+      .btn-main,.btn-secondary {
+        font-size:.85rem;
+        padding:.5rem 1rem;
+      }
+    }
+
+    img { max-width:100%; height:auto; }
+
+    button, .nav-btn, .btn-main, .btn-secondary, .close-btn {
+      touch-action:manipulation;
+    }
+    input[type="text"],
+    input[type="number"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="password"],
+    textarea,
+    select {
+      font-size:16px !important;
+    }
+  </style>
+</head>
+
+<body>
+  <header class="header-glass">
+    <div class="header-content">
+      <h1 class="header-title">
+        <i class="fa fa-passport"></i>
+        Passport Photo Maker
+        <span class="header-badge">2025</span>
+      </h1>
+      <div class="header-sub">
+        Create, crop, and print passport photos — ultra-smooth, mobile friendly, and completely free.
+      </div>
+    </div>
+    <div class="header-nav">
+      <a href="/" class="nav-btn" title="Back to Home" aria-label="Back to Home">
+        <i class="fa fa-home"></i>
+      </a>
+      <button class="nav-btn" id="theme-btn" title="Toggle dark mode" aria-label="Toggle dark mode">
+        <i class="fa fa-moon"></i>
+      </button>
+      <button class="nav-btn" id="info-btn" title="How to use" aria-label="How to use">
+        <i class="fa fa-info-circle"></i>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <p class="text-center text-lg mb-8">
+      Welcome to the <strong>free online passport photo maker</strong>! Upload, crop, format and
+      <strong>print passport photos</strong> with pro-level layout — right from your browser.
+    </p>
+
+    <section class="card">
+      <h2><i class="fa fa-image"></i> 1. Upload & Edit</h2>
+
+      <div class="upload-wrapper">
+        <div class="upload-area" id="upload-area" role="button" tabindex="0" aria-label="Upload photo area">
+          <div class="upload-placeholder">
+            <i class="fa fa-cloud-upload-alt fa-3x"></i>
+            <p>Click or Drag &amp; Drop to Upload Photo</p>
+          </div>
+          <input type="file" id="photo-upload" accept="image/*,.webp,.bmp,.tif,.tiff,.avif,.heic,.heif" aria-label="Upload your photo">
+        </div>
+      </div>
+
+      <div id="editor-container" class="hidden">
+        <div class="editor-toolbar-wrapper">
+          <div class="editor-toolbar">
+            <button class="btn-secondary" id="change-photo-btn" type="button">
+              <i class="fa fa-image"></i> Change Photo
+            </button>
+            <button class="btn-secondary" id="remove-bg-btn" type="button">
+              <i class="fa fa-magic"></i> Remove Background
+            </button>
+            <div class="color-picker-wrapper" title="Background Color">
+              <input type="color" id="bg-color-picker" value="#ffffff" aria-label="Background color picker">
+            </div>
+            <button class="btn-secondary" id="rotate-left" type="button" title="Rotate left">
+              <i class="fa fa-undo"></i>
+            </button>
+            <button class="btn-secondary" id="rotate-right" type="button" title="Rotate right">
+              <i class="fa fa-redo"></i>
+            </button>
+            <button class="btn-secondary" id="reset-crop" type="button" title="Reset crop">
+              <i class="fa fa-sync"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="crop-container">
+          <img id="image-to-crop" src="" alt="Image to crop">
+        </div>
+
+        <div id="bg-processing" class="processing-overlay hidden" aria-hidden="true">
+          <div class="spinner"></div>
+          <p>Removing background...</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" id="settings-section">
+      <h2><i class="fa fa-sliders-h"></i> 2. Settings &amp; Print Preview</h2>
+
+      <div class="split-view">
+        <div class="controls-panel">
+          <div class="settings-group">
+            <h3>Quick Actions</h3>
+            <div class="btn-pill-group">
+              <button class="btn-main" id="autofix-btn" type="button">
+                <i class="fa fa-wand-magic-sparkles"></i> Auto-Fix (300×400 &amp; 35 px)
+              </button>
+              <button class="btn-secondary" id="max-photos-btn" type="button">
+                <i class="fa fa-th"></i> Max Photos Per Page
+              </button>
+            </div>
+          </div>
+
+          <div class="settings-group">
+            <h3>Photo &amp; DPI</h3>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="unit">Unit</label>
+                <select id="unit">
+                  <option value="px">px</option>
+                  <option value="mm">mm</option>
+                  <option value="inch">inch</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="dpi">DPI (print)</label>
+                <input type="number" id="dpi" value="300" min="72" max="1200" step="1">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="photo-width">Photo Width</label>
+                <input type="number" id="photo-width" value="300" min="1" step="1">
+              </div>
+              <div class="form-group">
+                <label for="photo-height">Photo Height</label>
+                <input type="number" id="photo-height" value="400" min="1" step="1">
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-group">
+            <h3>Paper &amp; Layout</h3>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="page-size">Paper Size</label>
+                <select id="page-size">
+                  <option value="a4">A4 (210 × 297 mm)</option>
+                  <option value="4r">4R (4" × 6")</option>
+                  <option value="custom">Custom</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="num-photos">Photo Count</label>
+                <input type="number" id="num-photos" value="8" min="1" max="200" step="1">
+              </div>
+            </div>
+
+            <div class="form-row hidden" id="custom-page-size">
+              <div class="form-group">
+                <label for="custom-width">Custom Width</label>
+                <input type="number" id="custom-width" placeholder="Width" min="1">
+              </div>
+              <div class="form-group">
+                <label for="custom-height">Custom Height</label>
+                <input type="number" id="custom-height" placeholder="Height" min="1">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="h-spacing">Gap Horizontal</label>
+                <input type="number" id="h-spacing" value="35" min="0" step="1">
+              </div>
+              <div class="form-group">
+                <label for="v-spacing">Gap Vertical</label>
+                <input type="number" id="v-spacing" value="35" min="0" step="1">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="margin-top">Top Margin</label>
+                <input type="number" id="margin-top" value="35" min="0" step="1">
+              </div>
+              <div class="form-group">
+                <label for="margin-left">Left Margin</label>
+                <input type="number" id="margin-left" value="35" min="0" step="1">
+              </div>
+            </div>
+
+            <div class="checkbox-row">
+              <label class="checkbox-item">
+                <input type="checkbox" id="show-cutlines">
+                <span>Show Cutlines (around each photo)</span>
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" id="add-border">
+                <span>Add Solid Border</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="preview-panel">
+          <h3>Print Preview (scale-accurate, not squeezed)</h3>
+          <div class="canvas-wrapper">
+            <canvas id="output-canvas" aria-label="Print preview canvas"></canvas>
+          </div>
+          <div class="download-actions">
+            <div class="form-group" style="max-width:120px;">
+              <label for="format">Download Format</label>
+              <select id="format">
+                <option value="jpg">JPG</option>
+                <option value="png">PNG</option>
+              </select>
+            </div>
+            <button class="btn-main" id="download-btn" type="button">
+              <i class="fa fa-download"></i> Download
+            </button>
+            <button class="btn-main" id="download-hq-btn" type="button">
+              <i class="fa fa-star"></i> HQ Download
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="branding">
+      <div style="margin-top:.7em;">
+        Credits: Released by <strong>nishikant xalxo</strong>
+        (<a href="https://www.instagram.com/nishix_vamp" target="_blank" rel="noopener noreferrer">@nishix_vamp</a>)<br>
+        Owner: <b>shaderindia</b>
+      </div>
+      <div class="footer-links">
+        <a href="/">All Tools</a>
+        <a href="/blog.html">Blog</a>
+        <a href="/about.html">About</a>
+        <a href="/privacy-policy.html">Privacy Policy</a>
+      </div>
+      <p>&copy; <script>document.write(new Date().getFullYear())</script> SHADER7 - Free Apps for You. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <div class="modal-glass" id="info-modal" aria-hidden="true">
+    <div class="modal-content" role="dialog" aria-labelledby="modal-title">
+      <button class="close-btn" id="close-info" aria-label="Close">
+        <i class="fa fa-times"></i>
+      </button>
+      <h2 id="modal-title"><i class="fa fa-info-circle"></i> How to Use</h2>
+      <ul>
+        <li>Upload a clear, straight photo (JPG/PNG/other supported formats).</li>
+        <li>(Optional) Use <b>Remove Background</b> for a clean white background.</li>
+        <li>Adjust crop so your face is correctly framed.</li>
+        <li>Use <b>Auto-Fix</b> to set 300×400 px photos with 35 px margins &amp; gaps.</li>
+        <li>Check preview, enable cutlines / borders if desired.</li>
+        <li>Download and print on your printer or at a print shop.</li>
+      </ul>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', initializeApp);
+
+    function initializeApp() {
+      const els = {
+        uploadArea: document.getElementById('upload-area'),
+        photoUpload: document.getElementById('photo-upload'),
+        editorContainer: document.getElementById('editor-container'),
+        imageToCrop: document.getElementById('image-to-crop'),
+        bgProcessing: document.getElementById('bg-processing'),
+        removeBgBtn: document.getElementById('remove-bg-btn'),
+        changePhotoBtn: document.getElementById('change-photo-btn'),
+        bgColorPicker: document.getElementById('bg-color-picker'),
+        rotateLeftBtn: document.getElementById('rotate-left'),
+        rotateRightBtn: document.getElementById('rotate-right'),
+        resetCropBtn: document.getElementById('reset-crop'),
+        unit: document.getElementById('unit'),
+        dpi: document.getElementById('dpi'),
+        photoWidth: document.getElementById('photo-width'),
+        photoHeight: document.getElementById('photo-height'),
+        pageSize: document.getElementById('page-size'),
+        customPageSize: document.getElementById('custom-page-size'),
+        customWidth: document.getElementById('custom-width'),
+        customHeight: document.getElementById('custom-height'),
+        numPhotos: document.getElementById('num-photos'),
+        hSpacing: document.getElementById('h-spacing'),
+        vSpacing: document.getElementById('v-spacing'),
+        marginTop: document.getElementById('margin-top'),
+        marginLeft: document.getElementById('margin-left'),
+        showCutlines: document.getElementById('show-cutlines'),
+        addBorder: document.getElementById('add-border'),
+        autofixBtn: document.getElementById('autofix-btn'),
+        maxPhotosBtn: document.getElementById('max-photos-btn'),
+        outputCanvas: document.getElementById('output-canvas'),
+        format: document.getElementById('format'),
+        downloadBtn: document.getElementById('download-btn'),
+        downloadHQBtn: document.getElementById('download-hq-btn'),
+        themeBtn: document.getElementById('theme-btn'),
+        infoBtn: document.getElementById('info-btn'),
+        infoModal: document.getElementById('info-modal'),
+        closeInfo: document.getElementById('close-info')
+      };
+
+      let cropper = null;
+      let originalImageURL = null;
+      let currentImageURL = null;
+      let currentFile = null;
+      let isDark = false;
+      let bgColor = '#ffffff';
+      let previousUnit = 'px';
+
+      function validateNumber(value, min, max) {
+        const num = parseFloat(value);
+        if (!isFinite(num)) return min;
+        if (num < min) return min;
+        if (num > max) return max;
+        return num;
+      }
+
+      function init() {
+        // Theme
+        isDark = localStorage.getItem('theme') === 'dark';
+        if (isDark) {
+          document.body.classList.add('dark');
+          updateThemeIcon();
+        }
+
+        // Custom page defaults in mm
+        if (!els.customWidth.value) els.customWidth.value = 210;
+        if (!els.customHeight.value) els.customHeight.value = 297;
+
+        // Start in px unit
+        els.unit.value = 'px';
+        previousUnit = 'px';
+
+        setupEventListeners();
+        renderCanvas();
+      }
+
+      function setupEventListeners() {
+        // Ensure drag & drop works reliably in modern browsers
+        ['dragenter','dragover','dragleave','drop'].forEach(eventName => {
+          els.uploadArea.addEventListener(eventName, e => {
+            e.preventDefault();
+            e.stopPropagation();
+          });
+        });
+
+        // Upload & change photo (single click, even for same file)
+        function openFilePicker() {
+          els.photoUpload.value = ''; // reset so selecting same file triggers change
+          els.photoUpload.click();
+        }
+
+        els.uploadArea.addEventListener('click', openFilePicker);
+        els.uploadArea.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            openFilePicker();
+          }
+        });
+
+        els.changePhotoBtn.addEventListener('click', openFilePicker);
+
+        els.photoUpload.addEventListener('change', handleFileSelect);
+
+        // Drag & drop (visual feedback)
+        els.uploadArea.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          els.uploadArea.style.background = 'rgba(99,102,241,0.08)';
+        });
+        els.uploadArea.addEventListener('dragleave', (e) => {
+          e.preventDefault();
+          els.uploadArea.style.background = '';
+        });
+        els.uploadArea.addEventListener('drop', (e) => {
+          e.preventDefault();
+          els.uploadArea.style.background = '';
+          if (e.dataTransfer.files && e.dataTransfer.files.length) {
+            handleFile(e.dataTransfer.files[0]);
+          }
+        });
+
+        // Background color & remove
+        els.bgColorPicker.addEventListener('input', (e) => {
+          bgColor = e.target.value || '#ffffff';
+          renderCanvas();
+        });
+        els.removeBgBtn.addEventListener('click', removeBackground);
+
+        // Rotate / reset
+        els.rotateLeftBtn.addEventListener('click', () => {
+          if (cropper) {
+            cropper.rotate(-90);
+            renderCanvas();
+          }
+        });
+        els.rotateRightBtn.addEventListener('click', () => {
+          if (cropper) {
+            cropper.rotate(90);
+            renderCanvas();
+          }
+        });
+        els.resetCropBtn.addEventListener('click', () => {
+          if (cropper) {
+            cropper.reset();
+            updateCropperAspectRatio();
+            renderCanvas();
+          }
+        });
+
+        // Settings
+        const settingsInputs = [
+          els.unit, els.dpi, els.photoWidth, els.photoHeight,
+          els.pageSize, els.customWidth, els.customHeight,
+          els.numPhotos, els.hSpacing, els.vSpacing,
+          els.marginTop, els.marginLeft,
+          els.showCutlines, els.addBorder
+        ];
+        settingsInputs.forEach((el) => {
+          if (!el) return;
+          el.addEventListener('input', handleSettingsChange);
+          el.addEventListener('change', handleSettingsChange);
+        });
+
+        els.autofixBtn.addEventListener('click', autoFixLayout);
+        els.maxPhotosBtn.addEventListener('click', maxPhotosPerPage);
+
+        // Download
+        els.downloadBtn.addEventListener('click', () => downloadOutput(false));
+        els.downloadHQBtn.addEventListener('click', () => downloadOutput(true));
+
+        // Theme
+        els.themeBtn.addEventListener('click', toggleTheme);
+
+        // Modal
+        els.infoBtn.addEventListener('click', () => {
+          els.infoModal.classList.add('active');
+          els.infoModal.setAttribute('aria-hidden', 'false');
+        });
+        els.closeInfo.addEventListener('click', closeModal);
+        els.infoModal.addEventListener('click', (e) => {
+          if (e.target === els.infoModal) closeModal();
+        });
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && els.infoModal.classList.contains('active')) {
+            closeModal();
+          }
+        });
+
+        // Resize
+        window.addEventListener('resize', () => {
+          renderCanvas();
+        });
+
+        // Before unload cleanup
+        window.addEventListener('beforeunload', cleanupImageURLs);
+      }
+
+      function handleSettingsChange(e) {
+        const el = e.target;
+        if (el === els.pageSize) handlePageSizeChange();
+        if (el === els.unit) handleUnitChange();
+        if (el === els.photoWidth || el === els.photoHeight) updateCropperAspectRatio();
+        renderCanvas();
+      }
+
+      function closeModal() {
+        els.infoModal.classList.remove('active');
+        els.infoModal.setAttribute('aria-hidden', 'true');
+      }
+
+      // File / image
+      function handleFileSelect(e) {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        handleFile(file);
+      }
+
+      function handleFile(file) {
+        // Allow common image formats (based on extension)
+        const allowedExtensions = [
+          'jpg','jpeg','png','webp','bmp','gif',
+          'tif','tiff','avif','heic','heif'
+        ];
+        const name = file.name || '';
+        const ext = name.includes('.') ? name.split('.').pop().toLowerCase() : '';
+
+        if (!ext || !allowedExtensions.includes(ext)) {
+          alert('Unsupported format. Supported: JPG, PNG, WEBP, BMP, GIF, TIFF, AVIF, HEIC.');
+          return;
+        }
+
+        // Allow a bit larger images for high-res sources
+        if (file.size > 25 * 1024 * 1024) {
+          alert('File too large. Max 25MB.');
+          return;
+        }
+
+        cleanupImageURLs();
+        currentFile = file;
+        originalImageURL = URL.createObjectURL(file);
+        currentImageURL = originalImageURL;
+
+        els.editorContainer.classList.remove('hidden');
+
+        const cropContainer = document.querySelector('.crop-container');
+        if (cropContainer) {
+          cropContainer.classList.add('pulse-effect');
+          setTimeout(() => cropContainer.classList.remove('pulse-effect'), 1200);
+        }
+
+        startCropper(currentImageURL);
+      }
+
+      function cleanupImageURLs() {
+        if (originalImageURL) {
+          URL.revokeObjectURL(originalImageURL);
+          originalImageURL = null;
+        }
+        if (currentImageURL && currentImageURL !== originalImageURL) {
+          URL.revokeObjectURL(currentImageURL);
+          currentImageURL = null;
+        }
+      }
+
+      function startCropper(url) {
+        if (cropper) {
+          cropper.destroy();
+          cropper = null;
+        }
+
+        const img = els.imageToCrop;
+        img.src = url;
+
+        if (img.complete) {
+          initializeCropper();
+        } else {
+          img.onload = initializeCropper;
+        }
+        img.onerror = function () {
+          console.error('Image failed to load');
+          alert('Failed to load image. Your browser might not support this format.');
+          cleanupImageURLs();
+        };
+
+        function initializeCropper() {
+          try {
+            cropper = new Cropper(img, {
+              viewMode: 1,
+              dragMode: 'move',
+              aspectRatio: getAspectRatio(),
+              autoCropArea: 0.85,
+              restore: false,
+              guides: true,
+              center: true,
+              highlight: false,
+              cropBoxMovable: true,
+              cropBoxResizable: true,
+              toggleDragModeOnDblclick: false,
+              ready() {
+                updateCropperAspectRatio();
+                renderCanvas();
+              },
+              cropend() {
+                renderCanvas();
+              }
+            });
+          } catch (error) {
+            console.error('Cropper initialization error:', error);
+            alert('Failed to initialize cropper. Please try again with a different image.');
+          }
+        }
+      }
+
+      function getAspectRatio() {
+        // Use px-based logical ratio for consistency
+        const w = validateNumber(els.photoWidth.value || 300, 1, 10000);
+        const h = validateNumber(els.photoHeight.value || 400, 1, 10000);
+        return w / h;
+      }
+
+      function updateCropperAspectRatio() {
+        if (!cropper) return;
+        const ratio = getAspectRatio();
+        if (isFinite(ratio) && ratio > 0) {
+          cropper.setAspectRatio(ratio);
+        }
+      }
+
+      async function removeBackground() {
+        if (!currentImageURL && !currentFile) return;
+
+        if (!window.crossOriginIsolated) {
+          alert('Background removal requires HTTPS and a modern browser. The rest of the tool will still work fine.');
+          return;
+        }
+
+        els.bgProcessing.classList.remove('hidden');
+        els.removeBgBtn.disabled = true;
+
+        try {
+          const config = {
+            publicPath: 'https://cdn.jsdelivr.net/npm/@imgly/background-removal-data@1.0.6/dist/',
+            debug: false
+          };
+          const { removeBackground: imglyRemoveBackground } = await import('https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.0.5/+esm');
+          const source = currentFile || currentImageURL;
+          const blob = await imglyRemoveBackground(source, config);
+
+          if (currentImageURL && currentImageURL !== originalImageURL) {
+            URL.revokeObjectURL(currentImageURL);
+          }
+          const newUrl = URL.createObjectURL(blob);
+          currentImageURL = newUrl;
+          startCropper(currentImageURL);
+        } catch (error) {
+          console.error('Background removal failed:', error);
+          alert('Background removal failed. Please try again or skip this step.');
+        } finally {
+          els.bgProcessing.classList.add('hidden');
+          els.removeBgBtn.disabled = false;
+        }
+      }
+
+      // Units & DPI
+      function getDPI() {
+        return validateNumber(els.dpi.value || 300, 72, 1200);
+      }
+
+      function toPx(val, unit) {
+        const dpi = getDPI();
+        const v = parseFloat(val) || 0;
+        if (unit === 'mm') return (v / 25.4) * dpi;
+        if (unit === 'inch') return v * dpi;
+        return v;
+      }
+
+      function fromPx(px, unit) {
+        const dpi = getDPI();
+        if (unit === 'mm') return (px / dpi) * 25.4;
+        if (unit === 'inch') return px / dpi;
+        return px;
+      }
+
+      function getDims() {
+        const unit = els.unit.value;
+        return {
+          w: toPx(els.photoWidth.value || 300, unit),
+          h: toPx(els.photoHeight.value || 400, unit),
+          gapH: toPx(els.hSpacing.value || 0, unit),
+          gapV: toPx(els.vSpacing.value || 0, unit),
+          marginT: toPx(els.marginTop.value || 0, unit),
+          marginL: toPx(els.marginLeft.value || 0, unit)
+        };
+      }
+
+      function getPageSize() {
+        const unit = els.unit.value;
+        const type = els.pageSize.value;
+
+        if (type === 'a4') {
+          return {
+            w: toPx(210, 'mm'),
+            h: toPx(297, 'mm')
+          };
+        }
+        if (type === '4r') {
+          return {
+            w: toPx(4, 'inch'),
+            h: toPx(6, 'inch')
+          };
+        }
+        // Custom
+        const w = els.customWidth.value ? toPx(els.customWidth.value, unit) : toPx(210, 'mm');
+        const h = els.customHeight.value ? toPx(els.customHeight.value, unit) : toPx(297, 'mm');
+        return { w, h };
+      }
+
+      function handleUnitChange() {
+        const newUnit = els.unit.value;
+        if (newUnit === previousUnit) {
+          renderCanvas();
+          return;
+        }
+
+        const dpi = getDPI();
+        const inputs = [
+          els.photoWidth, els.photoHeight,
+          els.hSpacing, els.vSpacing,
+          els.marginTop, els.marginLeft,
+          els.customWidth, els.customHeight
+        ];
+
+        inputs.forEach((input) => {
+          if (!input || !input.value) return;
+          const raw = parseFloat(input.value);
+          if (!isFinite(raw)) return;
+
+          // Convert old unit -> px
+          let pxVal;
+          if (previousUnit === 'mm') pxVal = (raw / 25.4) * dpi;
+          else if (previousUnit === 'inch') pxVal = raw * dpi;
+          else pxVal = raw;
+
+          // px -> new unit
+          let newVal;
+          if (newUnit === 'mm') newVal = (pxVal / dpi) * 25.4;
+          else if (newUnit === 'inch') newVal = pxVal / dpi;
+          else newVal = pxVal;
+
+          input.value = newUnit === 'px' ? Math.round(newVal) : newVal.toFixed(2);
+        });
+
+        previousUnit = newUnit;
+        updateCropperAspectRatio();
+        renderCanvas();
+      }
+
+      function handlePageSizeChange() {
+        const isCustom = els.pageSize.value === 'custom';
+        els.customPageSize.classList.toggle('hidden', !isCustom);
+
+        if (isCustom) {
+          if (!els.customWidth.value) els.customWidth.value = 210;
+          if (!els.customHeight.value) els.customHeight.value = 297;
+        }
+        renderCanvas();
+      }
+
+      // Layout helpers
+      function computePerRow(dims, page) {
+        // Only left margin is user controlled; right edge is page end
+        const available = page.w - dims.marginL;
+        if (available <= dims.w) return 1;
+        const denom = dims.w + dims.gapH;
+        if (denom <= 0) return 1;
+        const numerator = available - dims.w;
+        const extraCols = Math.floor(numerator / denom);
+        return Math.max(1, extraCols + 1);
+      }
+
+      function computeMaxRows(dims, page) {
+        const available = page.h - dims.marginT;
+        if (available <= dims.h) return 1;
+        const denom = dims.h + dims.gapV;
+        if (denom <= 0) return 1;
+        const numerator = available - dims.h;
+        const extraRows = Math.floor(numerator / denom);
+        return Math.max(1, extraRows + 1);
+      }
+
+      // Auto-fix layout (300x400px, 35px gaps/margins)
+      function autoFixLayout() {
+        const w_px = 300;
+        const h_px = 400;
+        const gap_px = 35;
+        const margin_px = 35;
+
+        const unit = els.unit.value;
+
+        function pxToCurrent(px) {
+          const val = fromPx(px, unit);
+          return unit === 'px' ? Math.round(val) : val.toFixed(2);
+        }
+
+        els.photoWidth.value  = pxToCurrent(w_px);
+        els.photoHeight.value = pxToCurrent(h_px);
+        els.hSpacing.value    = pxToCurrent(gap_px);
+        els.vSpacing.value    = pxToCurrent(gap_px);
+        els.marginTop.value   = pxToCurrent(margin_px);
+        els.marginLeft.value  = pxToCurrent(margin_px);
+
+        if (cropper) {
+          cropper.setAspectRatio(w_px / h_px);
+        }
+
+        renderCanvas();
+
+        const originalHTML = els.autofixBtn.innerHTML;
+        els.autofixBtn.innerHTML = '<i class="fa fa-check"></i> Applied';
+        els.autofixBtn.disabled = true;
+        setTimeout(() => {
+          els.autofixBtn.innerHTML = originalHTML;
+          els.autofixBtn.disabled = false;
+        }, 1600);
+      }
+
+      // Max photos per page (fills as many as fit with current sizes)
+      function maxPhotosPerPage() {
+        const dims = getDims();
+        const page = getPageSize();
+
+        const perRow = computePerRow(dims, page);
+        const maxRows = computeMaxRows(dims, page);
+        const capacity = perRow * maxRows;
+
+        els.numPhotos.value = capacity;
+        renderCanvas();
+
+        const originalHTML = els.maxPhotosBtn.innerHTML;
+        els.maxPhotosBtn.innerHTML = '<i class="fa fa-check"></i> Maxed';
+        els.maxPhotosBtn.disabled = true;
+        setTimeout(() => {
+          els.maxPhotosBtn.innerHTML = originalHTML;
+          els.maxPhotosBtn.disabled = false;
+        }, 1400);
+      }
+
+      // Render
+      function renderCanvas() {
+        const canvas = els.outputCanvas;
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+
+        const page = getPageSize();
+        const dims = getDims();
+        const count = Math.max(1, parseInt(els.numPhotos.value || '1', 10) || 1);
+
+        const pageW = Math.max(1, Math.round(page.w));
+        const pageH = Math.max(1, Math.round(page.h));
+
+        // Set physical pixel size (for final print quality)
+        canvas.width = pageW;
+        canvas.height = pageH;
+
+        // CSS size: always scale to fit container (independent of DPI)
+        canvas.style.width = '100%';
+        canvas.style.height = 'auto';
+
+        // Background
+        ctx.fillStyle = isDark ? '#111827' : '#ffffff';
+        ctx.fillRect(0, 0, pageW, pageH);
+
+        if (!cropper) return; // nothing to draw yet
+
+        // Get layout capacity
+        const perRow = computePerRow(dims, page);
+        if (perRow < 1) return;
+
+        const maxRows = computeMaxRows(dims, page);
+        if (maxRows < 1) return;
+
+        const capacity = perRow * maxRows;
+        const photosToDraw = Math.min(count, capacity);
+
+        // Cropped photo at exact size (no squeezing)
+        const cropCanvas = cropper.getCroppedCanvas({
+          width: Math.max(1, Math.round(dims.w)),
+          height: Math.max(1, Math.round(dims.h)),
+          imageSmoothingEnabled: true,
+          imageSmoothingQuality: 'high',
+          fillColor: bgColor
+        });
+        if (!cropCanvas) return;
+
+        const showBorder = els.addBorder.checked;
+
+        // Draw photos
+        for (let i = 0; i < photosToDraw; i++) {
+          const row = Math.floor(i / perRow);
+          const col = i % perRow;
+
+          const x = dims.marginL + col * (dims.w + dims.gapH);
+          const y = dims.marginT + row * (dims.h + dims.gapV);
+
+          // Safety guard: do not draw beyond page (right or bottom)
+          if (x + dims.w > pageW + 0.1 || y + dims.h > pageH + 0.1) {
+            continue;
+          }
+
+          ctx.drawImage(cropCanvas, x, y, dims.w, dims.h);
+
+          // Borders
+          if (showBorder) {
+            ctx.save();
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(x + 0.5, y + 0.5, dims.w - 1, dims.h - 1);
+            ctx.restore();
+          }
+        }
+
+        // Cutlines: draw lines in the middle of gaps between photos (corrected)
+        if (els.showCutlines.checked) {
+          ctx.save();
+          ctx.strokeStyle = '#9ca3af';
+          ctx.setLineDash([4, 4]);
+          ctx.lineWidth = 1;
+
+          const rowsNeeded = Math.ceil(photosToDraw / perRow);
+          
+          // Draw vertical lines between columns (centered in horizontal gaps)
+          for (let col = 0; col < perRow - 1; col++) {
+            let minY = null;
+            let maxY = null;
+            
+            for (let row = 0; row < rowsNeeded; row++) {
+              const leftIdx = row * perRow + col;
+              const rightIdx = leftIdx + 1;
+              
+              if (leftIdx < photosToDraw && rightIdx < photosToDraw) {
+                const y = dims.marginT + row * (dims.h + dims.gapV);
+                if (minY === null) minY = y;
+                maxY = y + dims.h;
+              }
+            }
+            
+            if (minY !== null) {
+              const x = dims.marginL + (col + 1) * dims.w + col * dims.gapH + dims.gapH / 2;
+              ctx.beginPath();
+              ctx.moveTo(x + 0.5, minY);
+              ctx.lineTo(x + 0.5, maxY);
+              ctx.stroke();
+            }
+          }
+
+          // Draw horizontal lines between rows (centered in vertical gaps)
+          for (let row = 0; row < rowsNeeded - 1; row++) {
+            let minX = null;
+            let maxX = null;
+            
+            for (let col = 0; col < perRow; col++) {
+              const topIdx = row * perRow + col;
+              const bottomIdx = topIdx + perRow;
+              
+              if (topIdx < photosToDraw && bottomIdx < photosToDraw) {
+                const x = dims.marginL + col * (dims.w + dims.gapH);
+                if (minX === null) minX = x;
+                maxX = x + dims.w;
+              }
+            }
+            
+            if (minX !== null) {
+              const y = dims.marginT + (row + 1) * dims.h + row * dims.gapV + dims.gapV / 2;
+              ctx.beginPath();
+              ctx.moveTo(minX, y + 0.5);
+              ctx.lineTo(maxX, y + 0.5);
+              ctx.stroke();
+            }
+          }
+
+          ctx.restore();
+        }
+      }
+
+      // Download
+      function downloadOutput(highQuality) {
+        const ext = els.format.value || 'jpg';
+        const mime = ext === 'jpg' ? 'image/jpeg' : 'image/png';
+        const quality = highQuality ? 1.0 : 0.92;
+        const filename = 'passport-photo-' + Date.now() + '.' + ext;
+
+        const btn = highQuality ? els.downloadHQBtn : els.downloadBtn;
+        const originalHTML = btn.innerHTML;
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa fa-check"></i> Downloaded';
+        btn.classList.add('btn-success');
+
+        els.outputCanvas.toBlob((blob) => {
+          if (!blob) {
+            alert('Error: Could not generate image. Please try again.');
+            btn.innerHTML = originalHTML;
+            btn.disabled = false;
+            btn.classList.remove('btn-success');
+            return;
+          }
+
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = filename;
+          document.body.appendChild(link);
+          link.click();
+          setTimeout(() => {
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+          }, 200);
+        }, mime, quality);
+
+        setTimeout(() => {
+          btn.innerHTML = originalHTML;
+          btn.disabled = false;
+          btn.classList.remove('btn-success');
+        }, 2000);
+      }
+
+      // Theme
+      function toggleTheme() {
+        isDark = !isDark;
+        document.body.classList.toggle('dark', isDark);
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        updateThemeIcon();
+        renderCanvas();
+      }
+
+      function updateThemeIcon() {
+        const icon = els.themeBtn.querySelector('i');
+        if (!icon) return;
+        icon.className = isDark ? 'fa fa-sun' : 'fa fa-moon';
+      }
+
+      init();
+    }
+  </script>
+</body>
+</html>
