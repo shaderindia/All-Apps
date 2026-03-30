@@ -1,12 +1,89 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-FCJR8H4DME"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-FCJR8H4DME');
+  </script>
+
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>OD / ID Interpolation Macro Generator</title>
+  
+  <title>CNC Circular Interpolation G-Code Generator | ID/OD Milling - SHADER7</title>
+  <meta name="description" content="Free CNC macro generator for ID and OD circular interpolation. Create G02/G03 milling programs instantly. Compatible with Fanuc and Haas controls.">
+  <meta name="keywords" content="circular interpolation calculator, id od milling macro, g02 g03 g-code generator, cnc circle milling, fanuc macro, shader7">
+  <meta name="author" content="Nishikant Xalxo">
+  <meta name="robots" content="index, follow">
+
+  <link rel="canonical" href="https://shader7.com/cnc-machinist/idodinterpolation/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Shader7">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:url" content="https://shader7.com/cnc-machinist/idodinterpolation/">
+  <meta property="og:title" content="CNC Circular Interpolation G-Code Generator | ID/OD Milling">
+  <meta property="og:description" content="Free CNC macro generator for ID and OD circular interpolation. Create G02/G03 milling programs instantly.">
+  <meta property="og:image" content="https://shader7.com/og-image.jpg">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@nishix_vamp">
+  <meta name="twitter:creator" content="@nishix_vamp">
+  <meta name="twitter:url" content="https://shader7.com/cnc-machinist/idodinterpolation/">
+  <meta name="twitter:title" content="CNC Circular Interpolation G-Code Generator | ID/OD Milling">
+  <meta name="twitter:description" content="Free CNC macro generator for ID and OD circular interpolation. Create G02/G03 milling programs instantly.">
+  <meta name="twitter:image" content="https://shader7.com/og-image.jpg">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Shader7 Circular Interpolation Generator",
+    "url": "https://shader7.com/cnc-machinist/idodinterpolation/",
+    "operatingSystem": "Web Browser",
+    "applicationCategory": "UtilitiesApplication",
+    "offers": {
+      "@type": "Offer",
+      "price": "0.00",
+      "priceCurrency": "USD"
+    },
+    "description": "A free CNC programming utility to automatically generate parametric macro G-Code (G02/G03) for internal (ID) and external (OD) circular interpolation milling.",
+    "creator": {
+      "@type": "Person",
+      "name": "Nishikant Xalxo",
+      "url": "https://instagram.com/nishix_vamp"
+    }
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
   <style>
-    body { font-family: system-ui, Arial, sans-serif; margin: 18px; }
+    body { font-family: system-ui, Arial, sans-serif; margin: 18px; background-color: #f8fafc; }
     .wrap { max-width: 980px; margin: 0 auto; }
+
+    /* Navigation styling */
+    .nav-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      color: #64748b;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: color 0.2s ease;
+    }
+    .back-link:hover { color: #1a73e8; }
+    .back-link svg { width: 16px; height: 16px; fill: currentColor; }
 
     .banner {
       display: block;
@@ -31,42 +108,49 @@
       box-shadow: 0 8px 20px rgba(26, 115, 232, 0.4);
     }
 
-    h1 { font-size: 20px; margin: 0 0 12px; }
+    h1 { font-size: 20px; margin: 0 0 12px; color: #1e293b; }
 
     .grid{
       display:grid;
       grid-template-columns:repeat(2,minmax(240px,1fr));
       gap:12px;align-items:start;
     }
-    label{ display:block;font-size:13px;margin-bottom:6px;font-weight:500; }
+    label{ display:block;font-size:13px;margin-bottom:6px;font-weight:600; color: #475569; }
 
     input,select{
-      width:100%;padding:10px;border:1px solid #bbb;border-radius:8px;
-      font-size:14px;box-sizing:border-box;background:#fff;
+      width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px;
+      font-size:14px;box-sizing:border-box;background:#fff; color: #1e293b;
+    }
+    
+    input:focus, select:focus {
+        outline: none;
+        border-color: #1a73e8;
+        box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
     }
 
-    .row{ background:#f6f7f8;padding:12px;border-radius:10px; }
+    .row{ background:#f1f5f9;padding:12px;border-radius:10px; border: 1px solid #e2e8f0; }
     .actions{ display:flex;gap:10px;margin:12px 0;flex-wrap:wrap; }
 
     button{
-      padding:10px 14px;border:0;border-radius:10px;cursor:pointer;
-      font-weight:600;transition:opacity .2s;
+      padding:10px 14px;border:0;border-radius:8px;cursor:pointer;
+      font-weight:600;transition:opacity .2s, transform 0.1s;
     }
-    button:hover{ opacity:.9; }
-    button.primary{ background:#1a73e8;color:#fff; }
-    button.secondary{ background:#e8eaed;color:#333; }
+    button:hover{ opacity:.9; transform: translateY(-1px); }
+    button:active { transform: translateY(0); }
+    button.primary{ background:#1a73e8;color:#fff; box-shadow: 0 2px 4px rgba(26, 115, 232, 0.2); }
+    button.secondary{ background:#e2e8f0;color:#334155; }
 
     .out{
-      width:100%;min-height:420px;padding:12px;border:1px solid #bbb;
+      width:100%;min-height:420px;padding:16px;border:1px solid #cbd5e1;
       border-radius:10px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
-      font-size:13px;white-space:pre;overflow:auto;box-sizing:border-box;background:#fafafa;
+      font-size:13px;white-space:pre;overflow:auto;box-sizing:border-box;background:#1e293b; color:#f8fafc;
     }
 
-    .note{ font-size:12px;color:#444;margin-top:6px; }
-    .error{ color:#b00020;font-size:13px;margin:8px 0 0;font-weight:bold; }
+    .note{ font-size:12px;color:#64748b;margin-top:6px; font-weight: 500; }
+    .error{ color:#dc2626;font-size:13px;margin:8px 0 0;font-weight:bold; }
 
-    .credits{ text-align:center;margin-top:24px;font-size:14px;color:#555; }
-    .credits a{ color:#e1306c;text-decoration:none;font-weight:bold; }
+    .credits{ text-align:center;margin-top:24px;font-size:14px;color:#64748b; }
+    .credits a{ color:#1a73e8;text-decoration:none;font-weight:bold; }
     .credits a:hover{ text-decoration:underline; }
 
     @media (max-width:720px){ .grid{ grid-template-columns:1fr; } }
@@ -74,6 +158,14 @@
 </head>
 <body>
   <div class="wrap">
+    
+    <div class="nav-header">
+        <a href="../" class="back-link">
+            <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"></path></svg>
+            Back to CNC Hub
+        </a>
+    </div>
+
     <a href="https://shader7.com" target="_blank" class="banner">⚙️ Shader7 OD / ID INTERPOLATION</a>
     <h1>OD / ID Interpolation Macro Generator</h1>
 
@@ -173,7 +265,7 @@
     </div>
 
     <div class="credits">
-      Created by <a href="https://www.instagram.com/nishix_vamp" target="_blank">@nishix_vamp</a>
+      &copy; <script>document.write(new Date().getFullYear())</script> SHADER7 • Developed by <a href="https://www.instagram.com/nishix_vamp" target="_blank" rel="noopener noreferrer">@nishix_vamp</a>
     </div>
   </div>
 
@@ -364,6 +456,16 @@ ${p.endCode} ;
     if(!out.trim()) return;
     try{
       await navigator.clipboard.writeText(out);
+      const copyBtn = document.getElementById("copyBtn");
+      const originalText = copyBtn.textContent;
+      copyBtn.textContent = "Copied!";
+      copyBtn.style.background = "#16a34a";
+      copyBtn.style.color = "#fff";
+      setTimeout(() => {
+          copyBtn.textContent = originalText;
+          copyBtn.style.background = "#e2e8f0";
+          copyBtn.style.color = "#334155";
+      }, 2000);
     }catch{
       const ta = document.getElementById("output");
       ta.focus(); ta.select();
@@ -380,7 +482,7 @@ ${p.endCode} ;
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `${p.mode}_INTERPOLATION_${padO(p.progNum)}.txt`;
+    a.download = `${p.mode}_INTERPOLATION_O${String(p.progNum).padStart(4,'0')}.txt`;
     document.body.appendChild(a);
     a.click();
     a.remove();
