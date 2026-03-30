@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-FCJR8H4DME"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-FCJR8H4DME');
+  </script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Free CNC Circular Chamfer Macro Generator | SHADER7</title>
+  <meta name="description" content="Generate Fanuc G-Code for circular chamfering and cone milling. Automatically calculate Z-steps and radius adjustments for perfect CNC chamfers.">
+  <meta name="keywords" content="circular chamfer macro, cnc cone milling, g-code generator, fanuc macro, cnc machinist tools, shader7">
+  <meta name="author" content="Nishikant Xalxo">
+  <meta name="robots" content="index, follow">
+
+  <link rel="canonical" href="https://shader7.com/cnc-machinist/CircularChamfer/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Shader7">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:url" content="https://shader7.com/cnc-machinist/CircularChamfer/">
+  <meta property="og:title" content="Free CNC Circular Chamfer Macro Generator">
+  <meta property="og:description" content="Generate Fanuc G-Code for circular chamfering and cone milling. Automatically calculate Z-steps.">
+  <meta property="og:image" content="https://shader7.com/og-image.jpg">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@nishix_vamp">
+  <meta name="twitter:creator" content="@nishix_vamp">
+  <meta name="twitter:url" content="https://shader7.com/cnc-machinist/CircularChamfer/">
+  <meta name="twitter:title" content="Free CNC Circular Chamfer Macro Generator">
+  <meta name="twitter:description" content="Generate Fanuc G-Code for circular chamfering and cone milling. Automatically calculate Z-steps.">
+  <meta name="twitter:image" content="https://shader7.com/og-image.jpg">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Shader7 Circular Chamfer Generator",
+    "url": "https://shader7.com/cnc-machinist/CircularChamfer/",
+    "operatingSystem": "Web Browser",
+    "applicationCategory": "UtilitiesApplication",
+    "offers": {
+      "@type": "Offer",
+      "price": "0.00",
+      "priceCurrency": "USD"
+    },
+    "description": "A free browser-based CNC programming utility to automatically generate parametric macro G-Code for circular chamfering and cone milling operations.",
+    "creator": {
+      "@type": "Person",
+      "name": "Nishikant Xalxo",
+      "url": "https://instagram.com/nishix_vamp"
+    }
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#0f172a;
+  --panel:#1e293b;
+  --panel2:#0f172a;
+  --border:#334155;
+  --text:#f8fafc;
+  --muted:#94a3b8;
+  --green:#22c55e;
+  --indigo:#4f46e5;
+  --indigo-hover:#4338ca;
+  --success:#16a34a;
+  --success-hover:#15803d;
+  --gray:#475569;
+  --gray-hover:#334155;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  padding: 0 0 40px 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Header Styling */
+.app-header {
+    width: 100%;
+    background-color: #111827;
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    margin-bottom: 24px;
+}
+
+.header-content {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    color: var(--muted);
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.back-link:hover {
+    color: var(--text);
+}
+
+.back-link svg {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+}
+
+.brand-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #818cf8;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1.125rem;
+    letter-spacing: 0.025em;
+    transition: color 0.2s ease;
+}
+
+.brand-link:hover {
+    color: #a5b4fc;
+}
+
+.container{
+  max-width:1100px;
+  margin:auto;
+  padding: 0 24px;
+}
+
+h1{
+  margin:0 0 10px 0;
+  font-size:clamp(24px,4vw,32px);
+  color: #818cf8;
+}
+
+.subtitle{
+  color:var(--muted);
+  margin-bottom:24px;
+  font-size: 0.95rem;
+}
+
+.layout{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:24px;
+}
+
+.panel{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:24px;
+  box-shadow:0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.panel h2{
+  margin:0 0 20px 0;
+  font-size:18px;
+  color: #e2e8f0;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 10px;
+}
+
+.form-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+}
+
+.field{
+  display:flex;
+  flex-direction:column;
+}
+
+.field.full{
+  grid-column:1 / -1;
+}
+
+label{
+  margin-bottom:6px;
+  font-size:13px;
+  color:#cbd5e1;
+  font-weight:600;
+}
+
+input, select{
+  width:100%;
+  padding:12px 14px;
+  background:var(--panel2);
+  border:1px solid var(--border);
+  border-radius:8px;
+  color:var(--text);
+  font-size:14px;
+  outline:none;
+  transition: border-color 0.2s;
+}
+
+input:focus, select:focus{
+  border-color:#6366f1;
+}
+
+.select-wrap{
+  position:relative;
+}
+
+.select-wrap select{
+  appearance:none;
+  -webkit-appearance:none;
+  -moz-appearance:none;
+  padding-right:42px;
+  cursor:pointer;
+}
+
+.select-wrap::after{
+  content:"▼";
+  position:absolute;
+  right:14px;
+  top:50%;
+  transform:translateY(-50%);
+  pointer-events:none;
+  color:var(--muted);
+  font-size:10px;
+}
+
+.actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  margin-top:24px;
+}
+
+button{
+  padding:12px 18px;
+  border:none;
+  border-radius:8px;
+  font-weight:600;
+  cursor:pointer;
+  color:white;
+  font-size:14px;
+  flex: 1;
+  transition: transform 0.1s, filter 0.2s;
+}
+
+button:active { transform: translateY(1px); }
+button:hover { filter: brightness(1.1); }
+
+.generate{background:var(--indigo);}
+.download{background:var(--success);}
+.copy{background:var(--gray);}
+
+.output-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-bottom:16px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 10px;
+}
+
+.output-header h2 {
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+.status{
+  color:var(--muted);
+  font-size:13px;
+  background: var(--panel2);
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+}
+
+.notice{
+  margin-top:16px;
+  color:#94a3b8;
+  font-size:12px;
+  text-align: center;
+}
+
+pre{
+  background:#020617;
+  color:var(--green);
+  padding:20px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  margin-top:0;
+  white-space:pre-wrap;
+  word-break:break-word;
+  min-height:550px;
+  max-height: 600px;
+  overflow:auto;
+  font-size:13px;
+  line-height:1.6;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+@media (max-width: 900px){
+  .layout{
+    grid-template-columns:1fr;
+  }
+  pre{
+    min-height:360px;
+  }
+}
+
+@media (max-width: 520px){
+  .form-grid{
+    grid-template-columns:1fr;
+  }
+  .actions {
+      flex-direction: column;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header class="app-header">
+    <div class="header-content">
+        <a href="../" class="back-link">
+            <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"></path></svg>
+            Back to CNC Hub
+        </a>
+        <a href="https://shader7.com" class="brand-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"/>
+                <path d="m8 3.293 6 6V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V9.293l6-6Z"/>
+            </svg>
+            <span class="hidden sm:inline">Shader7</span>
+        </a>
+    </div>
+</header>
+
+<div class="container">
+  <h1>Circular Chamfer Macro Generator</h1>
+  <div class="subtitle">Ready-to-use CNC macro generator for cone milling and chamfering with live G-code updates.</div>
+
+  <div class="layout">
+    <div class="panel">
+      <h2>Macro Settings</h2>
+
+      <div class="form-grid">
+        <div class="field">
+          <label for="start-depth">Start Depth (#1)</label>
+          <input id="start-depth" type="number" step="any" value="1">
+        </div>
+
+        <div class="field">
+          <label for="final-depth">Final Depth (#2)</label>
+          <input id="final-depth" type="number" step="any" value="-15">
+        </div>
+
+        <div class="field">
+          <label for="diameter">Base Diameter (#3)</label>
+          <input id="diameter" type="number" step="any" value="51">
+        </div>
+
+        <div class="field">
+          <label for="angle">Chamfer Angle (#4)</label>
+          <input id="angle" type="number" step="any" value="45">
+        </div>
+
+        <div class="field">
+          <label for="z-step">Z Step (#6)</label>
+          <input id="z-step" type="number" step="any" value="0.5">
+        </div>
+
+        <div class="field">
+          <label for="d-reg">Tool Offset Register D (#7)</label>
+          <input id="d-reg" type="number" step="1" value="11">
+        </div>
+
+        <div class="field">
+          <label for="f-cut">Cut Feedrate (F)</label>
+          <input id="f-cut" type="number" step="any" value="500">
+        </div>
+
+        <div class="field">
+          <label for="f-retract">Retract Feedrate (F)</label>
+          <input id="f-retract" type="number" step="any" value="1000">
+        </div>
+
+        <div class="field">
+          <label for="safe-z">Safe Z Retract</label>
+          <input id="safe-z" type="number" step="any" value="200">
+        </div>
+
+        <div class="field">
+          <label for="prog-num">Program Number (O)</label>
+          <input id="prog-num" type="number" step="1" value="6999">
+        </div>
+
+        <div class="field full">
+          <label for="spindle">Spindle Command</label>
+          <div class="select-wrap">
+            <select id="spindle">
+              <option value="M141 S500; M103;">M141 S500; M103 (Gear Head)</option>
+              <option value="M03 S500;">M03 S500 (Standard)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="generate" onclick="generate()">Generate Macro</button>
+        <button class="download" onclick="downloadFile()">Download .NC</button>
+        <button class="copy" onclick="copyCode()">Copy Code</button>
+      </div>
+
+      <div class="notice">
+        Verify the output on your machine control before running production code.
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="output-header">
+        <h2>Generated Code</h2>
+        <div class="status" id="status">Ready</div>
+      </div>
+      <pre id="output"></pre>
+    </div>
+  </div>
+</div>
+
+<script>
+function val(id){
+  return parseFloat(document.getElementById(id).value) || 0;
+}
+
+function setStatus(msg){
+  document.getElementById("status").textContent = msg;
+}
+
+function round3(n){
+  return Math.round((n + Number.EPSILON) * 1000) / 1000;
+}
+
+function generate(){
+  const prog = String(document.getElementById("prog-num").value || "0").padStart(4, "0");
+
+  let z1 = val("start-depth");
+  const z2 = val("final-depth");
+  const dia = val("diameter");
+  const ang = val("angle");
+  const zStep = val("z-step");
+  const dReg = val("d-reg");
+  const fCut = val("f-cut");
+  const fRet = val("f-retract");
+  const safeZ = val("safe-z");
+  const spindle = document.getElementById("spindle").value;
+
+  if(zStep <= 0){
+    document.getElementById("output").textContent = "(ERROR: Z STEP MUST BE GREATER THAN 0)";
+    setStatus("Fix Z step");
+    return;
+  }
+
+  if(dia <= 0){
+    document.getElementById("output").textContent = "(ERROR: BASE DIAMETER MUST BE GREATER THAN 0)";
+    setStatus("Fix diameter");
+    return;
+  }
+
+  if(z1 <= z2){
+    document.getElementById("output").textContent = "(ERROR: START DEPTH MUST BE GREATER THAN FINAL DEPTH FOR THIS MACRO)";
+    setStatus("Fix depths");
+    return;
+  }
+
+  let gcode = "";
+
+  gcode += `%\n`;
+  gcode += `O${prog} (CIRCULAR CHAMFER MACRO)\n`;
+  gcode += `G40 G0 G90 G54 G17;\n`;
+  gcode += `${spindle}\n`;
+
+  gcode += `#1=${round3(z1)} (FIRST Z ENTRY)\n`;
+  gcode += `#2=${round3(z2)} (FINAL Z DEPTH)\n`;
+  gcode += `#3=${round3(dia)} (BASE DIAMETER)\n`;
+  gcode += `#4=${round3(ang)} (CHAMFER ANGLE)\n`;
+  gcode += `#6=${round3(zStep)} (Z STEP PER PASS)\n`;
+  gcode += `#7=${round3(dReg)} (TOOL OFFSET REGISTER)\n`;
+
+  gcode += `G90 G0 X0 Y0 (MOVE TO CENTER)\n`;
+  gcode += `G0 Z[#1+2.] (SAFE APPROACH)\n`;
+
+  gcode += `WHILE[#1 GT #2] DO1\n`;
+  gcode += `#9=ABS[#1-#2] (DISTANCE TO BASE)\n`;
+  gcode += `#5=[[#3/2]+[#9*TAN[#4]]] (CURRENT RADIUS)\n`;
+  gcode += `G90 G1 Z#1 F${round3(fCut)}\n`;
+  gcode += `G91 G1 G41 D#7 X#5 F${round3(fCut)}\n`;
+  gcode += `G03 X0 Y0 I-#5 J0\n`;
+  gcode += `G1 G40 X-#5 F${round3(fRet)}\n`;
+  gcode += `#1=#1-#6 (NEXT PASS)\n`;
+  gcode += `END1\n`;
+
+  gcode += `(FINAL PASS)\n`;
+  gcode += `#1=#2\n`;
+  gcode += `#5=[#3/2]\n`;
+  gcode += `G90 G1 Z#1 F${round3(fCut)}\n`;
+  gcode += `G91 G1 G41 D#7 X#5 F${round3(fCut)}\n`;
+  gcode += `G03 X0 Y0 I-#5 J0\n`;
+  gcode += `G1 G40 X-#5 F${round3(fRet)}\n`;
+
+  gcode += `G90 G0 Z${round3(safeZ)} (SAFE RETRACT)\n`;
+  gcode += `M0\n`;
+  gcode += `%\n`;
+
+  document.getElementById("output").textContent = gcode;
+  setStatus("Macro generated");
+}
+
+function copyCode(){
+  const text = document.getElementById("output").textContent;
+
+  if(!text.trim() || text.includes("(ERROR")){
+    setStatus("Nothing to copy");
+    return;
+  }
+
+  navigator.clipboard.writeText(text)
+    .then(() => setStatus("Copied to clipboard!"))
+    .catch(() => setStatus("Copy failed"));
+    
+  setTimeout(() => setStatus("Ready"), 2000);
+}
+
+function downloadFile(){
+  const text = document.getElementById("output").textContent;
+  const prog = document.getElementById("prog-num").value || "0000";
+
+  if(!text.trim() || text.includes("(ERROR")){
+    setStatus("Generate valid code first");
+    return;
+  }
+
+  const blob = new Blob([text], {type:"text/plain"});
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `O${prog}.nc`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+
+  URL.revokeObjectURL(url);
+  setStatus("NC file downloaded!");
+  setTimeout(() => setStatus("Ready"), 2000);
+}
+
+function enableLiveUpdate(){
+  const inputs = document.querySelectorAll("input, select");
+
+  inputs.forEach(el => {
+    el.addEventListener("input", generate);
+    el.addEventListener("change", generate);
+  });
+}
+
+window.addEventListener("load", () => {
+  enableLiveUpdate();
+  generate();
+});
+</script>
+
+</body>
+</html>
