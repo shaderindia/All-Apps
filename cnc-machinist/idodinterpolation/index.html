@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-FCJR8H4DME"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-FCJR8H4DME');
+  </script>
+
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <title>CNC Circular Interpolation G-Code Generator | ID/OD Milling - SHADER7</title>
+  <meta name="description" content="Free CNC macro generator for ID and OD circular interpolation. Create G02/G03 milling programs instantly. Compatible with Fanuc and Haas controls.">
+  <meta name="keywords" content="circular interpolation calculator, id od milling macro, g02 g03 g-code generator, cnc circle milling, fanuc macro, shader7">
+  <meta name="author" content="Nishikant Xalxo">
+  <meta name="robots" content="index, follow">
+
+  <link rel="canonical" href="https://shader7.com/cnc-machinist/idodinterpolation/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Shader7">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:url" content="https://shader7.com/cnc-machinist/idodinterpolation/">
+  <meta property="og:title" content="CNC Circular Interpolation G-Code Generator | ID/OD Milling">
+  <meta property="og:description" content="Free CNC macro generator for ID and OD circular interpolation. Create G02/G03 milling programs instantly.">
+  <meta property="og:image" content="https://shader7.com/og-image.jpg">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@nishix_vamp">
+  <meta name="twitter:creator" content="@nishix_vamp">
+  <meta name="twitter:url" content="https://shader7.com/cnc-machinist/idodinterpolation/">
+  <meta name="twitter:title" content="CNC Circular Interpolation G-Code Generator | ID/OD Milling">
+  <meta name="twitter:description" content="Free CNC macro generator for ID and OD circular interpolation. Create G02/G03 milling programs instantly.">
+  <meta name="twitter:image" content="https://shader7.com/og-image.jpg">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Shader7 Circular Interpolation Generator",
+    "url": "https://shader7.com/cnc-machinist/idodinterpolation/",
+    "operatingSystem": "Web Browser",
+    "applicationCategory": "UtilitiesApplication",
+    "offers": {
+      "@type": "Offer",
+      "price": "0.00",
+      "priceCurrency": "USD"
+    },
+    "description": "A free CNC programming utility to automatically generate parametric macro G-Code (G02/G03) for internal (ID) and external (OD) circular interpolation milling.",
+    "creator": {
+      "@type": "Person",
+      "name": "Nishikant Xalxo",
+      "url": "https://instagram.com/nishix_vamp"
+    }
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <style>
+    body { font-family: system-ui, Arial, sans-serif; margin: 18px; background-color: #f8fafc; }
+    .wrap { max-width: 980px; margin: 0 auto; }
+
+    /* Navigation styling */
+    .nav-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      color: #64748b;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: color 0.2s ease;
+    }
+    .back-link:hover { color: #1a73e8; }
+    .back-link svg { width: 16px; height: 16px; fill: currentColor; }
+
+    .banner {
+      display: block;
+      background: linear-gradient(135deg, #1a73e8 0%, #0056d2 100%);
+      color: #fff;
+      text-align: center;
+      padding: 18px;
+      text-decoration: none;
+      font-size: 24px;
+      font-weight: 800;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      letter-spacing: 1.5px;
+      box-shadow: 0 4px 15px rgba(26, 115, 232, 0.3);
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+    }
+    
+    .banner:hover {
+      filter: brightness(1.1);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(26, 115, 232, 0.4);
+    }
+
+    h1 { font-size: 20px; margin: 0 0 12px; color: #1e293b; }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(240px,1fr));
+      gap:12px;align-items:start;
+    }
+    label{ display:block;font-size:13px;margin-bottom:6px;font-weight:600; color: #475569; }
+
+    input,select{
+      width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px;
+      font-size:14px;box-sizing:border-box;background:#fff; color: #1e293b;
+    }
+    
+    input:focus, select:focus {
+        outline: none;
+        border-color: #1a73e8;
+        box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+    }
+
+    .row{ background:#f1f5f9;padding:12px;border-radius:10px; border: 1px solid #e2e8f0; }
+    .actions{ display:flex;gap:10px;margin:12px 0;flex-wrap:wrap; }
+
+    button{
+      padding:10px 14px;border:0;border-radius:8px;cursor:pointer;
+      font-weight:600;transition:opacity .2s, transform 0.1s;
+    }
+    button:hover{ opacity:.9; transform: translateY(-1px); }
+    button:active { transform: translateY(0); }
+    button.primary{ background:#1a73e8;color:#fff; box-shadow: 0 2px 4px rgba(26, 115, 232, 0.2); }
+    button.secondary{ background:#e2e8f0;color:#334155; }
+
+    .out{
+      width:100%;min-height:420px;padding:16px;border:1px solid #cbd5e1;
+      border-radius:10px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+      font-size:13px;white-space:pre;overflow:auto;box-sizing:border-box;background:#1e293b; color:#f8fafc;
+    }
+
+    .note{ font-size:12px;color:#64748b;margin-top:6px; font-weight: 500; }
+    .error{ color:#dc2626;font-size:13px;margin:8px 0 0;font-weight:bold; }
+
+    .credits{ text-align:center;margin-top:24px;font-size:14px;color:#64748b; }
+    .credits a{ color:#1a73e8;text-decoration:none;font-weight:bold; }
+    .credits a:hover{ text-decoration:underline; }
+
+    @media (max-width:720px){ .grid{ grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    
+    <div class="nav-header">
+        <a href="../" class="back-link">
+            <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"></path></svg>
+            Back to CNC Hub
+        </a>
+    </div>
+
+    <a href="https://shader7.com" target="_blank" class="banner">⚙️ Shader7 OD / ID INTERPOLATION</a>
+    <h1>OD / ID Interpolation Macro Generator</h1>
+
+    <div class="grid">
+      <div class="row">
+        <label for="mode">Mode</label>
+        <select id="mode">
+          <option value="OD" selected>OD (Outside Diameter)</option>
+          <option value="ID">ID (Inside Diameter)</option>
+        </select>
+        <div class="note">ID mode matches your N29/N35/N36 program.</div>
+      </div>
+
+      <div class="row">
+        <label for="progNum">Program Number (O####)</label>
+        <input id="progNum" type="number" step="1" value="1" />
+        <div class="note">Default O0001. Example: 30 → O0030</div>
+      </div>
+
+      <div class="row">
+        <label for="spindleMode">Spindle Mode</label>
+        <select id="spindleMode">
+          <option value="gear" selected>M141 S550 + M103 (Gear Head)</option>
+          <option value="m03">M03 S550 (Standard Spindle)</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <label for="endCode">End Program Code</label>
+        <select id="endCode">
+          <option value="M01">M01 (Optional Stop)</option>
+          <option value="M0" selected>M0 (Program Stop)</option>
+          <option value="M00">M00 (Program Stop)</option>
+          <option value="M30">M30 (End of Program)</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <label for="x">X coordinate (#16)</label>
+        <input id="x" type="number" step="any" value="0" />
+      </div>
+
+      <div class="row">
+        <label for="y">Y coordinate (#17)</label>
+        <input id="y" type="number" step="any" value="0" />
+      </div>
+
+      <div class="row">
+        <label for="firstDepth">First depth (#1)</label>
+        <input id="firstDepth" type="number" step="any" value="0" />
+      </div>
+
+      <div class="row">
+        <label for="finalDepth">Final depth (#2)</label>
+        <input id="finalDepth" type="number" step="any" value="-0.50" />
+      </div>
+
+      <div class="row">
+        <label for="doc">Depth of cut (#3)</label>
+        <input id="doc" type="number" step="any" value="0.05" />
+      </div>
+
+      <div class="row">
+        <label for="diaMake">Diameter to make (#30)</label>
+        <input id="diaMake" type="number" step="any" value="500" />
+      </div>
+
+      <div class="row">
+        <label for="cutterR">Cutter radius (#5)</label>
+        <input id="cutterR" type="number" step="any" value="50" />
+        <div class="note">Enter cutter <b>radius</b> (matches your ID example).</div>
+      </div>
+
+      <div class="row" id="odSafetyRow">
+        <label for="safety">Safety engage (#8) (OD only)</label>
+        <input id="safety" type="number" step="any" value="0" />
+      </div>
+
+      <div class="row">
+        <label for="feed">Feed (F)</label>
+        <input id="feed" type="number" step="any" value="1000" />
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="primary" id="generateBtn">Generate Program</button>
+      <button class="secondary" id="copyBtn">Copy to Clipboard</button>
+      <button class="secondary" id="downloadBtn">Download .txt</button>
+    </div>
+
+    <div id="err" class="error"></div>
+    <textarea id="output" class="out" spellcheck="false"></textarea>
+
+    <div class="note">
+      Output starts with <b>%</b> and ends with <b>%</b>. Program header is <b>O####</b>.
+      Validate on your control/simulator before cutting.
+    </div>
+
+    <div class="credits">
+      &copy; <script>document.write(new Date().getFullYear())</script> SHADER7 • Developed by <a href="https://www.instagram.com/nishix_vamp" target="_blank" rel="noopener noreferrer">@nishix_vamp</a>
+    </div>
+  </div>
+
+<script>
+  function n(v){ const num = Number(v); return Number.isFinite(num) ? num : NaN; }
+
+  function fmt(num){
+    if(!Number.isFinite(num)) return "NaN";
+    const s = String(num);
+    if(s.includes("e") || s.includes("E")) return num.toFixed(6).replace(/\.?0+$/,"");
+    return s;
+  }
+
+  function padO(num){
+    return "O" + String(num).padStart(4,'0');
+  }
+
+  function getSpindleCode(spindleMode){
+    if(spindleMode === "gear"){
+      return `M141 S550 ;
+M103 ;`;
+    }
+    return `M03 S550 ;`;
+  }
+
+  function buildOD(p){
+    // OD macro format (no "(1ST)")
+    return (
+`%
+${padO(p.progNum)} (OD INTERPOLATION);
+
+G40 G80 G49 G90 G54 G17 ;
+${getSpindleCode(p.spindleMode)}
+
+#16=${fmt(p.x)} (X) ;
+#17=${fmt(p.y)} (Y) ;
+
+#1=${fmt(p.firstDepth)} (FIRST DEPTH) ;
+#2=${fmt(p.finalDepth)} (FINAL DEPTH) ;
+#30=${fmt(p.diaMake)} (DIA) (DIA TO MAKE) ;
+#3=${fmt(p.doc)} (DEPTH OF CUT) ;
+#4=[#30/2] ;
+#5=${fmt(p.cutterR)} (CUTTER RADIUS) ;
+#7=#4+#5 ;
+#6=#5+#4+#8 ;
+#8=${fmt(p.safety)} (SAFETY ENGAGE) ;
+#12=#1 ;
+#15=#1 ;
+
+G52 X#16 Y#17 ;
+G0 X0 Y0 ;
+G43 G0 Z50 ;
+X0 Y#6 ;
+Z#15 ;
+G91 G01 Y-#8 F${fmt(p.feed)} ;
+IF[#1 EQ #2] GOTO 120 ;
+N80 G03 X0 Y0 Z-#3 I0 J-#7 ;
+
+G03 X0 Y0 I0 J-#7 ;
+#15=[#15-#3] ;
+IF[#15 GT #2] GOTO 80 ;
+IF[#12 EQ 0] GOTO 130 ;
+N120 G03 X0 Y0 I0 J-#7 ;
+N130 G01 G40 X0 Y#8 ;
+G90 G0 Z300 ;
+G52 X0 Y0 ;
+M5 ;
+M9 ;
+${p.endCode} ;
+%
+`
+    );
+  }
+
+  function buildID(p){
+    // ID macro EXACTLY like user-provided format (no safety engage, N29/N35/N36)
+    return (
+`%
+${padO(p.progNum)} (ID INTERPOLATION);
+
+G40 G80 G49 G90 G54 G17 ;
+${getSpindleCode(p.spindleMode)}
+
+#16=${fmt(p.x)} (X) ;
+#17=${fmt(p.y)} (Y) ;
+
+#1=${fmt(p.firstDepth)} (FIRST DEPTH) ;
+#2=${fmt(p.finalDepth)} (FINAL DEPTH) ;
+#30=${fmt(p.diaMake)} (DIA TO MAKE) ;
+#3=${fmt(p.doc)} (DEPTH OF CUT) ;
+#4=[#30/2] ;
+#5=${fmt(p.cutterR)} (CUTTER RADIUS) ;
+#6=#4-#5 ;
+#12=#1 ;
+#15=#1 ;
+
+G52 X#16 Y#17 ;
+G0 X0 Y0 ;
+G43 G0 Z50 ;
+Z#15 ;
+G91 G01 Y#6 F${fmt(p.feed)} ;
+IF[#1 EQ #2] GOTO 35 ;
+N29 G03 X0 Y0 Z-#3 I0 J-#6 ;
+G03 X0 Y0 I0 J-#6 ;
+#15=[#15-#3] ;
+IF[#15 GT #2] GOTO 29 ;
+IF[#12 EQ 0] GOTO 36 ;
+N35 G03 X0 Y0 I0 J-#6 ;
+N36 G01 G40 X0 Y0 ;
+G90 G0 Z300 ;
+G52 X0 Y0 ;
+M5 ;
+${p.endCode} ;
+%
+`
+    );
+  }
+
+  function validate(p){
+    const errs = [];
+
+    for(const [k,v] of Object.entries(p)){
+      if(k === "mode" || k === "endCode" || k === "spindleMode") continue;
+      if(!Number.isFinite(v)) errs.push(`${k} must be a number`);
+    }
+
+    if(Number.isFinite(p.progNum) && p.progNum < 0) errs.push("Program number cannot be negative");
+    if(Number.isFinite(p.doc) && p.doc <= 0) errs.push("Depth of cut (#3) must be > 0");
+    if(Number.isFinite(p.diaMake) && p.diaMake <= 0) errs.push("Diameter to make (#30) must be > 0");
+    if(Number.isFinite(p.cutterR) && p.cutterR <= 0) errs.push("Cutter radius (#5) must be > 0");
+    if(Number.isFinite(p.feed) && p.feed <= 0) errs.push("Feed must be > 0");
+
+    if(p.mode === "ID"){
+      const pathR = (p.diaMake/2) - p.cutterR; // #6
+      if(Number.isFinite(pathR) && pathR <= 0){
+        errs.push("ID too small for this cutter: (#30/2 - #5) must be > 0");
+      }
+    }
+
+    if(Number.isFinite(p.firstDepth) && Number.isFinite(p.finalDepth)){
+      if(p.finalDepth > p.firstDepth){
+        errs.push("Final depth (#2) is greater than first depth (#1). If cutting down in Z-, final depth is usually <= first.");
+      }
+    }
+
+    return errs;
+  }
+
+  function getParams(){
+    return {
+      mode: document.getElementById("mode").value,
+      progNum: parseInt(document.getElementById("progNum").value, 10),
+      spindleMode: document.getElementById("spindleMode").value,
+      endCode: document.getElementById("endCode").value,
+      x: n(document.getElementById("x").value),
+      y: n(document.getElementById("y").value),
+      firstDepth: n(document.getElementById("firstDepth").value),
+      finalDepth: n(document.getElementById("finalDepth").value),
+      doc: n(document.getElementById("doc").value),
+      diaMake: n(document.getElementById("diaMake").value),
+      cutterR: n(document.getElementById("cutterR").value),
+      safety: n(document.getElementById("safety").value),
+      feed: n(document.getElementById("feed").value)
+    };
+  }
+
+  function generate(){
+    const p = getParams();
+    const errs = validate(p);
+
+    // Show/hide OD safety row
+    document.getElementById("odSafetyRow").style.display = (p.mode === "OD") ? "block" : "none";
+
+    const errEl = document.getElementById("err");
+    const outEl = document.getElementById("output");
+
+    if(errs.length){
+      errEl.textContent = errs.join(" • ");
+      outEl.value = "";
+      return;
+    }
+    errEl.textContent = "";
+    outEl.value = (p.mode === "ID") ? buildID(p) : buildOD(p);
+  }
+
+  async function copyOut(){
+    const out = document.getElementById("output").value;
+    if(!out.trim()) return;
+    try{
+      await navigator.clipboard.writeText(out);
+      const copyBtn = document.getElementById("copyBtn");
+      const originalText = copyBtn.textContent;
+      copyBtn.textContent = "Copied!";
+      copyBtn.style.background = "#16a34a";
+      copyBtn.style.color = "#fff";
+      setTimeout(() => {
+          copyBtn.textContent = originalText;
+          copyBtn.style.background = "#e2e8f0";
+          copyBtn.style.color = "#334155";
+      }, 2000);
+    }catch{
+      const ta = document.getElementById("output");
+      ta.focus(); ta.select();
+      document.execCommand("copy");
+    }
+  }
+
+  function downloadOut(){
+    const out = document.getElementById("output").value;
+    const p = getParams();
+    if(!out.trim()) return;
+
+    const blob = new Blob([out], {type:"text/plain;charset=utf-8"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${p.mode}_INTERPOLATION_O${String(p.progNum).padStart(4,'0')}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  document.getElementById("generateBtn").addEventListener("click", generate);
+  document.getElementById("copyBtn").addEventListener("click", copyOut);
+  document.getElementById("downloadBtn").addEventListener("click", downloadOut);
+
+  // auto-generate when switching
+  document.getElementById("mode").addEventListener("change", generate);
+  document.getElementById("spindleMode").addEventListener("change", generate);
+  document.getElementById("endCode").addEventListener("change", generate);
+
+  generate();
+</script>
+</body>
+</html>
