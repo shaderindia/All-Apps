@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FCJR8H4DME"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-FCJR8H4DME');
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <title>Free 3D Parametric CAD Modeler | STL Export - SHADER7</title>
+    <meta name="description" content="Free browser-based 3D parametric CAD modeler. Create, modify, and export 3D models to STL format instantly. No software installation required.">
+    <meta name="keywords" content="3d parametric modeler, web cad, online 3d modeling, stl export, free cad software, cnc machinist tools, shader7">
+    <meta name="author" content="Nishikant Xalxo">
+    <meta name="robots" content="index, follow">
+
+    <link rel="canonical" href="https://shader7.com/cnc-machinist/3DCADWEB/">
+
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Shader7">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:url" content="https://shader7.com/cnc-machinist/3DCADWEB/">
+    <meta property="og:title" content="Free 3D Parametric CAD Modeler | STL Export">
+    <meta property="og:description" content="Free browser-based 3D parametric CAD modeler. Create, modify, and export 3D models to STL format instantly.">
+    <meta property="og:image" content="https://shader7.com/og-image.jpg">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@nishix_vamp">
+    <meta name="twitter:creator" content="@nishix_vamp">
+    <meta name="twitter:url" content="https://shader7.com/cnc-machinist/3DCADWEB/">
+    <meta name="twitter:title" content="Free 3D Parametric CAD Modeler | STL Export">
+    <meta name="twitter:description" content="Free browser-based 3D parametric CAD modeler. Create, modify, and export 3D models to STL format instantly.">
+    <meta name="twitter:image" content="https://shader7.com/og-image.jpg">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Shader7 3D Parametric Modeler",
+      "url": "https://shader7.com/cnc-machinist/3DCADWEB/",
+      "operatingSystem": "Web Browser",
+      "applicationCategory": "DesignApplication",
+      "offers": {
+        "@type": "Offer",
+        "price": "0.00",
+        "priceCurrency": "USD"
+      },
+      "description": "A free, browser-based 3D parametric CAD modeler utilizing CSG (Constructive Solid Geometry) to design parts and export directly to STL for 3D printing and CNC machining.",
+      "creator": {
+        "@type": "Person",
+        "name": "Nishikant Xalxo",
+        "url": "https://instagram.com/nishix_vamp"
+      }
+    }
+    </script>
+
+    <style>
+        :root {
+            --bg: #121212;
+            --panel-bg: #1e1e1e;
+            --text: #f0f0f0;
+            --text-muted: #aaa;
+            --border: #333;
+            --primary: #0a84ff;
+            --primary-hover: #0066cc;
+            --success: #30d158;
+            --success-hover: #24a143;
+            --danger: #ff453a;
+            --danger-hover: #cc2922;
+            --input-bg: #2c2c2e;
+            --shadow: rgba(0,0,0,0.5);
+        }
+
+        [data-theme="light"] {
+            --bg: #e5e5ea;
+            --panel-bg: #ffffff;
+            --text: #1c1c1e;
+            --text-muted: #666;
+            --border: #d1d1d6;
+            --primary: #007aff;
+            --primary-hover: #005bb5;
+            --success: #34c759;
+            --success-hover: #24a143;
+            --danger: #ff3b30;
+            --danger-hover: #cc2922;
+            --input-bg: #f2f2f7;
+            --shadow: rgba(0,0,0,0.1);
+        }
+
+        * { box-sizing: border-box; touch-action: manipulation; }
+        
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg); color: var(--text); overflow: hidden; display: flex; flex-direction: column;
+        }
+
+        #mobile-header {
+            display: none; align-items: center; background: var(--panel-bg);
+            border-bottom: 1px solid var(--border); padding: 12px 16px;
+            z-index: 15; box-shadow: 0 2px 10px var(--shadow);
+            justify-content: space-between;
+        }
+        .mobile-header-left { display: flex; align-items: center; }
+        #mobile-header h2 { margin: 0 0 0 12px; font-size: 1.1rem; font-weight: 600; color: var(--text); }
+        #btn-open-menu {
+            background: var(--primary); color: #fff; border: none; border-radius: 6px;
+            padding: 8px 12px; font-weight: 600; font-size: 0.9rem; cursor: pointer;
+            display: flex; align-items: center; gap: 6px;
+        }
+
+        #app { display: flex; width: 100%; height: 100%; flex-direction: row; flex: 1; overflow: hidden; }
+        
+        #viewport { flex: 1; position: relative; height: 100%; }
+        canvas { display: block; width: 100%; height: 100%; touch-action: none; outline: none; }
+        
+        #ui-panel {
+            width: 360px; min-width: 360px; background: var(--panel-bg); height: 100%;
+            overflow-y: auto; border-right: 1px solid var(--border); display: flex; flex-direction: column;
+            box-shadow: 2px 0 15px var(--shadow); z-index: 10; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .top-nav-bar {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            background: var(--panel-bg);
+            display: flex;
+            align-items: center;
+        }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            color: var(--primary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: color 0.2s ease;
+        }
+        .back-link:hover { color: var(--primary-hover); }
+        .back-link svg { width: 16px; height: 16px; fill: currentColor; }
+
+        .header {
+            padding: 16px; border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--panel-bg); position: sticky; top: 0; z-index: 11;
+        }
+        .header h2 { margin: 0; font-size: 1.1rem; font-weight: 600; }
+        
+        .panel-section { padding: 16px; border-bottom: 1px solid var(--border); }
+        .panel-section h3 { margin: 0 0 12px 0; font-size: 0.95rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        .form-group { margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+        .form-group label { font-size: 0.85rem; font-weight: 500; width: 45%; }
+        .form-group input[type="number"], .form-group input[type="text"], .form-group select {
+            width: 50%; padding: 8px; border: 1px solid var(--border); border-radius: 6px;
+            font-size: 0.85rem; background: var(--input-bg); color: var(--text); outline: none; transition: border-color 0.2s;
+        }
+        .form-group input:focus, .form-group select:focus { border-color: var(--primary); }
+        
+        .edge-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+            width: 100%; margin-top: 8px; padding: 10px; background: var(--input-bg);
+            border-radius: 6px; border: 1px solid var(--border);
+        }
+        .edge-grid-header { grid-column: span 2; font-size: 0.75rem; font-weight: bold; color: var(--primary); margin-top: 6px; border-bottom: 1px solid var(--border); padding-bottom: 2px;}
+        .edge-grid-header:first-child { margin-top: 0; }
+        .edge-grid select { width: 100%; font-size: 0.75rem; padding: 4px; border: 1px solid var(--border); border-radius: 4px; background: var(--panel-bg); color: var(--text);}
+
+        .btn-group { display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap; }
+        button {
+            flex: 1; min-width: 48%; padding: 10px; font-size: 0.85rem; font-weight: 600;
+            border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 5px;
+        }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-success { background: var(--success); color: #fff; }
+        .btn-success:hover { background: var(--success-hover); }
+        .btn-danger { background: var(--danger); color: #fff; }
+        .btn-danger:hover { background: var(--danger-hover); }
+        .btn-secondary { background: var(--input-bg); color: var(--text); border: 1px solid var(--border); }
+        .btn-secondary:hover { background: var(--border); }
+        
+        .icon-btn { padding: 6px; min-width: auto; background: transparent; border: 1px solid var(--border); border-radius: 4px; color: var(--text); }
+        .icon-btn:hover { background: var(--input-bg); }
+
+        .hidden { display: none !important; }
+
+        #dim-tooltip {
+            position: absolute; background: rgba(20, 20, 20, 0.9); padding: 10px 14px;
+            border-radius: 8px; font-size: 13px; font-family: 'SF Mono', Consolas, Menlo, monospace;
+            pointer-events: none; z-index: 100; border: 1px solid rgba(255,255,255,0.15);
+            backdrop-filter: blur(8px); box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            transform: translate(20px, 20px); color: #fff;
+        }
+        .dim-row { display: flex; justify-content: space-between; gap: 16px; margin-bottom: 4px; }
+        .dim-row:last-child { margin-bottom: 0; }
+        .dim-val { text-align: right; min-width: 60px; }
+        .dim-x { color: #ff5555; font-weight: bold; }
+        .dim-y { color: #55ff55; font-weight: bold; }
+        .dim-z { color: #5555ff; font-weight: bold; }
+        
+        #mobile-overlay { display: none; }
+        
+        @media (max-width: 768px) {
+            #mobile-header { display: flex; }
+            #ui-panel {
+                position: fixed; top: 0; left: 0; width: 320px; max-width: 85vw; height: 100%;
+                transform: translateX(-100%); border-right: 1px solid var(--border);
+                z-index: 30; transition: transform 0.3s ease;
+            }
+            #ui-panel.open { transform: translateX(0); }
+            
+            #mobile-overlay {
+                position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0,0,0,0.5); z-index: 25; opacity: 0; pointer-events: none; transition: opacity 0.3s;
+            }
+            #mobile-overlay.active { display: block; opacity: 1; pointer-events: auto; }
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+    </style>
+    
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
+            "three-csg-ts": "https://esm.sh/three-csg-ts@3.2.0?external=three"
+        }
+    }
+    </script>
+</head>
+<body>
+    <div id="mobile-header">
+        <div class="mobile-header-left">
+            <button id="btn-open-menu">☰ Menu</button>
+            <h2>Modeler Pro</h2>
+        </div>
+        <a href="../" class="back-link" style="margin-right: 8px;">
+            <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"></path></svg>
+            Exit
+        </a>
+    </div>
+
+    <div id="app">
+        <div id="mobile-overlay"></div>
+        
+        <div id="ui-panel">
+            <div class="top-nav-bar">
+                <a href="../" class="back-link">
+                    <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"></path></svg>
+                    Back to CNC Hub
+                </a>
+            </div>
+            <div class="header">
+                <h2>Properties</h2>
+                <div>
+                    <button class="icon-btn" id="btn-theme" title="Toggle Theme">🌓</button>
+                    <button class="icon-btn" id="btn-close-mobile" style="display: none;">✕</button>
+                </div>
+            </div>
+            
+            <div class="panel-section">
+                <h3>Global & File</h3>
+                <div class="btn-group">
+                    <button class="btn-secondary" id="btn-reset-cam">Reset Cam</button>
+                    <button class="btn-secondary" id="btn-save">Save JSON</button>
+                    <button class="btn-secondary" onclick="document.getElementById('file-input').click()">Load JSON</button>
+                    <input type="file" id="file-input" accept=".json" class="hidden">
+                    <button class="btn-success" id="btn-export-stl" style="flex-basis: 100%;">Export STL (mm)</button>
+                </div>
+                <div class="form-group" style="margin-top: 12px;">
+                    <label>Wireframe</label><input type="checkbox" id="ui-wireframe">
+                </div>
+            </div>
+
+            <div class="panel-section" id="panel-base">
+                <h3>Base Geometry</h3>
+                <div class="form-group">
+                    <label>Shape Type</label>
+                    <select id="base-shape">
+                        <option value="none">None (Empty)</option>
+                        <option value="block">Box (Per-Edge)</option>
+                        <option value="cylinder">Polygon / Cylinder</option>
+                    </select>
+                </div>
+                
+                <div id="base-block-controls" class="hidden">
+                    <div class="form-group"><label>Width (X) (mm)</label><input type="number" id="base-x" value="100" step="1"></div>
+                    <div class="form-group"><label>Depth (Y) (mm)</label><input type="number" id="base-y" value="100" step="1"></div>
+                    <div class="form-group"><label>Height (Z) (mm)</label><input type="number" id="base-z" value="50" step="1"></div>
+                    
+                    <div class="form-group">
+                        <label>Edge Size (mm)</label>
+                        <input type="number" id="base-edge-val" value="5" step="1" min="0">
+                    </div>
+                    <div id="base-corners-group" class="edge-grid">
+                        <div class="edge-grid-header">Vertical Edges</div>
+                        <select id="b-vFL"><option value="none">FL: -</option><option value="fillet">FL: Fillet</option><option value="chamfer">FL: Chamfer</option></select>
+                        <select id="b-vFR"><option value="none">FR: -</option><option value="fillet">FR: Fillet</option><option value="chamfer">FR: Chamfer</option></select>
+                        <select id="b-vBL"><option value="none">BL: -</option><option value="fillet">BL: Fillet</option><option value="chamfer">BL: Chamfer</option></select>
+                        <select id="b-vBR"><option value="none">BR: -</option><option value="fillet">BR: Fillet</option><option value="chamfer">BR: Chamfer</option></select>
+
+                        <div class="edge-grid-header">Top Edges</div>
+                        <select id="b-tF"><option value="none">F: -</option><option value="fillet">F: Fillet</option><option value="chamfer">F: Chamfer</option></select>
+                        <select id="b-tB"><option value="none">B: -</option><option value="fillet">B: Fillet</option><option value="chamfer">B: Chamfer</option></select>
+                        <select id="b-tL"><option value="none">L: -</option><option value="fillet">L: Fillet</option><option value="chamfer">L: Chamfer</option></select>
+                        <select id="b-tR"><option value="none">R: -</option><option value="fillet">R: Fillet</option><option value="chamfer">R: Chamfer</option></select>
+
+                        <div class="edge-grid-header">Bottom Edges</div>
+                        <select id="b-bF"><option value="none">F: -</option><option value="fillet">F: Fillet</option><option value="chamfer">F: Chamfer</option></select>
+                        <select id="b-bB"><option value="none">B: -</option><option value="fillet">B: Fillet</option><option value="chamfer">B: Chamfer</option></select>
+                        <select id="b-bL"><option value="none">L: -</option><option value="fillet">L: Fillet</option><option value="chamfer">L: Chamfer</option></select>
+                        <select id="b-bR"><option value="none">R: -</option><option value="fillet">R: Fillet</option><option value="chamfer">R: Chamfer</option></select>
+                    </div>
+                </div>
+
+                <div id="base-cyl-controls" class="hidden">
+                    <div class="form-group"><label>Radius (mm)</label><input type="number" id="base-r" value="50" step="1"></div>
+                    <div class="form-group"><label>Sides</label><input type="number" id="base-sides" value="4" step="1" min="3"></div>
+                    <div class="form-group"><label>Height (Z) (mm)</label><input type="number" id="base-cyl-h" value="50" step="1"></div>
+                    <div class="form-group">
+                        <label>Rim Modifier</label>
+                        <select id="base-cyl-mod">
+                            <option value="none">None</option>
+                            <option value="fillet">Fillet</option>
+                            <option value="chamfer">Chamfer</option>
+                        </select>
+                    </div>
+                    <div class="form-group hidden" id="base-cyl-mod-val-group">
+                        <label>Mod Size (mm)</label>
+                        <input type="number" id="base-cyl-edge-val" value="5" step="1" min="0">
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-section">
+                <h3>Add Shape Elements</h3>
+                <div class="btn-group">
+                    <button class="btn-primary" id="btn-add-feat-box">+ Box</button>
+                    <button class="btn-primary" id="btn-add-feat-cyl">+ Polygon</button>
+                    <button class="btn-primary" id="btn-add-feat-sphere">+ Sphere</button>
+                    <button class="btn-primary" id="btn-add-feat-text">+ Text</button>
+                </div>
+            </div>
+
+            <div class="panel-section hidden" id="panel-feature">
+                <h3>Element Properties</h3>
+                
+                <div class="form-group">
+                    <label>Action</label>
+                    <select id="feat-type">
+                        <option value="solid">Add (Solid)</option>
+                        <option value="hole">Cut (Hole)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Shape</label>
+                    <select id="feat-shape">
+                        <option value="cylinder">Polygon / Cylinder</option>
+                        <option value="box">Box</option>
+                        <option value="sphere">Sphere</option>
+                        <option value="text">Text (Engrave)</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="feat-axis-group">
+                    <label>Orientation</label>
+                    <select id="feat-axis">
+                        <option value="z">Z-Axis (Top/Bottom)</option>
+                        <option value="x">X-Axis (Sides)</option>
+                        <option value="y">Y-Axis (Front/Back)</option>
+                    </select>
+                </div>
+
+                <div class="form-group"><label>Pos X (mm)</label><input type="number" id="feat-pos-x" step="0.5"></div>
+                <div class="form-group"><label>Pos Y (mm)</label><input type="number" id="feat-pos-y" step="0.5"></div>
+                <div class="form-group"><label>Pos Z (mm)</label><input type="number" id="feat-pos-z" step="0.5"></div>
+
+                <div class="form-group"><label>Rot X (°)</label><input type="number" id="feat-rot-x" step="5"></div>
+                <div class="form-group"><label>Rot Y (°)</label><input type="number" id="feat-rot-y" step="5"></div>
+                <div class="form-group"><label>Rot Z (°)</label><input type="number" id="feat-rot-z" step="5"></div>
+
+                <div id="feat-dim-r" class="form-group"><label>Radius (mm)</label><input type="number" id="feat-radius" step="0.5" min="0.1"></div>
+                <div id="feat-dim-sides" class="form-group"><label>Sides</label><input type="number" id="feat-sides" step="1" min="3"></div>
+                <div id="feat-dim-w" class="form-group hidden"><label>Width (X) (mm)</label><input type="number" id="feat-w" step="0.5" min="0.1"></div>
+                <div id="feat-dim-d" class="form-group hidden"><label>Depth (Y) (mm)</label><input type="number" id="feat-d" step="0.5" min="0.1"></div>
+                <div id="feat-dim-h" class="form-group"><label>Extrude/Depth (mm)</label><input type="number" id="feat-height" step="0.5" min="0.1"></div>
+
+                <div id="feat-text-controls" class="hidden">
+                    <div class="form-group"><label>Text</label><input type="text" id="feat-text-str"></div>
+                    <div class="form-group">
+                        <label>Font</label>
+                        <select id="feat-text-font">
+                            <option value="helvetiker_regular">Helvetiker Regular</option>
+                            <option value="helvetiker_bold">Helvetiker Bold</option>
+                            <option value="optimer_regular">Optimer</option>
+                            <option value="gentilis_regular">Gentilis</option>
+                            <option value="droid_sans_regular">Droid Sans</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Text Size (mm)</label><input type="number" id="feat-text-size" step="0.5" min="1"></div>
+                    <div class="form-group"><label>Letter Spacing (mm)</label><input type="number" id="feat-text-spacing" step="0.1" value="1"></div>
+                </div>
+
+                <div class="form-group hidden" id="feat-mod-val-group">
+                    <label id="feat-mod-label">Mod Size (mm)</label>
+                    <input type="number" id="feat-mod-val" step="0.5" min="0">
+                </div>
+
+                <div id="feat-box-edges" class="edge-grid hidden">
+                    <div class="edge-grid-header">Vertical Edges</div>
+                    <select id="f-vFL"><option value="none">FL: -</option><option value="fillet">FL: Fillet</option><option value="chamfer">FL: Chamfer</option></select>
+                    <select id="f-vFR"><option value="none">FR: -</option><option value="fillet">FR: Fillet</option><option value="chamfer">FR: Chamfer</option></select>
+                    <select id="f-vBL"><option value="none">BL: -</option><option value="fillet">BL: Fillet</option><option value="chamfer">BL: Chamfer</option></select>
+                    <select id="f-vBR"><option value="none">BR: -</option><option value="fillet">BR: Fillet</option><option value="chamfer">BR: Chamfer</option></select>
+                    <div class="edge-grid-header">Top Edges</div>
+                    <select id="f-tF"><option value="none">F: -</option><option value="fillet">F: Fillet</option><option value="chamfer">F: Chamfer</option></select>
+                    <select id="f-tB"><option value="none">B: -</option><option value="fillet">B: Fillet</option><option value="chamfer">B: Chamfer</option></select>
+                    <select id="f-tL"><option value="none">L: -</option><option value="fillet">L: Fillet</option><option value="chamfer">L: Chamfer</option></select>
+                    <select id="f-tR"><option value="none">R: -</option><option value="fillet">R: Fillet</option><option value="chamfer">R: Chamfer</option></select>
+                    <div class="edge-grid-header">Bottom Edges</div>
+                    <select id="f-bF"><option value="none">F: -</option><option value="fillet">F: Fillet</option><option value="chamfer">F: Chamfer</option></select>
+                    <select id="f-bB"><option value="none">B: -</option><option value="fillet">B: Fillet</option><option value="chamfer">B: Chamfer</option></select>
+                    <select id="f-bL"><option value="none">L: -</option><option value="fillet">L: Fillet</option><option value="chamfer">L: Chamfer</option></select>
+                    <select id="f-bR"><option value="none">R: -</option><option value="fillet">R: Fillet</option><option value="chamfer">R: Chamfer</option></select>
+                </div>
+
+                <div id="feat-cyl-mods" class="hidden">
+                    <div class="form-group">
+                        <label id="cyl-mod-label">Modifier</label>
+                        <select id="feat-mod">
+                            <option value="none">None</option>
+                            <option value="fillet">Fillet / C-Sink</option>
+                            <option value="chamfer">Chamfer</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="btn-danger" id="btn-delete-feat" style="width: 100%; margin-top: 10px;">Delete Element</button>
+            </div>
+        </div>
+        
+        <div id="viewport">
+            <div id="dim-tooltip" class="hidden">
+                <div class="dim-row"><span class="dim-x">X Axis</span><span class="dim-val"><span id="lbl-x">0</span> mm</span></div>
+                <div class="dim-row"><span class="dim-y">Y Axis</span><span class="dim-val"><span id="lbl-y">0</span> mm</span></div>
+                <div class="dim-row"><span class="dim-z">Z Axis</span><span class="dim-val"><span id="lbl-z">0</span> mm</span></div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { TransformControls } from 'three/addons/controls/TransformControls.js';
+        import { STLExporter } from 'three/addons/exporters/STLExporter.js';
+        import { CSG } from 'three-csg-ts';
+        import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+        import { FontLoader } from 'three/addons/loaders/FontLoader.js';
+        import * as BufferGeometryUtils from 'three/addons/utils/BufferGeometryUtils.js';
+
+        const EDGE_IDS = ['vFL','vFR','vBL','vBR','tF','tB','tL','tR','bF','bB','bL','bR'];
+
+        let state = {
+            base: { 
+                shape: 'none', 
+                x: 100, y: 100, z: 50, 
+                radius: 50, height: 50, sides: 4,
+                edgeVal: 5, cylMod: 'none', cylModVal: 5,
+                edges: {
+                    vFL: 'none', vFR: 'none', vBL: 'none', vBR: 'none',
+                    tF: 'none', tB: 'none', tL: 'none', tR: 'none',
+                    bF: 'none', bB: 'none', bL: 'none', bR: 'none'
+                }
+            },
+            features: [],
+            selectedId: null,
+            wireframe: false,
+            theme: 'dark'
+        };
+
+        const container = document.getElementById('viewport');
+        const scene = new THREE.Scene();
+        
+        const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 1, 5000);
+        camera.up.set(0, 0, 1); 
+        const initialCameraPos = new THREE.Vector3(150, -150, 150);
+        camera.position.copy(initialCameraPos);
+        camera.lookAt(0, 0, 0);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        container.appendChild(renderer.domElement);
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.touches = { ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.DOLLY_PAN };
+
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
+
+        const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+        dirLight.position.set(100, 100, 200);
+        dirLight.castShadow = true;
+        dirLight.shadow.mapSize.width = 1024;
+        dirLight.shadow.mapSize.height = 1024;
+        dirLight.shadow.camera.left = -200;
+        dirLight.shadow.camera.right = 200;
+        dirLight.shadow.camera.top = 200;
+        dirLight.shadow.camera.bottom = -200;
+        dirLight.shadow.camera.far = 1000;
+        scene.add(dirLight);
+
+        const fillLight = new THREE.DirectionalLight(0xaaccff, 0.4);
+        fillLight.position.set(-100, -100, -100);
+        scene.add(fillLight);
+
+        const gridHelper = new THREE.GridHelper(500, 50, 0x888888, 0x444444);
+        gridHelper.rotation.x = Math.PI / 2; 
+        scene.add(gridHelper);
+
+        const axesHelper = new THREE.AxesHelper(100);
+        scene.add(axesHelper);
+
+        let materialSolid = new THREE.MeshStandardMaterial({
+            color: 0x007aff, roughness: 0.3, metalness: 0.2,
+            polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1
+        });
+        const materialWireframe = new THREE.MeshBasicMaterial({ color: 0x000000, wireframe: true });
+
+        let mainMesh = null;
+        const ghostGroup = new THREE.Group();
+        scene.add(ghostGroup);
+        const dimLinesGroup = new THREE.Group();
+        scene.add(dimLinesGroup);
+
+        const fontLoader = new FontLoader();
+        const fontCache = {};
+
+        const transformControl = new TransformControls(camera, renderer.domElement);
+        transformControl.size = 1.5;
+        let isDraggingGizmo = false;
+        
+        transformControl.addEventListener('dragging-changed', (event) => {
+            isDraggingGizmo = event.value;
+            controls.enabled = !event.value;
+            if (!event.value) { hideDimensions(); buildModel(); } 
+            else { showDimensions(); }
+        });
+
+        transformControl.addEventListener('change', () => {
+            if (transformControl.object && isDraggingGizmo) {
+                const id = transformControl.object.userData.id;
+                const feat = state.features.find(f => f.id === id);
+                if (feat) {
+                    feat.x = parseFloat(transformControl.object.position.x.toFixed(1));
+                    feat.y = parseFloat(transformControl.object.position.y.toFixed(1));
+                    feat.z = parseFloat(transformControl.object.position.z.toFixed(1));
+                    updateUIInputsOnly(); 
+                    updateDimensionsVisuals(transformControl.object.position);
+                }
+            }
+        });
+        scene.add(transformControl);
+
+        function applyTheme() {
+            document.documentElement.setAttribute('data-theme', state.theme);
+            const isDark = state.theme === 'dark';
+            scene.background = new THREE.Color(isDark ? 0x121212 : 0xe5e5ea);
+            materialWireframe.color.setHex(isDark ? 0xffffff : 0x000000);
+            gridHelper.material.color.setHex(isDark ? 0x888888 : 0xaaaaaa);
+            gridHelper.material.opacity = isDark ? 0.2 : 0.5;
+            gridHelper.material.transparent = true;
+        }
+
+        function generateUniqueId() { return Math.random().toString(36).substring(2, 9); }
+
+        function createModifiedCylinder(radius, height, sides, mod, val) {
+            val = Math.min(val, radius - 0.001, height / 2 - 0.001);
+            let geo;
+            
+            if (mod === 'none' || val <= 0) {
+                geo = new THREE.CylinderGeometry(radius, radius, height, sides);
+            } else {
+                const pts = [];
+                pts.push(new THREE.Vector2(0, -height/2));
+                pts.push(new THREE.Vector2(0, -height/2));
+                pts.push(new THREE.Vector2(radius - val, -height/2));
+                pts.push(new THREE.Vector2(radius - val, -height/2)); 
+
+                if (mod === 'chamfer') {
+                    pts.push(new THREE.Vector2(radius, -height/2 + val));
+                    pts.push(new THREE.Vector2(radius, -height/2 + val));
+                    pts.push(new THREE.Vector2(radius, height/2 - val));
+                    pts.push(new THREE.Vector2(radius, height/2 - val));
+                } else if (mod === 'fillet') {
+                    for(let i=0; i<=90; i+=10) {
+                        let radA = (i - 90) * Math.PI / 180;
+                        pts.push(new THREE.Vector2(radius - val + val * Math.cos(radA), -height/2 + val + val * Math.sin(radA)));
+                    }
+                    pts.push(new THREE.Vector2(radius, height/2 - val));
+                    pts.push(new THREE.Vector2(radius, height/2 - val));
+                    for(let i=0; i<=90; i+=10) {
+                        let radA = i * Math.PI / 180;
+                        pts.push(new THREE.Vector2(radius - val + val * Math.cos(radA), height/2 - val + val * Math.sin(radA)));
+                    }
+                }
+                pts.push(new THREE.Vector2(radius - val, height/2));
+                pts.push(new THREE.Vector2(radius - val, height/2));
+                pts.push(new THREE.Vector2(0, height/2));
+                pts.push(new THREE.Vector2(0, height/2));
+
+                geo = new THREE.LatheGeometry(pts, sides);
+            }
+            geo.rotateY(Math.PI / sides);
+            if (sides < 20) { geo = geo.toNonIndexed(); geo.computeVertexNormals(); }
+            return geo; 
+        }
+
+        function applyEdgeModifiersToCSG(csgObj, w, d, h, edges, val) {
+            if (val <= 0) return csgObj;
+            let result = csgObj;
+            const cuts = [
+                {id: 'vFL', ax: 'z', px: -w/2, py: -d/2, pz: 0, sX: 1, sY: 1, sZ: 0},
+                {id: 'vFR', ax: 'z', px: w/2, py: -d/2, pz: 0, sX: -1, sY: 1, sZ: 0},
+                {id: 'vBL', ax: 'z', px: -w/2, py: d/2, pz: 0, sX: 1, sY: -1, sZ: 0},
+                {id: 'vBR', ax: 'z', px: w/2, py: d/2, pz: 0, sX: -1, sY: -1, sZ: 0},
+                {id: 'tF', ax: 'x', px: 0, py: -d/2, pz: h/2, sX: 0, sY: 1, sZ: -1},
+                {id: 'tB', ax: 'x', px: 0, py: d/2, pz: h/2, sX: 0, sY: -1, sZ: -1},
+                {id: 'tL', ax: 'y', px: -w/2, py: 0, pz: h/2, sX: 1, sY: 0, sZ: -1},
+                {id: 'tR', ax: 'y', px: w/2, py: 0, pz: h/2, sX: -1, sY: 0, sZ: -1},
+                {id: 'bF', ax: 'x', px: 0, py: -d/2, pz: -h/2, sX: 0, sY: 1, sZ: 1},
+                {id: 'bB', ax: 'x', px: 0, py: d/2, pz: -h/2, sX: 0, sY: -1, sZ: 1},
+                {id: 'bL', ax: 'y', px: -w/2, py: 0, pz: -h/2, sX: 1, sY: 0, sZ: 1},
+                {id: 'bR', ax: 'y', px: w/2, py: 0, pz: -h/2, sX: -1, sY: 0, sZ: 1}
+            ];
+
+            cuts.forEach(e => {
+                const mod = edges[e.id];
+                if (!mod || mod === 'none') return;
+                
+                let cutterCSG;
+                let length = (e.ax === 'x' ? w : (e.ax === 'y' ? d : h)) + val * 4;
+
+                if (mod === 'chamfer') {
+                    let cGeo = new THREE.BoxGeometry(
+                        e.ax === 'x' ? length : val * Math.SQRT2,
+                        e.ax === 'y' ? length : val * Math.SQRT2,
+                        e.ax === 'z' ? length : val * Math.SQRT2
+                    );
+                    let cMesh = new THREE.Mesh(cGeo);
+                    if (e.ax === 'x') cMesh.rotation.x = Math.PI / 4;
+                    if (e.ax === 'y') cMesh.rotation.y = Math.PI / 4;
+                    if (e.ax === 'z') cMesh.rotation.z = Math.PI / 4;
+                    cMesh.position.set(e.px, e.py, e.pz);
+                    cMesh.updateMatrixWorld();
+                    cutterCSG = CSG.fromMesh(cMesh);
+                } else if (mod === 'fillet') {
+                    let bGeo = new THREE.BoxGeometry(
+                        e.ax === 'x' ? length : val * 2,
+                        e.ax === 'y' ? length : val * 2,
+                        e.ax === 'z' ? length : val * 2
+                    );
+                    let bMesh = new THREE.Mesh(bGeo);
+                    bMesh.position.set(e.px, e.py, e.pz);
+                    bMesh.updateMatrixWorld();
+                    let boxCSG = CSG.fromMesh(bMesh);
+
+                    let cylGeo = new THREE.CylinderGeometry(val, val, length, 32);
+                    let cylMesh = new THREE.Mesh(cylGeo);
+                    if (e.ax === 'x') {
+                        cylMesh.rotation.z = Math.PI / 2;
+                        cylMesh.position.set(e.px, e.py + e.sY*val, e.pz + e.sZ*val);
+                    } else if (e.ax === 'y') {
+                        cylMesh.position.set(e.px + e.sX*val, e.py, e.pz + e.sZ*val);
+                    } else if (e.ax === 'z') {
+                        cylMesh.rotation.x = Math.PI / 2;
+                        cylMesh.position.set(e.px + e.sX*val, e.py + e.sY*val, e.pz);
+                    }
+                    cylMesh.updateMatrixWorld();
+                    let cylCSG = CSG.fromMesh(cylMesh);
+                    cutterCSG = boxCSG.subtract(cylCSG);
+                }
+                if(cutterCSG) result = result.subtract(cutterCSG);
+            });
+            return result;
+        }
+
+        function buildModel() {
+            let fontsReady = true;
+            state.features.forEach(feat => {
+                if (feat.shape === 'text') {
+                    const fName = feat.font || 'helvetiker_bold';
+                    if (!fontCache[fName]) {
+                        fontsReady = false;
+                        fontLoader.load(`https://unpkg.com/three@0.160.0/examples/fonts/${fName}.typeface.json`, 
+                            (font) => { fontCache[fName] = font; buildModel(); },
+                            undefined,
+                            (err) => { console.error("Font error", err); fontCache[fName] = "error"; buildModel(); }
+                        );
+                    }
+                }
+            });
+            if (!fontsReady) return;
+
+            if (mainMesh) { scene.remove(mainMesh); mainMesh.geometry.dispose(); }
+            
+            transformControl.detach(); 
+            while(ghostGroup.children.length > 0){
+                let child = ghostGroup.children[0];
+                ghostGroup.remove(child);
+                child.geometry.dispose();
+                child.material.dispose();
+            }
+
+            const b = state.base;
+            const bX = Math.max(0.1, b.x || 100);
+            const bY = Math.max(0.1, b.y || 100);
+            const bZ = Math.max(0.1, b.z || 50);
+            const bR = Math.max(0.1, b.radius || 50);
+            const bH = Math.max(0.1, b.height || 50);
+            const bSides = Math.max(3, b.sides || 4);
+            const bEdgeVal = Math.max(0, b.edgeVal || 0);
+            const bCylModVal = Math.max(0, b.cylModVal || 0);
+
+            if (b.shape === 'none') {
+                gridHelper.position.z = 0;
+            } else {
+                gridHelper.position.z = b.shape === 'block' ? -bZ / 2 : -bH / 2;
+            }
+            gridHelper.position.y = 0;
+
+            try {
+                let resultCSG = null;
+
+                if (b.shape === 'block') {
+                    let baseMesh = new THREE.Mesh(new THREE.BoxGeometry(bX, bY, bZ));
+                    baseMesh.updateMatrixWorld();
+                    let baseCSG = CSG.fromMesh(baseMesh);
+                    let limit = Math.min(bX, bY, bZ) / 2.01;
+                    resultCSG = applyEdgeModifiersToCSG(baseCSG, bX, bY, bZ, b.edges, Math.min(bEdgeVal, limit));
+                } else if (b.shape === 'cylinder') {
+                    let cylGeo = createModifiedCylinder(bR, bH, bSides, b.cylMod, bCylModVal);
+                    cylGeo.rotateX(Math.PI / 2);
+                    let cylMesh = new THREE.Mesh(cylGeo);
+                    cylMesh.updateMatrixWorld();
+                    resultCSG = CSG.fromMesh(cylMesh);
+                }
+
+                state.features.forEach(feat => {
+                    let featCSG;
+                    let ghostGeo;
+                    let configuredMesh;
+                    
+                    let featW = Math.max(0.1, feat.w || 50);
+                    let featD = Math.max(0.1, feat.d || 50);
+                    let featH = Math.max(0.1, feat.h || 5); 
+                    let featR = Math.max(0.1, feat.r || 20);
+                    let featSides = Math.max(3, feat.sides || 4);
+                    let featModVal = Math.max(0, feat.modVal || 0);
+                    
+                    if (feat.shape === 'box') {
+                        let baseFeatMesh = new THREE.Mesh(new THREE.BoxGeometry(featW, featD, featH));
+                        baseFeatMesh.updateMatrixWorld();
+                        let tempCSG = CSG.fromMesh(baseFeatMesh);
+                        let limit = Math.min(featW, featD, featH) / 2.01;
+                        tempCSG = applyEdgeModifiersToCSG(tempCSG, featW, featD, featH, feat.edges || {}, Math.min(featModVal, limit));
+                        
+                        configuredMesh = CSG.toMesh(tempCSG, new THREE.Matrix4(), materialSolid);
+                        ghostGeo = configuredMesh.geometry.clone();
+
+                    } else if (feat.shape === 'sphere') {
+                        ghostGeo = new THREE.SphereGeometry(featR, 32, 16);
+                        configuredMesh = new THREE.Mesh(ghostGeo);
+                        
+                    } else if (feat.shape === 'text') {
+                        const fontName = feat.font || 'helvetiker_bold';
+                        const font = fontCache[fontName];
+                        let tStr = typeof feat.textStr !== 'undefined' ? feat.textStr : 'ENGRAVE';
+                        if (tStr.trim() === '') tStr = ' '; 
+                        let tSize = Math.max(0.1, feat.textSize || 15);
+                        let tSpacing = typeof feat.textSpacing !== 'undefined' ? feat.textSpacing : 1;
+                        
+                        if (tStr === ' ' || font === "error") {
+                            ghostGeo = new THREE.BoxGeometry(0.1, 0.1, 0.1); 
+                        } else {
+                            let charGeometries = [];
+                            let currentX = 0;
+                            
+                            for (let i = 0; i < tStr.length; i++) {
+                                if (tStr[i] === ' ') {
+                                    currentX += tSize * 0.4 + tSpacing; 
+                                    continue;
+                                }
+                                let charGeo = new TextGeometry(tStr[i], {
+                                    font: font, size: tSize, height: featH, depth: featH,
+                                    curveSegments: 3, bevelEnabled: false
+                                });
+                                charGeo.computeBoundingBox();
+                                const bBox = charGeo.boundingBox;
+                                const charW = bBox.max.x - bBox.min.x;
+                                
+                                charGeo.translate(currentX - bBox.min.x, 0, 0);
+                                charGeometries.push(charGeo);
+                                currentX += charW + tSpacing;
+                            }
+                            
+                            if (charGeometries.length > 0) {
+                                ghostGeo = BufferGeometryUtils.mergeGeometries(charGeometries);
+                            } else {
+                                ghostGeo = new THREE.BoxGeometry(0.1, 0.1, 0.1);
+                            }
+                        }
+
+                        ghostGeo.computeBoundingBox();
+                        const fullBox = ghostGeo.boundingBox;
+                        let xOffset = 0, yOffset = 0, zOffset = 0;
+                        if (fullBox && fullBox.max.x !== -Infinity) {
+                            xOffset = -0.5 * (fullBox.max.x + fullBox.min.x);
+                            yOffset = -0.5 * (fullBox.max.y + fullBox.min.y);
+                            zOffset = -0.5 * (fullBox.max.z + fullBox.min.z);
+                        }
+                        ghostGeo.translate(xOffset, yOffset, zOffset);
+                        configuredMesh = new THREE.Mesh(ghostGeo);
+
+                    } else { // Polygon/Cylinder
+                        let cylGeo;
+                        if (feat.type === 'solid') {
+                            cylGeo = createModifiedCylinder(featR, featH, featSides, feat.mod, featModVal);
+                        } else {
+                            cylGeo = new THREE.CylinderGeometry(featR, featR, featH, featSides);
+                            cylGeo.rotateY(Math.PI / featSides);
+                            if (featSides < 20) { cylGeo = cylGeo.toNonIndexed(); cylGeo.computeVertexNormals(); }
+                        }
+                        ghostGeo = cylGeo.clone();
+                        configuredMesh = new THREE.Mesh(cylGeo);
+                    }
+
+                    // Apply Base Axis Orientation
+                    if (feat.shape === 'cylinder') {
+                        if (feat.axis === 'z') configuredMesh.rotation.x = Math.PI / 2; 
+                        else if (feat.axis === 'x') configuredMesh.rotation.z = -Math.PI / 2; 
+                    } else if (feat.shape === 'text') {
+                        if (feat.axis === 'y') configuredMesh.rotation.x = Math.PI / 2; 
+                        else if (feat.axis === 'x') { configuredMesh.rotation.y = Math.PI / 2; configuredMesh.rotation.x = Math.PI / 2; }
+                    }
+
+                    // Apply Custom User Euler Rotation
+                    configuredMesh.rotateX(THREE.MathUtils.degToRad(feat.rx || 0));
+                    configuredMesh.rotateY(THREE.MathUtils.degToRad(feat.ry || 0));
+                    configuredMesh.rotateZ(THREE.MathUtils.degToRad(feat.rz || 0));
+
+                    configuredMesh.position.set(feat.x, feat.y, feat.z);
+                    configuredMesh.updateMatrixWorld();
+                    featCSG = CSG.fromMesh(configuredMesh);
+
+                    if (feat.shape === 'cylinder' && feat.type === 'hole' && feat.mod !== 'none' && featModVal > 0) {
+                        let coneGeo = new THREE.CylinderGeometry(featR + featModVal, featR, featModVal, featSides);
+                        coneGeo.rotateY(Math.PI / featSides);
+                        if (featSides < 20) { coneGeo = coneGeo.toNonIndexed(); coneGeo.computeVertexNormals(); }
+                        
+                        let topCone = new THREE.Mesh(coneGeo);
+                        let dir = new THREE.Vector3(0, 1, 0).applyEuler(configuredMesh.rotation);
+                        topCone.position.copy(configuredMesh.position).add(dir.clone().multiplyScalar(featH / 2));
+                        topCone.rotation.copy(configuredMesh.rotation);
+                        topCone.updateMatrixWorld();
+                        featCSG = featCSG.union(CSG.fromMesh(topCone));
+                    }
+
+                    let isSelected = state.selectedId === feat.id;
+                    let ghostMat = new THREE.MeshBasicMaterial({
+                        color: isSelected ? 0xffcc00 : (feat.type === 'hole' ? 0xff4444 : 0x44ff44),
+                        transparent: true, opacity: isSelected ? 0.7 : 0.2, wireframe: !isSelected, depthWrite: false
+                    });
+                    
+                    let ghostMesh = new THREE.Mesh(ghostGeo, ghostMat);
+                    ghostMesh.position.copy(configuredMesh.position);
+                    ghostMesh.rotation.copy(configuredMesh.rotation);
+                    ghostMesh.userData.id = feat.id;
+                    ghostGroup.add(ghostMesh);
+
+                    if (isSelected) transformControl.attach(ghostMesh);
+
+                    if (!resultCSG) {
+                        if (feat.type === 'solid') resultCSG = featCSG;
+                    } else {
+                        if (feat.type === 'hole') resultCSG = resultCSG.subtract(featCSG);
+                        else resultCSG = resultCSG.union(featCSG);
+                    }
+                });
+
+                if (resultCSG) {
+                    mainMesh = CSG.toMesh(resultCSG, new THREE.Matrix4(), materialSolid);
+                    mainMesh.castShadow = true; mainMesh.receiveShadow = true;
+                    if (state.wireframe) {
+                        const edges = new THREE.EdgesGeometry(mainMesh.geometry);
+                        const line = new THREE.LineSegments(edges, materialWireframe);
+                        mainMesh.add(line);
+                    }
+                    mainMesh.userData.id = 'base';
+                    scene.add(mainMesh);
+                }
+
+                if(state.selectedId === 'base' && mainMesh) {
+                    materialSolid.emissive.setHex(0x222222);
+                    transformControl.detach();
+                } else {
+                    materialSolid.emissive.setHex(0x000000);
+                }
+
+            } catch (err) { console.error("Build Error:", err); }
+        }
+
+        const raycaster = new THREE.Raycaster();
+        const pointerDownPos = new THREE.Vector2();
+        
+        container.addEventListener('pointerdown', (event) => {
+            if(isDraggingGizmo) return; 
+            pointerDownPos.set(event.clientX, event.clientY);
+        });
+
+        container.addEventListener('pointerup', (event) => {
+            if(isDraggingGizmo) return;
+            const dx = event.clientX - pointerDownPos.x;
+            const dy = event.clientY - pointerDownPos.y;
+            if (Math.sqrt(dx*dx + dy*dy) > 5) return; 
+
+            if(event.target !== renderer.domElement) return;
+
+            const rect = container.getBoundingClientRect();
+            const mouse = new THREE.Vector2(
+                ((event.clientX - rect.left) / rect.width) * 2 - 1,
+                -((event.clientY - rect.top) / rect.height) * 2 + 1
+            );
+
+            raycaster.setFromCamera(mouse, camera);
+
+            let isGizmo = false;
+            raycaster.intersectObjects(scene.children, true).forEach(hit => {
+                if(hit.object.parent && hit.object.parent.type === "TransformControls") isGizmo = true;
+            });
+            if (isGizmo) return;
+
+            let intersects = raycaster.intersectObjects(ghostGroup.children, false);
+            if (intersects.length > 0) {
+                state.selectedId = intersects[0].object.userData.id;
+            } else {
+                if (mainMesh) {
+                    let baseIntersect = raycaster.intersectObject(mainMesh, false);
+                    state.selectedId = baseIntersect.length > 0 ? 'base' : null;
+                }
+            }
+            updateUI(); buildModel();
+        });
+
+        function showDimensions() { document.getElementById('dim-tooltip').classList.remove('hidden'); }
+        function hideDimensions() { document.getElementById('dim-tooltip').classList.add('hidden'); dimLinesGroup.clear(); }
+
+        function updateDimensionsVisuals(pos) {
+            dimLinesGroup.clear();
+            const matX = new THREE.LineDashedMaterial({ color: 0xff6666, dashSize: 5, gapSize: 3, depthTest: false, transparent: true, opacity: 0.8 });
+            const matY = new THREE.LineDashedMaterial({ color: 0x66ff66, dashSize: 5, gapSize: 3, depthTest: false, transparent: true, opacity: 0.8 });
+            const matZ = new THREE.LineDashedMaterial({ color: 0x6666ff, dashSize: 5, gapSize: 3, depthTest: false, transparent: true, opacity: 0.8 });
+
+            const geoX = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,0,0), new THREE.Vector3(pos.x,0,0)]);
+            const geoY = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(pos.x,0,0), new THREE.Vector3(pos.x,pos.y,0)]);
+            const geoZ = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(pos.x,pos.y,0), pos]);
+
+            const lineX = new THREE.Line(geoX, matX); lineX.computeLineDistances();
+            const lineY = new THREE.Line(geoY, matY); lineY.computeLineDistances();
+            const lineZ = new THREE.Line(geoZ, matZ); lineZ.computeLineDistances();
+            
+            lineX.renderOrder = 999; lineY.renderOrder = 999; lineZ.renderOrder = 999;
+            dimLinesGroup.add(lineX, lineY, lineZ);
+
+            document.getElementById('lbl-x').textContent = pos.x.toFixed(1);
+            document.getElementById('lbl-y').textContent = pos.y.toFixed(1);
+            document.getElementById('lbl-z').textContent = pos.z.toFixed(1);
+
+            const tooltip = document.getElementById('dim-tooltip');
+            const proj = pos.clone().project(camera);
+            const w = container.clientWidth; const h = container.clientHeight;
+            tooltip.style.left = `${(proj.x * 0.5 + 0.5) * w}px`;
+            tooltip.style.top = `${(-proj.y * 0.5 + 0.5) * h}px`;
+        }
+
+        function updateUIInputsOnly() {
+             if (state.selectedId && state.selectedId !== 'base') {
+                const feat = state.features.find(f => f.id === state.selectedId);
+                if (feat) {
+                    document.getElementById('feat-pos-x').value = feat.x;
+                    document.getElementById('feat-pos-y').value = feat.y;
+                    document.getElementById('feat-pos-z').value = feat.z;
+                }
+             }
+        }
+
+        function updateUI() {
+            document.getElementById('ui-wireframe').checked = state.wireframe;
+
+            if (state.base.shape === 'block') {
+                document.getElementById('base-block-controls').classList.remove('hidden');
+                document.getElementById('base-cyl-controls').classList.add('hidden');
+            } else if (state.base.shape === 'cylinder') {
+                document.getElementById('base-block-controls').classList.add('hidden');
+                document.getElementById('base-cyl-controls').classList.remove('hidden');
+            } else {
+                document.getElementById('base-block-controls').classList.add('hidden');
+                document.getElementById('base-cyl-controls').classList.add('hidden');
+            }
+
+            const b = state.base;
+            document.getElementById('base-shape').value = b.shape;
+            document.getElementById('base-x').value = b.x || 100;
+            document.getElementById('base-y').value = b.y || 100;
+            document.getElementById('base-z').value = b.z || 50;
+            document.getElementById('base-r').value = b.radius || 50;
+            document.getElementById('base-sides').value = b.sides || 4;
+            document.getElementById('base-cyl-h').value = b.height || 50;
+            document.getElementById('base-edge-val').value = b.edgeVal || 0;
+            document.getElementById('base-cyl-mod').value = b.cylMod || 'none';
+            document.getElementById('base-cyl-edge-val').value = b.cylModVal || 0;
+
+            if (b.cylMod !== 'none') {
+                document.getElementById('base-cyl-mod-val-group').classList.remove('hidden');
+            } else {
+                document.getElementById('base-cyl-mod-val-group').classList.add('hidden');
+            }
+
+            EDGE_IDS.forEach(e => { document.getElementById(`b-${e}`).value = b.edges[e] || 'none'; });
+
+            const panelBase = document.getElementById('panel-base');
+            panelBase.style.borderLeft = state.selectedId === 'base' ? '4px solid var(--primary)' : 'none';
+
+            const panelFeat = document.getElementById('panel-feature');
+            if (state.selectedId && state.selectedId !== 'base') {
+                const feat = state.features.find(f => f.id === state.selectedId);
+                if (feat) {
+                    panelFeat.classList.remove('hidden');
+                    document.getElementById('feat-type').value = feat.type;
+                    document.getElementById('feat-shape').value = feat.shape;
+                    document.getElementById('feat-axis').value = feat.axis;
+                    document.getElementById('feat-pos-x').value = feat.x;
+                    document.getElementById('feat-pos-y').value = feat.y;
+                    document.getElementById('feat-pos-z').value = feat.z;
+                    
+                    document.getElementById('feat-rot-x').value = feat.rx || 0;
+                    document.getElementById('feat-rot-y').value = feat.ry || 0;
+                    document.getElementById('feat-rot-z').value = feat.rz || 0;
+
+                    document.getElementById('feat-radius').value = feat.r || 20;
+                    document.getElementById('feat-sides').value = feat.sides || 4;
+                    document.getElementById('feat-height').value = feat.h || 5;
+                    document.getElementById('feat-w').value = feat.w || 50;
+                    document.getElementById('feat-d').value = feat.d || 50;
+                    document.getElementById('feat-mod-val').value = feat.modVal || 0;
+                    
+                    document.getElementById('feat-text-str').value = typeof feat.textStr !== 'undefined' ? feat.textStr : 'ENGRAVE';
+                    document.getElementById('feat-text-font').value = feat.font || 'helvetiker_bold';
+                    document.getElementById('feat-text-size').value = feat.textSize || 15;
+                    document.getElementById('feat-text-spacing').value = typeof feat.textSpacing !== 'undefined' ? feat.textSpacing : 1;
+
+                    const dimR = document.getElementById('feat-dim-r');
+                    const dimSides = document.getElementById('feat-dim-sides');
+                    const dimH = document.getElementById('feat-dim-h');
+                    const dimW = document.getElementById('feat-dim-w');
+                    const dimD = document.getElementById('feat-dim-d');
+                    
+                    const modGroup = document.getElementById('feat-mod-val-group');
+                    const boxEdges = document.getElementById('feat-box-edges');
+                    const cylMods = document.getElementById('feat-cyl-mods');
+                    const axisGroup = document.getElementById('feat-axis-group');
+                    const textGroup = document.getElementById('feat-text-controls');
+
+                    if (feat.shape === 'box') {
+                        dimR.classList.add('hidden');
+                        dimSides.classList.add('hidden');
+                        dimH.querySelector('label').innerText = 'Height (Z) (mm)';
+                        dimH.classList.remove('hidden'); dimW.classList.remove('hidden'); dimD.classList.remove('hidden');
+                        
+                        textGroup.classList.add('hidden');
+                        modGroup.classList.remove('hidden');
+                        document.getElementById('feat-mod-label').innerText = 'Edge Size (mm)';
+                        boxEdges.classList.remove('hidden');
+                        cylMods.classList.add('hidden');
+                        
+                        EDGE_IDS.forEach(e => { document.getElementById(`f-${e}`).value = (feat.edges && feat.edges[e]) ? feat.edges[e] : 'none'; });
+                        
+                    } else if (feat.shape === 'sphere') {
+                        dimR.classList.remove('hidden');
+                        dimSides.classList.add('hidden');
+                        dimH.classList.add('hidden'); dimW.classList.add('hidden'); dimD.classList.add('hidden');
+                        textGroup.classList.add('hidden');
+                        modGroup.classList.add('hidden'); boxEdges.classList.add('hidden'); cylMods.classList.add('hidden');
+                    } else if (feat.shape === 'text') {
+                        dimR.classList.add('hidden');
+                        dimSides.classList.add('hidden');
+                        dimH.querySelector('label').innerText = 'Extrude Depth (mm)';
+                        dimH.classList.remove('hidden'); dimW.classList.add('hidden'); dimD.classList.add('hidden');
+                        
+                        textGroup.classList.remove('hidden');
+                        modGroup.classList.add('hidden'); boxEdges.classList.add('hidden'); cylMods.classList.add('hidden');
+                    } else { // Polygon/Cylinder
+                        dimR.classList.remove('hidden');
+                        dimSides.classList.remove('hidden');
+                        dimH.querySelector('label').innerText = 'Height (Z) (mm)';
+                        dimH.classList.remove('hidden'); dimW.classList.add('hidden'); dimD.classList.add('hidden');
+                        
+                        textGroup.classList.add('hidden');
+                        boxEdges.classList.add('hidden');
+                        cylMods.classList.remove('hidden');
+                        
+                        document.getElementById('feat-mod').value = feat.mod || 'none';
+                        if (feat.mod !== 'none') {
+                            modGroup.classList.remove('hidden');
+                            document.getElementById('feat-mod-label').innerText = feat.type === 'hole' ? 'Cut Depth (mm)' : 'Edge Size (mm)';
+                        } else {
+                            modGroup.classList.add('hidden');
+                        }
+                    }
+                } else { panelFeat.classList.add('hidden'); }
+            } else { panelFeat.classList.add('hidden'); }
+        }
+
+        function addInputListener(id, action) { document.getElementById(id).addEventListener('input', (e) => { action(e.target); buildModel(); }); }
+        function addChangeListener(id, action) { document.getElementById(id).addEventListener('change', (e) => { action(e.target); updateUI(); buildModel(); }); }
+
+        addChangeListener('ui-wireframe', t => state.wireframe = t.checked);
+        addChangeListener('base-shape', t => state.base.shape = t.value);
+        addInputListener('base-x', t => state.base.x = parseFloat(t.value));
+        addInputListener('base-y', t => state.base.y = parseFloat(t.value));
+        addInputListener('base-z', t => state.base.z = parseFloat(t.value));
+        addInputListener('base-r', t => state.base.radius = parseFloat(t.value));
+        addInputListener('base-sides', t => state.base.sides = parseInt(t.value));
+        addInputListener('base-cyl-h', t => state.base.height = parseFloat(t.value));
+        addInputListener('base-edge-val', t => state.base.edgeVal = parseFloat(t.value));
+        addChangeListener('base-cyl-mod', t => state.base.cylMod = t.value);
+        addInputListener('base-cyl-edge-val', t => state.base.cylModVal = parseFloat(t.value));
+
+        EDGE_IDS.forEach(edge => {
+            addChangeListener(`b-${edge}`, t => state.base.edges[edge] = t.value);
+            addChangeListener(`f-${edge}`, t => {
+                const f = state.features.find(feat => feat.id === state.selectedId);
+                if (f) {
+                    if (!f.edges) f.edges = {}; 
+                    f.edges[edge] = t.value;
+                }
+            });
+        });
+
+        function addFeature(shape) {
+            const id = generateUniqueId();
+            
+            let startZ = 0;
+            if (state.base.shape === 'block') startZ = state.base.z / 2;
+            else if (state.base.shape === 'cylinder') startZ = state.base.height / 2;
+            
+            let type = shape === 'text' ? 'hole' : 'solid';
+            let initialZ = 0;
+            if (state.base.shape !== 'none') {
+                initialZ = shape === 'text' ? startZ : (type === 'solid' ? startZ + 25 : 0);
+            }
+            
+            state.features.push({ 
+                id, type, shape, axis: 'z', 
+                x: 0, y: 0, z: initialZ, 
+                rx: 0, ry: 0, rz: 0,
+                r: 20, sides: shape === 'cylinder' ? 64 : 4, h: shape === 'text' ? 5 : 50, w: 50, d: 50, 
+                mod: 'none', modVal: 5,
+                textStr: 'ENGRAVE', font: 'helvetiker_bold', textSize: 15, textSpacing: 1,
+                edges: { vFL:'none',vFR:'none',vBL:'none',vBR:'none',tF:'none',tB:'none',tL:'none',tR:'none',bF:'none',bB:'none',bL:'none',bR:'none' }
+            });
+            state.selectedId = id; updateUI(); buildModel();
+        }
+
+        document.getElementById('btn-add-feat-box').addEventListener('click', () => addFeature('box'));
+        document.getElementById('btn-add-feat-cyl').addEventListener('click', () => addFeature('cylinder'));
+        document.getElementById('btn-add-feat-sphere').addEventListener('click', () => addFeature('sphere'));
+        document.getElementById('btn-add-feat-text').addEventListener('click', () => addFeature('text'));
+
+        const updateFeat = (k, pFunc) => (t) => {
+            const f = state.features.find(f => f.id === state.selectedId);
+            if (f) { f[k] = pFunc ? pFunc(t.value) : t.value; }
+        };
+
+        addChangeListener('feat-type', updateFeat('type'));
+        addChangeListener('feat-shape', updateFeat('shape'));
+        addChangeListener('feat-axis', updateFeat('axis'));
+        addInputListener('feat-pos-x', updateFeat('x', parseFloat));
+        addInputListener('feat-pos-y', updateFeat('y', parseFloat));
+        addInputListener('feat-pos-z', updateFeat('z', parseFloat));
+        addInputListener('feat-rot-x', updateFeat('rx', parseFloat));
+        addInputListener('feat-rot-y', updateFeat('ry', parseFloat));
+        addInputListener('feat-rot-z', updateFeat('rz', parseFloat));
+        addInputListener('feat-radius', updateFeat('r', parseFloat));
+        addInputListener('feat-sides', updateFeat('sides', parseInt));
+        addInputListener('feat-height', updateFeat('h', parseFloat));
+        addInputListener('feat-w', updateFeat('w', parseFloat));
+        addInputListener('feat-d', updateFeat('d', parseFloat));
+        addChangeListener('feat-mod', updateFeat('mod'));
+        addInputListener('feat-mod-val', updateFeat('modVal', parseFloat));
+        
+        addInputListener('feat-text-str', updateFeat('textStr'));
+        addChangeListener('feat-text-font', updateFeat('font'));
+        addInputListener('feat-text-size', updateFeat('textSize', parseFloat));
+        addInputListener('feat-text-spacing', updateFeat('textSpacing', parseFloat));
+
+        document.getElementById('btn-delete-feat').addEventListener('click', () => {
+            state.features = state.features.filter(f => f.id !== state.selectedId);
+            state.selectedId = null; updateUI(); buildModel();
+        });
+
+        document.getElementById('btn-theme').addEventListener('click', () => {
+            state.theme = state.theme === 'dark' ? 'light' : 'dark'; applyTheme();
+        });
+
+        document.getElementById('btn-reset-cam').addEventListener('click', () => {
+            camera.position.copy(initialCameraPos); controls.target.set(0,0,0); controls.update();
+        });
+
+        document.getElementById('btn-save').addEventListener('click', () => {
+            const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+            const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
+            a.download = "model_config.json"; a.click();
+        });
+
+        document.getElementById('file-input').addEventListener('change', (e) => {
+            const file = e.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                try { state = JSON.parse(ev.target.result); applyTheme(); updateUI(); buildModel(); } 
+                catch(err) { alert("Invalid JSON file"); }
+            };
+            reader.readAsText(file);
+        });
+
+        document.getElementById('btn-export-stl').addEventListener('click', () => {
+            if (!mainMesh) { alert("No model to export!"); return; }
+            const originalWireframe = state.wireframe;
+            if (originalWireframe) { state.wireframe = false; buildModel(); }
+
+            try {
+                const exporter = new STLExporter();
+                const stlString = exporter.parse(mainMesh, { binary: true });
+                const blob = new Blob([stlString], { type: 'application/octet-stream' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = 'parametric_model_mm.stl';
+                link.click();
+            } catch (err) {
+                console.error("Export Error:", err); alert("Failed to export STL.");
+            }
+            if (originalWireframe) { state.wireframe = true; buildModel(); }
+        });
+
+        const uiPanel = document.getElementById('ui-panel');
+        const btnOpenMenu = document.getElementById('btn-open-menu');
+        const btnCloseMobile = document.getElementById('btn-close-mobile');
+        const mobileOverlay = document.getElementById('mobile-overlay');
+
+        function toggleMobileUI(forceOpen = false) {
+            if(window.innerWidth > 768) return;
+            const isOpen = uiPanel.classList.contains('open');
+            if (!isOpen || forceOpen) {
+                uiPanel.classList.add('open');
+                mobileOverlay.classList.add('active');
+                btnCloseMobile.style.display = 'block';
+            } else {
+                uiPanel.classList.remove('open');
+                mobileOverlay.classList.remove('active');
+                btnCloseMobile.style.display = 'none';
+            }
+        }
+
+        btnOpenMenu.addEventListener('click', () => toggleMobileUI(true));
+        mobileOverlay.addEventListener('click', () => toggleMobileUI(false));
+        btnCloseMobile.addEventListener('click', () => toggleMobileUI(false));
+
+        window.addEventListener('resize', () => {
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            if(window.innerWidth > 768) {
+                uiPanel.classList.remove('open');
+                mobileOverlay.classList.remove('active');
+                btnCloseMobile.style.display = 'none';
+            }
+            if(isDraggingGizmo && transformControl.object) updateDimensionsVisuals(transformControl.object.position);
+        });
+
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        applyTheme(); updateUI(); buildModel(); animate();
+    </script>
+</body>
+</html>
