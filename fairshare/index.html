@@ -1,31 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-FCJR8H4DME"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FCJR8H4DME"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-FCJR8H4DME');
+    </script>
 
-  gtag('config', 'G-FCJR8H4DME');
-</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FairShare Expenses</title>
-    <!-- Tailwind CSS CDN -->
+    
+    <title>Free Bill Splitter & Roommate Expense Calculator | SHADER7</title>
+    <meta name="description" content="Split bills and shared expenses easily with roommates, friends, or travel partners. Free online calculator with instant PDF settlement reports. No login required.">
+    <meta name="keywords" content="bill splitter, expense splitter, roommate expense calculator, split money, shared expenses, fairshare, shader7">
+    <meta name="author" content="Nishikant Xalxo">
+    <meta name="robots" content="index, follow">
+
+    <link rel="canonical" href="https://shader7.com/fairshare/">
+
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Shader7">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:url" content="https://shader7.com/fairshare/">
+    <meta property="og:title" content="Free Bill Splitter & Shared Expense Calculator">
+    <meta property="og:description" content="Split bills and shared expenses easily with friends. Free online calculator with instant PDF reports.">
+    <meta property="og:image" content="https://shader7.com/og-image.jpg">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@nishix_vamp">
+    <meta name="twitter:creator" content="@nishix_vamp">
+    <meta name="twitter:url" content="https://shader7.com/fairshare/">
+    <meta name="twitter:title" content="Free Bill Splitter & Shared Expense Calculator">
+    <meta name="twitter:description" content="Split bills and shared expenses easily with friends. Free online calculator with instant PDF reports.">
+    <meta name="twitter:image" content="https://shader7.com/og-image.jpg">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "FairShare Expense Splitter",
+      "url": "https://shader7.com/fairshare/",
+      "operatingSystem": "All",
+      "applicationCategory": "FinanceApplication",
+      "offers": {
+        "@type": "Offer",
+        "price": "0.00",
+        "priceCurrency": "USD"
+      },
+      "description": "A free online tool to calculate and settle shared bills and monthly expenses among roommates or groups. Includes PDF report generation.",
+      "creator": {
+        "@type": "Person",
+        "name": "Nishikant Xalxo",
+        "url": "https://instagram.com/nishix_vamp"
+      }
+    }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"></noscript>
+
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Inter Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <!-- html2canvas CDN (for capturing HTML to canvas) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <!-- jsPDF CDN (for generating PDF from canvas) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f0f4f8; /* Light blue-gray background */
-            color: #334155; /* Dark slate text */
+            background-color: #f0f4f8;
+            color: #334155;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
@@ -175,18 +224,18 @@
             border-bottom: none;
         }
         .payment-list li {
-            background-color: #e0e7ff; /* Light indigo background */
+            background-color: #e0e7ff;
             margin-bottom: 0.5rem;
             padding: 0.75rem 1rem;
             border-radius: 0.5rem;
             font-weight: 500;
-            color: #312e81; /* Darker indigo text */
+            color: #312e81;
         }
         /* A4 Report Styles */
         #reportContent {
             background-color: white;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            position: absolute; /* Off-screen positioning */
+            position: absolute;
             top: -9999px;
             left: -9999px;
             z-index: -1;
@@ -196,17 +245,17 @@
             color: #1e293b;
         }
         #reportContent .report-page {
-            width: 210mm; /* A4 width */
-            min-height: 297mm; /* A4 height */
-            padding: 20mm; /* Margins for A4 print */
+            width: 210mm;
+            min-height: 297mm;
+            padding: 20mm;
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
-            justify-content: space-between; /* Push header/footer to ends */
-            page-break-after: always; /* Ensure each page breaks after itself for printing */
+            justify-content: space-between;
+            page-break-after: always;
         }
         #reportContent .report-page:last-child {
-            page-break-after: auto; /* No page break after the last page */
+            page-break-after: auto;
         }
         #reportContent h3 {
             font-size: 1.5rem;
@@ -262,7 +311,7 @@
             border-radius: 0.5rem;
             font-weight: 500;
             color: #312e81;
-            list-style: none; /* Remove default list style for clean print */
+            list-style: none;
         }
         #a4PreviewCanvas {
             border: 1px solid #cbd5e1;
@@ -271,12 +320,12 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             display: block;
             margin: 2rem auto;
-            max-width: 100%; /* Ensure it fits in container, responsive */
-            height: auto; /* Maintain aspect ratio */
-            aspect-ratio: 210 / 297; /* A4 aspect ratio to prevent squishing */
+            max-width: 100%;
+            height: auto;
+            aspect-ratio: 210 / 297;
         }
         .share-btn {
-            background-color: #1c9bef; /* Twitter blue, common share color */
+            background-color: #1c9bef;
             color: white;
             padding: 0.75rem 1.5rem;
             border-radius: 0.75rem;
@@ -290,6 +339,19 @@
             transform: translateY(-2px);
             background-color: #1a8ad6;
             box-shadow: 0 6px 10px -1px rgba(0, 0, 0, 0.15), 0 3px 6px -1px rgba(0, 0, 0, 0.08);
+        }
+        .back-nav {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+        .back-nav:hover {
+            color: white;
         }
     </style>
 </head>
@@ -305,8 +367,9 @@
     </div>
     <div id="overlay" class="overlay"></div>
 
-    <header class="bg-gradient-to-r from-violet-600 to-indigo-600 text-white py-8 text-center rounded-b-xl shadow-lg">
-        <h1 class="text-4xl font-bold mb-2">FairShare Expenses</h1>
+    <header class="bg-gradient-to-r from-violet-600 to-indigo-600 text-white py-8 text-center rounded-b-xl shadow-lg relative">
+        <a href="/" class="back-nav">&larr; Back to Shader7</a>
+        <h1 class="text-4xl font-bold mb-2 mt-4">FairShare Expenses</h1>
         <p class="text-lg">Easily calculate and settle monthly expenses with your roommates.</p>
     </header>
 
@@ -318,7 +381,6 @@
                 <button id="addRoommateBtn" class="btn-primary">Add Roommate</button>
             </div>
             <div id="roommatesList" class="space-y-2">
-                <!-- Roommates will be listed here -->
                 <p id="noRoommatesMessage" class="text-gray-500 text-center">No roommates added yet.</p>
             </div>
         </div>
@@ -327,8 +389,7 @@
             <h2 class="text-2xl font-bold mb-4 text-center">Enter Monthly Spending</h2>
             <div id="spendingInputs" class="space-y-4">
                 <p id="noSpendingMessage" class="text-gray-500 text-center">Add roommates first to enter spending.</p>
-                <!-- Spending inputs will be dynamically generated here -->
-            </div>
+                </div>
             <div class="flex justify-end mt-6">
                 <button id="calculateBillBtn" class="btn-primary" disabled>Calculate Bill</button>
             </div>
@@ -351,15 +412,13 @@
                         </tr>
                     </thead>
                     <tbody id="individualBalancesTableBody">
-                        <!-- Individual balances will be dynamically inserted here -->
-                    </tbody>
+                        </tbody>
                 </table>
             </div>
 
             <h3 class="text-xl font-bold mb-3">Payment Instructions:</h3>
             <ul id="paymentInstructionsList" class="payment-list">
-                <!-- Who pays whom instructions will be here -->
-            </ul>
+                </ul>
             <p id="noPaymentsNeeded" class="text-gray-500 text-center hidden">Everyone is settled, no payments needed!</p>
         </div>
 
@@ -371,16 +430,13 @@
                 <button id="downloadPdfBtn" class="btn-secondary hidden">Download PDF</button>
             </div>
 
-            <!-- A4 Preview Area -->
             <div class="mt-8 text-center" id="a4PreviewArea" style="display: none;">
                 <h3 class="text-xl font-bold mb-4">Report Preview (A4 Size - Ready for Download)</h3>
                 <canvas id="a4PreviewCanvas" class="border border-gray-300"></canvas>
             </div>
 
-            <!-- Hidden div for html2canvas to capture -->
             <div id="reportContent">
-                <!-- Content will be generated here dynamically for capture -->
-            </div>
+                </div>
         </div>
 
         <div class="flex justify-center mt-6">
@@ -396,7 +452,7 @@
     </main>
 
     <footer class="bg-gray-800 text-gray-300 py-4 text-center text-sm rounded-t-xl shadow-inner mt-auto">
-        <p>&copy; 2024 FairShare Expenses. All rights reserved.</p>
+        <p>&copy; <script>document.write(new Date().getFullYear())</script> SHADER7 - Free Apps for You. All rights reserved.</p>
         <p class="mt-2">Developed by Nishikant Xalxo - <a href="https://www.instagram.com/nishix_vamp" target="_blank" rel="noopener noreferrer" class="text-blue-300 hover:underline">@nishix_vamp</a></p>
     </footer>
 
@@ -434,7 +490,6 @@
         const noRoommatesMessage = document.getElementById('noRoommatesMessage');
         const spendingInputsDiv = document.getElementById('spendingInputs');
         const noSpendingMessage = document.getElementById('noSpendingMessage');
-        // FIX: Changed 'calculateBill' to 'calculateBillBtn' to match the HTML ID.
         const calculateBillBtn = document.getElementById('calculateBillBtn');
         const billSettlementSection = document.getElementById('billSettlementSection');
         const totalSpentSpan = document.getElementById('totalSpent');
@@ -453,18 +508,14 @@
 
 
         // --- State Variable (Array to store roommate data) ---
-        // Each roommate object will have: { id: number, name: string, spent: number }
         let roommates = [];
-        let currentSettlementData = null; // Store last calculated settlement data for reports
+        let currentSettlementData = null; 
 
         // --- Local Storage Key ---
         const LOCAL_STORAGE_KEY = 'roommateSlipBillData';
 
         // --- Functions ---
 
-        /**
-         * Saves current roommate data to Local Storage.
-         */
         function saveRoommates() {
             try {
                 localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(roommates));
@@ -474,9 +525,6 @@
             }
         }
 
-        /**
-         * Loads roommate data from Local Storage.
-         */
         function loadRoommates() {
             try {
                 const storedData = localStorage.getItem(LOCAL_STORAGE_KEY);
@@ -488,13 +536,10 @@
             } catch (e) {
                 console.error("Error loading from local storage:", e);
                 showMessage("Failed to load saved data. Your previous roommates might not be available.");
-                roommates = []; // Reset to empty if loading fails
+                roommates = []; 
             }
         }
 
-        /**
-         * Renders the list of added roommates and their spending input fields.
-         */
         function renderRoommatesAndSpendingInputs() {
             roommatesList.innerHTML = '';
             spendingInputsDiv.innerHTML = '';
@@ -508,10 +553,9 @@
             } else {
                 noRoommatesMessage.classList.add('hidden');
                 noSpendingMessage.classList.add('hidden');
-                calculateBillBtn.disabled = false; // Enable calculate button if roommates exist
+                calculateBillBtn.disabled = false; 
 
                 roommates.forEach(roommate => {
-                    // Render roommate in the list (for viewing/deleting)
                     const roommateItem = document.createElement('div');
                     roommateItem.classList.add('roommate-item');
                     roommateItem.innerHTML = `
@@ -520,18 +564,16 @@
                     `;
                     roommatesList.appendChild(roommateItem);
 
-                    // Render spending input for each roommate
                     const spendingInputGroup = document.createElement('div');
                     spendingInputGroup.classList.add('flex', 'flex-col', 'md:flex-row', 'items-start', 'md:items-center', 'gap-2');
                     spendingInputGroup.innerHTML = `
                         <label for="spent-${roommate.id}" class="w-32 font-medium">${roommate.name}:</label>
-                        <input type="number" id="spent-${roommate.id}" placeholder="INR spent" min="0" step="0.01" value="${roommate.spent || ''}"
+                        <input type="number" id="spent-${roommate.id}" placeholder="Amount spent" min="0" step="0.01" value="${roommate.spent || ''}"
                                class="flex-grow spending-input rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                     `;
                     spendingInputsDiv.appendChild(spendingInputGroup);
                 });
 
-                // Attach event listeners for delete buttons
                 document.querySelectorAll('.delete-roommate-btn').forEach(button => {
                     button.addEventListener('click', (event) => {
                         const idToDelete = parseInt(event.target.dataset.id);
@@ -539,15 +581,11 @@
                     });
                 });
             }
-            // Hide settlement section and report options if roommates change
             billSettlementSection.classList.add('hidden');
             a4PreviewArea.style.display = 'none';
             downloadPdfBtn.classList.add('hidden');
         }
 
-        /**
-         * Adds a new roommate to the list.
-         */
         function addRoommate() {
             const name = roommateNameInput.value.trim();
             if (!name) {
@@ -555,29 +593,23 @@
                 return;
             }
 
-            // Check for duplicate names (case-insensitive)
             if (roommates.some(r => r.name.toLowerCase() === name.toLowerCase())) {
                 showMessage(`Roommate "${name}" already exists.`);
                 return;
             }
 
             const newRoommate = {
-                id: Date.now(), // Simple unique ID
+                id: Date.now(), 
                 name: name,
-                spent: 0 // Initialize spent amount to 0
+                spent: 0 
             };
             roommates.push(newRoommate);
             saveRoommates();
             renderRoommatesAndSpendingInputs();
-            roommateNameInput.value = ''; // Clear input field
+            roommateNameInput.value = ''; 
         }
 
-        /**
-         * Deletes a roommate from the list.
-         * @param {number} id - The ID of the roommate to delete.
-         */
         function deleteRoommate(id) {
-             // Custom confirmation dialog
             const originalMessageBoxContent = document.getElementById('messageText').innerHTML;
             document.getElementById('messageText').innerHTML = `
                 <p>Are you sure you want to delete this roommate? Their spending data will be lost.</p>
@@ -604,17 +636,14 @@
             };
         }
 
-        /**
-         * Calculates the bill settlement.
-         */
         function calculateBill() {
             showLoading();
             billSettlementSection.classList.remove('hidden');
-            individualBalancesTableBody.innerHTML = ''; // Clear previous individual balances
-            paymentInstructionsList.innerHTML = ''; // Clear previous payment instructions
-            noPaymentsNeeded.classList.add('hidden'); // Hide "no payments needed" message initially
-            a4PreviewArea.style.display = 'none'; // Hide A4 preview
-            downloadPdfBtn.classList.add('hidden'); // Hide download button
+            individualBalancesTableBody.innerHTML = ''; 
+            paymentInstructionsList.innerHTML = ''; 
+            noPaymentsNeeded.classList.add('hidden'); 
+            a4PreviewArea.style.display = 'none'; 
+            downloadPdfBtn.classList.add('hidden'); 
 
             if (roommates.length === 0) {
                 hideLoading();
@@ -623,71 +652,66 @@
             }
 
             let totalSpent = 0;
-            // Collect spent amounts from dynamic input fields and update roommate objects
             roommates.forEach(roommate => {
                 const inputElement = document.getElementById(`spent-${roommate.id}`);
-                const spentAmount = parseFloat(inputElement.value) || 0; // Default to 0 if invalid
+                const spentAmount = parseFloat(inputElement.value) || 0; 
                 roommate.spent = spentAmount;
                 totalSpent += spentAmount;
             });
-            saveRoommates(); // Save updated spent amounts
+            saveRoommates(); 
 
             const numberOfRoommates = roommates.length;
             const averageAmount = totalSpent / numberOfRoommates;
 
-            totalSpentSpan.textContent = `INR ${totalSpent.toFixed(2)}`;
-            averageAmountSpan.textContent = `INR ${averageAmount.toFixed(2)}`;
+            totalSpentSpan.textContent = `${totalSpent.toFixed(2)}`;
+            averageAmountSpan.textContent = `${averageAmount.toFixed(2)}`;
 
-            // --- Individual Balances Calculation and Storing Status/Class ---
             const balances = roommates.map(roommate => {
                 const balance = roommate.spent - averageAmount;
                 let statusText = '';
                 let balanceClass = '';
-                let formattedBalance = ''; // New property for formatted balance
+                let formattedBalance = ''; 
 
-                // Determine status and class based on balance
-                const epsilon = 0.01; // INR 0.01 threshold
+                const epsilon = 0.01; 
                 if (balance < -epsilon) {
                     balanceClass = 'text-red-600 font-semibold';
                     statusText = 'Owes';
-                    formattedBalance = balance.toFixed(2); // Negative sign is natural
+                    formattedBalance = balance.toFixed(2); 
                 } else if (balance > epsilon) {
                     balanceClass = 'text-green-600 font-semibold';
                     statusText = 'Is Owed';
-                    formattedBalance = `+${balance.toFixed(2)}`; // Explicitly add + sign
+                    formattedBalance = `+${balance.toFixed(2)}`; 
                 } else {
                     balanceClass = 'text-gray-500 italic';
                     statusText = 'Settled';
-                    formattedBalance = (0).toFixed(2); // For settled, show 0.00
+                    formattedBalance = (0).toFixed(2); 
                 }
 
                 return {
                     name: roommate.name,
                     spent: roommate.spent,
-                    balance: balance, // Keep original numeric balance for calculations
-                    formattedBalance: formattedBalance, // Store formatted string for display
+                    balance: balance, 
+                    formattedBalance: formattedBalance, 
                     statusText: statusText,
                     balanceClass: balanceClass
                 };
             });
 
-            // --- Individual Balances Rendering ---
             balances.forEach(item => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td class="py-3 px-4">${item.name}</td>
-                    <td class="py-3 px-4 text-right">INR ${item.spent.toFixed(2)}</td>
+                    <td class="py-3 px-4 text-right">${item.spent.toFixed(2)}</td>
                     <td class="py-3 px-4 text-right ${item.balanceClass}">${item.formattedBalance}</td>
                     <td class="py-3 px-4 ${item.balanceClass}">${item.statusText}</td>
                 `;
                 individualBalancesTableBody.appendChild(row);
             });
 
-            // --- Payment Instructions Algorithm ---
             let debtors = balances.filter(item => item.balance < -0.01)
-                                  .sort((a, b) => a.balance - b.balance); // Sort by most owed (most negative)
+                                  .sort((a, b) => a.balance - b.balance); 
             let creditors = balances.filter(item => item.balance > 0.01)
-                                   .sort((a, b) => b.balance - a.balance); // Sort by most owed (most positive)
+                                   .sort((a, b) => b.balance - a.balance); 
 
             const payments = [];
             while (debtors.length > 0 && creditors.length > 0) {
@@ -702,11 +726,9 @@
                     amount: amountToTransfer
                 });
 
-                // Update balances for the algorithm, but remember original for display
                 debtor.balance += amountToTransfer;
                 creditor.balance -= amountToTransfer;
 
-                // Remove settled individuals (check with epsilon)
                 if (Math.abs(debtor.balance) < 0.01) {
                     debtors.shift();
                 }
@@ -714,37 +736,30 @@
                     creditors.shift();
                 }
 
-                // Re-sort (important for minimizing transactions)
                 debtors.sort((a, b) => a.balance - b.balance);
                 creditors.sort((a, b) => b.balance - a.balance);
             }
 
-            // Render payment instructions
             if (payments.length === 0) {
                 noPaymentsNeeded.classList.remove('hidden');
             } else {
                 payments.forEach(payment => {
                     const listItem = document.createElement('li');
-                    listItem.textContent = `${payment.from} pays ${payment.to}: INR ${payment.amount.toFixed(2)}`;
+                    listItem.textContent = `${payment.from} pays ${payment.to}: ${payment.amount.toFixed(2)}`;
                     paymentInstructionsList.appendChild(listItem);
                 });
             }
             hideLoading();
 
-            // Store this settlement data for report generation
             currentSettlementData = {
                 totalSpent: totalSpent,
                 averageAmount: averageAmount,
-                balances: balances, // This now includes statusText, balanceClass, and formattedBalance
+                balances: balances, 
                 payments: payments
             };
         }
 
-        /**
-         * Resets all roommate data and clears local storage.
-         */
         function resetAllData() {
-            // Custom confirmation dialog
             const originalMessageBoxContent = document.getElementById('messageText').innerHTML;
             document.getElementById('messageText').innerHTML = `
                 <p>Are you sure you want to clear ALL roommate data and spending? This action cannot be undone.</p>
@@ -758,12 +773,12 @@
 
             document.getElementById('confirmResetBtn').onclick = () => {
                 roommates = [];
-                currentSettlementData = null; // Clear settlement data
+                currentSettlementData = null; 
                 saveRoommates();
                 renderRoommatesAndSpendingInputs();
-                billSettlementSection.classList.add('hidden'); // Hide settlement results
-                a4PreviewArea.style.display = 'none'; // Hide A4 preview
-                downloadPdfBtn.classList.add('hidden'); // Hide download button
+                billSettlementSection.classList.add('hidden'); 
+                a4PreviewArea.style.display = 'none'; 
+                downloadPdfBtn.classList.add('hidden'); 
                 hideMessage();
                 showMessage("All data reset successfully.");
                 document.getElementById('messageText').innerHTML = originalMessageBoxContent;
@@ -775,13 +790,6 @@
             };
         }
 
-        // --- A4 Report Generation Functions ---
-
-        /**
-         * Generates the HTML content for the A4 report.
-         * @param {Object} data - The settlement data (totalSpent, averageAmount, balances, payments).
-         * @returns {string} HTML string for the report.
-         */
         function generateReportHtml(data) {
             const date = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' });
 
@@ -792,15 +800,14 @@
                         <thead>
                             <tr>
                                 <th style="border:1px solid #e2e8f0; padding:8px 12px; text-align:left; background-color:#f8fafc; font-weight:600; color:#475569; text-transform:uppercase; font-size:0.875rem;">Roommate</th>
-                                <th style="border:1px solid #e2e8f0; padding:8px 12px; text-align:right; background-color:#f8fafc; font-weight:600; color:#475569; text-transform:uppercase; font-size:0.875rem;">Amount Spent (INR)</th>
-                                <th style="border:1px solid #e2e8f0; padding:8px 12px; text-align:right; background-color:#f8fafc; font-weight:600; color:#475569; text-transform:uppercase; font-size:0.875rem;">Balance (INR)</th>
+                                <th style="border:1px solid #e2e8f0; padding:8px 12px; text-align:right; background-color:#f8fafc; font-weight:600; color:#475569; text-transform:uppercase; font-size:0.875rem;">Amount Spent</th>
+                                <th style="border:1px solid #e2e8f0; padding:8px 12px; text-align:right; background-color:#f8fafc; font-weight:600; color:#475569; text-transform:uppercase; font-size:0.875rem;">Balance</th>
                                 <th style="border:1px solid #e2e8f0; padding:8px 12px; text-align:left; background-color:#f8fafc; font-weight:600; color:#475569; text-transform:uppercase; font-size:0.875rem;">Status</th>
                             </tr>
                         </thead>
                         <tbody>
                 `;
                 data.balances.forEach(item => {
-                    // Use the stored balanceClass and statusText directly
                     let inlineBalanceStyle = '';
                     if (item.balanceClass.includes('text-red')) {
                         inlineBalanceStyle = 'color:#dc2626; font-weight:bold;';
@@ -813,7 +820,7 @@
                     individualBalancesHtml += `
                         <tr>
                             <td style="border:1px solid #e2e8f0; padding:8px 12px;">${item.name}</td>
-                            <td style="border:1px solid #e2e8f0; padding:8px 12px; text-align:right;">INR ${item.spent.toFixed(2)}</td>
+                            <td style="border:1px solid #e2e8f0; padding:8px 12px; text-align:right;">${item.spent.toFixed(2)}</td>
                             <td style="border:1px solid #e2e8f0; padding:8px 12px; text-align:right; ${inlineBalanceStyle}">${item.formattedBalance}</td>
                             <td style="border:1px solid #e2e8f0; padding:8px 12px; ${inlineBalanceStyle}">${item.statusText}</td>
                         </tr>
@@ -836,7 +843,7 @@
                 data.payments.forEach(payment => {
                     paymentInstructionsHtml += `
                         <li style="background-color:#e0e7ff; margin-bottom:0.5rem; padding:0.75rem 1rem; border-radius:0.5rem; font-weight:500; color:#312e81;">
-                            ${payment.from} pays ${payment.to}: INR ${payment.amount.toFixed(2)}
+                            ${payment.from} pays ${payment.to}: ${payment.amount.toFixed(2)}
                         </li>
                     `;
                 });
@@ -852,8 +859,8 @@
                         </div>
                         <div style="margin-bottom:1.5rem;">
                             <p style="font-size:1.1rem; font-weight:600; margin-bottom:0.5rem;">Overall Summary:</p>
-                            <p style="font-size:1rem; margin-bottom:0.2rem;">Total Group Spending: <span style="font-weight:700; color:#4f46e5;">INR ${data.totalSpent.toFixed(2)}</span></p>
-                            <p style="font-size:1rem;">Average Amount Per Person: <span style="font-weight:700; color:#6d28d9;">INR ${data.averageAmount.toFixed(2)}</span></p>
+                            <p style="font-size:1rem; margin-bottom:0.2rem;">Total Group Spending: <span style="font-weight:700; color:#4f46e5;">${data.totalSpent.toFixed(2)}</span></p>
+                            <p style="font-size:1rem;">Average Amount Per Person: <span style="font-weight:700; color:#6d28d9;">${data.averageAmount.toFixed(2)}</span></p>
                         </div>
 
                         <div style="margin-bottom:1.5rem;">
@@ -867,7 +874,7 @@
                         </div>
                     </div>
                     <div class="report-footer" style="text-align:center; padding-top:1rem; border-top:1px solid #e2e8f0; font-size:0.8rem; color:#475569;">
-                        <p>&copy; 2024 FairShare Expenses. All rights reserved.</p>
+                        <p>&copy; ${new Date().getFullYear()} FairShare Expenses. All rights reserved.</p>
                         <p style="margin-top:0.2rem;">Developed by Nishikant Xalxo - @nishix_vamp</p>
                         <p style="margin-top:0.2rem;">Page 1 of 1</p>
                     </div>
@@ -876,9 +883,6 @@
             return reportHtml;
         }
 
-        /**
-         * Renders the report onto the A4 preview canvas.
-         */
         async function renderA4ReportPreview() {
             if (!currentSettlementData) {
                 showMessage("Please calculate the bill first to generate a report.");
@@ -890,17 +894,15 @@
             const reportHtml = generateReportHtml(currentSettlementData);
             reportContentDiv.innerHTML = reportHtml;
 
-            a4PreviewArea.style.display = 'block'; // Show the canvas preview area
-            downloadPdfBtn.classList.add('hidden'); // Hide download button until canvas is ready
+            a4PreviewArea.style.display = 'block'; 
+            downloadPdfBtn.classList.add('hidden'); 
 
-            // Define A4 dimensions in pixels at 96 DPI (common browser rendering DPI)
             const A4_WIDTH_MM = 210;
             const A4_HEIGHT_MM = 297;
-            const PREVIEW_DPI = 96; // Standard DPI for browser rendering
+            const PREVIEW_DPI = 96; 
             const A4_WIDTH_PX_96DPI = (A4_WIDTH_MM / 25.4) * PREVIEW_DPI;
             const A4_HEIGHT_PX_96DPI = (A4_HEIGHT_MM / 25.4) * PREVIEW_DPI;
 
-            // Set canvas internal resolution (device pixels for crispness)
             a4PreviewCanvas.width = A4_WIDTH_PX_96DPI * window.devicePixelRatio;
             a4PreviewCanvas.height = A4_HEIGHT_PX_96DPI * window.devicePixelRatio;
             const ctx = a4PreviewCanvas.getContext('2d');
@@ -908,17 +910,11 @@
             ctx.fillStyle = '#ffffff';
             ctx.fillRect(0, 0, a4PreviewCanvas.width, a4PreviewCanvas.height);
 
-
             try {
-                // Temporarily show reportContentDiv and position it off-screen for html2canvas
-                // Let the .report-page CSS define the dimensions, html2canvas will measure them.
                 reportContentDiv.style.position = 'absolute';
                 reportContentDiv.style.left = '-9999px';
                 reportContentDiv.style.display = 'block';
-                // Do NOT set explicit width/height on reportContentDiv here.
-                // Let the content (.report-page) define its own dimensions.
 
-                // Get the first page element to capture
                 const pageElement = reportContentDiv.querySelector('.report-page');
 
                 if (!pageElement) {
@@ -926,17 +922,15 @@
                 }
 
                 await html2canvas(pageElement, {
-                    scale: window.devicePixelRatio, // Capture at device pixel ratio for quality
+                    scale: window.devicePixelRatio, 
                     logging: false,
                     useCORS: true,
-                    // width and height automatically derived from pageElement.offsetWidth/Height
                 }).then(canvas => {
                     if (canvas.width === 0 || canvas.height === 0) {
                         throw new Error(`Captured canvas has zero dimensions (width: ${canvas.width}, height: ${canvas.height}).`);
                     }
-                    // Draw the captured image onto the preview canvas, scaling to its internal resolution
                     ctx.drawImage(canvas, 0, 0, a4PreviewCanvas.width, a4PreviewCanvas.height);
-                    downloadPdfBtn.classList.remove('hidden'); // Show download button ONLY AFTER successful rendering
+                    downloadPdfBtn.classList.remove('hidden'); 
                 }).catch(error => {
                     console.error("html2canvas error for preview:", error);
                     throw new Error("Error generating preview: " + error.message);
@@ -944,21 +938,17 @@
             } catch (error) {
                 console.error("Caught error during preview generation:", error);
                 showMessage("Failed to generate report preview. " + error.message);
-                a4PreviewArea.style.display = 'none'; // Hide preview area on error
-                downloadPdfBtn.classList.add('hidden'); // Ensure download button is hidden on error
+                a4PreviewArea.style.display = 'none'; 
+                downloadPdfBtn.classList.add('hidden'); 
             } finally {
                 hideLoading();
-                // Reset reportContentDiv styles
                 reportContentDiv.style.display = 'none';
                 reportContentDiv.style.position = 'absolute';
                 reportContentDiv.style.left = '-9999px';
-                reportContentDiv.innerHTML = ''; // Clear content
+                reportContentDiv.innerHTML = ''; 
             }
         }
 
-        /**
-         * Downloads the generated report as a PDF.
-         */
         async function downloadPdfReport() {
             if (!currentSettlementData) {
                 showMessage("Please calculate the bill first to generate a report.");
@@ -976,18 +966,14 @@
 
             const A4_WIDTH_PX_AT_DPI = (A4_WIDTH_MM / 25.4) * PDF_DPI;
             const A4_HEIGHT_PX_AT_DPI = (A4_HEIGHT_MM / 25.4) * PDF_DPI;
-            const STANDARD_BROWSER_DPI = 96; // This is what browser's 'mm' units typically translate to
-
+            const STANDARD_BROWSER_DPI = 96; 
 
             const doc = new jsPDF('p', 'px', [A4_WIDTH_PX_AT_DPI, A4_HEIGHT_PX_AT_DPI]);
 
             try {
-                // Temporarily show reportContentDiv and position it off-screen for html2canvas
-                // Let the .report-page CSS define the dimensions, html2canvas will measure them.
                 reportContentDiv.style.position = 'absolute';
                 reportContentDiv.style.left = '-9999px';
                 reportContentDiv.style.display = 'block';
-                // Do NOT set explicit width/height on reportContentDiv here.
 
                 const pageElement = reportContentDiv.querySelector('.report-page');
                 if (!pageElement) {
@@ -995,15 +981,14 @@
                 }
 
                 await html2canvas(pageElement, {
-                    scale: PDF_DPI / STANDARD_BROWSER_DPI, // Scale from browser's internal DPI to target PDF DPI
+                    scale: PDF_DPI / STANDARD_BROWSER_DPI, 
                     logging: false,
                     useCORS: true,
-                    // width and height automatically derived from pageElement.offsetWidth/Height
                 }).then(canvas => {
                     if (canvas.width === 0 || canvas.height === 0) {
                         throw new Error(`Captured canvas for PDF has zero dimensions (width: ${canvas.width}, height: ${canvas.height}).`);
                     }
-                    const imgData = canvas.toDataURL('image/jpeg', 1.0); // Use JPEG for smaller file size, high quality
+                    const imgData = canvas.toDataURL('image/jpeg', 1.0); 
                     doc.addImage(imgData, 'JPEG', 0, 0, A4_WIDTH_PX_AT_DPI, A4_HEIGHT_PX_AT_DPI);
                 }).catch(error => {
                     console.error("html2canvas error for PDF:", error);
@@ -1018,17 +1003,13 @@
                 showMessage("Failed to download PDF. " + error.message);
             } finally {
                 hideLoading();
-                // Reset reportContentDiv styles
                 reportContentDiv.style.display = 'none';
                 reportContentDiv.style.position = 'absolute';
                 reportContentDiv.style.left = '-9999px';
-                reportContentDiv.innerHTML = ''; // Clear content
+                reportContentDiv.innerHTML = ''; 
             }
         }
 
-        /**
-         * Share App functionality.
-         */
         async function shareApp() {
             const appUrl = window.location.href;
             const shareData = {
@@ -1042,36 +1023,30 @@
                     await navigator.share(shareData);
                     console.log('App shared successfully!');
                 } else {
-                    // Fallback for browsers that do not support Web Share API
                     await navigator.clipboard.writeText(appUrl);
                     showMessage('App link copied to clipboard! You can paste it to share.');
                 }
             } catch (err) {
                 console.error('Error sharing the app:', err);
-                if (err.name !== 'AbortError') { // AbortError means user cancelled
+                if (err.name !== 'AbortError') { 
                     showMessage('Could not share the app. Please copy the link manually: ' + appUrl);
                 }
             }
         }
 
-
-        // --- Event Listeners ---
         addRoommateBtn.addEventListener('click', addRoommate);
-        // Allow adding roommate with Enter key
         roommateNameInput.addEventListener('keypress', (event) => {
             if (event.key === 'Enter') {
-                event.preventDefault(); // Prevent default form submission
+                event.preventDefault(); 
                 addRoommate();
             }
         });
         calculateBillBtn.addEventListener('click', calculateBill);
         resetAllBtn.addEventListener('click', resetAllData);
-        generateReportPreviewBtn.addEventListener('click', renderA4ReportPreview); // New event listener for preview
+        generateReportPreviewBtn.addEventListener('click', renderA4ReportPreview); 
         downloadPdfBtn.addEventListener('click', downloadPdfReport);
-        shareAppBtn.addEventListener('click', shareApp); // Event listener for share button
+        shareAppBtn.addEventListener('click', shareApp); 
 
-
-        // --- Initial Load ---
         document.addEventListener('DOMContentLoaded', () => {
             showLoading("Loading saved data...");
             loadRoommates();
