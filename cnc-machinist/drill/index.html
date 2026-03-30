@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FCJR8H4DME"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-FCJR8H4DME');
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <title>CNC Drill & Tap Speeds and Feeds Calculator | Free App - SHADER7</title>
+    <meta name="description" content="Calculate optimal Spindle Speed (RPM) and Feed Rate for CNC drilling and rigid tapping. Smart Sync forces perfect whole numbers for Fanuc & Haas G84 cycles.">
+    <meta name="keywords" content="cnc speeds and feeds calculator, drill rpm calculator, tapping feed rate, rigid tapping g84, cnc machinist tools, shader7">
+    <meta name="author" content="Nishikant Xalxo">
+    <meta name="robots" content="index, follow">
+
+    <link rel="canonical" href="https://shader7.com/cnc-machinist/drill/">
+
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Shader7">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:url" content="https://shader7.com/cnc-machinist/drill/">
+    <meta property="og:title" content="CNC Drill & Tap Speeds and Feeds Calculator">
+    <meta property="og:description" content="Calculate optimal Spindle Speed (RPM) and Feed Rate for CNC drilling and rigid tapping.">
+    <meta property="og:image" content="https://shader7.com/og-image.jpg">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@nishix_vamp">
+    <meta name="twitter:creator" content="@nishix_vamp">
+    <meta name="twitter:url" content="https://shader7.com/cnc-machinist/drill/">
+    <meta name="twitter:title" content="CNC Drill & Tap Speeds and Feeds Calculator">
+    <meta name="twitter:description" content="Calculate optimal Spindle Speed (RPM) and Feed Rate for CNC drilling and rigid tapping.">
+    <meta name="twitter:image" content="https://shader7.com/og-image.jpg">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Shader7 Drill & Tap Calculator",
+      "url": "https://shader7.com/cnc-machinist/drill/",
+      "operatingSystem": "Web Browser",
+      "applicationCategory": "UtilitiesApplication",
+      "offers": {
+        "@type": "Offer",
+        "price": "0.00",
+        "priceCurrency": "USD"
+      },
+      "description": "A free CNC machining utility to calculate accurate spindle speeds (RPM) and feed rates for drilling and rigid tapping operations. Includes Smart Sync for perfect G84 cycles.",
+      "creator": {
+        "@type": "Person",
+        "name": "Nishikant Xalxo",
+        "url": "https://instagram.com/nishix_vamp"
+      }
+    }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <style>
+        :root {
+            --bg-page: #0f172a;
+            --bg-card: #1e293b;
+            --bg-input: #020617;
+            --primary: #22c55e;
+            --primary-hover: #16a34a;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --warning: #facc15;
+            --min-color: #3b82f6;
+            --max-color: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg-page);
+            color: var(--text-main);
+            padding: 20px;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .main-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* Unified App Header / Banner */
+        .app-header {
+            background: linear-gradient(135deg, #1e293b, #020617);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 15px 20px 25px 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-nav {
+            width: 100%;
+            display: flex;
+            justify-content: flex-start;
+            margin-bottom: 5px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s ease;
+            padding: 4px 8px;
+            margin-left: -8px; 
+            border-radius: 6px;
+        }
+
+        .back-link:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .back-link svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+
+        .header-branding {
+            text-align: center;
+        }
+
+        .header-branding h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            margin-bottom: 4px;
+            color: #ffffff;
+            text-transform: uppercase;
+        }
+
+        .header-branding h1 span {
+            color: var(--primary);
+        }
+
+        .header-branding p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        h2 {
+            text-align: center;
+            color: var(--primary);
+            margin-bottom: 25px;
+            font-size: 1.5rem;
+        }
+
+        /* Responsive Grid */
+        .app-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .app-container {
+                grid-template-columns: 1fr 1fr;
+                gap: 30px;
+            }
+        }
+
+        .panel {
+            background: var(--bg-card);
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        /* Hidden class for dynamic pitch field */
+        .hidden {
+            display: none !important;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg-input);
+            color: var(--text-main);
+            font-size: 1rem; 
+            transition: border-color 0.2s;
+            appearance: none;
+        }
+
+        select {
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2394a3b8%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat, repeat;
+            background-position: right .7em top 50%, 0 0;
+            background-size: .65em auto, 100%;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        button.calc-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: #022c22;
+            font-weight: 700;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.2s;
+        }
+
+        button.calc-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        button.calc-btn:active {
+            transform: translateY(1px);
+        }
+
+        /* Results Styling & Fixes */
+        .results-header {
+            color: var(--text-main);
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+        }
+
+        .result-card {
+            background: var(--bg-input);
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .result-card.min { border-left-color: var(--min-color); }
+        .result-card.max { border-left-color: var(--max-color); }
+
+        /* Give the left side breathing room */
+        .result-card-info {
+            padding-right: 15px; 
+            flex: 1; 
+        }
+
+        .result-card-info h4 {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+            line-height: 1.2;
+        }
+
+        .result-card-info p {
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        /* Prevent text wrapping on the feed rate */
+        .result-card-extra {
+            text-align: right;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            white-space: nowrap; 
+            flex-shrink: 0;      
+        }
+
+        .warn-box {
+            background: rgba(250, 204, 21, 0.1);
+            border: 1px solid rgba(250, 204, 21, 0.3);
+            color: var(--warning);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .empty-state {
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 40px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-wrapper">
+    <header class="app-header">
+        <div class="header-nav">
+            <a href="../" class="back-link">
+                <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"></path></svg>
+                Back to CNC Hub
+            </a>
+        </div>
+        <div class="header-branding">
+            <h1>SHADER<span>7</span></h1>
+            <p>Advanced CNC Tools & Resources</p>
+        </div>
+    </header>
+
+    <h2>Feed & Speed Calculator</h2>
+
+    <div class="app-container">
+        <div class="panel">
+            <div class="form-group">
+                <label for="operation">Operation</label>
+                <select id="operation">
+                    <option value="drill">Drilling</option>
+                    <option value="tap">Tapping (Rigid)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="diameter">Tool Diameter (mm)</label>
+                <input type="number" id="diameter" step="0.1" placeholder="e.g. 6">
+            </div>
+
+            <div class="form-group hidden" id="pitchGroup">
+                <label for="pitch">Thread Pitch (mm) <span style="font-weight:normal; font-size:0.8rem;">(Overrides Coarse)</span></label>
+                <input type="number" id="pitch" step="0.05" placeholder="e.g. 1.0">
+            </div>
+
+            <div class="form-group">
+                <label for="toolMaterial">Tool Material</label>
+                <select id="toolMaterial">
+                    <option value="hss">HSS</option>
+                    <option value="hssco">HSS-Co</option>
+                    <option value="carbide">Carbide</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="workMaterial">Work Material</label>
+                <select id="workMaterial">
+                    <option value="mild">Mild Steel</option>
+                    <option value="alloy">Alloy Steel</option>
+                    <option value="stainless">Stainless Steel</option>
+                    <option value="aluminum">Aluminum</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="depth">Hole Depth (mm) <span style="font-weight:normal; font-size:0.8rem;">(Optional)</span></label>
+                <input type="number" id="depth" placeholder="e.g. 20">
+            </div>
+
+            <button class="calc-btn" onclick="calculate()">Calculate Parameters</button>
+        </div>
+
+        <div class="panel">
+            <div id="result">
+                <div class="empty-state">Enter tool parameters and click calculate to see results.</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Elements
+const opEl = document.getElementById("operation");
+const diaEl = document.getElementById("diameter");
+const pitchEl = document.getElementById("pitch");
+const pitchGroup = document.getElementById("pitchGroup");
+const resultEl = document.getElementById("result");
+
+// ISO metric coarse pitch table
+const pitchTable = [
+ {d:3,p:0.5},{d:4,p:0.7},{d:5,p:0.8},{d:6,p:1.0},
+ {d:8,p:1.25},{d:10,p:1.5},{d:12,p:1.75},
+ {d:16,p:2.0},{d:20,p:2.5},{d:24,p:3.0},
+ {d:30,p:3.5},{d:36,p:4.0},{d:42,p:4.5}
+];
+
+function getPitch(d){
+    return pitchTable.reduce((a,b)=>
+        Math.abs(b.d-d)<Math.abs(a.d-d)?b:a
+    ).p;
+}
+
+// Clear results when user changes inputs to prevent stale data
+document.querySelectorAll('input, select').forEach(el => {
+    el.addEventListener('input', () => {
+        resultEl.innerHTML = '<div class="empty-state">Enter tool parameters and click calculate to see results.</div>';
+    });
+});
+
+// Show/Hide Pitch Input based on Operation & Auto-fill coarse pitch
+function handleOperationChange() {
+    if (opEl.value === "tap") {
+        pitchGroup.classList.remove("hidden");
+        const D = parseFloat(diaEl.value);
+        if (D > 0 && !pitchEl.value) {
+            pitchEl.value = getPitch(D);
+        }
+    } else {
+        pitchGroup.classList.add("hidden");
+    }
+}
+
+opEl.addEventListener('change', handleOperationChange);
+
+// Auto-suggest pitch when diameter is typed (only if tapping)
+diaEl.addEventListener('input', () => {
+    if (opEl.value === "tap") {
+        const D = parseFloat(diaEl.value);
+        if (D > 0) {
+            pitchEl.value = getPitch(D);
+        } else {
+            pitchEl.value = "";
+        }
+    }
+});
+
+// Correct industrial drill feed per rev
+function drillFeedPerRev(d){
+    if (d <= 5) return 0.07;
+    if (d <= 8) return 0.10;
+    if (d <= 12) return 0.14;
+    if (d <= 20) return 0.18;
+    return 0.25;
+}
+
+// SMART TAPPING SYNC: Adjusts RPM slightly to force a perfect whole-number Feed
+function getSyncedTap(baseRpm, pitch) {
+    // Search up to +/- 10 RPM to find a number that multiplies perfectly into an integer
+    for (let i = 0; i <= 20; i++) {
+        let offset = i % 2 === 0 ? i / 2 : -(i + 1) / 2;
+        let testRpm = Math.round(baseRpm) + offset;
+        let testFeed = testRpm * pitch;
+        
+        // If the resulting feed is a whole number (accounting for tiny JS float math errors)
+        if (Math.abs(testFeed - Math.round(testFeed)) < 0.001) {
+            return { r: testRpm, f: Math.round(testFeed) };
+        }
+    }
+    // Fallback if no integer is found: Just round the RPM and Feed normally
+    return { r: Math.round(baseRpm), f: Math.round(baseRpm * pitch) };
+}
+
+function calculate(){
+    const op = opEl.value;
+    const D = parseFloat(diaEl.value);
+    const tool = document.getElementById("toolMaterial").value;
+    const mat = document.getElementById("workMaterial").value;
+    const depth = parseFloat(document.getElementById("depth").value) || 0;
+
+    // Reject Zero, Negative, or Empty numbers
+    if(!D || D <= 0){ 
+        alert("Please enter a valid positive tool diameter."); 
+        diaEl.focus();
+        return; 
+    }
+
+    // Cutting speeds (m/min)
+    const drillV = {
+        mild:{hss:22,hssco:28,carbide:80},
+        alloy:{hss:18,hssco:24,carbide:70},
+        stainless:{hss:14,hssco:20,carbide:60},
+        aluminum:{hss:60,hssco:80,carbide:200}
+    };
+
+    const tapV = {
+        mild:{hss:6,hssco:8,carbide:18},
+        alloy:{hss:5,hssco:7,carbide:15},
+        stainless:{hss:4,hssco:6,carbide:12},
+        aluminum:{hss:10,hssco:12,carbide:30}
+    };
+
+    const V = (op==="drill") ? drillV[mat][tool] : tapV[mat][tool];
+
+    // Initial mathematically standard RPMs
+    const rpmStdRaw = (1000 * V) / (Math.PI * D);
+    const rpmMinRaw = rpmStdRaw * 0.6;
+    const rpmMaxRaw = rpmStdRaw * 1.2;
+
+    let html = "";
+
+    if(op === "drill"){
+        const f_rev = drillFeedPerRev(D);
+        
+        // Ensure Drill values are rounded integers
+        const rpmMin = Math.round(rpmMinRaw);
+        const rpmStd = Math.round(rpmStdRaw);
+        const rpmMax = Math.round(rpmMaxRaw);
+        
+        let peckWarning = "";
+        if (depth >= (D * 3)) {
+            peckWarning = `<div class="warn-box">⚠️ Depth is &ge; 3x Diameter. Use peck drilling (G83/G73).</div>`;
+        }
+
+        html = `
+        <h3 class="results-header">Drilling Results</h3>
+        
+        <div class="result-card min">
+            <div class="result-card-info">
+                <h4>Minimum</h4>
+                <p>${rpmMin} RPM</p>
+            </div>
+            <div class="result-card-extra">
+                F ${Math.round(rpmMin*f_rev)} mm/min
+            </div>
+        </div>
+
+        <div class="result-card std">
+            <div class="result-card-info">
+                <h4>Standard (Recommended)</h4>
+                <p>${rpmStd} RPM</p>
+            </div>
+            <div class="result-card-extra">
+                F ${Math.round(rpmStd*f_rev)} mm/min
+            </div>
+        </div>
+
+        <div class="result-card max">
+            <div class="result-card-info">
+                <h4>Max Safe</h4>
+                <p>${rpmMax} RPM</p>
+            </div>
+            <div class="result-card-extra">
+                F ${Math.round(rpmMax*f_rev)} mm/min
+            </div>
+        </div>
+
+        <div style="margin-top: 15px; font-size: 0.9rem; color: var(--text-muted);">
+            <strong>Calculated Feed/Rev:</strong> ${f_rev} mm/rev
+        </div>
+        ${peckWarning}
+        `;
+    } else {
+        // Handle custom pitch or fallback
+        let pitch = parseFloat(pitchEl.value);
+        if (!pitch || pitch <= 0) {
+            pitch = getPitch(D);
+            pitchEl.value = pitch; 
+        }
+
+        // Apply Smart Sync to find perfect whole numbers for Rigid Tapping
+        const minTap = getSyncedTap(rpmMinRaw, pitch);
+        const stdTap = getSyncedTap(rpmStdRaw, pitch);
+        const maxTap = getSyncedTap(rpmMaxRaw, pitch);
+
+        html = `
+        <h3 class="results-header">Tapping Results (M${D} x ${pitch})</h3>
+        
+        <div class="result-card min">
+            <div class="result-card-info">
+                <h4>Minimum</h4>
+                <p>${minTap.r} RPM</p>
+            </div>
+            <div class="result-card-extra">
+                F ${minTap.f} mm/min
+            </div>
+        </div>
+
+        <div class="result-card std">
+            <div class="result-card-info">
+                <h4>Standard (Recommended)</h4>
+                <p>${stdTap.r} RPM</p>
+            </div>
+            <div class="result-card-extra">
+                F ${stdTap.f} mm/min
+            </div>
+        </div>
+
+        <div class="result-card max">
+            <div class="result-card-info">
+                <h4>Max Safe</h4>
+                <p>${maxTap.r} RPM</p>
+            </div>
+            <div class="result-card-extra">
+                F ${maxTap.f} mm/min
+            </div>
+        </div>
+
+        <div class="warn-box">
+            ⚠️ Values are perfectly synced for Rigid Tapping (G84). Feed = RPM &times; Pitch.
+        </div>
+        `;
+    }
+
+    resultEl.innerHTML = html;
+}
+</script>
+
+</body>
+</html>
