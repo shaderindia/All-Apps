@@ -1,0 +1,339 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Segoe UI',sans-serif;background:#04090f;color:#e2e8f0;overflow-x:hidden;}
+canvas#bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;}
+
+/* NAV */
+header.top-bar{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(4,9,15,0.85);backdrop-filter:blur(16px);border-bottom:1px solid rgba(59,130,246,0.15);padding:0 2rem;height:56px;display:flex;align-items:center;}
+header.top-bar a{color:#818cf8;font-weight:700;font-size:1.1rem;text-decoration:none;letter-spacing:2px;display:flex;align-items:center;gap:8px;}
+header.top-bar a:hover{color:#a5b4fc;}
+nav.sticky-nav{position:sticky;top:56px;z-index:190;background:rgba(4,9,15,0.92);backdrop-filter:blur(14px);border-bottom:1px solid rgba(59,130,246,0.12);padding:0 2rem;height:52px;display:flex;align-items:center;justify-content:space-between;}
+.nav-brand{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.nav-brand span{font-size:1.3rem;font-weight:800;color:#f1f5f9;letter-spacing:1px;}
+.nav-brand span b{color:#3b82f6;}
+.nav-badge{background:rgba(59,130,246,0.15);color:#60a5fa;font-size:0.65rem;font-weight:700;padding:3px 8px;border-radius:4px;letter-spacing:2px;border:1px solid rgba(59,130,246,0.25);}
+.nav-links{display:flex;gap:2rem;}
+.nav-links a{color:rgba(226,232,240,0.6);text-decoration:none;font-size:0.85rem;font-weight:500;transition:color 0.2s;letter-spacing:0.5px;}
+.nav-links a:hover{color:#60a5fa;}
+
+/* HERO */
+.hero{position:relative;z-index:10;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 2rem 6rem;}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.3);border-radius:999px;padding:5px 16px;font-size:0.72rem;letter-spacing:2px;color:#60a5fa;margin-bottom:1.8rem;}
+.hero h1{font-size:clamp(2.8rem,7vw,5.5rem);font-weight:900;line-height:1.05;margin-bottom:1.2rem;background:linear-gradient(135deg,#f1f5f9 0%,#93c5fd 45%,#60a5fa 70%,#818cf8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hero h1 span{background:linear-gradient(135deg,#3b82f6,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hero p{font-size:1.05rem;color:rgba(226,232,240,0.55);max-width:520px;line-height:1.8;margin-bottom:2.5rem;}
+.hero-btn{display:inline-block;padding:0.85rem 2.2rem;background:linear-gradient(135deg,#1d4ed8,#3b82f6);color:#fff;font-weight:700;border-radius:10px;text-decoration:none;font-size:0.9rem;letter-spacing:0.5px;transition:transform 0.2s,box-shadow 0.2s;box-shadow:0 0 30px rgba(59,130,246,0.35);}
+.hero-btn:hover{transform:translateY(-2px);box-shadow:0 0 50px rgba(59,130,246,0.55);}
+
+/* GCODE TICKER */
+.gcode-ticker{position:relative;z-index:10;overflow:hidden;background:rgba(0,0,0,0.5);border-top:1px solid rgba(59,130,246,0.15);border-bottom:1px solid rgba(59,130,246,0.15);padding:10px 0;}
+.ticker-inner{display:flex;gap:3rem;animation:ticker 22s linear infinite;white-space:nowrap;}
+.ticker-inner span{font-family:monospace;font-size:0.78rem;color:#3b82f6;opacity:0.6;letter-spacing:1px;}
+@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* TOOLS GRID */
+.tools-section{position:relative;z-index:10;padding:5rem 2rem 6rem;}
+.section-label{text-align:center;font-size:0.7rem;letter-spacing:4px;color:#60a5fa;margin-bottom:0.4rem;}
+.section-title{text-align:center;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;margin-bottom:3.5rem;background:linear-gradient(90deg,#f1f5f9,#93c5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem;max-width:1100px;margin:0 auto;}
+
+.tool-card{background:rgba(15,23,42,0.7);border:1px solid rgba(59,130,246,0.12);border-radius:18px;padding:2rem;text-decoration:none;color:inherit;display:block;transition:transform 0.3s,box-shadow 0.3s,border-color 0.3s;position:relative;overflow:hidden;}
+.tool-card::before{content:'';position:absolute;inset:0;border-radius:18px;background:linear-gradient(135deg,rgba(59,130,246,0.06),rgba(99,102,241,0.06));opacity:0;transition:opacity 0.3s;}
+.tool-card:hover::before{opacity:1;}
+.tool-card:hover{transform:translateY(-6px);border-color:rgba(59,130,246,0.4);box-shadow:0 20px 60px rgba(59,130,246,0.12);}
+.tool-card.coming-soon{opacity:0.5;cursor:default;}
+.tool-card.coming-soon:hover{transform:none;border-color:rgba(59,130,246,0.12);box-shadow:none;}
+
+.card-icon{width:52px;height:52px;background:linear-gradient(135deg,#1d4ed8,#3b82f6);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:1.2rem;transition:transform 0.3s;}
+.tool-card:hover .card-icon{transform:scale(1.1) rotate(-3deg);}
+.coming-soon .card-icon{background:linear-gradient(135deg,#334155,#475569);}
+.card-title{font-size:1.05rem;font-weight:700;color:#f1f5f9;margin-bottom:0.5rem;}
+.card-desc{font-size:0.82rem;color:rgba(226,232,240,0.45);line-height:1.6;margin-bottom:1rem;}
+.card-link{font-size:0.8rem;font-weight:700;color:#3b82f6;letter-spacing:0.5px;}
+.coming-badge{display:inline-block;font-size:0.65rem;font-weight:700;letter-spacing:2px;background:rgba(100,116,139,0.2);color:#94a3b8;border:1px solid rgba(100,116,139,0.25);padding:3px 10px;border-radius:4px;}
+
+/* FEATURES STRIP */
+.features-strip{position:relative;z-index:10;padding:3rem 2rem;background:rgba(0,0,0,0.3);border-top:1px solid rgba(59,130,246,0.08);border-bottom:1px solid rgba(59,130,246,0.08);}
+.features-inner{max-width:900px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:center;gap:2.5rem;}
+.feat{text-align:center;min-width:140px;}
+.feat-icon{font-size:1.6rem;margin-bottom:0.5rem;}
+.feat-title{font-size:0.9rem;font-weight:600;color:#e2e8f0;margin-bottom:0.2rem;}
+.feat-sub{font-size:0.75rem;color:rgba(226,232,240,0.35);}
+
+/* FOOTER */
+footer{position:relative;z-index:10;background:rgba(4,9,15,0.95);border-top:1px solid rgba(59,130,246,0.1);padding:2.5rem 2rem;text-align:center;}
+footer p{color:rgba(226,232,240,0.3);font-size:0.8rem;margin-bottom:0.5rem;}
+footer a{color:#60a5fa;text-decoration:none;margin:0 0.5rem;font-size:0.8rem;}
+footer a:hover{color:#93c5fd;}
+
+/* Reveal */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity 0.65s ease,transform 0.65s ease;}
+.reveal.visible{opacity:1;transform:none;}
+</style>
+</head>
+<body>
+
+<canvas id="bg"></canvas>
+
+<!-- TOP HEADER -->
+<header class="top-bar">
+  <a href="https://shader7.com">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"/><path d="m8 3.293 6 6V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V9.293l6-6Z"/></svg>
+    SHADER7
+  </a>
+</header>
+
+<!-- STICKY NAV -->
+<nav class="sticky-nav">
+  <a class="nav-brand" href="https://shader7.com/cnc-machinist/">
+    <span>SHADER<b>7</b></span>
+    <span class="nav-badge">CNC HUB</span>
+  </a>
+  <div class="nav-links">
+    <a href="https://shader7.com/#tools">All Tools</a>
+    <a href="https://shader7.com/blog.html">Blog</a>
+    <a href="https://shader7.com/contact.html">Contact</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">⚙ PROFESSIONAL GRADE · FREE · BROWSER-BASED</div>
+  <h1>CNC Machinist<br><span>Toolkit</span></h1>
+  <p>Professional online calculators for Speeds & Feeds, PCD Coordinates, G-Code generation, and precision machining workflows.</p>
+  <a href="#cnc-tools" class="hero-btn">Explore All Tools ↓</a>
+</section>
+
+<!-- GCODE TICKER -->
+<div class="gcode-ticker">
+  <div class="ticker-inner" id="ticker"></div>
+</div>
+
+<!-- TOOLS GRID -->
+<section class="tools-section reveal" id="cnc-tools">
+  <div class="section-label">PRECISION TOOLS</div>
+  <div class="section-title">Machinist Calculators</div>
+  <div class="tools-grid">
+
+    <a href="https://shader7.com/cnc-machinist/drill/" class="tool-card">
+      <div class="card-icon">⚙️</div>
+      <div class="card-title">Drill RPM & Feed</div>
+      <div class="card-desc">Calculate optimal Spindle Speed (RPM) and Feed Rate based on your cutter diameter and material.</div>
+      <div class="card-link">Open Calculator →</div>
+    </a>
+
+    <a href="https://shader7.com/cnc-machinist/pcd/" class="tool-card">
+      <div class="card-icon">⊕</div>
+      <div class="card-title">PCD Coordinates</div>
+      <div class="card-desc">Get X and Y coordinates for drilling holes on a Pitch Circle Diameter (bolt circle).</div>
+      <div class="card-link">Open Calculator →</div>
+    </a>
+
+    <a href="https://shader7.com/cnc-machinist/idodinterpolation/" class="tool-card">
+      <div class="card-icon">📐</div>
+      <div class="card-title">Circular Interpolation</div>
+      <div class="card-desc">Generate G02/G03 code for milling internal/external circles and dovetails.</div>
+      <div class="card-link">Generate G-Code →</div>
+    </a>
+
+    <a href="https://shader7.com/cnc-machinist/milldrillcontour/" class="tool-card">
+      <div class="card-icon">✍️</div>
+      <div class="card-title">Macro Program Generator</div>
+      <div class="card-desc">Quick programs for Face Milling, Simple Contours, and Drill cycles. Fanuc & Haas compatible.</div>
+      <div class="card-link">Generate G-Code →</div>
+    </a>
+
+    <a href="https://shader7.com/cnc-machinist/XYchamfer/" class="tool-card">
+      <div class="card-icon">📏</div>
+      <div class="card-title">Chamfer in G17</div>
+      <div class="card-desc">Use CHAMFER in the G17 X,Y plane. Easy to use and quick to generate clean chamfer code.</div>
+      <div class="card-link">Generate G-Code →</div>
+    </a>
+
+    <a href="https://shader7.com/cnc-machinist/CircularChamfer/" class="tool-card">
+      <div class="card-icon">🔩</div>
+      <div class="card-title">Circular Chamfer</div>
+      <div class="card-desc">Circular interpolation chamfer using G17 in the X,Y plane — fast and precise code generation.</div>
+      <div class="card-link">Generate G-Code →</div>
+    </a>
+
+    <a href="https://shader7.com/cnc-machinist/3DCADWEB/" class="tool-card">
+      <div class="card-icon">🖥️</div>
+      <div class="card-title">3D CAD Web App</div>
+      <div class="card-desc">Design your model in the browser with this 3D CAD WebApp. Great for quick geometry visualization.</div>
+      <div class="card-link">Design Your Model →</div>
+    </a>
+
+    <div class="tool-card coming-soon">
+      <div class="card-icon">🗂️</div>
+      <div class="card-title">G-Code Simulator</div>
+      <div class="card-desc">Visualize your toolpaths in 2D before running the machine. Catch errors before they cost you.</div>
+      <span class="coming-badge">COMING SOON</span>
+    </div>
+
+  </div>
+</section>
+
+<!-- FEATURES STRIP -->
+<div class="features-strip reveal">
+  <div class="features-inner">
+    <div class="feat"><div class="feat-icon">🔒</div><div class="feat-title">Privacy First</div><div class="feat-sub">Client-side only</div></div>
+    <div class="feat"><div class="feat-icon">⚡</div><div class="feat-title">100% Free</div><div class="feat-sub">No paywalls ever</div></div>
+    <div class="feat"><div class="feat-icon">🏭</div><div class="feat-title">Fanuc · Haas · Mazak</div><div class="feat-sub">Industry compatible</div></div>
+    <div class="feat"><div class="feat-icon">📱</div><div class="feat-title">Works on Mobile</div><div class="feat-sub">Shop floor ready</div></div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>© <span id="yr"></span> Nishikant Xalxo — SHADER7 CNC Tools</p>
+  <p>
+    <a href="https://shader7.com/">Main Site</a>
+    <a href="https://shader7.com/contact.html">Contact</a>
+    <a href="https://instagram.com/nishix_vamp" target="_blank" rel="noopener">@nishix_vamp</a>
+  </p>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+document.getElementById('yr').textContent = new Date().getFullYear();
+
+// G-code ticker
+const codes = ['G00 X0 Y0 Z50.','G01 Z-5. F120','G02 X50. Y0 I25. J0','M03 S2500','G41 D01','G83 Z-30. R2. Q5. F80','M05 M09','G28 G91 Z0','T02 M06','G54 G17 G40','G03 X-50. Y0 I-25. J0','M08','G80 G49','F200 S3000','G91 G28 Z0 M19'];
+const t = document.getElementById('ticker');
+[...codes,...codes].forEach(c=>{const s=document.createElement('span');s.textContent=c;t.appendChild(s);});
+
+// THREE.JS CNC SCENE
+const canvas = document.getElementById('bg');
+const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setSize(innerWidth, innerHeight);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(55, innerWidth/innerHeight, 0.1, 500);
+camera.position.set(0, 8, 55);
+
+// GRID FLOOR
+const gridHelper = new THREE.GridHelper(200, 60, 0x1e3a8a, 0x0f172a);
+gridHelper.position.y = -20;
+gridHelper.material.opacity = 0.4;
+gridHelper.material.transparent = true;
+scene.add(gridHelper);
+
+// AMBIENT + LIGHTS
+scene.add(new THREE.AmbientLight(0x0a1628, 2));
+const bl = new THREE.PointLight(0x3b82f6, 6, 120);
+bl.position.set(-30, 20, 10);
+scene.add(bl);
+const bl2 = new THREE.PointLight(0x818cf8, 4, 100);
+bl2.position.set(30, 15, 5);
+scene.add(bl2);
+const bl3 = new THREE.PointLight(0x60a5fa, 3, 80);
+bl3.position.set(0, -5, 30);
+scene.add(bl3);
+
+// CNC LATHE / SPINDLE shapes
+const meshes = [];
+
+// Main rotating gear-like torus knot (spindle)
+const spindleMat = new THREE.MeshPhongMaterial({color:0x3b82f6,emissive:0x1d4ed8,emissiveIntensity:0.3,wireframe:false,transparent:true,opacity:0.7,shininess:80});
+const spindle = new THREE.Mesh(new THREE.TorusKnotGeometry(6,1.2,180,12,3,5), spindleMat);
+spindle.position.set(-22, 0, -15);
+scene.add(spindle);
+meshes.push({m:spindle, rx:0.003, ry:0.007});
+
+// Large wireframe gear (cylinder with segments)
+const gearMat = new THREE.MeshPhongMaterial({color:0x1e40af,wireframe:true,transparent:true,opacity:0.35});
+const gear = new THREE.Mesh(new THREE.CylinderGeometry(10,10,2,32,1), gearMat);
+gear.position.set(22,-5,-20);
+scene.add(gear);
+meshes.push({m:gear, rx:0.001, ry:0.008});
+
+// Drill bit shape (cone + cylinder)
+const drillMat = new THREE.MeshPhongMaterial({color:0x475569,emissive:0x1e3a8a,emissiveIntensity:0.2,shininess:120});
+const drillGroup = new THREE.Group();
+const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.5,0.5,12,16), drillMat);
+const tip = new THREE.Mesh(new THREE.ConeGeometry(0.5,2.5,16), drillMat);
+tip.position.y = -7.25;
+drillGroup.add(shaft); drillGroup.add(tip);
+drillGroup.position.set(15, 8, -10);
+drillGroup.rotation.z = 0.4;
+scene.add(drillGroup);
+meshes.push({m:drillGroup, rx:0, ry:0.012});
+
+// Octahedron (workpiece)
+const wpMat = new THREE.MeshPhongMaterial({color:0x64748b,emissive:0x0f172a,wireframe:false,transparent:true,opacity:0.5,shininess:60});
+const wp = new THREE.Mesh(new THREE.OctahedronGeometry(5,0), wpMat);
+wp.position.set(-15,-8,-25);
+scene.add(wp);
+meshes.push({m:wp, rx:0.005, ry:0.006});
+
+// Wireframe icosahedron (floating chip)
+const chipMat = new THREE.MeshPhongMaterial({color:0x3b82f6,wireframe:true,transparent:true,opacity:0.2});
+const chip = new THREE.Mesh(new THREE.IcosahedronGeometry(8,1), chipMat);
+chip.position.set(5,5,-35);
+scene.add(chip);
+meshes.push({m:chip, rx:0.002, ry:0.003});
+
+// PARTICLES (metal chips)
+const pGeo = new THREE.BufferGeometry();
+const pN = 600, pPos = new Float32Array(pN*3);
+for(let i=0;i<pN;i++){pPos[i*3]=(Math.random()-.5)*160;pPos[i*3+1]=(Math.random()-.5)*80;pPos[i*3+2]=(Math.random()-.5)*80;}
+pGeo.setAttribute('position',new THREE.BufferAttribute(pPos,3));
+const pMat = new THREE.PointsMaterial({color:0x3b82f6,size:0.3,transparent:true,opacity:0.35});
+const particles = new THREE.Points(pGeo,pMat);
+scene.add(particles);
+
+// TOOLPATH LINE (circular path visualization)
+const pathPoints = [];
+for(let i=0;i<=120;i++){const a=(i/120)*Math.PI*2;pathPoints.push(new THREE.Vector3(Math.cos(a)*18,Math.sin(a)*18,-40));}
+const pathGeo = new THREE.BufferGeometry().setFromPoints(pathPoints);
+const pathMat = new THREE.LineBasicMaterial({color:0x60a5fa,transparent:true,opacity:0.15});
+scene.add(new THREE.Line(pathGeo,pathMat));
+
+// SECOND toolpath
+const pathPoints2 = [];
+for(let i=0;i<=80;i++){const a=(i/80)*Math.PI*2;pathPoints2.push(new THREE.Vector3(Math.cos(a)*10,-18+(Math.sin(a*3)*3),-30));}
+const pathGeo2 = new THREE.BufferGeometry().setFromPoints(pathPoints2);
+const pathMat2 = new THREE.LineBasicMaterial({color:0x818cf8,transparent:true,opacity:0.12});
+scene.add(new THREE.Line(pathGeo2,pathMat2));
+
+let mx=0,my=0;
+document.addEventListener('mousemove',e=>{mx=(e.clientX/innerWidth-.5)*2;my=-(e.clientY/innerHeight-.5)*2;});
+
+window.addEventListener('resize',()=>{
+  camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth,innerHeight);
+});
+
+let tick=0;
+function animate(){
+  requestAnimationFrame(animate); tick+=0.008;
+  meshes.forEach(o=>{o.m.rotation.x+=o.rx;o.m.rotation.y+=o.ry;});
+  particles.rotation.y+=0.0005;
+  gear.position.y=Math.sin(tick*0.7)*2-5;
+  spindle.position.y=Math.sin(tick*0.5)*1.5;
+  // Drill reciprocating
+  drillGroup.position.y=8+Math.sin(tick*3)*3;
+  bl.position.x=Math.sin(tick*0.6)*35;
+  bl2.position.x=Math.cos(tick*0.4)*30;
+  camera.position.x+=(mx*6-camera.position.x)*0.035;
+  camera.position.y+=(my*3+8-camera.position.y)*0.035;
+  camera.lookAt(0,0,0);
+  renderer.render(scene,camera);
+}
+animate();
+
+// Scroll reveal
+const reveals=document.querySelectorAll('.reveal');
+const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{threshold:0.08});
+reveals.forEach(r=>obs.observe(r));
+</script>
+</body>
+</html>
