@@ -1,0 +1,403 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #050510; color: #fff; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
+  canvas#bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
+
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1rem 2rem;
+    background: rgba(5,5,16,0.7);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(100,120,255,0.15);
+  }
+  .logo { font-size: 1.4rem; font-weight: 700; letter-spacing: 2px;
+    background: linear-gradient(90deg, #7b8fff, #c084fc, #38bdf8);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  nav a { color: rgba(255,255,255,0.7); text-decoration: none; font-size: 0.85rem;
+    letter-spacing: 1px; transition: color 0.3s; margin-left: 1.5rem; }
+  nav a:hover { color: #7b8fff; }
+
+  section { position: relative; z-index: 10; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center;
+    padding: 6rem 2rem 4rem;
+  }
+  .hero-badge {
+    display: inline-block; padding: 0.3rem 1rem; border-radius: 999px;
+    background: rgba(123,143,255,0.12); border: 1px solid rgba(123,143,255,0.35);
+    font-size: 0.75rem; letter-spacing: 2px; color: #a5b4fc; margin-bottom: 1.5rem;
+  }
+  .hero h1 {
+    font-size: clamp(2.5rem, 6vw, 5rem); font-weight: 800; line-height: 1.1;
+    background: linear-gradient(135deg, #e0e7ff 0%, #a5b4fc 40%, #38bdf8 70%, #c084fc 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 1.2rem;
+  }
+  .hero p { font-size: 1.1rem; color: rgba(255,255,255,0.55); max-width: 540px; line-height: 1.7; margin-bottom: 2.5rem; }
+  .btn-group { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+  .btn-primary {
+    padding: 0.8rem 2rem; border-radius: 999px; font-size: 0.9rem; font-weight: 600;
+    background: linear-gradient(135deg, #7b8fff, #c084fc);
+    color: #fff; border: none; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 0 30px rgba(123,143,255,0.4);
+  }
+  .btn-primary:hover { transform: translateY(-2px) scale(1.03); box-shadow: 0 0 50px rgba(123,143,255,0.6); }
+  .btn-ghost {
+    padding: 0.8rem 2rem; border-radius: 999px; font-size: 0.9rem; font-weight: 600;
+    background: transparent; color: #a5b4fc;
+    border: 1px solid rgba(123,143,255,0.4); cursor: pointer; transition: all 0.2s;
+  }
+  .btn-ghost:hover { background: rgba(123,143,255,0.1); }
+
+  /* FEATURES */
+  .features {
+    padding: 6rem 2rem;
+    background: linear-gradient(180deg, transparent 0%, rgba(30,10,60,0.6) 50%, transparent 100%);
+  }
+  .section-label { text-align: center; font-size: 0.75rem; letter-spacing: 3px;
+    color: #a5b4fc; margin-bottom: 0.5rem; }
+  .section-title { text-align: center; font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 700; margin-bottom: 3.5rem;
+    background: linear-gradient(90deg, #e0e7ff, #c084fc);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem; max-width: 1100px; margin: 0 auto; }
+  .card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 18px; padding: 2rem;
+    transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+    cursor: default; position: relative; overflow: hidden;
+  }
+  .card::before {
+    content: ''; position: absolute; inset: 0; border-radius: 18px; opacity: 0;
+    background: linear-gradient(135deg, rgba(123,143,255,0.08), rgba(192,132,252,0.08));
+    transition: opacity 0.3s;
+  }
+  .card:hover::before { opacity: 1; }
+  .card:hover { transform: translateY(-6px) scale(1.01); border-color: rgba(123,143,255,0.3);
+    box-shadow: 0 20px 60px rgba(123,143,255,0.12); }
+  .card-icon { font-size: 2rem; margin-bottom: 1rem; }
+  .card h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; color: #e0e7ff; }
+  .card p { font-size: 0.88rem; color: rgba(255,255,255,0.45); line-height: 1.6; }
+  .card-tag {
+    display: inline-block; margin-top: 1rem; padding: 0.2rem 0.75rem;
+    border-radius: 999px; font-size: 0.7rem; letter-spacing: 1px; font-weight: 600;
+  }
+  .tag-blue { background: rgba(56,189,248,0.12); color: #38bdf8; border: 1px solid rgba(56,189,248,0.25); }
+  .tag-purple { background: rgba(192,132,252,0.12); color: #c084fc; border: 1px solid rgba(192,132,252,0.25); }
+  .tag-teal { background: rgba(45,212,191,0.12); color: #2dd4bf; border: 1px solid rgba(45,212,191,0.25); }
+
+  /* STATS */
+  .stats { padding: 5rem 2rem; }
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 2rem; max-width: 900px; margin: 0 auto; text-align: center; }
+  .stat-num { font-size: 3rem; font-weight: 800;
+    background: linear-gradient(135deg, #38bdf8, #7b8fff);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .stat-label { font-size: 0.85rem; color: rgba(255,255,255,0.4); margin-top: 0.3rem; letter-spacing: 1px; }
+
+  /* CNC */
+  .cnc-banner {
+    margin: 0 2rem 6rem;
+    border-radius: 24px;
+    background: linear-gradient(135deg, rgba(15,30,80,0.8), rgba(40,10,80,0.8));
+    border: 1px solid rgba(123,143,255,0.2);
+    padding: 3.5rem 3rem;
+    display: flex; flex-wrap: wrap; gap: 2rem;
+    align-items: center; justify-content: space-between;
+    position: relative; overflow: hidden;
+  }
+  .cnc-banner::after {
+    content: '⚙'; position: absolute; right: -20px; bottom: -20px;
+    font-size: 10rem; opacity: 0.04; pointer-events: none;
+  }
+  .cnc-text h2 { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem; }
+  .cnc-text p { color: rgba(255,255,255,0.5); font-size: 0.9rem; max-width: 400px; }
+
+  /* PRIVACY */
+  .pillars { padding: 4rem 2rem 6rem; }
+  .pillars-grid { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; max-width: 900px; margin: 0 auto; }
+  .pillar {
+    flex: 1 1 220px; background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06); border-radius: 16px;
+    padding: 1.75rem; text-align: center;
+  }
+  .pillar-icon { font-size: 2.2rem; margin-bottom: 0.75rem; }
+  .pillar h4 { font-size: 1rem; font-weight: 600; color: #e0e7ff; margin-bottom: 0.4rem; }
+  .pillar p { font-size: 0.82rem; color: rgba(255,255,255,0.4); line-height: 1.55; }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid rgba(255,255,255,0.06);
+    padding: 2.5rem 2rem; text-align: center;
+    color: rgba(255,255,255,0.25); font-size: 0.8rem;
+  }
+  footer a { color: #7b8fff; text-decoration: none; margin: 0 0.5rem; }
+  .footer-logo { font-size: 1.2rem; font-weight: 700; letter-spacing: 2px;
+    background: linear-gradient(90deg, #7b8fff, #c084fc);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 0.75rem; }
+
+  /* Scroll reveal */
+  .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.visible { opacity: 1; transform: none; }
+</style>
+</head>
+<body>
+
+<canvas id="bg"></canvas>
+
+<nav>
+  <div class="logo">SHADER7</div>
+  <div>
+    <a href="#">Tools</a>
+    <a href="#">CNC Hub</a>
+    <a href="#">Blog</a>
+    <a href="#">About</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">✦ 100% FREE · NO LOGIN · PRIVACY FIRST</div>
+  <h1>Professional Tools<br>for Modern Makers</h1>
+  <p>Create passport photos, build resumes, calculate salaries, split bills — all free, all instant, all in your browser.</p>
+  <div class="btn-group">
+    <button class="btn-primary" onclick="openLink('https://shader7.com')">Explore Tools</button>
+    <button class="btn-ghost" onclick="openLink('https://shader7.com/cnc-machinist/')">CNC Resources</button>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features reveal">
+  <div class="section-label">POPULAR TOOLS</div>
+  <div class="section-title">Everything You Need</div>
+  <div class="cards">
+    <div class="card">
+      <div class="card-icon">📸</div>
+      <h3>Passport Photo PRO</h3>
+      <p>AI-assisted passport & ID photo creator with precise cropping to international standards.</p>
+      <span class="card-tag tag-blue">AI POWERED</span>
+    </div>
+    <div class="card">
+      <div class="card-icon">📄</div>
+      <h3>Resume Builder</h3>
+      <p>Build a job-winning CV in minutes. ATS-friendly templates. Simple, fast, and effective.</p>
+      <span class="card-tag tag-purple">CV BANAO</span>
+    </div>
+    <div class="card">
+      <div class="card-icon">💰</div>
+      <h3>Salary Calculator</h3>
+      <p>Convert hourly wages to annual, monthly, and weekly pay — instantly and accurately.</p>
+      <span class="card-tag tag-teal">FINANCE</span>
+    </div>
+    <div class="card">
+      <div class="card-icon">⚖️</div>
+      <h3>FairShare Splitter</h3>
+      <p>Split bills and expenses fairly with friends, roommates, or travel partners.</p>
+      <span class="card-tag tag-blue">EXPENSES</span>
+    </div>
+    <div class="card">
+      <div class="card-icon">🧾</div>
+      <h3>Receipt Maker</h3>
+      <p>Generate professional PDF receipts for freelance work and small business invoicing.</p>
+      <span class="card-tag tag-purple">PDF</span>
+    </div>
+    <div class="card">
+      <div class="card-icon">📈</div>
+      <h3>Trading Mastery</h3>
+      <p>Professional trading guides and calculators for technical market analysis.</p>
+      <span class="card-tag tag-teal">TRADING</span>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="stats reveal">
+  <div class="stats-grid">
+    <div>
+      <div class="stat-num">6+</div>
+      <div class="stat-label">FREE TOOLS</div>
+    </div>
+    <div>
+      <div class="stat-num">15+</div>
+      <div class="stat-label">BLOG GUIDES</div>
+    </div>
+    <div>
+      <div class="stat-num">0</div>
+      <div class="stat-label">ADS EVER</div>
+    </div>
+    <div>
+      <div class="stat-num">∞</div>
+      <div class="stat-label">FREE FOREVER</div>
+    </div>
+  </div>
+</section>
+
+<!-- CNC BANNER -->
+<section class="reveal">
+  <div class="cnc-banner">
+    <div class="cnc-text">
+      <h2>⚙ CNC Machinist Hub</h2>
+      <p>G-Code references, drill charts, PCD generation, and precision machining calculators tailored for industry professionals.</p>
+    </div>
+    <button class="btn-primary" onclick="openLink('https://shader7.com/cnc-machinist/')">Visit CNC Hub →</button>
+  </div>
+</section>
+
+<!-- PILLARS -->
+<section class="pillars reveal">
+  <div class="section-label">WHY SHADER7</div>
+  <div class="section-title">Built Different</div>
+  <div class="pillars-grid">
+    <div class="pillar">
+      <div class="pillar-icon">🔒</div>
+      <h4>Privacy First</h4>
+      <p>No data stored. Everything runs client-side, secured inside your browser.</p>
+    </div>
+    <div class="pillar">
+      <div class="pillar-icon">⚡</div>
+      <h4>100% Free</h4>
+      <p>No paywalls, no subscriptions, no mandatory account creation.</p>
+    </div>
+    <div class="pillar">
+      <div class="pillar-icon">🛠️</div>
+      <h4>Professional Grade</h4>
+      <p>Built to industry standards for makers, freelancers, and engineers.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">SHADER7</div>
+  <p style="margin-bottom: 0.75rem;">
+    <a href="#">Privacy Policy</a>
+    <a href="#">Terms</a>
+    <a href="#">Contact</a>
+    <a href="#">Blog</a>
+  </p>
+  <p>Developed by <a href="https://instagram.com/nishix_vamp">Nishikant Xalxo</a> · © Shader7</p>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function() {
+  const canvas = document.getElementById('bg');
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 200);
+  camera.position.z = 40;
+
+  // Starfield
+  const starGeo = new THREE.BufferGeometry();
+  const starCount = 1800;
+  const positions = new Float32Array(starCount * 3);
+  for (let i = 0; i < starCount; i++) {
+    positions[i * 3] = (Math.random() - 0.5) * 200;
+    positions[i * 3 + 1] = (Math.random() - 0.5) * 200;
+    positions[i * 3 + 2] = (Math.random() - 0.5) * 200;
+  }
+  starGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  const starMat = new THREE.PointsMaterial({ color: 0xaaaaff, size: 0.25, transparent: true, opacity: 0.7 });
+  scene.add(new THREE.Points(starGeo, starMat));
+
+  // Floating torus knots
+  const objects = [];
+  const colors = [0x7b8fff, 0xc084fc, 0x38bdf8, 0x2dd4bf];
+  const geos = [
+    new THREE.TorusKnotGeometry(3.5, 0.8, 120, 16),
+    new THREE.OctahedronGeometry(3, 0),
+    new THREE.IcosahedronGeometry(3, 0),
+    new THREE.TorusGeometry(3, 0.9, 20, 60),
+  ];
+  const positions3d = [
+    [-18, 8, -20], [20, -6, -25], [-14, -12, -30], [16, 12, -18]
+  ];
+  geos.forEach((geo, i) => {
+    const mat = new THREE.MeshPhongMaterial({
+      color: colors[i], emissive: colors[i], emissiveIntensity: 0.15,
+      wireframe: true, transparent: true, opacity: 0.45
+    });
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.position.set(...positions3d[i]);
+    scene.add(mesh);
+    objects.push({ mesh, speed: 0.004 + i * 0.002, axis: new THREE.Vector3(Math.random(), Math.random(), Math.random()).normalize() });
+  });
+
+  // Lights
+  scene.add(new THREE.AmbientLight(0x334488, 1));
+  const pl1 = new THREE.PointLight(0x7b8fff, 3, 80);
+  pl1.position.set(-20, 10, 10);
+  scene.add(pl1);
+  const pl2 = new THREE.PointLight(0xc084fc, 3, 80);
+  pl2.position.set(20, -10, 10);
+  scene.add(pl2);
+
+  // Floating particles
+  const particleGeo = new THREE.BufferGeometry();
+  const pCount = 200;
+  const pPos = new Float32Array(pCount * 3);
+  for (let i = 0; i < pCount; i++) {
+    pPos[i * 3] = (Math.random() - 0.5) * 80;
+    pPos[i * 3 + 1] = (Math.random() - 0.5) * 80;
+    pPos[i * 3 + 2] = (Math.random() - 0.5) * 40;
+  }
+  particleGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+  const pMat = new THREE.PointsMaterial({ color: 0xc084fc, size: 0.5, transparent: true, opacity: 0.5 });
+  const particles = new THREE.Points(particleGeo, pMat);
+  scene.add(particles);
+
+  let mouseX = 0, mouseY = 0;
+  document.addEventListener('mousemove', e => {
+    mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+    mouseY = -(e.clientY / window.innerHeight - 0.5) * 2;
+  });
+
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+
+  let t = 0;
+  function animate() {
+    requestAnimationFrame(animate);
+    t += 0.005;
+    objects.forEach(o => o.mesh.rotateOnAxis(o.axis, o.speed));
+    particles.rotation.y += 0.0008;
+    camera.position.x += (mouseX * 5 - camera.position.x) * 0.04;
+    camera.position.y += (mouseY * 3 - camera.position.y) * 0.04;
+    camera.lookAt(0, 0, 0);
+    pl1.position.x = Math.sin(t * 0.7) * 25;
+    pl2.position.x = Math.cos(t * 0.5) * 25;
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  reveals.forEach(r => observer.observe(r));
+
+  function openLink(url) { window.open(url, '_blank'); }
+  window.openLink = openLink;
+})();
+</script>
+</body>
+</html>
