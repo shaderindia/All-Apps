@@ -1,75 +1,103 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SHADER7 CNC Machinist Toolkit</title>
+<meta name="description" content="Professional online calculators for Speeds & Feeds, PCD Coordinates, G-Code generation, and precision machining workflows.">
+<meta name="theme-color" content="#04090f">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'Segoe UI',sans-serif;background:#04090f;color:#e2e8f0;overflow-x:hidden;}
-canvas#bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;}
+
+/* NEW BACKGROUND IMAGE & OVERLAY */
+.bg-image {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  /* UPDATED TO YOUR LOCAL FILE */
+  background: url('my-background.jpg') center/cover no-repeat;
+  z-index: -2;
+  opacity: 0.5; /* Adjust brightness of the image here */
+}
+
+.bg-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  /* Dark gradient to ensure text remains highly readable */
+  background: linear-gradient(to bottom, rgba(4,9,15,0.7), rgba(4,9,15,0.95));
+  z-index: -1;
+}
+
+canvas#bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;opacity:0.8;}
 
 /* NAV */
-header.top-bar{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(4,9,15,0.85);backdrop-filter:blur(16px);border-bottom:1px solid rgba(59,130,246,0.15);padding:0 2rem;height:56px;display:flex;align-items:center;}
+header.top-bar{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(4,9,15,0.9);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid rgba(59,130,246,0.15);padding:0 2rem;height:56px;display:flex;align-items:center;}
 header.top-bar a{color:#818cf8;font-weight:700;font-size:1.1rem;text-decoration:none;letter-spacing:2px;display:flex;align-items:center;gap:8px;}
 header.top-bar a:hover{color:#a5b4fc;}
-nav.sticky-nav{position:sticky;top:56px;z-index:190;background:rgba(4,9,15,0.92);backdrop-filter:blur(14px);border-bottom:1px solid rgba(59,130,246,0.12);padding:0 2rem;height:52px;display:flex;align-items:center;justify-content:space-between;}
+nav.sticky-nav{position:sticky;top:56px;z-index:190;background:rgba(4,9,15,0.95);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(59,130,246,0.12);padding:0 2rem;height:52px;display:flex;align-items:center;justify-content:space-between;}
 .nav-brand{display:flex;align-items:center;gap:10px;text-decoration:none;}
 .nav-brand span{font-size:1.3rem;font-weight:800;color:#f1f5f9;letter-spacing:1px;}
 .nav-brand span b{color:#3b82f6;}
 .nav-badge{background:rgba(59,130,246,0.15);color:#60a5fa;font-size:0.65rem;font-weight:700;padding:3px 8px;border-radius:4px;letter-spacing:2px;border:1px solid rgba(59,130,246,0.25);}
 .nav-links{display:flex;gap:2rem;}
-.nav-links a{color:rgba(226,232,240,0.6);text-decoration:none;font-size:0.85rem;font-weight:500;transition:color 0.2s;letter-spacing:0.5px;}
+.nav-links a{color:rgba(226,232,240,0.9);text-decoration:none;font-size:0.85rem;font-weight:600;transition:color 0.2s;letter-spacing:0.5px;}
 .nav-links a:hover{color:#60a5fa;}
 
 /* HERO */
-.hero{position:relative;z-index:10;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 2rem 6rem;}
-.hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.3);border-radius:999px;padding:5px 16px;font-size:0.72rem;letter-spacing:2px;color:#60a5fa;margin-bottom:1.8rem;}
-.hero h1{font-size:clamp(2.8rem,7vw,5.5rem);font-weight:900;line-height:1.05;margin-bottom:1.2rem;background:linear-gradient(135deg,#f1f5f9 0%,#93c5fd 45%,#60a5fa 70%,#818cf8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-.hero h1 span{background:linear-gradient(135deg,#3b82f6,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-.hero p{font-size:1.05rem;color:rgba(226,232,240,0.55);max-width:520px;line-height:1.8;margin-bottom:2.5rem;}
-.hero-btn{display:inline-block;padding:0.85rem 2.2rem;background:linear-gradient(135deg,#1d4ed8,#3b82f6);color:#fff;font-weight:700;border-radius:10px;text-decoration:none;font-size:0.9rem;letter-spacing:0.5px;transition:transform 0.2s,box-shadow 0.2s;box-shadow:0 0 30px rgba(59,130,246,0.35);}
-.hero-btn:hover{transform:translateY(-2px);box-shadow:0 0 50px rgba(59,130,246,0.55);}
+.hero{position:relative;z-index:10;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 2rem 6rem;text-shadow:0 4px 20px rgba(0,0,0,0.8);}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(15,23,42,0.8);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(59,130,246,0.4);border-radius:999px;padding:6px 18px;font-size:0.75rem;font-weight:700;letter-spacing:2px;color:#93c5fd;margin-bottom:1.8rem;}
+.hero h1{font-size:clamp(2.8rem,7vw,5.5rem);font-weight:900;line-height:1.05;margin-bottom:1.2rem;background:linear-gradient(135deg,#ffffff 0%,#bfdbfe 45%,#60a5fa 70%,#a5b4fc 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0px 4px 12px rgba(0,0,0,0.5));}
+.hero h1 span{background:linear-gradient(135deg,#3b82f6,#93c5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hero p{font-size:1.1rem;font-weight:500;color:rgba(241,245,249,0.9);max-width:520px;line-height:1.8;margin-bottom:2.5rem;text-shadow:0 2px 10px rgba(0,0,0,1);}
+.hero-btn{display:inline-block;padding:0.85rem 2.2rem;background:linear-gradient(135deg,#1d4ed8,#3b82f6);color:#fff;font-weight:700;border-radius:10px;text-decoration:none;font-size:0.9rem;letter-spacing:0.5px;transition:transform 0.2s,box-shadow 0.2s;box-shadow:0 4px 15px rgba(0,0,0,0.5), 0 0 30px rgba(59,130,246,0.35);}
+.hero-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,0.6), 0 0 50px rgba(59,130,246,0.55);}
 
 /* GCODE TICKER */
-.gcode-ticker{position:relative;z-index:10;overflow:hidden;background:rgba(0,0,0,0.5);border-top:1px solid rgba(59,130,246,0.15);border-bottom:1px solid rgba(59,130,246,0.15);padding:10px 0;}
+.gcode-ticker{position:relative;z-index:10;overflow:hidden;background:rgba(4,9,15,0.85);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid rgba(59,130,246,0.2);border-bottom:1px solid rgba(59,130,246,0.2);padding:12px 0;}
 .ticker-inner{display:flex;gap:3rem;animation:ticker 22s linear infinite;white-space:nowrap;}
-.ticker-inner span{font-family:monospace;font-size:0.78rem;color:#3b82f6;opacity:0.6;letter-spacing:1px;}
+.ticker-inner span{font-family:monospace;font-size:0.85rem;font-weight:600;color:#60a5fa;opacity:0.9;letter-spacing:1px;text-shadow:0 1px 4px rgba(0,0,0,0.8);}
 @keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 
 /* TOOLS GRID */
 .tools-section{position:relative;z-index:10;padding:5rem 2rem 6rem;}
-.section-label{text-align:center;font-size:0.7rem;letter-spacing:4px;color:#60a5fa;margin-bottom:0.4rem;}
-.section-title{text-align:center;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;margin-bottom:3.5rem;background:linear-gradient(90deg,#f1f5f9,#93c5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.section-label{text-align:center;font-size:0.75rem;font-weight:700;letter-spacing:4px;color:#93c5fd;margin-bottom:0.4rem;text-shadow:0 2px 8px rgba(0,0,0,0.8);}
+.section-title{text-align:center;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;margin-bottom:3.5rem;background:linear-gradient(90deg,#ffffff,#bfdbfe);-webkit-background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 2px 8px rgba(0,0,0,0.8));}
 .tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem;max-width:1100px;margin:0 auto;}
 
-.tool-card{background:rgba(15,23,42,0.7);border:1px solid rgba(59,130,246,0.12);border-radius:18px;padding:2rem;text-decoration:none;color:inherit;display:block;transition:transform 0.3s,box-shadow 0.3s,border-color 0.3s;position:relative;overflow:hidden;}
-.tool-card::before{content:'';position:absolute;inset:0;border-radius:18px;background:linear-gradient(135deg,rgba(59,130,246,0.06),rgba(99,102,241,0.06));opacity:0;transition:opacity 0.3s;}
+/* IMPROVED CARD VISIBILITY WITH GLASSMORPHISM */
+.tool-card{background:rgba(10,15,30,0.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(59,130,246,0.25);border-radius:18px;padding:2rem;text-decoration:none;color:inherit;display:block;transition:transform 0.3s,box-shadow 0.3s,border-color 0.3s;position:relative;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.5);}
+.tool-card::before{content:'';position:absolute;inset:0;border-radius:18px;background:linear-gradient(135deg,rgba(59,130,246,0.08),rgba(99,102,241,0.08));opacity:0;transition:opacity 0.3s;}
 .tool-card:hover::before{opacity:1;}
-.tool-card:hover{transform:translateY(-6px);border-color:rgba(59,130,246,0.4);box-shadow:0 20px 60px rgba(59,130,246,0.12);}
-.tool-card.coming-soon{opacity:0.5;cursor:default;}
-.tool-card.coming-soon:hover{transform:none;border-color:rgba(59,130,246,0.12);box-shadow:none;}
+.tool-card:hover{transform:translateY(-6px);border-color:rgba(59,130,246,0.5);box-shadow:0 20px 60px rgba(0,0,0,0.7), 0 0 20px rgba(59,130,246,0.15);}
+.tool-card.coming-soon{background:rgba(10,15,30,0.6);opacity:0.6;cursor:default;}
+.tool-card.coming-soon:hover{transform:none;border-color:rgba(59,130,246,0.25);box-shadow:0 10px 30px rgba(0,0,0,0.5);}
 
-.card-icon{width:52px;height:52px;background:linear-gradient(135deg,#1d4ed8,#3b82f6);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:1.2rem;transition:transform 0.3s;}
+.card-icon{width:52px;height:52px;background:linear-gradient(135deg,#1d4ed8,#3b82f6);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:1.2rem;transition:transform 0.3s;box-shadow:0 4px 12px rgba(0,0,0,0.4);}
 .tool-card:hover .card-icon{transform:scale(1.1) rotate(-3deg);}
 .coming-soon .card-icon{background:linear-gradient(135deg,#334155,#475569);}
-.card-title{font-size:1.05rem;font-weight:700;color:#f1f5f9;margin-bottom:0.5rem;}
-.card-desc{font-size:0.82rem;color:rgba(226,232,240,0.45);line-height:1.6;margin-bottom:1rem;}
-.card-link{font-size:0.8rem;font-weight:700;color:#3b82f6;letter-spacing:0.5px;}
-.coming-badge{display:inline-block;font-size:0.65rem;font-weight:700;letter-spacing:2px;background:rgba(100,116,139,0.2);color:#94a3b8;border:1px solid rgba(100,116,139,0.25);padding:3px 10px;border-radius:4px;}
+.card-title{font-size:1.1rem;font-weight:700;color:#ffffff;margin-bottom:0.5rem;}
+.card-desc{font-size:0.85rem;color:rgba(226,232,240,0.85);line-height:1.6;margin-bottom:1rem;}
+.card-link{font-size:0.85rem;font-weight:700;color:#60a5fa;letter-spacing:0.5px;}
+.coming-badge{display:inline-block;font-size:0.65rem;font-weight:700;letter-spacing:2px;background:rgba(100,116,139,0.3);color:#e2e8f0;border:1px solid rgba(100,116,139,0.4);padding:3px 10px;border-radius:4px;}
 
 /* FEATURES STRIP */
-.features-strip{position:relative;z-index:10;padding:3rem 2rem;background:rgba(0,0,0,0.3);border-top:1px solid rgba(59,130,246,0.08);border-bottom:1px solid rgba(59,130,246,0.08);}
-.features-inner{max-width:900px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:center;gap:2.5rem;}
+.features-strip{position:relative;z-index:10;padding:3.5rem 2rem;background:rgba(4,9,15,0.85);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid rgba(59,130,246,0.15);border-bottom:1px solid rgba(59,130,246,0.15);box-shadow:0 0 30px rgba(0,0,0,0.8);}
+.features-inner{max-width:900px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:center;gap:3rem;}
 .feat{text-align:center;min-width:140px;}
-.feat-icon{font-size:1.6rem;margin-bottom:0.5rem;}
-.feat-title{font-size:0.9rem;font-weight:600;color:#e2e8f0;margin-bottom:0.2rem;}
-.feat-sub{font-size:0.75rem;color:rgba(226,232,240,0.35);}
+.feat-icon{font-size:1.8rem;margin-bottom:0.8rem;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5));}
+.feat-title{font-size:0.95rem;font-weight:700;color:#ffffff;margin-bottom:0.3rem;}
+.feat-sub{font-size:0.8rem;color:rgba(226,232,240,0.8);}
 
 /* FOOTER */
-footer{position:relative;z-index:10;background:rgba(4,9,15,0.95);border-top:1px solid rgba(59,130,246,0.1);padding:2.5rem 2rem;text-align:center;}
-footer p{color:rgba(226,232,240,0.3);font-size:0.8rem;margin-bottom:0.5rem;}
-footer a{color:#60a5fa;text-decoration:none;margin:0 0.5rem;font-size:0.8rem;}
+footer{position:relative;z-index:10;background:rgba(4,9,15,0.98);border-top:1px solid rgba(59,130,246,0.2);padding:3rem 2rem;text-align:center;}
+footer p{color:rgba(226,232,240,0.8);font-size:0.85rem;margin-bottom:0.8rem;}
+footer a{color:#60a5fa;font-weight:600;text-decoration:none;margin:0 0.8rem;font-size:0.85rem;transition:color 0.2s;}
 footer a:hover{color:#93c5fd;}
 
 /* Reveal */
@@ -79,17 +107,18 @@ footer a:hover{color:#93c5fd;}
 </head>
 <body>
 
-<canvas id="bg"></canvas>
+<div class="bg-image" aria-hidden="true"></div>
+<div class="bg-overlay" aria-hidden="true"></div>
 
-<!-- TOP HEADER -->
+<canvas id="bg" aria-hidden="true"></canvas>
+
 <header class="top-bar">
-  <a href="https://shader7.com">
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"/><path d="m8 3.293 6 6V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V9.293l6-6Z"/></svg>
+  <a href="https://shader7.com" aria-label="Shader7 Home">
+    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"/><path d="m8 3.293 6 6V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V9.293l6-6Z"/></svg>
     SHADER7
   </a>
 </header>
 
-<!-- STICKY NAV -->
 <nav class="sticky-nav">
   <a class="nav-brand" href="https://shader7.com/cnc-machinist/">
     <span>SHADER<b>7</b></span>
@@ -102,7 +131,6 @@ footer a:hover{color:#93c5fd;}
   </div>
 </nav>
 
-<!-- HERO -->
 <section class="hero">
   <div class="hero-badge">⚙ PROFESSIONAL GRADE · FREE · BROWSER-BASED</div>
   <h1>CNC Machinist<br><span>Toolkit</span></h1>
@@ -110,15 +138,13 @@ footer a:hover{color:#93c5fd;}
   <a href="#cnc-tools" class="hero-btn">Explore All Tools ↓</a>
 </section>
 
-<!-- GCODE TICKER -->
-<div class="gcode-ticker">
+<div class="gcode-ticker" aria-hidden="true">
   <div class="ticker-inner" id="ticker"></div>
 </div>
 
-<!-- TOOLS GRID -->
 <section class="tools-section reveal" id="cnc-tools">
   <div class="section-label">PRECISION TOOLS</div>
-  <div class="section-title">Machinist Calculators</div>
+  <h2 class="section-title">Machinist Calculators</h2>
   <div class="tools-grid">
 
     <a href="https://shader7.com/cnc-machinist/drill/" class="tool-card">
@@ -180,160 +206,153 @@ footer a:hover{color:#93c5fd;}
   </div>
 </section>
 
-<!-- FEATURES STRIP -->
 <div class="features-strip reveal">
   <div class="features-inner">
-    <div class="feat"><div class="feat-icon">🔒</div><div class="feat-title">Privacy First</div><div class="feat-sub">Client-side only</div></div>
-    <div class="feat"><div class="feat-icon">⚡</div><div class="feat-title">100% Free</div><div class="feat-sub">No paywalls ever</div></div>
-    <div class="feat"><div class="feat-icon">🏭</div><div class="feat-title">Fanuc · Haas · Mazak</div><div class="feat-sub">Industry compatible</div></div>
-    <div class="feat"><div class="feat-icon">📱</div><div class="feat-title">Works on Mobile</div><div class="feat-sub">Shop floor ready</div></div>
+    <div class="feat"><div class="feat-icon" aria-hidden="true">🔒</div><div class="feat-title">Privacy First</div><div class="feat-sub">Client-side only</div></div>
+    <div class="feat"><div class="feat-icon" aria-hidden="true">⚡</div><div class="feat-title">100% Free</div><div class="feat-sub">No paywalls ever</div></div>
+    <div class="feat"><div class="feat-icon" aria-hidden="true">🏭</div><div class="feat-title">Fanuc · Haas · Mazak</div><div class="feat-sub">Industry compatible</div></div>
+    <div class="feat"><div class="feat-icon" aria-hidden="true">📱</div><div class="feat-title">Works on Mobile</div><div class="feat-sub">Shop floor ready</div></div>
   </div>
 </div>
 
-<!-- FOOTER -->
 <footer>
   <p>© <span id="yr"></span> Nishikant Xalxo — SHADER7 CNC Tools</p>
   <p>
     <a href="https://shader7.com/">Main Site</a>
     <a href="https://shader7.com/contact.html">Contact</a>
-    <a href="https://instagram.com/nishix_vamp" target="_blank" rel="noopener">@nishix_vamp</a>
+    <a href="https://instagram.com/nishix_vamp" target="_blank" rel="noopener noreferrer">@nishix_vamp</a>
   </p>
 </footer>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-document.getElementById('yr').textContent = new Date().getFullYear();
+window.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('yr').textContent = new Date().getFullYear();
 
-// G-code ticker
-const codes = ['G00 X0 Y0 Z50.','G01 Z-5. F120','G02 X50. Y0 I25. J0','M03 S2500','G41 D01','G83 Z-30. R2. Q5. F80','M05 M09','G28 G91 Z0','T02 M06','G54 G17 G40','G03 X-50. Y0 I-25. J0','M08','G80 G49','F200 S3000','G91 G28 Z0 M19'];
-const t = document.getElementById('ticker');
-[...codes,...codes].forEach(c=>{const s=document.createElement('span');s.textContent=c;t.appendChild(s);});
+  // G-code ticker
+  const codes = ['G00 X0 Y0 Z50.','G01 Z-5. F120','G02 X50. Y0 I25. J0','M03 S2500','G41 D01','G83 Z-30. R2. Q5. F80','M05 M09','G28 G91 Z0','T02 M06','G54 G17 G40','G03 X-50. Y0 I-25. J0','M08','G80 G49','F200 S3000','G91 G28 Z0 M19'];
+  const t = document.getElementById('ticker');
+  [...codes,...codes].forEach(c=>{const s=document.createElement('span');s.textContent=c;t.appendChild(s);});
 
-// THREE.JS CNC SCENE
-const canvas = document.getElementById('bg');
-const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
-renderer.setPixelRatio(Math.min(devicePixelRatio,2));
-renderer.setSize(innerWidth, innerHeight);
+  // THREE.JS CNC SCENE
+  const canvas = document.getElementById('bg');
+  const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
+  
+  renderer.setPixelRatio(window.innerWidth < 768 ? 1 : Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
 
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(55, innerWidth/innerHeight, 0.1, 500);
-camera.position.set(0, 8, 55);
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(55, window.innerWidth/window.innerHeight, 0.1, 500);
+  camera.position.set(0, 8, 55);
 
-// GRID FLOOR
-const gridHelper = new THREE.GridHelper(200, 60, 0x1e3a8a, 0x0f172a);
-gridHelper.position.y = -20;
-gridHelper.material.opacity = 0.4;
-gridHelper.material.transparent = true;
-scene.add(gridHelper);
+  const gridHelper = new THREE.GridHelper(200, 60, 0x1e3a8a, 0x0f172a);
+  gridHelper.position.y = -20;
+  gridHelper.material.opacity = 0.4;
+  gridHelper.material.transparent = true;
+  scene.add(gridHelper);
 
-// AMBIENT + LIGHTS
-scene.add(new THREE.AmbientLight(0x0a1628, 2));
-const bl = new THREE.PointLight(0x3b82f6, 6, 120);
-bl.position.set(-30, 20, 10);
-scene.add(bl);
-const bl2 = new THREE.PointLight(0x818cf8, 4, 100);
-bl2.position.set(30, 15, 5);
-scene.add(bl2);
-const bl3 = new THREE.PointLight(0x60a5fa, 3, 80);
-bl3.position.set(0, -5, 30);
-scene.add(bl3);
+  scene.add(new THREE.AmbientLight(0x0a1628, 2));
+  const bl = new THREE.PointLight(0x3b82f6, 6, 120);
+  bl.position.set(-30, 20, 10);
+  scene.add(bl);
+  const bl2 = new THREE.PointLight(0x818cf8, 4, 100);
+  bl2.position.set(30, 15, 5);
+  scene.add(bl2);
+  const bl3 = new THREE.PointLight(0x60a5fa, 3, 80);
+  bl3.position.set(0, -5, 30);
+  scene.add(bl3);
 
-// CNC LATHE / SPINDLE shapes
-const meshes = [];
+  const meshes = [];
 
-// Main rotating gear-like torus knot (spindle)
-const spindleMat = new THREE.MeshPhongMaterial({color:0x3b82f6,emissive:0x1d4ed8,emissiveIntensity:0.3,wireframe:false,transparent:true,opacity:0.7,shininess:80});
-const spindle = new THREE.Mesh(new THREE.TorusKnotGeometry(6,1.2,180,12,3,5), spindleMat);
-spindle.position.set(-22, 0, -15);
-scene.add(spindle);
-meshes.push({m:spindle, rx:0.003, ry:0.007});
+  const spindleMat = new THREE.MeshPhongMaterial({color:0x3b82f6,emissive:0x1d4ed8,emissiveIntensity:0.3,wireframe:false,transparent:true,opacity:0.7,shininess:80});
+  const spindle = new THREE.Mesh(new THREE.TorusKnotGeometry(6,1.2,180,12,3,5), spindleMat);
+  spindle.position.set(-22, 0, -15);
+  scene.add(spindle);
+  meshes.push({m:spindle, rx:0.003, ry:0.007});
 
-// Large wireframe gear (cylinder with segments)
-const gearMat = new THREE.MeshPhongMaterial({color:0x1e40af,wireframe:true,transparent:true,opacity:0.35});
-const gear = new THREE.Mesh(new THREE.CylinderGeometry(10,10,2,32,1), gearMat);
-gear.position.set(22,-5,-20);
-scene.add(gear);
-meshes.push({m:gear, rx:0.001, ry:0.008});
+  const gearMat = new THREE.MeshPhongMaterial({color:0x1e40af,wireframe:true,transparent:true,opacity:0.35});
+  const gear = new THREE.Mesh(new THREE.CylinderGeometry(10,10,2,32,1), gearMat);
+  gear.position.set(22,-5,-20);
+  scene.add(gear);
+  meshes.push({m:gear, rx:0.001, ry:0.008});
 
-// Drill bit shape (cone + cylinder)
-const drillMat = new THREE.MeshPhongMaterial({color:0x475569,emissive:0x1e3a8a,emissiveIntensity:0.2,shininess:120});
-const drillGroup = new THREE.Group();
-const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.5,0.5,12,16), drillMat);
-const tip = new THREE.Mesh(new THREE.ConeGeometry(0.5,2.5,16), drillMat);
-tip.position.y = -7.25;
-drillGroup.add(shaft); drillGroup.add(tip);
-drillGroup.position.set(15, 8, -10);
-drillGroup.rotation.z = 0.4;
-scene.add(drillGroup);
-meshes.push({m:drillGroup, rx:0, ry:0.012});
+  const drillMat = new THREE.MeshPhongMaterial({color:0x475569,emissive:0x1e3a8a,emissiveIntensity:0.2,shininess:120});
+  const drillGroup = new THREE.Group();
+  const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.5,0.5,12,16), drillMat);
+  const tip = new THREE.Mesh(new THREE.ConeGeometry(0.5,2.5,16), drillMat);
+  tip.position.y = -7.25;
+  drillGroup.add(shaft); drillGroup.add(tip);
+  drillGroup.position.set(15, 8, -10);
+  drillGroup.rotation.z = 0.4;
+  scene.add(drillGroup);
+  meshes.push({m:drillGroup, rx:0, ry:0.012});
 
-// Octahedron (workpiece)
-const wpMat = new THREE.MeshPhongMaterial({color:0x64748b,emissive:0x0f172a,wireframe:false,transparent:true,opacity:0.5,shininess:60});
-const wp = new THREE.Mesh(new THREE.OctahedronGeometry(5,0), wpMat);
-wp.position.set(-15,-8,-25);
-scene.add(wp);
-meshes.push({m:wp, rx:0.005, ry:0.006});
+  const wpMat = new THREE.MeshPhongMaterial({color:0x64748b,emissive:0x0f172a,wireframe:false,transparent:true,opacity:0.5,shininess:60});
+  const wp = new THREE.Mesh(new THREE.OctahedronGeometry(5,0), wpMat);
+  wp.position.set(-15,-8,-25);
+  scene.add(wp);
+  meshes.push({m:wp, rx:0.005, ry:0.006});
 
-// Wireframe icosahedron (floating chip)
-const chipMat = new THREE.MeshPhongMaterial({color:0x3b82f6,wireframe:true,transparent:true,opacity:0.2});
-const chip = new THREE.Mesh(new THREE.IcosahedronGeometry(8,1), chipMat);
-chip.position.set(5,5,-35);
-scene.add(chip);
-meshes.push({m:chip, rx:0.002, ry:0.003});
+  const chipMat = new THREE.MeshPhongMaterial({color:0x3b82f6,wireframe:true,transparent:true,opacity:0.2});
+  const chip = new THREE.Mesh(new THREE.IcosahedronGeometry(8,1), chipMat);
+  chip.position.set(5,5,-35);
+  scene.add(chip);
+  meshes.push({m:chip, rx:0.002, ry:0.003});
 
-// PARTICLES (metal chips)
-const pGeo = new THREE.BufferGeometry();
-const pN = 600, pPos = new Float32Array(pN*3);
-for(let i=0;i<pN;i++){pPos[i*3]=(Math.random()-.5)*160;pPos[i*3+1]=(Math.random()-.5)*80;pPos[i*3+2]=(Math.random()-.5)*80;}
-pGeo.setAttribute('position',new THREE.BufferAttribute(pPos,3));
-const pMat = new THREE.PointsMaterial({color:0x3b82f6,size:0.3,transparent:true,opacity:0.35});
-const particles = new THREE.Points(pGeo,pMat);
-scene.add(particles);
+  const pGeo = new THREE.BufferGeometry();
+  const pN = 600, pPos = new Float32Array(pN*3);
+  for(let i=0;i<pN;i++){pPos[i*3]=(Math.random()-.5)*160;pPos[i*3+1]=(Math.random()-.5)*80;pPos[i*3+2]=(Math.random()-.5)*80;}
+  pGeo.setAttribute('position',new THREE.BufferAttribute(pPos,3));
+  const pMat = new THREE.PointsMaterial({color:0x3b82f6,size:0.3,transparent:true,opacity:0.35});
+  const particles = new THREE.Points(pGeo,pMat);
+  scene.add(particles);
 
-// TOOLPATH LINE (circular path visualization)
-const pathPoints = [];
-for(let i=0;i<=120;i++){const a=(i/120)*Math.PI*2;pathPoints.push(new THREE.Vector3(Math.cos(a)*18,Math.sin(a)*18,-40));}
-const pathGeo = new THREE.BufferGeometry().setFromPoints(pathPoints);
-const pathMat = new THREE.LineBasicMaterial({color:0x60a5fa,transparent:true,opacity:0.15});
-scene.add(new THREE.Line(pathGeo,pathMat));
+  const pathPoints = [];
+  for(let i=0;i<=120;i++){const a=(i/120)*Math.PI*2;pathPoints.push(new THREE.Vector3(Math.cos(a)*18,Math.sin(a)*18,-40));}
+  const pathGeo = new THREE.BufferGeometry().setFromPoints(pathPoints);
+  const pathMat = new THREE.LineBasicMaterial({color:0x60a5fa,transparent:true,opacity:0.15});
+  scene.add(new THREE.Line(pathGeo,pathMat));
 
-// SECOND toolpath
-const pathPoints2 = [];
-for(let i=0;i<=80;i++){const a=(i/80)*Math.PI*2;pathPoints2.push(new THREE.Vector3(Math.cos(a)*10,-18+(Math.sin(a*3)*3),-30));}
-const pathGeo2 = new THREE.BufferGeometry().setFromPoints(pathPoints2);
-const pathMat2 = new THREE.LineBasicMaterial({color:0x818cf8,transparent:true,opacity:0.12});
-scene.add(new THREE.Line(pathGeo2,pathMat2));
+  const pathPoints2 = [];
+  for(let i=0;i<=80;i++){const a=(i/80)*Math.PI*2;pathPoints2.push(new THREE.Vector3(Math.cos(a)*10,-18+(Math.sin(a*3)*3),-30));}
+  const pathGeo2 = new THREE.BufferGeometry().setFromPoints(pathPoints2);
+  const pathMat2 = new THREE.LineBasicMaterial({color:0x818cf8,transparent:true,opacity:0.12});
+  scene.add(new THREE.Line(pathGeo2,pathMat2));
 
-let mx=0,my=0;
-document.addEventListener('mousemove',e=>{mx=(e.clientX/innerWidth-.5)*2;my=-(e.clientY/innerHeight-.5)*2;});
+  let mx=0,my=0;
+  document.addEventListener('mousemove',e=>{mx=(e.clientX/window.innerWidth-.5)*2;my=-(e.clientY/window.innerHeight-.5)*2;});
 
-window.addEventListener('resize',()=>{
-  camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();
-  renderer.setSize(innerWidth,innerHeight);
+  window.addEventListener('resize',()=>{
+    camera.aspect=window.innerWidth/window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth,window.innerHeight);
+    renderer.setPixelRatio(window.innerWidth < 768 ? 1 : Math.min(window.devicePixelRatio, 2));
+  });
+
+  let tick=0;
+  function animate(){
+    requestAnimationFrame(animate); tick+=0.008;
+    meshes.forEach(o=>{o.m.rotation.x+=o.rx;o.m.rotation.y+=o.ry;});
+    particles.rotation.y+=0.0005;
+    gear.position.y=Math.sin(tick*0.7)*2-5;
+    spindle.position.y=Math.sin(tick*0.5)*1.5;
+    drillGroup.position.y=8+Math.sin(tick*3)*3;
+    bl.position.x=Math.sin(tick*0.6)*35;
+    bl2.position.x=Math.cos(tick*0.4)*30;
+    camera.position.x+=(mx*6-camera.position.x)*0.035;
+    camera.position.y+=(my*3+8-camera.position.y)*0.035;
+    camera.lookAt(0,0,0);
+    renderer.render(scene,camera);
+  }
+  
+  setTimeout(() => {
+    animate();
+  }, 100);
+
+  const reveals=document.querySelectorAll('.reveal');
+  const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{threshold:0.08});
+  reveals.forEach(r=>obs.observe(r));
 });
-
-let tick=0;
-function animate(){
-  requestAnimationFrame(animate); tick+=0.008;
-  meshes.forEach(o=>{o.m.rotation.x+=o.rx;o.m.rotation.y+=o.ry;});
-  particles.rotation.y+=0.0005;
-  gear.position.y=Math.sin(tick*0.7)*2-5;
-  spindle.position.y=Math.sin(tick*0.5)*1.5;
-  // Drill reciprocating
-  drillGroup.position.y=8+Math.sin(tick*3)*3;
-  bl.position.x=Math.sin(tick*0.6)*35;
-  bl2.position.x=Math.cos(tick*0.4)*30;
-  camera.position.x+=(mx*6-camera.position.x)*0.035;
-  camera.position.y+=(my*3+8-camera.position.y)*0.035;
-  camera.lookAt(0,0,0);
-  renderer.render(scene,camera);
-}
-animate();
-
-// Scroll reveal
-const reveals=document.querySelectorAll('.reveal');
-const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{threshold:0.08});
-reveals.forEach(r=>obs.observe(r));
 </script>
 </body>
 </html>
