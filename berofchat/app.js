@@ -46,11 +46,38 @@ let localStream = null;
 let calls = {};
 let inCall = false;
 let isVideo = false;
+let callingRestricted = false;
 
 const btnVoiceCall = document.getElementById('btn-voice-call');
 const btnVideoCall = document.getElementById('btn-video-call');
 const btnEndCall = document.getElementById('btn-end-call');
 const videoGrid = document.getElementById('video-grid');
+
+// Geo-Fencing Check (UAE / China Blocking)
+async function checkGeoRestrictions() {
+  try {
+    const res = await fetch('https://ipapi.co/json/');
+    const data = await res.json();
+    if (data.country_code === 'AE' || data.country_code === 'CN') {
+      callingRestricted = true;
+      console.warn(`Calling disabled in region: ${data.country_code}`);
+      
+      if (btnVoiceCall) {
+        btnVoiceCall.style.opacity = '0.3';
+        btnVoiceCall.style.cursor = 'not-allowed';
+        btnVoiceCall.title = "VoIP disabled in your region";
+      }
+      if (btnVideoCall) {
+        btnVideoCall.style.opacity = '0.3';
+        btnVideoCall.style.cursor = 'not-allowed';
+        btnVideoCall.title = "VoIP disabled in your region";
+      }
+    }
+  } catch (err) {
+    console.error("Geo-fencing check failed.");
+  }
+}
+checkGeoRestrictions();
 
 // Tab Switching logic
 tabBtns.forEach(btn => {
@@ -371,6 +398,11 @@ function handleIncomingData(data) {
 
 // WebRTC Call Logic
 async function toggleCall(withVideo = false) {
+  if (callingRestricted) {
+    alert("Voice/Video calling features are restricted in your region (UAE/China) due to strict ISP VoIP blocking policies.");
+    return;
+  }
+
   if (inCall) {
     leaveCall();
     return;
