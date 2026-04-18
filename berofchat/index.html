@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BER OF CHAT</title>
+  <meta name="description" content="A real-time, peer-to-peer chat application with room code generation.">
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <!-- Background Animated Shapes for Entry -->
+    <div class="bg-shapes" id="bg-shapes">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="shape shape-3"></div>
+    </div>
+
+    <!-- Entry Screen -->
+    <div id="entry-screen" class="screen active">
+      <div class="glass-panel">
+        <div class="logo">
+          <div class="logo-icon"><i class="fa-brands fa-nfc-symbol"></i></div>
+          <h1>BER OF CHAT</h1>
+        </div>
+        <p class="subtitle">Connect securely with auto-generated rooms.</p>
+        
+        <div class="tabs">
+          <button class="tab-btn active" data-target="join-form">Join Room</button>
+          <button class="tab-btn" data-target="create-form">Create Room</button>
+        </div>
+
+        <div id="join-form" class="form-container active">
+          <div class="input-group">
+            <i class="fa-solid fa-user"></i>
+            <input type="text" id="username-join" placeholder="Your Display Name" autocomplete="off" maxlength="20">
+          </div>
+          <div class="input-group">
+            <i class="fa-solid fa-hashtag"></i>
+            <input type="text" id="room-code-input" placeholder="Enter Room Code" autocomplete="off" maxlength="8" style="text-transform: uppercase;">
+          </div>
+          <button id="btn-join" class="btn primary-btn"><i class="fa-solid fa-right-to-bracket"></i> Join Chat</button>
+        </div>
+
+        <div id="create-form" class="form-container">
+          <div class="input-group">
+            <i class="fa-solid fa-user"></i>
+            <input type="text" id="username-create" placeholder="Your Display Name" autocomplete="off" maxlength="20">
+          </div>
+          <div class="input-group">
+            <i class="fa-solid fa-users"></i>
+            <input type="number" id="max-members-create" placeholder="Max Members (up to 10)" autocomplete="off" min="2" max="10" value="10">
+          </div>
+          <button id="btn-create" class="btn primary-btn gradient-btn"><i class="fa-solid fa-magic"></i> Generate & Host Room</button>
+        </div>
+        
+        <div class="status-msg" id="entry-status"></div>
+      </div>
+    </div>
+
+    <!-- Chat Screen -->
+    <div id="chat-screen" class="screen">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <div class="brand">
+            <i class="fa-brands fa-nfc-symbol"></i> <span>BER</span>
+          </div>
+        </div>
+        
+        <div class="room-info">
+          <span class="label">Current Room</span>
+          <div class="code-box">
+            <span id="display-room-code">----</span>
+            <button id="copy-code-btn" title="Copy Room Code"><i class="fa-solid fa-copy"></i></button>
+          </div>
+          <div class="role-badge" id="my-role-badge">Host</div>
+        </div>
+
+        <div class="members-section">
+          <div class="section-title">
+            <span class="label">Members</span>
+            <span class="count-badge" id="member-count">1</span>
+          </div>
+          <ul id="members-list">
+            <!-- Members populated here dynamically -->
+          </ul>
+        </div>
+
+        <div class="sidebar-footer">
+          <div class="user-profile">
+            <div class="avatar gradient-avatar" id="my-avatar">U</div>
+            <div class="user-details">
+              <span id="my-name" class="name">User</span>
+              <span class="status"><span class="status-dot"></span>Online</span>
+            </div>
+          </div>
+          <button id="btn-leave" class="icon-btn danger-btn" title="Leave Room"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+        </div>
+      </aside>
+
+      <!-- Main Chat Area -->
+      <main class="chat-area">
+        <header class="chat-header">
+          <div class="header-info">
+            <h3 id="chat-header-title">Global Lounge</h3>
+            <span class="status-text"><i class="fa-solid fa-lock"></i> End-to-End P2P Encrypted</span>
+          </div>
+          <div class="header-actions">
+            <button class="icon-btn header-btn"><i class="fa-solid fa-phone"></i></button>
+            <button class="icon-btn header-btn"><i class="fa-solid fa-video"></i></button>
+            <div class="divider"></div>
+            <button class="icon-btn header-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
+          </div>
+        </header>
+
+        <div class="messages-container" id="messages-container">
+          <!-- Welcome Message -->
+          <div class="system-msg">
+            <div class="sys-content">
+              <i class="fa-solid fa-shield-halved"></i> Welcome to BER OF CHAT. Your connection is peer-to-peer.
+            </div>
+          </div>
+        </div>
+
+        <footer class="chat-input-area">
+          <button class="icon-btn attach-btn"><i class="fa-solid fa-plus"></i></button>
+          <div class="input-wrapper">
+            <input type="text" id="message-input" placeholder="Message Room..." autocomplete="off">
+            <button class="icon-btn emoji-btn"><i class="fa-regular fa-face-smile"></i></button>
+          </div>
+          <button id="btn-send" class="btn send-btn"><i class="fa-solid fa-paper-plane"></i></button>
+        </footer>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
