@@ -41,9 +41,7 @@ body {
   color: var(--text-main);
   height: 100vh;
   height: 100dvh;
-  height: -webkit-fill-available;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -52,10 +50,8 @@ body {
 #app {
   width: 100%;
   height: 100%;
-  min-height: 100dvh;
   position: relative;
-  display: flex;
-  flex-direction: column;
+  overflow: hidden;
 }
 
 /* ================= BACKGROUND SHAPES ================= */
@@ -112,18 +108,18 @@ body {
 /* ================= SCREENS ================= */
 .screen {
   display: none !important;
+  visibility: hidden !important;
   width: 100%;
   height: 100%;
-  min-height: 100dvh;
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
   z-index: 1;
 }
 
 .screen.active {
   display: flex !important;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  visibility: visible !important;
   animation: fadeIn 0.4s ease-out;
 }
 
@@ -133,9 +129,12 @@ body {
 }
 
 /* ================= ENTRY SCREEN ================= */
-#entry-screen {
+#entry-screen.active {
   justify-content: center;
   align-items: center;
+  flex-direction: column;
+  z-index: 10;
+  overflow-y: auto;
 }
 
 .glass-panel {
@@ -325,8 +324,11 @@ input:focus {
 .status-msg.success { color: var(--success-color); }
 
 /* ================= CHAT SCREEN ================= */
-#chat-screen {
-  /* Display is managed by .screen and .screen.active classes */
+#chat-screen.active {
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: stretch;
+  z-index: 20;
 }
 
 /* Sidebar (Discord Style) */
@@ -914,35 +916,25 @@ input:focus {
 }
 .success-btn:hover { background: #26b261; }
 
-/* Responsive */
+/* ================= RESPONSIVE ================= */
 @media (max-width: 768px) {
-  #app {
-    height: 100dvh;
-    overflow: hidden;
-  }
-
   .glass-panel {
-    padding: 30px 20px;
+    padding: 24px 18px;
     margin: 10px;
-    max-height: 90vh;
+    max-height: 92vh;
+    max-height: 92dvh;
     overflow-y: auto;
     width: 95%;
   }
 
   #entry-screen.active {
-    display: flex !important;
-    z-index: 1000;
+    z-index: 10;
+    padding: 10px;
   }
 
   #chat-screen.active {
-    display: flex !important;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100dvh;
-    z-index: 2000;
-    background: var(--bg-dark);
+    flex-direction: column;
+    z-index: 20;
   }
 
   .sidebar {
@@ -963,31 +955,31 @@ input:focus {
   }
 
   .chat-area {
-    position: relative;
     width: 100%;
     height: 100%;
-    display: flex;
-    flex-direction: column;
   }
   
   .chat-header {
-    padding: 10px 16px;
-    height: 60px;
+    padding: 10px 12px;
   }
 
   .header-info h3 {
     font-size: 14px;
-    max-width: 100px;
+    max-width: 110px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .header-actions .icon-btn {
-    width: 34px;
-    height: 34px;
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
   }
 
   .chat-input-area {
-    padding: 10px;
-    padding-bottom: max(10px, env(safe-area-inset-bottom));
+    padding: 8px 12px;
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
   }
 
   .video-grid {
@@ -998,10 +990,22 @@ input:focus {
   .modal-overlay {
     z-index: 5000;
   }
+
+  .mobile-only {
+    display: flex !important;
+  }
+
+  .desktop-only {
+    display: none !important;
+  }
 }
 
 @media (max-width: 400px) {
   .header-info .status-text {
     display: none;
   }
+  .glass-panel {
+    padding: 20px 14px;
+  }
 }
+
