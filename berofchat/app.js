@@ -12,6 +12,7 @@ const maxMembersInput = document.getElementById('max-members-create');
 const roomCodeInput = document.getElementById('room-code-input');
 const messageInput = document.getElementById('message-input');
 const dobInput = document.getElementById('dob-input');
+const maskIpCheckbox = document.getElementById('mask-ip-checkbox');
 
 // Buttons
 const btnJoin = document.getElementById('btn-join');
@@ -62,6 +63,39 @@ tabBtns.forEach(btn => {
 });
 
 // Utilities
+function getPeerConfig() {
+  const maskIp = maskIpCheckbox ? maskIpCheckbox.checked : false;
+  const config = {
+    iceServers: [
+      { urls: 'stun:stun.l.google.com:19302' },
+      { urls: 'stun:global.stun.twilio.com:3478' }
+    ]
+  };
+
+  if (maskIp) {
+    // Add free TURN servers to mask IP addresses
+    config.iceServers.push({
+      urls: "turn:openrelay.metered.ca:80",
+      username: "openrelayproject",
+      credential: "openrelayproject"
+    });
+    config.iceServers.push({
+      urls: "turn:openrelay.metered.ca:443",
+      username: "openrelayproject",
+      credential: "openrelayproject"
+    });
+    config.iceServers.push({
+      urls: "turn:openrelay.metered.ca:443?transport=tcp",
+      username: "openrelayproject",
+      credential: "openrelayproject"
+    });
+    // Force Relay-only to completely hide local IP
+    config.iceTransportPolicy = 'relay';
+  }
+
+  return { config };
+}
+
 function calculateAge(dobStr) {
   if (!dobStr) return 0;
   const dob = new Date(dobStr);
@@ -389,7 +423,7 @@ btnCreate.addEventListener('click', () => {
   showStatus('Generating room...', false);
   
   // Use roomCode as Peer ID
-  peer = new Peer(roomCode);
+  peer = new Peer(roomCode, getPeerConfig());
   
   peer.on('open', (id) => {
     isHost = true;
@@ -479,7 +513,7 @@ btnJoin.addEventListener('click', () => {
   
   showStatus('Connecting...', false);
   
-  peer = new Peer();
+  peer = new Peer(getPeerConfig());
   
   peer.on('open', (id) => {
     isHost = false;
