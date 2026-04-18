@@ -11,7 +11,7 @@ const createNameInput = document.getElementById('username-create');
 const maxMembersInput = document.getElementById('max-members-create');
 const roomCodeInput = document.getElementById('room-code-input');
 const messageInput = document.getElementById('message-input');
-const ageVerifyCheckbox = document.getElementById('age-verify-checkbox');
+const dobInput = document.getElementById('dob-input');
 
 // Buttons
 const btnJoin = document.getElementById('btn-join');
@@ -62,6 +62,46 @@ tabBtns.forEach(btn => {
 });
 
 // Utilities
+function calculateAge(dobStr) {
+  if (!dobStr) return 0;
+  const dob = new Date(dobStr);
+  if (isNaN(dob.getTime())) return 0;
+  const diffMs = Date.now() - dob.getTime();
+  const ageDate = new Date(diffMs); 
+  return Math.abs(ageDate.getUTCFullYear() - 1970);
+}
+
+// Grievance Report Modal Logic
+const reportModal = document.getElementById('report-modal');
+const btnReport = document.getElementById('btn-report');
+const btnCancelReport = document.getElementById('btn-cancel-report');
+const btnSubmitReport = document.getElementById('btn-submit-report');
+const reportText = document.getElementById('report-text');
+
+if (btnReport) {
+  btnReport.addEventListener('click', () => {
+    reportModal.classList.remove('hidden');
+  });
+}
+
+if (btnCancelReport) {
+  btnCancelReport.addEventListener('click', () => {
+    reportModal.classList.add('hidden');
+    reportText.value = '';
+  });
+}
+
+if (btnSubmitReport) {
+  btnSubmitReport.addEventListener('click', () => {
+    if (!reportText.value.trim()) return;
+    const body = encodeURIComponent("Grievance Report (BER OF CHAT):\n\n" + reportText.value);
+    window.location.href = `mailto:nxdecore@gmail.com?subject=Grievance Report - BER OF CHAT&body=${body}`;
+    reportModal.classList.add('hidden');
+    reportText.value = '';
+    alert('Report prepared. Your default email client should open to submit the report to the Resident Grievance Officer.');
+  });
+}
+
 function escapeHTML(str) {
   const div = document.createElement('div');
   div.textContent = str;
@@ -333,7 +373,8 @@ btnEndCall.addEventListener('click', leaveCall);
 
 // Create Room (Host)
 btnCreate.addEventListener('click', () => {
-  if (!ageVerifyCheckbox.checked) {
+  const age = calculateAge(dobInput.value);
+  if (age < 19) {
     showStatus('You must be 19 or older to use BER OF CHAT.', true);
     return;
   }
@@ -422,7 +463,8 @@ btnCreate.addEventListener('click', () => {
 
 // Join Room (Client)
 btnJoin.addEventListener('click', () => {
-  if (!ageVerifyCheckbox.checked) {
+  const age = calculateAge(dobInput.value);
+  if (age < 19) {
     showStatus('You must be 19 or older to use BER OF CHAT.', true);
     return;
   }

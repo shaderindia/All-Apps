@@ -77,9 +77,9 @@
         </div>
         
         <div class="age-verification">
-          <label>
-            <input type="checkbox" id="age-verify-checkbox">
-            <span>I confirm that I am 19 years of age or older.</span>
+          <label style="display: flex; flex-direction: column; align-items: flex-start; gap: 8px; width: 100%;">
+            <span style="font-size: 13px; color: var(--text-muted);">Date of Birth (You must be 19+)</span>
+            <input type="date" id="dob-input" style="background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 10px; width: 100%; color-scheme: dark;">
           </label>
         </div>
         
@@ -140,6 +140,7 @@
             <button id="btn-video-call" class="icon-btn header-btn" title="Join Video Call"><i class="fa-solid fa-video"></i></button>
             <button id="btn-end-call" class="icon-btn header-btn hangup-btn hidden" title="End Call"><i class="fa-solid fa-phone-slash"></i></button>
             <div class="divider"></div>
+            <button id="btn-report" class="icon-btn header-btn danger-text" title="Report Issue" style="color: var(--danger-color);"><i class="fa-solid fa-triangle-exclamation"></i></button>
             <button class="icon-btn header-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
           </div>
         </header>
@@ -176,6 +177,20 @@
       <div class="modal-actions">
         <button id="btn-decline-call" class="btn danger-btn"><i class="fa-solid fa-phone-slash"></i> Decline</button>
         <button id="btn-accept-call" class="btn success-btn"><i class="fa-solid fa-phone"></i> Answer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Grievance Report Modal -->
+  <div id="report-modal" class="modal-overlay hidden">
+    <div class="modal-content" style="max-width: 400px;">
+      <div class="pulsing-icon" style="color: var(--danger-color); animation: none; font-size: 30px;"><i class="fa-solid fa-triangle-exclamation"></i></div>
+      <h2 style="font-size: 18px;">Report a Grievance</h2>
+      <p style="font-size: 12px; margin-bottom: 15px; color: var(--text-muted);">Please describe the abuse or issue. Reports are sent to the Resident Grievance Officer.</p>
+      <textarea id="report-text" rows="4" placeholder="Describe the violation here..." style="width: 100%; background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 10px; margin-bottom: 15px; resize: none;"></textarea>
+      <div class="modal-actions">
+        <button id="btn-cancel-report" class="btn primary-btn" style="background: rgba(255,255,255,0.1); border:none;"><i class="fa-solid fa-xmark"></i> Cancel</button>
+        <button id="btn-submit-report" class="btn danger-btn" style="background: var(--danger-color); color: white; border: none;"><i class="fa-solid fa-paper-plane"></i> Submit Report</button>
       </div>
     </div>
   </div>
