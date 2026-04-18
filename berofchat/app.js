@@ -13,6 +13,8 @@ const roomCodeInput = document.getElementById('room-code-input');
 const messageInput = document.getElementById('message-input');
 const dobInput = document.getElementById('dob-input');
 const maskIpCheckbox = document.getElementById('mask-ip-checkbox');
+const tosCheckbox = document.getElementById('tos-checkbox');
+const btnDownloadLogs = document.getElementById('btn-download-logs');
 
 // Buttons
 const btnJoin = document.getElementById('btn-join');
@@ -103,6 +105,52 @@ function calculateAge(dobStr) {
   const diffMs = Date.now() - dob.getTime();
   const ageDate = new Date(diffMs); 
   return Math.abs(ageDate.getUTCFullYear() - 1970);
+}
+
+// Audit Logging
+function generateUUID() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
+
+function logConsent(age) {
+  const consentData = {
+    consentId: generateUUID(),
+    timestamp: new Date().toISOString(),
+    userAgent: navigator.userAgent,
+    ageAtConsent: age,
+    agreedToTOS: true
+  };
+  let logs = [];
+  try {
+    const saved = localStorage.getItem('berofchat_consent_logs');
+    if (saved) logs = JSON.parse(saved);
+  } catch (e) {}
+  logs.push(consentData);
+  localStorage.setItem('berofchat_consent_logs', JSON.stringify(logs));
+}
+
+if (btnDownloadLogs) {
+  btnDownloadLogs.addEventListener('click', () => {
+    let logs = [];
+    try {
+      const saved = localStorage.getItem('berofchat_consent_logs');
+      if (saved) logs = JSON.parse(saved);
+    } catch (e) {}
+    
+    if (logs.length === 0) {
+      alert('No consent logs found. You have not agreed to the TOS yet.');
+      return;
+    }
+    
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(logs, null, 2));
+    const dlAnchorElem = document.createElement('a');
+    dlAnchorElem.setAttribute("href", dataStr);
+    dlAnchorElem.setAttribute("download", "berofchat_consent_audit_logs.json");
+    dlAnchorElem.click();
+  });
 }
 
 // Grievance Report Modal Logic
@@ -407,11 +455,18 @@ btnEndCall.addEventListener('click', leaveCall);
 
 // Create Room (Host)
 btnCreate.addEventListener('click', () => {
+  if (!tosCheckbox.checked) {
+    showStatus('You must agree to the Terms of Service & Privacy Policy.', true);
+    return;
+  }
+  
   const age = calculateAge(dobInput.value);
   if (age < 19) {
     showStatus('You must be 19 or older to use BER OF CHAT.', true);
     return;
   }
+  
+  logConsent(age);
   
   myName = createNameInput.value.trim() || 'Anonymous';
   maxRoomMembers = parseInt(maxMembersInput.value, 10) || 10;
@@ -497,11 +552,18 @@ btnCreate.addEventListener('click', () => {
 
 // Join Room (Client)
 btnJoin.addEventListener('click', () => {
+  if (!tosCheckbox.checked) {
+    showStatus('You must agree to the Terms of Service & Privacy Policy.', true);
+    return;
+  }
+  
   const age = calculateAge(dobInput.value);
   if (age < 19) {
     showStatus('You must be 19 or older to use BER OF CHAT.', true);
     return;
   }
+  
+  logConsent(age);
   
   myName = joinNameInput.value.trim() || 'Anonymous';
   const targetCode = roomCodeInput.value.trim().toUpperCase();
