@@ -116,6 +116,28 @@ if (membersList) {
   });
 }
 
+// TOS Modal Logic
+const tosModal = document.getElementById('tos-modal');
+const btnAcceptTos = document.getElementById('btn-accept-tos');
+
+function checkTosAgreement() {
+  if (localStorage.getItem('ber_tos_agreed') === 'true') {
+    if (tosModal) tosModal.classList.add('hidden');
+    if (tosCheckbox) tosCheckbox.checked = true;
+  }
+}
+
+if (btnAcceptTos) {
+  btnAcceptTos.addEventListener('click', () => {
+    localStorage.setItem('ber_tos_agreed', 'true');
+    if (tosModal) tosModal.classList.add('hidden');
+    if (tosCheckbox) tosCheckbox.checked = true;
+  });
+}
+
+// Run agreement check on load
+checkTosAgreement();
+
 // Utilities
 function getPeerConfig() {
   const maskIp = maskIpCheckbox ? maskIpCheckbox.checked : false;
