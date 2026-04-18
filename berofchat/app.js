@@ -22,6 +22,9 @@ const btnCreate = document.getElementById('btn-create');
 const btnSend = document.getElementById('btn-send');
 const btnLeave = document.getElementById('btn-leave');
 const copyCodeBtn = document.getElementById('copy-code-btn');
+const sidebar = document.querySelector('.sidebar');
+const btnMenu = document.getElementById('btn-menu');
+const btnCloseSidebar = document.getElementById('btn-close-sidebar');
 
 // Chat UI Elements
 const displayRoomCode = document.getElementById('display-room-code');
@@ -90,6 +93,28 @@ tabBtns.forEach(btn => {
     statusMsg.textContent = '';
   });
 });
+
+// Mobile Sidebar Logic
+if (btnMenu) {
+  btnMenu.addEventListener('click', () => {
+    sidebar.classList.add('open');
+  });
+}
+
+if (btnCloseSidebar) {
+  btnCloseSidebar.addEventListener('click', () => {
+    sidebar.classList.remove('open');
+  });
+}
+
+// Close sidebar when clicking a member or leaving room on mobile
+if (membersList) {
+  membersList.addEventListener('click', () => {
+    if (window.innerWidth <= 768) {
+      sidebar.classList.remove('open');
+    }
+  });
+}
 
 // Utilities
 function getPeerConfig() {
