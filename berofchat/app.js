@@ -37,7 +37,15 @@ let myName = '';
 let myId = '';
 let roomCode = '';
 let maxRoomMembers = 10;
-let members = []; // Array of { id, name, isHost }
+let members = []; // Array of { id, name, isHost, inCall }
+let localStream = null;
+let calls = {};
+let inCall = false;
+let isVideo = false;
+
+const btnVoiceCall = document.getElementById('btn-voice-call');
+const btnVideoCall = document.getElementById('btn-video-call');
+const videoGrid = document.getElementById('video-grid');
 
 // Tab Switching logic
 tabBtns.forEach(btn => {
@@ -146,12 +154,124 @@ function handleIncomingData(data) {
     members = data.members;
     maxRoomMembers = data.maxMembers || 10;
     updateMembersUI();
+    if (inCall) callOtherInCallMembers();
   } else if (data.type === 'join_error') {
     showStatus(data.reason, true);
     if (peer) peer.destroy();
     setTimeout(() => location.reload(), 2000);
   }
 }
+
+// WebRTC Call Logic
+async function toggleCall(withVideo = false) {
+  if (inCall) {
+    leaveCall();
+    return;
+  }
+  
+  try {
+    isVideo = withVideo;
+    localStream = await navigator.mediaDevices.getUserMedia({ video: withVideo, audio: true });
+    inCall = true;
+    
+    if (withVideo) btnVideoCall.classList.add('active');
+    else btnVoiceCall.classList.add('active');
+    
+    videoGrid.classList.remove('hidden');
+    addVideoStream(myId, myName, localStream, true);
+    
+    if (isHost) {
+      const me = members.find(m => m.id === myId);
+      if (me) me.inCall = true;
+      broadcastToAll({ type: 'members_update', members, maxMembers: maxRoomMembers });
+      callOtherInCallMembers();
+    } else {
+      if (currentConnection && currentConnection.open) {
+        currentConnection.send({ type: 'call_status', inCall: true });
+      }
+    }
+  } catch (err) {
+    console.error('Failed to get local stream', err);
+    showStatus('Failed to access microphone/camera', true);
+  }
+}
+
+function leaveCall() {
+  if (!inCall) return;
+  inCall = false;
+  if (localStream) {
+    localStream.getTracks().forEach(track => track.stop());
+    localStream = null;
+  }
+  
+  btnVideoCall.classList.remove('active');
+  btnVoiceCall.classList.remove('active');
+  videoGrid.classList.add('hidden');
+  videoGrid.innerHTML = '';
+  
+  Object.values(calls).forEach(call => call.close());
+  calls = {};
+  
+  if (isHost) {
+    const me = members.find(m => m.id === myId);
+    if (me) me.inCall = false;
+    broadcastToAll({ type: 'members_update', members, maxMembers: maxRoomMembers });
+  } else {
+    if (currentConnection && currentConnection.open) {
+      currentConnection.send({ type: 'call_status', inCall: false });
+    }
+  }
+}
+
+function callOtherInCallMembers() {
+  members.forEach(m => {
+    if (m.id !== myId && m.inCall && !calls[m.id]) {
+      const call = peer.call(m.id, localStream, { metadata: { senderName: myName } });
+      handleCall(call, m.name);
+    }
+  });
+}
+
+function handleCall(call, name) {
+  calls[call.peer] = call;
+  call.on('stream', remoteStream => {
+    addVideoStream(call.peer, name, remoteStream, false);
+  });
+  call.on('close', () => {
+    removeVideoStream(call.peer);
+    delete calls[call.peer];
+  });
+}
+
+function addVideoStream(id, name, stream, isLocal) {
+  if (document.getElementById(`video-wrapper-${id}`)) return;
+  
+  const wrapper = document.createElement('div');
+  wrapper.className = 'video-wrapper';
+  wrapper.id = `video-wrapper-${id}`;
+  
+  const video = document.createElement('video');
+  video.srcObject = stream;
+  video.autoplay = true;
+  video.playsInline = true;
+  if (isLocal) video.muted = true;
+  
+  const label = document.createElement('div');
+  label.className = 'video-label';
+  label.textContent = name;
+  
+  wrapper.appendChild(video);
+  wrapper.appendChild(label);
+  videoGrid.appendChild(wrapper);
+}
+
+function removeVideoStream(id) {
+  const el = document.getElementById(`video-wrapper-${id}`);
+  if (el) el.remove();
+}
+
+btnVoiceCall.addEventListener('click', () => toggleCall(false));
+btnVideoCall.addEventListener('click', () => toggleCall(true));
 
 // Create Room (Host)
 btnCreate.addEventListener('click', () => {
@@ -174,9 +294,19 @@ btnCreate.addEventListener('click', () => {
     chatHeaderTitle.textContent = 'BER OF CHAT (Host)';
     
     // Add self to members
-    members.push({ id: myId, name: myName, isHost: true });
+    members.push({ id: myId, name: myName, isHost: true, inCall: false });
     
     enterChatScreen();
+  });
+  
+  peer.on('call', call => {
+    if (!inCall) {
+      call.close();
+      return;
+    }
+    call.answer(localStream);
+    const callerName = call.metadata ? call.metadata.senderName : 'Unknown';
+    handleCall(call, callerName);
   });
   
   peer.on('connection', (conn) => {
@@ -194,10 +324,14 @@ btnCreate.addEventListener('click', () => {
           setTimeout(() => conn.close(), 500);
           return;
         }
-        members.push({ id: data.senderId, name: data.senderName, isHost: false });
+        members.push({ id: data.senderId, name: data.senderName, isHost: false, inCall: false });
         appendMessage('System', `${data.senderName} joined the room.`, false, true);
         
         // Broadcast new member list
+        broadcastToAll({ type: 'members_update', members, maxMembers: maxRoomMembers });
+      } else if (data.type === 'call_status') {
+        const member = members.find(m => m.id === data.senderId);
+        if (member) member.inCall = data.inCall;
         broadcastToAll({ type: 'members_update', members, maxMembers: maxRoomMembers });
       } else {
         handleIncomingData(data);
@@ -243,6 +377,16 @@ btnJoin.addEventListener('click', () => {
     roomCode = targetCode;
     
     const conn = peer.connect(targetCode);
+    
+    peer.on('call', call => {
+      if (!inCall) {
+        call.close();
+        return;
+      }
+      call.answer(localStream);
+      const callerName = call.metadata ? call.metadata.senderName : 'Unknown';
+      handleCall(call, callerName);
+    });
     
     conn.on('open', () => {
       currentConnection = conn;
@@ -327,6 +471,7 @@ messageInput.addEventListener('keypress', (e) => {
 
 // Leave Room
 btnLeave.addEventListener('click', () => {
+  leaveCall();
   if (peer) {
     peer.destroy();
   }
