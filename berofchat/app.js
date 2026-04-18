@@ -147,7 +147,7 @@ function getPeerConfig() {
     config.iceTransportPolicy = 'relay';
   }
 
-  return { config };
+  return config;
 }
 
 function calculateAge(dobStr) {
