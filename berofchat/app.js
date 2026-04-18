@@ -56,31 +56,90 @@ const btnVideoCall = document.getElementById('btn-video-call');
 const btnEndCall = document.getElementById('btn-end-call');
 const videoGrid = document.getElementById('video-grid');
 
-// Geo-Fencing Check (UAE / China Blocking)
+// Geo-Fencing & India Detection
 async function checkGeoRestrictions() {
   try {
     const res = await fetch('https://ipapi.co/json/');
     const data = await res.json();
+    userCountry = data.country_code;
+    
+    // UAE / China VoIP Block
     if (data.country_code === 'AE' || data.country_code === 'CN') {
       callingRestricted = true;
       console.warn(`Calling disabled in region: ${data.country_code}`);
-      
-      if (btnVoiceCall) {
-        btnVoiceCall.style.opacity = '0.3';
-        btnVoiceCall.style.cursor = 'not-allowed';
-        btnVoiceCall.title = "VoIP disabled in your region";
-      }
-      if (btnVideoCall) {
-        btnVideoCall.style.opacity = '0.3';
-        btnVideoCall.style.cursor = 'not-allowed';
-        btnVideoCall.title = "VoIP disabled in your region";
-      }
+      if (btnVoiceCall) { btnVoiceCall.style.opacity = '0.3'; btnVoiceCall.style.cursor = 'not-allowed'; btnVoiceCall.title = 'VoIP disabled in your region'; }
+      if (btnVideoCall) { btnVideoCall.style.opacity = '0.3'; btnVideoCall.style.cursor = 'not-allowed'; btnVideoCall.title = 'VoIP disabled in your region'; }
+    }
+    
+    // India SIM-Binding OTP
+    if (data.country_code === 'IN') {
+      const otpSection = document.getElementById('otp-section');
+      if (otpSection) otpSection.classList.remove('hidden');
     }
   } catch (err) {
-    console.error("Geo-fencing check failed.");
+    console.error('Geo-fencing check failed.');
   }
 }
 checkGeoRestrictions();
+
+// Initialize Supabase
+if (typeof initSupabase === 'function') {
+  initSupabase();
+}
+
+// India OTP UI Logic
+const btnSendOtp = document.getElementById('btn-send-otp');
+const btnVerifyOtp = document.getElementById('btn-verify-otp');
+const otpPhoneInput = document.getElementById('otp-phone');
+const otpCodeInput = document.getElementById('otp-code');
+const otpStepPhone = document.getElementById('otp-step-phone');
+const otpStepVerify = document.getElementById('otp-step-verify');
+const otpStatusEl = document.getElementById('otp-status');
+const otpVerifiedBadge = document.getElementById('otp-verified-badge');
+
+if (btnSendOtp) {
+  btnSendOtp.addEventListener('click', async () => {
+    const phone = otpPhoneInput ? otpPhoneInput.value.trim() : '';
+    if (!phone || phone.length < 10) {
+      showStatus('Enter a valid Indian phone number (+91...)', true);
+      return;
+    }
+    try {
+      btnSendOtp.disabled = true;
+      btnSendOtp.textContent = 'Sending...';
+      await sendOTP(phone);
+      if (otpStepPhone) otpStepPhone.classList.add('hidden');
+      if (otpStepVerify) otpStepVerify.classList.remove('hidden');
+      if (otpStatusEl) otpStatusEl.textContent = 'OTP sent to ' + phone;
+    } catch (err) {
+      showStatus('OTP send failed: ' + (err.message || 'Unknown error'), true);
+      btnSendOtp.disabled = false;
+      btnSendOtp.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send OTP';
+    }
+  });
+}
+
+if (btnVerifyOtp) {
+  btnVerifyOtp.addEventListener('click', async () => {
+    const phone = otpPhoneInput ? otpPhoneInput.value.trim() : '';
+    const code = otpCodeInput ? otpCodeInput.value.trim() : '';
+    if (!code || code.length !== 6) {
+      if (otpStatusEl) otpStatusEl.textContent = 'Enter a valid 6-digit code.';
+      return;
+    }
+    try {
+      btnVerifyOtp.disabled = true;
+      btnVerifyOtp.textContent = 'Verifying...';
+      await verifyOTP(phone, code);
+      if (otpStepVerify) otpStepVerify.classList.add('hidden');
+      if (otpVerifiedBadge) otpVerifiedBadge.classList.remove('hidden');
+    } catch (err) {
+      if (otpStatusEl) otpStatusEl.textContent = 'Invalid OTP. Try again.';
+      btnVerifyOtp.disabled = false;
+      btnVerifyOtp.innerHTML = '<i class="fa-solid fa-check-double"></i> Verify OTP';
+    }
+  });
+}
 
 // Tab Switching logic
 tabBtns.forEach(btn => {
@@ -275,22 +334,9 @@ async function generateMessageHash(message) {
 }
 
 async function logMessageTrace(text) {
-  try {
-    const hash = await generateMessageHash(text);
-    fetch(`${TRACEABILITY_SERVER_URL}/log-trace`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        senderId: myId,
-        messageHash: hash,
-        timestamp: new Date().toISOString(),
-        roomCode: roomCode
-      })
-    }).catch(e => {
-      // Silently fail if server is offline or unreachable
-    });
-  } catch (err) {
-    console.error('Hashing failed', err);
+  // Log to Supabase (primary)
+  if (typeof logMessageHash === 'function') {
+    logMessageHash(myId, roomCode, text);
   }
 }
 
@@ -575,6 +621,12 @@ btnCreate.addEventListener('click', () => {
     return;
   }
   
+  // India OTP gate
+  if (userCountry === 'IN' && typeof otpVerified !== 'undefined' && !otpVerified) {
+    showStatus('Indian users must complete phone OTP verification.', true);
+    return;
+  }
+  
   logConsent(age);
   
   myName = createNameInput.value.trim() || 'Anonymous';
@@ -672,6 +724,12 @@ btnJoin.addEventListener('click', () => {
     return;
   }
   
+  // India OTP gate
+  if (userCountry === 'IN' && typeof otpVerified !== 'undefined' && !otpVerified) {
+    showStatus('Indian users must complete phone OTP verification.', true);
+    return;
+  }
+  
   logConsent(age);
   
   myName = joinNameInput.value.trim() || 'Anonymous';
@@ -738,6 +796,11 @@ function enterChatScreen() {
   displayRoomCode.textContent = roomCode;
   myNameDisplay.textContent = myName;
   updateMembersUI();
+  
+  // Traceability: log room join
+  if (typeof logRoomJoin === 'function') {
+    logRoomJoin(myId, roomCode);
+  }
 }
 
 // Copy Code
@@ -789,6 +852,10 @@ messageInput.addEventListener('keypress', (e) => {
 // Leave Room
 btnLeave.addEventListener('click', () => {
   leaveCall();
+  // Traceability: log room leave
+  if (typeof logRoomLeave === 'function' && myId && roomCode) {
+    logRoomLeave(myId, roomCode);
+  }
   if (peer) {
     peer.destroy();
   }

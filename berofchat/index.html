@@ -91,6 +91,27 @@
           </label>
         </div>
 
+        <!-- India SIM-Binding OTP (shown only for Indian users) -->
+        <div id="otp-section" class="hidden" style="margin-top: 10px; background: rgba(46,213,115,0.05); padding: 14px; border-radius: 10px; border: 1px solid rgba(46,213,115,0.15);">
+          <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;"><i class="fa-solid fa-mobile-screen-button" style="color: var(--success-color);"></i> <strong>India Users:</strong> Phone verification required (DoT SIM-Binding Mandate).</p>
+          <div id="otp-step-phone">
+            <div class="input-group" style="margin-bottom: 8px;">
+              <i class="fa-solid fa-phone"></i>
+              <input type="tel" id="otp-phone" placeholder="+91 XXXXX XXXXX" autocomplete="tel" style="background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 10px 10px 10px 40px; width: 100%;">
+            </div>
+            <button id="btn-send-otp" class="btn primary-btn" style="font-size: 13px; padding: 10px;"><i class="fa-solid fa-paper-plane"></i> Send OTP</button>
+          </div>
+          <div id="otp-step-verify" class="hidden">
+            <div class="input-group" style="margin-bottom: 8px;">
+              <i class="fa-solid fa-key"></i>
+              <input type="text" id="otp-code" placeholder="Enter 6-digit OTP" maxlength="6" autocomplete="one-time-code" style="background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 10px 10px 10px 40px; width: 100%; letter-spacing: 4px; text-align: center;">
+            </div>
+            <button id="btn-verify-otp" class="btn primary-btn" style="font-size: 13px; padding: 10px; background: rgba(46,213,115,0.15); color: var(--success-color); border: 1px solid rgba(46,213,115,0.3);"><i class="fa-solid fa-check-double"></i> Verify OTP</button>
+            <p id="otp-status" style="font-size: 11px; color: var(--text-muted); margin-top: 6px; text-align: center;"></p>
+          </div>
+          <div id="otp-verified-badge" class="hidden" style="text-align: center; padding: 8px; color: var(--success-color); font-size: 13px; font-weight: 600;"><i class="fa-solid fa-circle-check"></i> Phone Verified</div>
+        </div>
+
         <div class="privacy-toggle" style="margin-top: 15px; background: rgba(255,255,255,0.02); padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
           <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
             <input type="checkbox" id="mask-ip-checkbox" style="accent-color: var(--accent-color); width: 16px; height: 16px;">
@@ -246,7 +267,9 @@
     </div>
   </div>
 
+  <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="supabase-config.js?v=2.0.0"></script>
   <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
-  <script src="app.js?v=2.0.0"></script>
+  <script src="app.js?v=2.1.0"></script>
 </body>
 </html>
