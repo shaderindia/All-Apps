@@ -46,6 +46,7 @@ let isVideo = false;
 
 const btnVoiceCall = document.getElementById('btn-voice-call');
 const btnVideoCall = document.getElementById('btn-video-call');
+const btnEndCall = document.getElementById('btn-end-call');
 const videoGrid = document.getElementById('video-grid');
 
 // Tab Switching logic
@@ -178,6 +179,7 @@ async function toggleCall(withVideo = false) {
     if (withVideo) btnVideoCall.classList.add('active');
     else btnVoiceCall.classList.add('active');
     
+    btnEndCall.classList.remove('hidden');
     videoGrid.classList.remove('hidden');
     addVideoStream(myId, myName, localStream, true);
     
@@ -207,6 +209,7 @@ function leaveCall() {
   
   btnVideoCall.classList.remove('active');
   btnVoiceCall.classList.remove('active');
+  btnEndCall.classList.add('hidden');
   videoGrid.classList.add('hidden');
   videoGrid.innerHTML = '';
   
@@ -273,6 +276,7 @@ function removeVideoStream(id) {
 
 btnVoiceCall.addEventListener('click', () => toggleCall(false));
 btnVideoCall.addEventListener('click', () => toggleCall(true));
+btnEndCall.addEventListener('click', leaveCall);
 
 // Create Room (Host)
 btnCreate.addEventListener('click', () => {
