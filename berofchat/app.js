@@ -62,6 +62,56 @@ tabBtns.forEach(btn => {
 });
 
 // Utilities
+function escapeHTML(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// Incoming Call Logic
+let pendingCall = null;
+const incomingCallModal = document.getElementById('incoming-call-modal');
+const callerNameDisplay = document.getElementById('caller-name-display');
+const btnAcceptCall = document.getElementById('btn-accept-call');
+const btnDeclineCall = document.getElementById('btn-decline-call');
+
+function showIncomingCall(call) {
+  pendingCall = call;
+  const callerName = call.metadata && call.metadata.senderName ? call.metadata.senderName : 'Someone';
+  callerNameDisplay.textContent = callerName;
+  incomingCallModal.classList.remove('hidden');
+}
+
+function hideIncomingCall() {
+  incomingCallModal.classList.add('hidden');
+  pendingCall = null;
+}
+
+if(btnAcceptCall) {
+  btnAcceptCall.addEventListener('click', async () => {
+    if (pendingCall) {
+      const callToAnswer = pendingCall;
+      hideIncomingCall();
+      if (!inCall) {
+        await toggleCall(false); // Join with voice by default
+      }
+      if (localStream) {
+        callToAnswer.answer(localStream);
+        const callerName = callToAnswer.metadata && callToAnswer.metadata.senderName ? callToAnswer.metadata.senderName : 'Unknown';
+        handleCall(callToAnswer, callerName);
+      }
+    }
+  });
+}
+
+if(btnDeclineCall) {
+  btnDeclineCall.addEventListener('click', () => {
+    if (pendingCall) {
+      pendingCall.close();
+      hideIncomingCall();
+    }
+  });
+}
 function generateRoomCode() {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   let result = '';
@@ -85,22 +135,25 @@ function scrollToBottom() {
 }
 
 function appendMessage(senderName, text, isMe = false, isSystem = false) {
+  const safeText = escapeHTML(text);
+  const safeName = escapeHTML(senderName);
+  
   if (isSystem) {
     const sysDiv = document.createElement('div');
     sysDiv.className = 'system-msg';
-    sysDiv.innerHTML = `<div class="sys-content"><i class="fa-solid fa-info-circle"></i> ${text}</div>`;
+    sysDiv.innerHTML = `<div class="sys-content"><i class="fa-solid fa-info-circle"></i> ${safeText}</div>`;
     messagesContainer.appendChild(sysDiv);
   } else {
     const msgDiv = document.createElement('div');
     msgDiv.className = `message-wrapper ${isMe ? 'sent' : 'received'}`;
     
-    const senderSpan = `<span class="msg-sender">${senderName}</span>`;
+    const senderSpan = `<span class="msg-sender">${safeName}</span>`;
     const timeSpan = `<span class="msg-time">${formatTime(new Date())}</span>`;
     
     msgDiv.innerHTML = `
       ${isMe ? '' : senderSpan}
       <div class="message">
-        ${text}
+        ${safeText}
         ${timeSpan}
       </div>
     `;
@@ -310,13 +363,13 @@ btnCreate.addEventListener('click', () => {
   });
   
   peer.on('call', call => {
-    if (!inCall) {
-      call.close();
-      return;
+    if (inCall) {
+      call.answer(localStream);
+      const callerName = call.metadata ? call.metadata.senderName : 'Unknown';
+      handleCall(call, callerName);
+    } else {
+      showIncomingCall(call);
     }
-    call.answer(localStream);
-    const callerName = call.metadata ? call.metadata.senderName : 'Unknown';
-    handleCall(call, callerName);
   });
   
   peer.on('connection', (conn) => {
@@ -394,13 +447,13 @@ btnJoin.addEventListener('click', () => {
     const conn = peer.connect(targetCode);
     
     peer.on('call', call => {
-      if (!inCall) {
-        call.close();
-        return;
+      if (inCall) {
+        call.answer(localStream);
+        const callerName = call.metadata ? call.metadata.senderName : 'Unknown';
+        handleCall(call, callerName);
+      } else {
+        showIncomingCall(call);
       }
-      call.answer(localStream);
-      const callerName = call.metadata ? call.metadata.senderName : 'Unknown';
-      handleCall(call, callerName);
     });
     
     conn.on('open', () => {
