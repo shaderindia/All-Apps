@@ -123,10 +123,10 @@ function updateMembersUI() {
   });
 }
 
-function broadcastToAll(data) {
+function broadcastToAll(data, excludePeerId = null) {
   if (!isHost) return;
   hostConnections.forEach(conn => {
-    if (conn.open) {
+    if (conn.open && conn.peer !== excludePeerId) {
       conn.send(data);
     }
   });
@@ -137,7 +137,7 @@ function handleIncomingData(data) {
     appendMessage(data.senderName, data.text, data.senderId === myId);
     if (isHost && data.senderId !== myId) {
       // Host re-broadcasts to other clients
-      broadcastToAll(data);
+      broadcastToAll(data, data.senderId);
     }
   } else if (data.type === 'members_update') {
     if (!chatScreen.classList.contains('active') && !isHost) {
