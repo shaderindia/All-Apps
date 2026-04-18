@@ -11,6 +11,7 @@ const createNameInput = document.getElementById('username-create');
 const maxMembersInput = document.getElementById('max-members-create');
 const roomCodeInput = document.getElementById('room-code-input');
 const messageInput = document.getElementById('message-input');
+const ageVerifyCheckbox = document.getElementById('age-verify-checkbox');
 
 // Buttons
 const btnJoin = document.getElementById('btn-join');
@@ -275,6 +276,11 @@ btnVideoCall.addEventListener('click', () => toggleCall(true));
 
 // Create Room (Host)
 btnCreate.addEventListener('click', () => {
+  if (!ageVerifyCheckbox.checked) {
+    showStatus('You must be 19 or older to use BER OF CHAT.', true);
+    return;
+  }
+  
   myName = createNameInput.value.trim() || 'Anonymous';
   maxRoomMembers = parseInt(maxMembersInput.value, 10) || 10;
   if (maxRoomMembers > 10) maxRoomMembers = 10;
@@ -359,6 +365,11 @@ btnCreate.addEventListener('click', () => {
 
 // Join Room (Client)
 btnJoin.addEventListener('click', () => {
+  if (!ageVerifyCheckbox.checked) {
+    showStatus('You must be 19 or older to use BER OF CHAT.', true);
+    return;
+  }
+  
   myName = joinNameInput.value.trim() || 'Anonymous';
   const targetCode = roomCodeInput.value.trim().toUpperCase();
   
