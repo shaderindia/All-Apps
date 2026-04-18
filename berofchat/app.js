@@ -190,6 +190,36 @@ function escapeHTML(str) {
   return div.innerHTML;
 }
 
+// IT Rules 2021: Traceability
+const TRACEABILITY_SERVER_URL = 'http://localhost:3000';
+
+async function generateMessageHash(message) {
+  const msgUint8 = new TextEncoder().encode(message);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function logMessageTrace(text) {
+  try {
+    const hash = await generateMessageHash(text);
+    fetch(`${TRACEABILITY_SERVER_URL}/log-trace`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        senderId: myId,
+        messageHash: hash,
+        timestamp: new Date().toISOString(),
+        roomCode: roomCode
+      })
+    }).catch(e => {
+      // Silently fail if server is offline or unreachable
+    });
+  } catch (err) {
+    console.error('Hashing failed', err);
+  }
+}
+
 // Incoming Call Logic
 let pendingCall = null;
 const incomingCallModal = document.getElementById('incoming-call-modal');
@@ -658,11 +688,13 @@ function sendMessage() {
     // Render locally and broadcast
     appendMessage(myName, text, true);
     broadcastToAll(msgData);
+    logMessageTrace(text);
   } else {
     // Send to host
     if (currentConnection && currentConnection.open) {
       appendMessage(myName, text, true);
       currentConnection.send(msgData);
+      logMessageTrace(text);
     }
   }
   
