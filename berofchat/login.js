@@ -1,6 +1,5 @@
 // ============================================================
-// BER OF CHAT — Login & Signup Logic
-// MTALKZ API Key: NuDhjmSw8RUV0Hf5YlybqbHrCY7AI5
+// BER OF CHAT — Login & Signup Logic (Twilio OTP)
 // ============================================================
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -78,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const password = document.getElementById('login-password').value;
 
         if (!phone || phone.length < 12 || !password) {
-            showStatus('Please enter a valid phone number and password', true);
+            showStatus('Enter a valid phone number and password', true);
             return;
         }
 
@@ -99,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 setTimeout(() => { window.location.href = 'index.html'; }, 1200);
             }
         } catch (err) {
-            showStatus('An error occurred during login', true);
+            showStatus('Login error. Check your connection.', true);
             console.error('[Login Error]', err);
         } finally {
             btnLogin.disabled = false;
@@ -108,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // =========================================================
-    // SIGNUP STEP 1: Send OTP
+    // SIGNUP STEP 1: Send OTP via Twilio (Edge Function)
     // =========================================================
     const btnSendOtp = document.getElementById('btn-send-otp');
     btnSendOtp.addEventListener('click', async () => {
@@ -130,54 +129,33 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         btnSendOtp.disabled = true;
-        btnSendOtp.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Sending...';
-        showStatus('Generating OTP...', false);
+        btnSendOtp.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Sending OTP...';
+        showStatus('Sending verification code via SMS...', false);
 
         try {
-            // Step 1: Generate OTP via Supabase RPC
-            const { data: otpResult, error: otpError } = await supabase.rpc('request_otp', {
-                p_phone: phone,
-                p_purpose: 'signup'
-            });
-
-            if (otpError) {
-                showStatus('Server error: ' + otpError.message, true);
-                return;
-            }
-            if (!otpResult || !otpResult.success) {
-                showStatus(otpResult?.error || 'Failed to generate OTP', true);
-                return;
-            }
-
-            const otp = otpResult.otp;
-
-            // Step 2: Send OTP via MTALKZ SMS API
-            showStatus('Sending SMS...', false);
-            const smsNumber = phone.replace('+', '');
-            const smsResponse = await fetch('https://msg.mtalkz.com/V2/http-api-post.php', {
+            // Call Edge Function which handles Twilio server-side
+            const response = await fetch(`${SUPABASE_URL}/functions/v1/send-otp`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    apikey: 'NuDhjmSw8RUV0Hf5YlybqbHrCY7AI5',
-                    senderid: 'SHDR7I',
-                    number: smsNumber,
-                    message: `Your BER OF CHAT verification code is: ${otp}. Valid for 5 minutes. Do not share this code. - SHADER7`,
-                    format: 'json'
-                })
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                },
+                body: JSON.stringify({ phone, purpose: 'signup' })
             });
 
-            const smsText = await smsResponse.text();
-            console.log('[MTALKZ Response]', smsText);
+            const result = await response.json();
 
-            // Move to step 2 regardless of SMS response (OTP is stored in DB)
-            currentPhone = phone;
-            signupStep1.classList.add('hidden');
-            signupStep2.classList.remove('hidden');
-            signupStep2.classList.add('fade-in');
-            showStatus('OTP sent to ' + phone, false);
-
+            if (result.success) {
+                currentPhone = phone;
+                signupStep1.classList.add('hidden');
+                signupStep2.classList.remove('hidden');
+                signupStep2.classList.add('fade-in');
+                showStatus('OTP sent to ' + phone, false);
+            } else {
+                showStatus(result.error || 'Failed to send OTP', true);
+            }
         } catch (err) {
-            showStatus('Error sending OTP. Check your connection.', true);
+            showStatus('Could not reach OTP service. Please try again.', true);
             console.error('[OTP Error]', err);
         } finally {
             btnSendOtp.disabled = false;
@@ -256,7 +234,6 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 showStatus('Account created! Logging in...', false);
 
-                // Auto-login
                 const loginRes = await supabase.rpc('login_user', {
                     p_phone: currentPhone,
                     p_password: password

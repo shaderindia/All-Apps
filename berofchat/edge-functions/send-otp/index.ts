@@ -1,11 +1,12 @@
 // ============================================================
 // Supabase Edge Function: send-otp
-// Sends OTP via MTALKZ SMS API
+// Sends OTP via Twilio SMS API
 // 
-// Deploy: supabase functions deploy send-otp
+// Deploy: supabase functions deploy send-otp --project-ref qwuozqwaakqoopswwpti
 // Set secrets:
-//   supabase secrets set MTALKZ_API_KEY=your_key
-//   supabase secrets set MTALKZ_SENDER_ID=your_sender_id
+//   supabase secrets set TWILIO_ACCOUNT_SID=your_account_sid
+//   supabase secrets set TWILIO_AUTH_TOKEN=your_auth_token
+//   supabase secrets set TWILIO_PHONE_NUMBER=your_twilio_number
 // ============================================================
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
@@ -17,7 +18,6 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
-  // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
   }
@@ -54,24 +54,39 @@ serve(async (req) => {
 
     const otp = otpResult.otp
 
-    // Send OTP via MTALKZ API
-    const mtalkzApiKey = Deno.env.get('MTALKZ_API_KEY')
-    const mtalkzSenderId = Deno.env.get('MTALKZ_SENDER_ID')
+    // Send OTP via Twilio SMS API
+    const accountSid = Deno.env.get('TWILIO_ACCOUNT_SID')
+    const authToken = Deno.env.get('TWILIO_AUTH_TOKEN')
+    const fromNumber = Deno.env.get('TWILIO_PHONE_NUMBER')
 
-    const mtalkzResponse = await fetch('http://msg.mtalkz.com/V2/http-api-post.php', {
+    const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`
+    const credentials = btoa(`${accountSid}:${authToken}`)
+
+    const twilioResponse = await fetch(twilioUrl, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        APIKEY: mtalkzApiKey,
-        SENDERID: mtalkzSenderId,
-        NUMBER: phone.replace('+', ''),
-        MESSAGE: `Your BER OF CHAT verification code is: ${otp}. Valid for 5 minutes. Do not share this code. - SHADER7`,
-        FORMAT: 'JSON'
-      })
+      headers: {
+        'Authorization': `Basic ${credentials}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        To: phone,
+        From: fromNumber,
+        Body: `Your BER OF CHAT verification code is: ${otp}. Valid for 5 minutes. Do not share this code.`
+      }).toString()
     })
 
-    const mtalkzResult = await mtalkzResponse.text()
-    console.log('[MTALKZ] Response:', mtalkzResult)
+    const twilioResult = await twilioResponse.json()
+    console.log('[Twilio] Status:', twilioResult.status, 'SID:', twilioResult.sid)
+
+    if (twilioResult.error_code) {
+      console.error('[Twilio] Error:', twilioResult.message)
+      return new Response(JSON.stringify({ 
+        success: false, 
+        error: 'SMS delivery failed: ' + twilioResult.message 
+      }), {
+        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      })
+    }
 
     return new Response(JSON.stringify({ 
       success: true, 
