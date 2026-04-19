@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - BER OF CHAT</title>
+    <meta name="description" content="Secure login for BER OF CHAT P2P Messaging.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #00d2ff;
+            --secondary: #3a7bd5;
+            --dark: #0a0c14;
+            --surface: rgba(255, 255, 255, 0.03);
+            --surface-hover: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
+            --text-muted: #8a8d98;
+            --success: #2ed573;
+            --error: #ff4757;
+            --grad-primary: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--dark);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background-image: 
+                radial-gradient(circle at 20% 20%, rgba(0, 210, 255, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(58, 123, 213, 0.05) 0%, transparent 40%);
+        }
+
+        /* Animated Background Blobs */
+        .blob {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: var(--primary);
+            filter: blur(80px);
+            border-radius: 50%;
+            z-index: -1;
+            opacity: 0.15;
+            animation: move 20s infinite alternate;
+        }
+
+        .blob-2 {
+            background: var(--secondary);
+            right: 10%;
+            bottom: 10%;
+            animation-delay: -10s;
+        }
+
+        @keyframes move {
+            from { transform: translate(-10%, -10%); }
+            to { transform: translate(10%, 10%); }
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 400px;
+            background: rgba(15, 18, 30, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            transform: translateY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .login-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .brand {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .brand-icon {
+            font-size: 48px;
+            background: var(--grad-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+            display: inline-block;
+        }
+
+        .brand-name {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .tabs {
+            display: flex;
+            background: var(--surface);
+            padding: 4px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            color: var(--text-muted);
+        }
+
+        .tab.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .form-group i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            transition: color 0.3s ease;
+        }
+
+        input {
+            width: 100%;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px 16px 14px 48px;
+            color: #fff;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            background: var(--surface-hover);
+            box-shadow: 0 0 0 4px rgba(0, 210, 255, 0.1);
+        }
+
+        input:focus + i {
+            color: var(--primary);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: var(--grad-primary);
+            color: white;
+            box-shadow: 0 8px 20px rgba(0, 210, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: scale(1.02);
+            box-shadow: 0 12px 24px rgba(0, 210, 255, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status-msg {
+            text-align: center;
+            font-size: 13px;
+            margin-top: 16px;
+            min-height: 20px;
+        }
+
+        .status-error { color: var(--error); }
+        .status-success { color: var(--success); }
+
+        .hidden { display: none; }
+
+        /* Step Animations */
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .otp-input-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .otp-char {
+            width: 45px;
+            height: 55px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 700;
+            padding: 0;
+            border-radius: 10px;
+        }
+
+        .footer-links {
+            margin-top: 24px;
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer-links a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="blob"></div>
+    <div class="blob blob-2"></div>
+
+    <div class="login-card fade-in">
+        <div class="brand">
+            <div class="brand-icon"><i class="fa-solid fa-comments"></i></div>
+            <h1 class="brand-name">BER OF CHAT</h1>
+            <p style="color: var(--text-muted); font-size: 13px; margin-top: 4px;">P2P Encrypted Messaging</p>
+        </div>
+
+        <div class="tabs">
+            <div id="tab-login" class="tab active">Log In</div>
+            <div id="tab-signup" class="tab">Sign Up</div>
+        </div>
+
+        <!-- Login Form -->
+        <div id="login-form">
+            <div class="form-group">
+                <i class="fa-solid fa-phone"></i>
+                <input type="tel" id="login-phone" placeholder="+91 XXXXX XXXXX" autocomplete="tel">
+            </div>
+            <div class="form-group">
+                <i class="fa-solid fa-lock"></i>
+                <input type="password" id="login-password" placeholder="Password">
+            </div>
+            <button id="btn-login" class="btn btn-primary">
+                <span>Log In</span>
+                <i class="fa-solid fa-right-to-bracket"></i>
+            </button>
+        </div>
+
+        <!-- Signup Flow -->
+        <div id="signup-form" class="hidden">
+            <!-- Step 1: Phone & Display Name -->
+            <div id="signup-step-1">
+                <div class="form-group">
+                    <i class="fa-solid fa-user"></i>
+                    <input type="text" id="signup-name" placeholder="Display Name" maxlength="20">
+                </div>
+                <div class="form-group">
+                    <i class="fa-solid fa-phone"></i>
+                    <input type="tel" id="signup-phone" placeholder="+91 XXXXX XXXXX">
+                </div>
+                <div style="margin-bottom: 20px; display: flex; gap: 10px; align-items: flex-start; padding: 0 5px;">
+                    <input type="checkbox" id="signup-gdpr" style="width: 18px; height: 18px; margin-top: 2px; cursor: pointer;">
+                    <label for="signup-gdpr" style="font-size: 12px; color: var(--text-muted); line-height: 1.4;">
+                        I consent to the processing of my phone number for authentication and agree to the 
+                        <a href="../privacy-policy.html" target="_blank" style="color: var(--primary);">Privacy Policy</a> 
+                        (GDPR compliant).
+                    </label>
+                </div>
+                <button id="btn-send-otp" class="btn btn-primary">
+                    <span>Send OTP</span>
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </div>
+
+            <!-- Step 2: OTP Verification -->
+            <div id="signup-step-2" class="hidden">
+                <p style="font-size: 14px; text-align: center; margin-bottom: 20px; color: var(--text-muted);">Enter the 6-digit code sent to your phone.</p>
+                <div class="form-group">
+                    <i class="fa-solid fa-key"></i>
+                    <input type="text" id="signup-otp" placeholder="6-digit OTP" maxlength="6" style="letter-spacing: 8px; text-align: center; padding-left: 16px;">
+                </div>
+                <button id="btn-verify-otp" class="btn btn-primary">
+                    <span>Verify OTP</span>
+                    <i class="fa-solid fa-check-double"></i>
+                </button>
+                <div style="text-align: center; margin-top: 15px;">
+                    <button id="btn-resend-otp" style="background:none; border:none; color: var(--primary); font-size: 13px; cursor: pointer;">Resend OTP</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Password -->
+            <div id="signup-step-3" class="hidden">
+                <div class="form-group">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="signup-password" placeholder="Create Password">
+                </div>
+                <div class="form-group">
+                    <i class="fa-solid fa-shield-check"></i>
+                    <input type="password" id="signup-password-confirm" placeholder="Confirm Password">
+                </div>
+                <button id="btn-create-account" class="btn btn-primary">
+                    <span>Complete Signup</span>
+                    <i class="fa-solid fa-circle-check"></i>
+                </button>
+            </div>
+        </div>
+
+        <div id="status-msg" class="status-msg"></div>
+
+        <div class="footer-links">
+            <p>By continuing, you agree to our <br> <a href="../terms.html">Terms</a> & <a href="../privacy-policy.html">Privacy Policy</a></p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script src="supabase-config.js?v=2.0.0"></script>
+    <script src="login.js?v=1.0.0"></script>
+</body>
+</html>

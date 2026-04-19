@@ -43,8 +43,12 @@
     <!-- Entry Screen -->
     <div id="entry-screen" class="screen active">
       <div class="glass-panel">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: -10px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
           <a href="https://shader7.com" style="color: var(--text-muted); font-size: 12px; text-decoration: none; display: flex; align-items: center; gap: 5px;"><i class="fa-solid fa-house"></i> Home</a>
+          <div id="user-profile" class="hidden" style="display: flex; align-items: center; gap: 10px;">
+            <span id="user-name-display" style="font-size: 13px; font-weight: 600; color: var(--accent-color);"></span>
+            <button id="btn-logout" style="background: none; border: none; color: #ff4757; cursor: pointer; font-size: 12px; display: flex; align-items: center; gap: 4px;"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+          </div>
         </div>
         <div class="logo">
           <div class="logo-icon"><i class="fa-brands fa-nfc-symbol"></i></div>
@@ -62,10 +66,6 @@
 
         <div id="join-form" class="form-container active">
           <div class="input-group">
-            <i class="fa-solid fa-user"></i>
-            <input type="text" id="username-join" placeholder="Your Display Name" autocomplete="off" maxlength="20">
-          </div>
-          <div class="input-group">
             <i class="fa-solid fa-hashtag"></i>
             <input type="text" id="room-code-input" placeholder="Enter Room Code" autocomplete="off" maxlength="8" style="text-transform: uppercase;">
           </div>
@@ -73,10 +73,6 @@
         </div>
 
         <div id="create-form" class="form-container">
-          <div class="input-group">
-            <i class="fa-solid fa-user"></i>
-            <input type="text" id="username-create" placeholder="Your Display Name" autocomplete="off" maxlength="20">
-          </div>
           <div class="input-group">
             <i class="fa-solid fa-users"></i>
             <input type="number" id="max-members-create" placeholder="Max Members (up to 10)" autocomplete="off" min="2" max="10" value="10">
@@ -91,65 +87,7 @@
           </label>
         </div>
 
-        <!-- Phone Auth (MTALKZ OTP + Password) -->
-        <div id="auth-section" style="margin-top: 10px; background: rgba(46,213,115,0.05); padding: 14px; border-radius: 10px; border: 1px solid rgba(46,213,115,0.15);">
-          <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;"><i class="fa-solid fa-shield-halved" style="color: var(--success-color);"></i> <strong>Secure Login:</strong> Sign up or log in with your phone number.</p>
-          
-          <!-- Auth Mode Toggle -->
-          <div id="auth-mode-toggle" style="display: flex; gap: 4px; margin-bottom: 12px; background: rgba(255,255,255,0.03); border-radius: 8px; padding: 3px;">
-            <button id="auth-tab-signup" class="btn" style="flex: 1; font-size: 12px; padding: 8px; border-radius: 6px; background: var(--accent-color); color: #fff; border: none; cursor: pointer;">Sign Up</button>
-            <button id="auth-tab-login" class="btn" style="flex: 1; font-size: 12px; padding: 8px; border-radius: 6px; background: transparent; color: var(--text-muted); border: none; cursor: pointer;">Log In</button>
-          </div>
-
-          <!-- SIGNUP FLOW -->
-          <div id="auth-signup-flow">
-            <!-- Step 1: Phone -->
-            <div id="signup-step-phone">
-              <div class="input-group" style="margin-bottom: 8px;">
-                <i class="fa-solid fa-phone"></i>
-                <input type="tel" id="auth-phone" placeholder="+91 XXXXX XXXXX" autocomplete="tel" style="background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 10px 10px 10px 40px; width: 100%;">
-              </div>
-              <button id="btn-auth-send-otp" class="btn primary-btn" style="font-size: 13px; padding: 10px; width: 100%;"><i class="fa-solid fa-paper-plane"></i> Send OTP via SMS</button>
-            </div>
-            <!-- Step 2: Verify OTP -->
-            <div id="signup-step-otp" class="hidden">
-              <div class="input-group" style="margin-bottom: 8px;">
-                <i class="fa-solid fa-key"></i>
-                <input type="text" id="auth-otp-code" placeholder="Enter 6-digit OTP" maxlength="6" autocomplete="one-time-code" style="background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 10px 10px 10px 40px; width: 100%; letter-spacing: 4px; text-align: center;">
-              </div>
-              <button id="btn-auth-verify-otp" class="btn primary-btn" style="font-size: 13px; padding: 10px; width: 100%; background: rgba(46,213,115,0.15); color: var(--success-color); border: 1px solid rgba(46,213,115,0.3);"><i class="fa-solid fa-check-double"></i> Verify OTP</button>
-            </div>
-            <!-- Step 3: Set Password -->
-            <div id="signup-step-password" class="hidden">
-              <div class="input-group" style="margin-bottom: 8px;">
-                <i class="fa-solid fa-lock"></i>
-                <input type="password" id="auth-password" placeholder="Create a password (min 6 chars)" minlength="6" autocomplete="new-password" style="background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 10px 10px 10px 40px; width: 100%;">
-              </div>
-              <div class="input-group" style="margin-bottom: 8px;">
-                <i class="fa-solid fa-lock"></i>
-                <input type="password" id="auth-password-confirm" placeholder="Confirm password" minlength="6" autocomplete="new-password" style="background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 10px 10px 10px 40px; width: 100%;">
-              </div>
-              <button id="btn-auth-signup" class="btn primary-btn gradient-btn" style="font-size: 13px; padding: 10px; width: 100%;"><i class="fa-solid fa-user-plus"></i> Create Account</button>
-            </div>
-          </div>
-
-          <!-- LOGIN FLOW -->
-          <div id="auth-login-flow" class="hidden">
-            <div class="input-group" style="margin-bottom: 8px;">
-              <i class="fa-solid fa-phone"></i>
-              <input type="tel" id="login-phone" placeholder="+91 XXXXX XXXXX" autocomplete="tel" style="background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 10px 10px 10px 40px; width: 100%;">
-            </div>
-            <div class="input-group" style="margin-bottom: 8px;">
-              <i class="fa-solid fa-lock"></i>
-              <input type="password" id="login-password" placeholder="Your password" autocomplete="current-password" style="background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 10px 10px 10px 40px; width: 100%;">
-            </div>
-            <button id="btn-auth-login" class="btn primary-btn gradient-btn" style="font-size: 13px; padding: 10px; width: 100%;"><i class="fa-solid fa-right-to-bracket"></i> Log In</button>
-          </div>
-
-          <p id="auth-status" style="font-size: 11px; color: var(--text-muted); margin-top: 8px; text-align: center;"></p>
-          <div id="auth-verified-badge" class="hidden" style="text-align: center; padding: 8px; color: var(--success-color); font-size: 13px; font-weight: 600;"><i class="fa-solid fa-circle-check"></i> <span id="auth-user-display">Logged In</span></div>
-        </div>
-
+        <!-- Phone Auth moved to login.html -->
         <div class="privacy-toggle" style="margin-top: 15px; background: rgba(255,255,255,0.02); padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
           <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
             <input type="checkbox" id="mask-ip-checkbox" style="accent-color: var(--accent-color); width: 16px; height: 16px;">
@@ -168,7 +106,8 @@
 
         <div style="text-align: center; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px;">
           <button id="btn-download-logs" style="background: none; border: none; color: var(--text-muted); font-size: 11px; text-decoration: underline; cursor: pointer; margin-bottom: 8px; display: block; width: 100%;">Download Consent Audit Logs</button>
-          <button id="btn-delete-data" style="background: none; border: none; color: var(--danger-color); font-size: 11px; text-decoration: underline; cursor: pointer; margin-bottom: 8px; display: block; width: 100%;"><i class="fa-solid fa-trash-can"></i> Delete My Data & Revoke Consent (GDPR)</button>
+          <button id="btn-delete-data" style="background: none; border: none; color: var(--danger-color); font-size: 11px; text-decoration: underline; cursor: pointer; margin-bottom: 8px; display: block; width: 100%;"><i class="fa-solid fa-trash-can"></i> Delete My Data & Revoke Consent (GDPR / CCPA / LGPD)</button>
+          <p style="font-size: 10px; color: var(--text-muted); margin-bottom: 8px; line-height: 1.4;">Data Controller: SHADER7 (nxdecore@gmail.com). Traceability hashes retained 180 days per Indian IT Rules 2021. We do <strong>not sell personal information</strong> (CCPA §1798.120).</p>
           <a href="https://instagram.com/nishix_vamp" target="_blank" style="color: var(--text-muted); font-size: 12px; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 6px; transition: color 0.3s;">
             <i class="fa-brands fa-instagram" style="background: var(--grad-insta); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i> @nishix_vamp
           </a>

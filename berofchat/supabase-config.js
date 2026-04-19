@@ -73,33 +73,9 @@ async function logRoomLeave(senderId, roomCode) {
 // Uses Supabase Auth Phone OTP when user is in India.
 // ============================================================
 
-let otpVerified = false;
-let userCountry = null;
+// Note: otpVerified and userCountry are declared in app.js
+// OTP functions are handled by login.js via Edge Functions
 
-async function sendOTP(phoneNumber) {
-  if (!supabase) throw new Error('Supabase not initialized');
-
-  const { data, error } = await supabase.auth.signInWithOtp({
-    phone: phoneNumber
-  });
-
-  if (error) throw error;
-  return data;
-}
-
-async function verifyOTP(phoneNumber, otpCode) {
-  if (!supabase) throw new Error('Supabase not initialized');
-
-  const { data, error } = await supabase.auth.verifyOtp({
-    phone: phoneNumber,
-    token: otpCode,
-    type: 'sms'
-  });
-
-  if (error) throw error;
-  otpVerified = true;
-  return data;
-}
 
 // ============================================================
 // Auto-Purge Trigger (for Edge Function fallback)

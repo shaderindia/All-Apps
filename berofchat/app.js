@@ -6,8 +6,6 @@ const formContainers = document.querySelectorAll('.form-container');
 const statusMsg = document.getElementById('entry-status');
 
 // Inputs
-const joinNameInput = document.getElementById('username-join');
-const createNameInput = document.getElementById('username-create');
 const maxMembersInput = document.getElementById('max-members-create');
 const roomCodeInput = document.getElementById('room-code-input');
 const messageInput = document.getElementById('message-input');
@@ -25,6 +23,9 @@ const copyCodeBtn = document.getElementById('copy-code-btn');
 const sidebar = document.querySelector('.sidebar');
 const btnMenu = document.getElementById('btn-menu');
 const btnCloseSidebar = document.getElementById('btn-close-sidebar');
+const btnLogout = document.getElementById('btn-logout');
+const userNameDisplay = document.getElementById('user-name-display');
+const userProfileUI = document.getElementById('user-profile');
 
 // Chat UI Elements
 const displayRoomCode = document.getElementById('display-room-code');
@@ -50,13 +51,28 @@ let calls = {};
 let inCall = false;
 let isVideo = false;
 let callingRestricted = false;
+let userCountry = null;
 
 const btnVoiceCall = document.getElementById('btn-voice-call');
 const btnVideoCall = document.getElementById('btn-video-call');
 const btnEndCall = document.getElementById('btn-end-call');
+const btnMuteMic = document.getElementById('btn-mute-mic');
+const btnMuteCam = document.getElementById('btn-mute-cam');
 const videoGrid = document.getElementById('video-grid');
+let isMicMuted = false;
+let isCamOff = false;
 
-// Geo-Fencing & India Detection
+// XSS Protection
+function escapeHTML(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// Geo-Fencing & Region Detection
+const EU_COUNTRIES = ['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE','IS','LI','NO','CH','GB'];
+const CCPA_STATES = true; // Show CCPA notice for all US users
+
 async function checkGeoRestrictions() {
   try {
     const res = await fetch('https://ipapi.co/json/');
@@ -66,15 +82,14 @@ async function checkGeoRestrictions() {
     // UAE / China VoIP Block
     if (data.country_code === 'AE' || data.country_code === 'CN') {
       callingRestricted = true;
-      console.warn(`Calling disabled in region: ${data.country_code}`);
       if (btnVoiceCall) { btnVoiceCall.style.opacity = '0.3'; btnVoiceCall.style.cursor = 'not-allowed'; btnVoiceCall.title = 'VoIP disabled in your region'; }
       if (btnVideoCall) { btnVideoCall.style.opacity = '0.3'; btnVideoCall.style.cursor = 'not-allowed'; btnVideoCall.title = 'VoIP disabled in your region'; }
     }
     
-    // India SIM-Binding OTP
-    if (data.country_code === 'IN') {
-      const otpSection = document.getElementById('otp-section');
-      if (otpSection) otpSection.classList.remove('hidden');
+    // GDPR banner for EU users
+    if (EU_COUNTRIES.includes(data.country_code) && !localStorage.getItem('ber_gdpr_consent')) {
+      const gdprBanner = document.getElementById('gdpr-banner');
+      if (gdprBanner) gdprBanner.classList.remove('hidden');
     }
   } catch (err) {
     console.error('Geo-fencing check failed.');
@@ -88,217 +103,35 @@ if (typeof initSupabase === 'function') {
 }
 
 // ============================================================
-// Auth System (MTALKZ OTP + Password via Supabase)
+// Auth Session Check
 // ============================================================
 let loggedInUser = JSON.parse(localStorage.getItem('ber_user') || 'null');
-const authStatusEl = document.getElementById('auth-status');
-const authVerifiedBadge = document.getElementById('auth-verified-badge');
-const authUserDisplay = document.getElementById('auth-user-display');
 
-// Tab toggle
-const authTabSignup = document.getElementById('auth-tab-signup');
-const authTabLogin = document.getElementById('auth-tab-login');
-const authSignupFlow = document.getElementById('auth-signup-flow');
-const authLoginFlow = document.getElementById('auth-login-flow');
-
-if (authTabSignup) {
-  authTabSignup.addEventListener('click', () => {
-    authSignupFlow.classList.remove('hidden');
-    authLoginFlow.classList.add('hidden');
-    authTabSignup.style.background = 'var(--accent-color)';
-    authTabSignup.style.color = '#fff';
-    authTabLogin.style.background = 'transparent';
-    authTabLogin.style.color = 'var(--text-muted)';
-    if (authStatusEl) authStatusEl.textContent = '';
-  });
-}
-if (authTabLogin) {
-  authTabLogin.addEventListener('click', () => {
-    authLoginFlow.classList.remove('hidden');
-    authSignupFlow.classList.add('hidden');
-    authTabLogin.style.background = 'var(--accent-color)';
-    authTabLogin.style.color = '#fff';
-    authTabSignup.style.background = 'transparent';
-    authTabSignup.style.color = 'var(--text-muted)';
-    if (authStatusEl) authStatusEl.textContent = '';
-  });
-}
-
-function setAuthStatus(msg, isError) {
-  if (authStatusEl) {
-    authStatusEl.textContent = msg;
-    authStatusEl.style.color = isError ? 'var(--danger-color)' : 'var(--success-color)';
+function checkAuth() {
+  if (!loggedInUser) {
+    console.log('[Auth] No session found. Redirecting to login...');
+    window.location.href = 'login.html';
+    return false;
   }
+  
+  // Update UI with user info
+  if (userProfileUI) userProfileUI.classList.remove('hidden');
+  if (userNameDisplay) userNameDisplay.textContent = loggedInUser.display_name;
+  
+  // Set global myName for chat
+  myName = loggedInUser.display_name;
+  return true;
 }
 
-// Check if already logged in
-if (loggedInUser) {
-  otpVerified = true;
-  const authSection = document.getElementById('auth-section');
-  if (authSection) {
-    const modeToggle = document.getElementById('auth-mode-toggle');
-    if (modeToggle) modeToggle.classList.add('hidden');
-    if (authSignupFlow) authSignupFlow.classList.add('hidden');
-    if (authLoginFlow) authLoginFlow.classList.add('hidden');
-    if (authVerifiedBadge) authVerifiedBadge.classList.remove('hidden');
-    if (authUserDisplay) authUserDisplay.textContent = `${loggedInUser.display_name} (${loggedInUser.phone})`;
-  }
+if (checkAuth()) {
+  // Continue with other initializations if needed
 }
 
-// --- SIGNUP FLOW ---
-let signupPhone = '';
-const btnAuthSendOtp = document.getElementById('btn-auth-send-otp');
-const btnAuthVerifyOtp = document.getElementById('btn-auth-verify-otp');
-const btnAuthSignup = document.getElementById('btn-auth-signup');
-const signupStepPhone = document.getElementById('signup-step-phone');
-const signupStepOtp = document.getElementById('signup-step-otp');
-const signupStepPassword = document.getElementById('signup-step-password');
-
-// Step 1: Send OTP
-if (btnAuthSendOtp) {
-  btnAuthSendOtp.addEventListener('click', async () => {
-    const phone = document.getElementById('auth-phone').value.trim();
-    if (!phone || phone.length < 10) {
-      setAuthStatus('Enter a valid phone number with country code', true);
-      return;
-    }
-    signupPhone = phone;
-    btnAuthSendOtp.disabled = true;
-    btnAuthSendOtp.textContent = 'Sending...';
-    setAuthStatus('', false);
-
-    try {
-      const res = await fetch(`${SUPABASE_URL}/functions/v1/send-otp`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` },
-        body: JSON.stringify({ phone: signupPhone, purpose: 'signup' })
-      });
-      const data = await res.json();
-      if (data.success) {
-        signupStepPhone.classList.add('hidden');
-        signupStepOtp.classList.remove('hidden');
-        setAuthStatus('OTP sent to ' + phone, false);
-      } else {
-        setAuthStatus(data.error || 'Failed to send OTP', true);
-        btnAuthSendOtp.disabled = false;
-        btnAuthSendOtp.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send OTP via SMS';
-      }
-    } catch (err) {
-      setAuthStatus('Network error. Check your connection.', true);
-      btnAuthSendOtp.disabled = false;
-      btnAuthSendOtp.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send OTP via SMS';
-    }
+if (btnLogout) {
+  btnLogout.addEventListener('click', () => {
+    localStorage.removeItem('ber_user');
+    window.location.href = 'login.html';
   });
-}
-
-// Step 2: Verify OTP
-if (btnAuthVerifyOtp) {
-  btnAuthVerifyOtp.addEventListener('click', async () => {
-    const code = document.getElementById('auth-otp-code').value.trim();
-    if (!code || code.length !== 6) {
-      setAuthStatus('Enter the 6-digit OTP', true);
-      return;
-    }
-    btnAuthVerifyOtp.disabled = true;
-    btnAuthVerifyOtp.textContent = 'Verifying...';
-
-    try {
-      const { data, error } = await supabase.rpc('verify_otp', { p_phone: signupPhone, p_otp: code });
-      if (data && data.success) {
-        signupStepOtp.classList.add('hidden');
-        signupStepPassword.classList.remove('hidden');
-        setAuthStatus('Phone verified! Create a password.', false);
-      } else {
-        setAuthStatus(data?.error || 'Invalid OTP', true);
-        btnAuthVerifyOtp.disabled = false;
-        btnAuthVerifyOtp.innerHTML = '<i class="fa-solid fa-check-double"></i> Verify OTP';
-      }
-    } catch (err) {
-      setAuthStatus('Verification failed', true);
-      btnAuthVerifyOtp.disabled = false;
-      btnAuthVerifyOtp.innerHTML = '<i class="fa-solid fa-check-double"></i> Verify OTP';
-    }
-  });
-}
-
-// Step 3: Create Account
-if (btnAuthSignup) {
-  btnAuthSignup.addEventListener('click', async () => {
-    const pw = document.getElementById('auth-password').value;
-    const pwConfirm = document.getElementById('auth-password-confirm').value;
-    if (!pw || pw.length < 6) { setAuthStatus('Password must be at least 6 characters', true); return; }
-    if (pw !== pwConfirm) { setAuthStatus('Passwords do not match', true); return; }
-    
-    btnAuthSignup.disabled = true;
-    btnAuthSignup.textContent = 'Creating...';
-    
-    const displayName = document.getElementById('username-join')?.value.trim() 
-      || document.getElementById('username-create')?.value.trim() 
-      || 'User';
-
-    try {
-      const { data, error } = await supabase.rpc('signup_user', { 
-        p_phone: signupPhone, p_password: pw, p_name: displayName 
-      });
-      if (data && data.success) {
-        loggedInUser = { phone: signupPhone, display_name: displayName };
-        localStorage.setItem('ber_user', JSON.stringify(loggedInUser));
-        otpVerified = true;
-        completeAuth(displayName, signupPhone);
-        setAuthStatus('Account created!', false);
-      } else {
-        setAuthStatus(data?.error || 'Signup failed', true);
-        btnAuthSignup.disabled = false;
-        btnAuthSignup.innerHTML = '<i class="fa-solid fa-user-plus"></i> Create Account';
-      }
-    } catch (err) {
-      setAuthStatus('Error creating account', true);
-      btnAuthSignup.disabled = false;
-      btnAuthSignup.innerHTML = '<i class="fa-solid fa-user-plus"></i> Create Account';
-    }
-  });
-}
-
-// --- LOGIN FLOW ---
-const btnAuthLogin = document.getElementById('btn-auth-login');
-if (btnAuthLogin) {
-  btnAuthLogin.addEventListener('click', async () => {
-    const phone = document.getElementById('login-phone').value.trim();
-    const pw = document.getElementById('login-password').value;
-    if (!phone || phone.length < 10) { setAuthStatus('Enter your phone number', true); return; }
-    if (!pw) { setAuthStatus('Enter your password', true); return; }
-    
-    btnAuthLogin.disabled = true;
-    btnAuthLogin.textContent = 'Logging in...';
-
-    try {
-      const { data, error } = await supabase.rpc('login_user', { p_phone: phone, p_password: pw });
-      if (data && data.success) {
-        loggedInUser = data.user;
-        localStorage.setItem('ber_user', JSON.stringify(loggedInUser));
-        otpVerified = true;
-        completeAuth(data.user.display_name, data.user.phone);
-        setAuthStatus('Welcome back!', false);
-      } else {
-        setAuthStatus(data?.error || 'Login failed', true);
-        btnAuthLogin.disabled = false;
-        btnAuthLogin.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Log In';
-      }
-    } catch (err) {
-      setAuthStatus('Login error', true);
-      btnAuthLogin.disabled = false;
-      btnAuthLogin.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Log In';
-    }
-  });
-}
-
-function completeAuth(name, phone) {
-  const modeToggle = document.getElementById('auth-mode-toggle');
-  if (modeToggle) modeToggle.classList.add('hidden');
-  if (authSignupFlow) authSignupFlow.classList.add('hidden');
-  if (authLoginFlow) authLoginFlow.classList.add('hidden');
-  if (authVerifiedBadge) authVerifiedBadge.classList.remove('hidden');
-  if (authUserDisplay) authUserDisplay.textContent = `${name} (${phone})`;
 }
 
 // Tab Switching logic
@@ -314,33 +147,12 @@ tabBtns.forEach(btn => {
 });
 
 // ============================================================
-// GDPR Compliance (EU Users)
+// GDPR / CCPA / Global Privacy Compliance
 // ============================================================
-const EU_COUNTRIES = ['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE','IS','LI','NO','CH','GB'];
-let isEU = false;
-let gdprConsented = localStorage.getItem('ber_gdpr_consent');
-
 const gdprBanner = document.getElementById('gdpr-banner');
 const gdprAccept = document.getElementById('gdpr-accept');
 const gdprReject = document.getElementById('gdpr-reject');
 const btnDeleteData = document.getElementById('btn-delete-data');
-
-function checkIfEU() {
-  if (userCountry && EU_COUNTRIES.includes(userCountry)) {
-    isEU = true;
-    if (!gdprConsented) {
-      // Show GDPR banner for first-time EU users
-      if (gdprBanner) gdprBanner.classList.remove('hidden');
-    }
-  }
-}
-
-// Re-check after geo loads (userCountry is set by checkGeoRestrictions)
-const origGeoCheck = checkGeoRestrictions;
-checkGeoRestrictions = async function() {
-  await origGeoCheck();
-  checkIfEU();
-};
 
 if (gdprAccept) {
   gdprAccept.addEventListener('click', () => {
@@ -364,30 +176,40 @@ if (gdprReject) {
     }));
     gdprConsented = 'rejected';
     if (gdprBanner) gdprBanner.classList.add('hidden');
-    // Disable traceability logging for users who rejected
     window._gdprRejected = true;
   });
 }
 
 // Delete My Data (GDPR Right to Erasure + Right to Withdraw)
 if (btnDeleteData) {
-  btnDeleteData.addEventListener('click', () => {
+  btnDeleteData.addEventListener('click', async () => {
     const confirmed = confirm(
       'GDPR Data Deletion Request\n\n' +
-      'This will:\n' +
-      '• Clear all consent records from this device\n' +
-      '• Revoke your Terms of Service agreement\n' +
-      '• Remove all locally stored preferences\n\n' +
-      'Server-side traceability hashes (anonymized) will auto-purge within 180 days.\n\n' +
+      'This will PERMANENTLY:\n' +
+      '• Delete your account from our server\n' +
+      '• Clear all local consent records\n' +
+      '• Revoke your Terms of Service agreement\n\n' +
       'Continue?'
     );
+    
     if (confirmed) {
-      // Clear ALL localStorage related to BER OF CHAT
+      if (loggedInUser && loggedInUser.phone) {
+        try {
+          const { data, error } = await supabase.rpc('delete_user_account', { 
+            p_phone: loggedInUser.phone 
+          });
+          if (error) console.error('[GDPR] Server deletion failed:', error);
+        } catch (err) {
+          console.error('[GDPR] Error calling delete RPC:', err);
+        }
+      }
+
+      localStorage.removeItem('ber_user');
       localStorage.removeItem('ber_tos_agreed');
       localStorage.removeItem('ber_gdpr_consent');
-      localStorage.removeItem('ber_consent_log');
+      localStorage.removeItem('berofchat_consent_logs');
       
-      alert('All your data has been deleted. The page will now reload.');
+      alert('Your account and data have been permanently deleted. The page will now reload.');
       location.reload();
     }
   });
@@ -395,23 +217,14 @@ if (btnDeleteData) {
 
 // Mobile Sidebar Logic
 if (btnMenu) {
-  btnMenu.addEventListener('click', () => {
-    sidebar.classList.add('open');
-  });
+  btnMenu.addEventListener('click', () => { sidebar.classList.add('open'); });
 }
-
 if (btnCloseSidebar) {
-  btnCloseSidebar.addEventListener('click', () => {
-    sidebar.classList.remove('open');
-  });
+  btnCloseSidebar.addEventListener('click', () => { sidebar.classList.remove('open'); });
 }
-
-// Close sidebar when clicking a member or leaving room on mobile
 if (membersList) {
   membersList.addEventListener('click', () => {
-    if (window.innerWidth <= 768) {
-      sidebar.classList.remove('open');
-    }
+    if (window.innerWidth <= 768) sidebar.classList.remove('open');
   });
 }
 
@@ -425,7 +238,6 @@ function checkTosAgreement() {
     if (tosCheckbox) tosCheckbox.checked = true;
   }
 }
-
 if (btnAcceptTos) {
   btnAcceptTos.addEventListener('click', () => {
     localStorage.setItem('ber_tos_agreed', 'true');
@@ -433,8 +245,6 @@ if (btnAcceptTos) {
     if (tosCheckbox) tosCheckbox.checked = true;
   });
 }
-
-// Run agreement check on load
 checkTosAgreement();
 
 // Utilities
@@ -446,28 +256,11 @@ function getPeerConfig() {
       { urls: 'stun:global.stun.twilio.com:3478' }
     ]
   };
-
   if (maskIp) {
-    // Add free TURN servers to mask IP addresses
-    config.iceServers.push({
-      urls: "turn:openrelay.metered.ca:80",
-      username: "openrelayproject",
-      credential: "openrelayproject"
-    });
-    config.iceServers.push({
-      urls: "turn:openrelay.metered.ca:443",
-      username: "openrelayproject",
-      credential: "openrelayproject"
-    });
-    config.iceServers.push({
-      urls: "turn:openrelay.metered.ca:443?transport=tcp",
-      username: "openrelayproject",
-      credential: "openrelayproject"
-    });
-    // Force Relay-only to completely hide local IP
+    config.iceServers.push({ urls: "turn:openrelay.metered.ca:80", username: "openrelayproject", credential: "openrelayproject" });
+    config.iceServers.push({ urls: "turn:openrelay.metered.ca:443", username: "openrelayproject", credential: "openrelayproject" });
     config.iceTransportPolicy = 'relay';
   }
-
   return config;
 }
 
@@ -475,12 +268,9 @@ function calculateAge(dobStr) {
   if (!dobStr) return 0;
   const dob = new Date(dobStr);
   if (isNaN(dob.getTime())) return 0;
-  const diffMs = Date.now() - dob.getTime();
-  const ageDate = new Date(diffMs); 
-  return Math.abs(ageDate.getUTCFullYear() - 1970);
+  return Math.abs(new Date(Date.now() - dob.getTime()).getUTCFullYear() - 1970);
 }
 
-// Audit Logging
 function generateUUID() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
     const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
@@ -489,36 +279,18 @@ function generateUUID() {
 }
 
 function logConsent(age) {
-  const consentData = {
-    consentId: generateUUID(),
-    timestamp: new Date().toISOString(),
-    userAgent: navigator.userAgent,
-    ageAtConsent: age,
-    agreedToTOS: true
-  };
+  const consentData = { consentId: generateUUID(), timestamp: new Date().toISOString(), ageAtConsent: age, agreedToTOS: true };
   let logs = [];
-  try {
-    const saved = localStorage.getItem('berofchat_consent_logs');
-    if (saved) logs = JSON.parse(saved);
-  } catch (e) {}
+  try { const saved = localStorage.getItem('berofchat_consent_logs'); if (saved) logs = JSON.parse(saved); } catch (e) {}
   logs.push(consentData);
   localStorage.setItem('berofchat_consent_logs', JSON.stringify(logs));
 }
 
 if (btnDownloadLogs) {
   btnDownloadLogs.addEventListener('click', () => {
-    let logs = [];
-    try {
-      const saved = localStorage.getItem('berofchat_consent_logs');
-      if (saved) logs = JSON.parse(saved);
-    } catch (e) {}
-    
-    if (logs.length === 0) {
-      alert('No consent logs found. You have not agreed to the TOS yet.');
-      return;
-    }
-    
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(logs, null, 2));
+    const saved = localStorage.getItem('berofchat_consent_logs');
+    if (!saved) { alert('No consent logs found.'); return; }
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(saved);
     const dlAnchorElem = document.createElement('a');
     dlAnchorElem.setAttribute("href", dataStr);
     dlAnchorElem.setAttribute("download", "berofchat_consent_audit_logs.json");
@@ -526,55 +298,8 @@ if (btnDownloadLogs) {
   });
 }
 
-// Grievance Report Modal Logic
-const reportModal = document.getElementById('report-modal');
-const btnReport = document.getElementById('btn-report');
-const btnCancelReport = document.getElementById('btn-cancel-report');
-const btnSubmitReport = document.getElementById('btn-submit-report');
-const reportText = document.getElementById('report-text');
-
-if (btnReport) {
-  btnReport.addEventListener('click', () => {
-    reportModal.classList.remove('hidden');
-  });
-}
-
-if (btnCancelReport) {
-  btnCancelReport.addEventListener('click', () => {
-    reportModal.classList.add('hidden');
-    reportText.value = '';
-  });
-}
-
-if (btnSubmitReport) {
-  btnSubmitReport.addEventListener('click', () => {
-    if (!reportText.value.trim()) return;
-    const body = encodeURIComponent("Grievance Report (BER OF CHAT):\n\n" + reportText.value);
-    window.location.href = `mailto:nxdecore@gmail.com?subject=Grievance Report - BER OF CHAT&body=${body}`;
-    reportModal.classList.add('hidden');
-    reportText.value = '';
-    alert('Report prepared. Your default email client should open to submit the report to the Resident Grievance Officer.');
-  });
-}
-
-function escapeHTML(str) {
-  const div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
-}
-
 // IT Rules 2021: Traceability
-const TRACEABILITY_SERVER_URL = 'http://localhost:3000';
-
-async function generateMessageHash(message) {
-  const msgUint8 = new TextEncoder().encode(message);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-}
-
 async function logMessageTrace(text) {
-  // Log to Supabase (primary)
   if (typeof logMessageHash === 'function') {
     logMessageHash(myId, roomCode, text);
   }
@@ -589,48 +314,32 @@ const btnDeclineCall = document.getElementById('btn-decline-call');
 
 function showIncomingCall(call) {
   pendingCall = call;
-  const callerName = call.metadata && call.metadata.senderName ? call.metadata.senderName : 'Someone';
-  callerNameDisplay.textContent = callerName;
+  callerNameDisplay.textContent = call.metadata?.senderName || 'Someone';
   incomingCallModal.classList.remove('hidden');
-}
-
-function hideIncomingCall() {
-  incomingCallModal.classList.add('hidden');
-  pendingCall = null;
 }
 
 if(btnAcceptCall) {
   btnAcceptCall.addEventListener('click', async () => {
     if (pendingCall) {
       const callToAnswer = pendingCall;
-      hideIncomingCall();
-      if (!inCall) {
-        await toggleCall(false); // Join with voice by default
-      }
+      incomingCallModal.classList.add('hidden');
+      if (!inCall) await toggleCall(false);
       if (localStream) {
         callToAnswer.answer(localStream);
-        const callerName = callToAnswer.metadata && callToAnswer.metadata.senderName ? callToAnswer.metadata.senderName : 'Unknown';
-        handleCall(callToAnswer, callerName);
+        handleCall(callToAnswer, callToAnswer.metadata?.senderName || 'Unknown');
       }
     }
   });
 }
-
 if(btnDeclineCall) {
-  btnDeclineCall.addEventListener('click', () => {
-    if (pendingCall) {
-      pendingCall.close();
-      hideIncomingCall();
-    }
-  });
+  btnDeclineCall.addEventListener('click', () => { if (pendingCall) { pendingCall.close(); incomingCallModal.classList.add('hidden'); } });
 }
+
 function generateRoomCode() {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let result = '';
-  for (let i = 0; i < 6; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return result;
+  let res = '';
+  for (let i = 0; i < 6; i++) res += chars.charAt(Math.floor(Math.random() * chars.length));
+  return res;
 }
 
 function showStatus(msg, isError = false) {
@@ -638,61 +347,36 @@ function showStatus(msg, isError = false) {
   statusMsg.className = `status-msg ${isError ? 'error' : 'success'}`;
 }
 
-function formatTime(date) {
-  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-}
-
-function scrollToBottom() {
-  messagesContainer.scrollTop = messagesContainer.scrollHeight;
-}
+function formatTime(date) { return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); }
 
 function appendMessage(senderName, text, isMe = false, isSystem = false) {
-  const safeText = escapeHTML(text);
   const safeName = escapeHTML(senderName);
+  const safeText = escapeHTML(text);
+  const msgDiv = document.createElement('div');
+  msgDiv.className = isSystem ? 'system-msg' : `message-wrapper ${isMe ? 'sent' : 'received'}`;
   
   if (isSystem) {
-    const sysDiv = document.createElement('div');
-    sysDiv.className = 'system-msg';
-    sysDiv.innerHTML = `<div class="sys-content"><i class="fa-solid fa-info-circle"></i> ${safeText}</div>`;
-    messagesContainer.appendChild(sysDiv);
+    msgDiv.innerHTML = `<div class="sys-content"><i class="fa-solid fa-info-circle"></i> ${safeText}</div>`;
   } else {
-    const msgDiv = document.createElement('div');
-    msgDiv.className = `message-wrapper ${isMe ? 'sent' : 'received'}`;
-    
-    const senderSpan = `<span class="msg-sender">${safeName}</span>`;
-    const timeSpan = `<span class="msg-time">${formatTime(new Date())}</span>`;
-    
     msgDiv.innerHTML = `
-      ${isMe ? '' : senderSpan}
-      <div class="message">
-        ${safeText}
-        ${timeSpan}
-      </div>
+      ${isMe ? '' : `<span class="msg-sender">${safeName}</span>`}
+      <div class="message">${safeText}<span class="msg-time">${formatTime(new Date())}</span></div>
     `;
-    messagesContainer.appendChild(msgDiv);
   }
-  scrollToBottom();
+  messagesContainer.appendChild(msgDiv);
+  messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 
 function updateMembersUI() {
   memberCount.textContent = `${members.length}/${maxRoomMembers}`;
   membersList.innerHTML = '';
-  
-  members.forEach((m, index) => {
+  members.forEach((m, i) => {
     const li = document.createElement('li');
     li.className = 'member-item';
-    
-    // Assign a random avatar color based on index
-    const avatarClass = `avatar-random-${(index % 4) + 1}`;
-    
+    const safeMName = escapeHTML(m.name);
     li.innerHTML = `
-      <div class="avatar ${m.id === myId ? 'gradient-avatar' : avatarClass}">${m.name.charAt(0).toUpperCase()}</div>
-      <div class="member-info">
-        <div class="member-name">
-          ${m.name} ${m.id === myId ? '(You)' : ''}
-          ${m.isHost ? '<i class="fa-solid fa-crown host-crown" title="Host"></i>' : ''}
-        </div>
-      </div>
+      <div class="avatar avatar-random-${(i % 4) + 1}">${safeMName.charAt(0).toUpperCase()}</div>
+      <div class="member-info"><div class="member-name">${safeMName} ${m.id === myId ? '(You)' : ''} ${m.isHost ? '<i class="fa-solid fa-crown host-crown"></i>' : ''}</div></div>
     `;
     membersList.appendChild(li);
   });
@@ -700,28 +384,18 @@ function updateMembersUI() {
 
 function broadcastToAll(data, excludePeerId = null) {
   if (!isHost) return;
-  hostConnections.forEach(conn => {
-    if (conn.open && conn.peer !== excludePeerId) {
-      conn.send(data);
-    }
-  });
+  hostConnections.forEach(conn => { if (conn.open && conn.peer !== excludePeerId) conn.send(data); });
 }
 
 function handleIncomingData(data) {
   if (data.type === 'chat') {
     appendMessage(data.senderName, data.text, data.senderId === myId);
-    if (isHost && data.senderId !== myId) {
-      // Host re-broadcasts to other clients
-      broadcastToAll(data, data.senderId);
-    }
+    if (isHost && data.senderId !== myId) broadcastToAll(data, data.senderId);
   } else if (data.type === 'members_update') {
-    if (!chatScreen.classList.contains('active') && !isHost) {
-      enterChatScreen();
-    }
+    if (!chatScreen.classList.contains('active') && !isHost) enterChatScreen();
     members = data.members;
     maxRoomMembers = data.maxMembers || 10;
     updateMembersUI();
-    if (inCall) callOtherInCallMembers();
   } else if (data.type === 'join_error') {
     showStatus(data.reason, true);
     if (peer) peer.destroy();
@@ -729,83 +403,39 @@ function handleIncomingData(data) {
   }
 }
 
-// WebRTC Call Logic
 async function toggleCall(withVideo = false) {
-  if (callingRestricted) {
-    alert("Voice/Video calling features are restricted in your region (UAE/China) due to strict ISP VoIP blocking policies.");
-    return;
-  }
-
-  if (inCall) {
-    leaveCall();
-    return;
-  }
-  
+  if (callingRestricted) { alert("VoIP restricted in your region."); return; }
+  if (inCall) { leaveCall(); return; }
   try {
     isVideo = withVideo;
     localStream = await navigator.mediaDevices.getUserMedia({ video: withVideo, audio: true });
     inCall = true;
-    
-    if (withVideo) btnVideoCall.classList.add('active');
-    else btnVoiceCall.classList.add('active');
-    
     btnEndCall.classList.remove('hidden');
-    btnMuteMic.classList.remove('hidden');
-    if (withVideo) btnMuteCam.classList.remove('hidden');
     videoGrid.classList.remove('hidden');
     addVideoStream(myId, myName, localStream, true);
-    
-    // Reset mute states
-    isMicMuted = false;
-    isCamOff = false;
-    btnMuteMic.innerHTML = '<i class="fa-solid fa-microphone"></i>';
-    btnMuteMic.classList.remove('active');
-    btnMuteCam.innerHTML = '<i class="fa-solid fa-video"></i>';
-    btnMuteCam.classList.remove('active');
-    
     if (isHost) {
-      const me = members.find(m => m.id === myId);
-      if (me) me.inCall = true;
+      members.find(m => m.id === myId).inCall = true;
       broadcastToAll({ type: 'members_update', members, maxMembers: maxRoomMembers });
       callOtherInCallMembers();
     } else {
-      if (currentConnection && currentConnection.open) {
-        currentConnection.send({ type: 'call_status', inCall: true });
-      }
+      currentConnection?.send({ type: 'call_status', inCall: true });
     }
-  } catch (err) {
-    console.error('Failed to get local stream', err);
-    showStatus('Failed to access microphone/camera', true);
-  }
+  } catch (err) { showStatus('Media access failed', true); }
 }
 
 function leaveCall() {
-  if (!inCall) return;
   inCall = false;
-  if (localStream) {
-    localStream.getTracks().forEach(track => track.stop());
-    localStream = null;
-  }
-  
-  btnVideoCall.classList.remove('active');
-  btnVoiceCall.classList.remove('active');
-  btnEndCall.classList.add('hidden');
-  btnMuteMic.classList.add('hidden');
-  btnMuteCam.classList.add('hidden');
+  localStream?.getTracks().forEach(t => t.stop());
+  localStream = null;
   videoGrid.classList.add('hidden');
   videoGrid.innerHTML = '';
-  
-  Object.values(calls).forEach(call => call.close());
+  Object.values(calls).forEach(c => c.close());
   calls = {};
-  
   if (isHost) {
-    const me = members.find(m => m.id === myId);
-    if (me) me.inCall = false;
+    members.find(m => m.id === myId).inCall = false;
     broadcastToAll({ type: 'members_update', members, maxMembers: maxRoomMembers });
   } else {
-    if (currentConnection && currentConnection.open) {
-      currentConnection.send({ type: 'call_status', inCall: false });
-    }
+    currentConnection?.send({ type: 'call_status', inCall: false });
   }
 }
 
@@ -820,140 +450,94 @@ function callOtherInCallMembers() {
 
 function handleCall(call, name) {
   calls[call.peer] = call;
-  call.on('stream', remoteStream => {
-    addVideoStream(call.peer, name, remoteStream, false);
-  });
-  call.on('close', () => {
-    removeVideoStream(call.peer);
-    delete calls[call.peer];
-  });
+  call.on('stream', s => addVideoStream(call.peer, name, s, false));
+  call.on('close', () => { removeVideoStream(call.peer); delete calls[call.peer]; });
 }
 
 function addVideoStream(id, name, stream, isLocal) {
   if (document.getElementById(`video-wrapper-${id}`)) return;
-  
-  const wrapper = document.createElement('div');
-  wrapper.className = 'video-wrapper';
-  wrapper.id = `video-wrapper-${id}`;
-  
-  const video = document.createElement('video');
-  video.srcObject = stream;
-  video.autoplay = true;
-  video.playsInline = true;
-  if (isLocal) video.muted = true;
-  
-  const label = document.createElement('div');
-  label.className = 'video-label';
-  label.textContent = name;
-  
-  wrapper.appendChild(video);
-  wrapper.appendChild(label);
-  videoGrid.appendChild(wrapper);
+  const w = document.createElement('div');
+  w.className = 'video-wrapper';
+  w.id = `video-wrapper-${id}`;
+  const v = document.createElement('video');
+  v.srcObject = stream; v.autoplay = true; v.playsInline = true; if (isLocal) v.muted = true;
+  w.innerHTML = `<div class="video-label">${escapeHTML(name)}</div>`;
+  w.prepend(v);
+  videoGrid.appendChild(w);
 }
 
-function removeVideoStream(id) {
-  const el = document.getElementById(`video-wrapper-${id}`);
-  if (el) el.remove();
-}
+function removeVideoStream(id) { document.getElementById(`video-wrapper-${id}`)?.remove(); }
 
 btnVoiceCall.addEventListener('click', () => toggleCall(false));
 btnVideoCall.addEventListener('click', () => toggleCall(true));
 btnEndCall.addEventListener('click', leaveCall);
 
 // Mute/Unmute Controls
-const btnMuteMic = document.getElementById('btn-mute-mic');
-const btnMuteCam = document.getElementById('btn-mute-cam');
-let isMicMuted = false;
-let isCamOff = false;
+if (btnMuteMic) {
+  btnMuteMic.addEventListener('click', () => {
+    if (!localStream) return;
+    isMicMuted = !isMicMuted;
+    localStream.getAudioTracks().forEach(t => { t.enabled = !isMicMuted; });
+    btnMuteMic.innerHTML = isMicMuted ? '<i class="fa-solid fa-microphone-slash"></i>' : '<i class="fa-solid fa-microphone"></i>';
+    btnMuteMic.style.color = isMicMuted ? 'var(--danger-color)' : '';
+  });
+}
+if (btnMuteCam) {
+  btnMuteCam.addEventListener('click', () => {
+    if (!localStream) return;
+    isCamOff = !isCamOff;
+    localStream.getVideoTracks().forEach(t => { t.enabled = !isCamOff; });
+    btnMuteCam.innerHTML = isCamOff ? '<i class="fa-solid fa-video-slash"></i>' : '<i class="fa-solid fa-video"></i>';
+    btnMuteCam.style.color = isCamOff ? 'var(--danger-color)' : '';
+  });
+}
 
-btnMuteMic.addEventListener('click', () => {
-  if (!localStream) return;
-  isMicMuted = !isMicMuted;
-  localStream.getAudioTracks().forEach(track => { track.enabled = !isMicMuted; });
-  btnMuteMic.innerHTML = isMicMuted
-    ? '<i class="fa-solid fa-microphone-slash"></i>'
-    : '<i class="fa-solid fa-microphone"></i>';
-  btnMuteMic.classList.toggle('active', !isMicMuted);
-  btnMuteMic.style.color = isMicMuted ? 'var(--danger-color)' : '';
-  btnMuteMic.title = isMicMuted ? 'Unmute Mic' : 'Mute Mic';
-});
+// Grievance Report Modal
+const reportModal = document.getElementById('report-modal');
+const btnReport = document.getElementById('btn-report');
+const btnCancelReport = document.getElementById('btn-cancel-report');
+const btnSubmitReport = document.getElementById('btn-submit-report');
+const reportText = document.getElementById('report-text');
 
-btnMuteCam.addEventListener('click', () => {
-  if (!localStream) return;
-  isCamOff = !isCamOff;
-  localStream.getVideoTracks().forEach(track => { track.enabled = !isCamOff; });
-  btnMuteCam.innerHTML = isCamOff
-    ? '<i class="fa-solid fa-video-slash"></i>'
-    : '<i class="fa-solid fa-video"></i>';
-  btnMuteCam.classList.toggle('active', !isCamOff);
-  btnMuteCam.style.color = isCamOff ? 'var(--danger-color)' : '';
-  btnMuteCam.title = isCamOff ? 'Turn On Camera' : 'Turn Off Camera';
-});
+if (btnReport) btnReport.addEventListener('click', () => { if (reportModal) reportModal.classList.remove('hidden'); });
+if (btnCancelReport) btnCancelReport.addEventListener('click', () => { if (reportModal) reportModal.classList.add('hidden'); if (reportText) reportText.value = ''; });
+if (btnSubmitReport) {
+  btnSubmitReport.addEventListener('click', () => {
+    if (!reportText || !reportText.value.trim()) return;
+    const body = encodeURIComponent('Grievance Report (BER OF CHAT):\n\n' + reportText.value);
+    window.location.href = `mailto:nxdecore@gmail.com?subject=Grievance Report - BER OF CHAT&body=${body}`;
+    if (reportModal) reportModal.classList.add('hidden');
+    reportText.value = '';
+    alert('Report prepared. Your email client will open to submit the report to the Resident Grievance Officer.');
+  });
+}
 
-// Create Room (Host)
+// Create/Join Listeners
 btnCreate.addEventListener('click', () => {
-  if (!tosCheckbox.checked) {
-    showStatus('You must agree to the Terms of Service & Privacy Policy.', true);
-    return;
-  }
-  
+  if (!loggedInUser) { window.location.href = 'login.html'; return; }
+  if (!tosCheckbox.checked) { showStatus('Agree to Terms first.', true); return; }
   const age = calculateAge(dobInput.value);
-  if (age < 19) {
-    showStatus('You must be 19 or older to use BER OF CHAT.', true);
-    return;
-  }
-  
-  // India OTP gate
-  if (userCountry === 'IN' && typeof otpVerified !== 'undefined' && !otpVerified) {
-    showStatus('Indian users must complete phone OTP verification.', true);
-    return;
-  }
-  
+  if (age < 19) { showStatus('Must be 19+.', true); return; }
   logConsent(age);
-  
-  myName = createNameInput.value.trim() || 'Anonymous';
+  myName = loggedInUser.display_name;
   maxRoomMembers = parseInt(maxMembersInput.value, 10) || 10;
   if (maxRoomMembers > 10) maxRoomMembers = 10;
   if (maxRoomMembers < 2) maxRoomMembers = 2;
-  
   roomCode = generateRoomCode();
-  
-  showStatus('Generating room...', false);
-  
-  // Use roomCode as Peer ID
   peer = new Peer(roomCode, getPeerConfig());
-  
-  peer.on('open', (id) => {
-    isHost = true;
-    myId = id;
+  peer.on('open', id => {
+    isHost = true; myId = id;
     myRoleBadge.style.display = 'block';
-    chatHeaderTitle.textContent = 'BER OF CHAT (Host)';
-    
-    // Add self to members
-    members.push({ id: myId, name: myName, isHost: true, inCall: false });
-    
+    members.push({ id, name: myName, isHost: true, inCall: false });
     enterChatScreen();
   });
-  
   peer.on('call', call => {
-    if (inCall) {
-      call.answer(localStream);
-      const callerName = call.metadata ? call.metadata.senderName : 'Unknown';
-      handleCall(call, callerName);
-    } else {
-      showIncomingCall(call);
-    }
+    if (inCall && localStream) { call.answer(localStream); handleCall(call, call.metadata?.senderName || 'Unknown'); }
+    else showIncomingCall(call);
   });
-  
-  peer.on('connection', (conn) => {
+  peer.on('connection', conn => {
     hostConnections.push(conn);
-    
-    conn.on('open', () => {
-      // A new client connected
-      // We expect the client to send their info first
-    });
-    
-    conn.on('data', (data) => {
+    conn.on('data', data => {
       if (data.type === 'join') {
         if (members.length >= maxRoomMembers) {
           conn.send({ type: 'join_error', reason: 'Room is full (Max ' + maxRoomMembers + ')' });
@@ -962,224 +546,83 @@ btnCreate.addEventListener('click', () => {
         }
         members.push({ id: data.senderId, name: data.senderName, isHost: false, inCall: false });
         appendMessage('System', `${data.senderName} joined the room.`, false, true);
-        
-        // Broadcast new member list
         broadcastToAll({ type: 'members_update', members, maxMembers: maxRoomMembers });
       } else if (data.type === 'call_status') {
         const member = members.find(m => m.id === data.senderId);
         if (member) member.inCall = data.inCall;
         broadcastToAll({ type: 'members_update', members, maxMembers: maxRoomMembers });
-      } else {
-        handleIncomingData(data);
-      }
+      } else handleIncomingData(data);
     });
-    
     conn.on('close', () => {
-      // Find and remove member
-      const index = members.findIndex(m => m.id === conn.peer);
-      if (index !== -1) {
-        const leftName = members[index].name;
-        members.splice(index, 1);
-        appendMessage('System', `${leftName} left the room.`, false, true);
+      const idx = members.findIndex(m => m.id === conn.peer);
+      if (idx !== -1) {
+        appendMessage('System', `${members[idx].name} left the room.`, false, true);
+        members.splice(idx, 1);
         broadcastToAll({ type: 'members_update', members, maxMembers: maxRoomMembers });
       }
       hostConnections = hostConnections.filter(c => c.peer !== conn.peer);
     });
   });
-  
-  peer.on('error', (err) => {
-    showStatus('Failed to create room. ID might be taken.', true);
-    console.error(err);
-  });
+  peer.on('error', err => { showStatus('Failed to create room.', true); console.error(err); });
 });
 
-// Join Room (Client)
 btnJoin.addEventListener('click', () => {
-  if (!tosCheckbox.checked) {
-    showStatus('You must agree to the Terms of Service & Privacy Policy.', true);
-    return;
-  }
-  
+  if (!loggedInUser) { window.location.href = 'login.html'; return; }
+  const code = roomCodeInput.value.trim().toUpperCase();
+  if (!code) { showStatus('Enter room code.', true); return; }
+  if (!tosCheckbox.checked) { showStatus('Agree to Terms first.', true); return; }
   const age = calculateAge(dobInput.value);
-  if (age < 19) {
-    showStatus('You must be 19 or older to use BER OF CHAT.', true);
-    return;
-  }
-  
-  // India OTP gate
-  if (userCountry === 'IN' && typeof otpVerified !== 'undefined' && !otpVerified) {
-    showStatus('Indian users must complete phone OTP verification.', true);
-    return;
-  }
-  
+  if (age < 19) { showStatus('Must be 19+.', true); return; }
   logConsent(age);
-  
-  myName = joinNameInput.value.trim() || 'Anonymous';
-  const targetCode = roomCodeInput.value.trim().toUpperCase();
-  
-  if (!targetCode) {
-    showStatus('Please enter a room code.', true);
-    return;
-  }
-  
+  myName = loggedInUser.display_name;
   showStatus('Connecting...', false);
-  
   peer = new Peer(getPeerConfig());
-  
-  peer.on('open', (id) => {
-    isHost = false;
-    myId = id;
-    roomCode = targetCode;
-    
-    const conn = peer.connect(targetCode);
-    
-    peer.on('call', call => {
-      if (inCall) {
-        call.answer(localStream);
-        const callerName = call.metadata ? call.metadata.senderName : 'Unknown';
-        handleCall(call, callerName);
-      } else {
-        showIncomingCall(call);
-      }
-    });
-    
-    conn.on('open', () => {
-      currentConnection = conn;
-      
-      // Send join event to host
-      conn.send({ type: 'join', senderId: myId, senderName: myName });
-      // We wait for 'members_update' to enter the chat screen
-    });
-    
+  peer.on('open', id => {
+    myId = id; roomCode = code;
+    const conn = peer.connect(code);
+    conn.on('open', () => { currentConnection = conn; conn.send({ type: 'join', senderId: id, senderName: myName }); });
     conn.on('data', handleIncomingData);
-    
     conn.on('close', () => {
       appendMessage('System', 'Host disconnected. Room closed.', false, true);
       setTimeout(() => location.reload(), 3000);
     });
-    
-    peer.on('error', (err) => {
-      showStatus('Failed to connect. Room code might be invalid.', true);
-      console.error(err);
-    });
   });
-  
-  peer.on('error', (err) => {
-    showStatus('Peer network error.', true);
-    console.error(err);
+  peer.on('call', call => {
+    if (inCall && localStream) { call.answer(localStream); handleCall(call, call.metadata?.senderName || 'Unknown'); }
+    else showIncomingCall(call);
   });
+  peer.on('error', err => { showStatus('Failed to connect. Invalid room code?', true); console.error(err); });
 });
 
-// Transition to Chat
 function enterChatScreen() {
   entryScreen.classList.remove('active');
   chatScreen.classList.add('active');
-  
   displayRoomCode.textContent = roomCode;
   myNameDisplay.textContent = myName;
   updateMembersUI();
-  
-  // Traceability: log room join
-  if (typeof logRoomJoin === 'function') {
-    logRoomJoin(myId, roomCode);
-  }
+  if (typeof logRoomJoin === 'function') logRoomJoin(myId, roomCode);
 }
 
-// Copy Code
 copyCodeBtn.addEventListener('click', () => {
   navigator.clipboard.writeText(roomCode);
   copyCodeBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
-  copyCodeBtn.style.color = 'var(--success-color)';
-  setTimeout(() => {
-    copyCodeBtn.innerHTML = '<i class="fa-solid fa-copy"></i>';
-    copyCodeBtn.style.color = 'var(--text-muted)';
-  }, 2000);
+  setTimeout(() => { copyCodeBtn.innerHTML = '<i class="fa-solid fa-copy"></i>'; }, 2000);
 });
 
-// Send Message
 function sendMessage() {
   const text = messageInput.value.trim();
   if (!text) return;
-  
-  const msgData = {
-    type: 'chat',
-    senderId: myId,
-    senderName: myName,
-    text: text
-  };
-  
-  if (isHost) {
-    // Render locally and broadcast
-    appendMessage(myName, text, true);
-    broadcastToAll(msgData);
-    logMessageTrace(text);
-  } else {
-    // Send to host
-    if (currentConnection && currentConnection.open) {
-      appendMessage(myName, text, true);
-      currentConnection.send(msgData);
-      logMessageTrace(text);
-    }
-  }
-  
+  const msg = { type: 'chat', senderId: myId, senderName: myName, text };
+  if (isHost) { appendMessage(myName, text, true); broadcastToAll(msg); logMessageTrace(text); }
+  else if (currentConnection?.open) { appendMessage(myName, text, true); currentConnection.send(msg); logMessageTrace(text); }
   messageInput.value = '';
-  messageInput.focus();
 }
-
 btnSend.addEventListener('click', sendMessage);
-messageInput.addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') sendMessage();
-});
+messageInput.addEventListener('keypress', e => { if (e.key === 'Enter') sendMessage(); });
 
-// Leave Room
 btnLeave.addEventListener('click', () => {
   leaveCall();
-  // Traceability: log room leave
-  if (typeof logRoomLeave === 'function' && myId && roomCode) {
-    logRoomLeave(myId, roomCode);
-  }
-  if (peer) {
-    peer.destroy();
-  }
+  if (typeof logRoomLeave === 'function') logRoomLeave(myId, roomCode);
+  peer?.destroy();
   location.reload();
 });
-
-// --- PWA INSTALLATION & SERVICE WORKER ---
-let deferredPrompt;
-const btnInstall = document.getElementById('btn-install');
-
-window.addEventListener('beforeinstallprompt', (e) => {
-  // Prevent Chrome 67 and earlier from automatically showing the prompt
-  e.preventDefault();
-  // Stash the event so it can be triggered later.
-  deferredPrompt = e;
-  // Update UI to notify the user they can add to home screen
-  if (btnInstall) {
-    btnInstall.classList.remove('hidden');
-  }
-});
-
-if (btnInstall) {
-  btnInstall.addEventListener('click', async () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') {
-        console.log('User accepted the install prompt');
-      }
-      deferredPrompt = null;
-      btnInstall.classList.add('hidden');
-    }
-  });
-}
-
-// Register Service Worker
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').then(reg => {
-      console.log('Service worker registered.', reg);
-    }).catch(err => {
-      console.log('Service worker registration failed:', err);
-    });
-  });
-}
