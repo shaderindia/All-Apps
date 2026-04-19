@@ -510,8 +510,18 @@ async function toggleCall(withVideo = false) {
     else btnVoiceCall.classList.add('active');
     
     btnEndCall.classList.remove('hidden');
+    btnMuteMic.classList.remove('hidden');
+    if (withVideo) btnMuteCam.classList.remove('hidden');
     videoGrid.classList.remove('hidden');
     addVideoStream(myId, myName, localStream, true);
+    
+    // Reset mute states
+    isMicMuted = false;
+    isCamOff = false;
+    btnMuteMic.innerHTML = '<i class="fa-solid fa-microphone"></i>';
+    btnMuteMic.classList.remove('active');
+    btnMuteCam.innerHTML = '<i class="fa-solid fa-video"></i>';
+    btnMuteCam.classList.remove('active');
     
     if (isHost) {
       const me = members.find(m => m.id === myId);
@@ -540,6 +550,8 @@ function leaveCall() {
   btnVideoCall.classList.remove('active');
   btnVoiceCall.classList.remove('active');
   btnEndCall.classList.add('hidden');
+  btnMuteMic.classList.add('hidden');
+  btnMuteCam.classList.add('hidden');
   videoGrid.classList.add('hidden');
   videoGrid.innerHTML = '';
   
@@ -607,6 +619,36 @@ function removeVideoStream(id) {
 btnVoiceCall.addEventListener('click', () => toggleCall(false));
 btnVideoCall.addEventListener('click', () => toggleCall(true));
 btnEndCall.addEventListener('click', leaveCall);
+
+// Mute/Unmute Controls
+const btnMuteMic = document.getElementById('btn-mute-mic');
+const btnMuteCam = document.getElementById('btn-mute-cam');
+let isMicMuted = false;
+let isCamOff = false;
+
+btnMuteMic.addEventListener('click', () => {
+  if (!localStream) return;
+  isMicMuted = !isMicMuted;
+  localStream.getAudioTracks().forEach(track => { track.enabled = !isMicMuted; });
+  btnMuteMic.innerHTML = isMicMuted
+    ? '<i class="fa-solid fa-microphone-slash"></i>'
+    : '<i class="fa-solid fa-microphone"></i>';
+  btnMuteMic.classList.toggle('active', !isMicMuted);
+  btnMuteMic.style.color = isMicMuted ? 'var(--danger-color)' : '';
+  btnMuteMic.title = isMicMuted ? 'Unmute Mic' : 'Mute Mic';
+});
+
+btnMuteCam.addEventListener('click', () => {
+  if (!localStream) return;
+  isCamOff = !isCamOff;
+  localStream.getVideoTracks().forEach(track => { track.enabled = !isCamOff; });
+  btnMuteCam.innerHTML = isCamOff
+    ? '<i class="fa-solid fa-video-slash"></i>'
+    : '<i class="fa-solid fa-video"></i>';
+  btnMuteCam.classList.toggle('active', !isCamOff);
+  btnMuteCam.style.color = isCamOff ? 'var(--danger-color)' : '';
+  btnMuteCam.title = isCamOff ? 'Turn On Camera' : 'Turn Off Camera';
+});
 
 // Create Room (Host)
 btnCreate.addEventListener('click', () => {
