@@ -130,32 +130,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
         btnSendOtp.disabled = true;
         btnSendOtp.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Sending OTP...';
-        showStatus('Sending verification code via SMS...', false);
+        showStatus('Sending verification code...', false);
 
         try {
-            // Call Edge Function which handles Twilio server-side
-            const response = await fetch(`${SUPABASE_URL}/functions/v1/send-otp`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-                },
-                body: JSON.stringify({ phone, purpose: 'signup' })
+            // Call database function directly (handles OTP generation + Twilio SMS)
+            const { data, error } = await supabase.rpc('send_otp_twilio', {
+                p_phone: phone,
+                p_purpose: 'signup'
             });
 
-            const result = await response.json();
+            console.log('[OTP] Response:', JSON.stringify(data), 'Error:', error);
 
-            if (result.success) {
+            if (error) {
+                showStatus('Error: ' + error.message, true);
+            } else if (data && data.success) {
                 currentPhone = phone;
                 signupStep1.classList.add('hidden');
                 signupStep2.classList.remove('hidden');
                 signupStep2.classList.add('fade-in');
                 showStatus('OTP sent to ' + phone, false);
             } else {
-                showStatus(result.error || 'Failed to send OTP', true);
+                showStatus(data?.error || 'Failed to send OTP', true);
             }
         } catch (err) {
-            showStatus('Could not reach OTP service. Please try again.', true);
+            showStatus('Error: ' + err.message, true);
             console.error('[OTP Error]', err);
         } finally {
             btnSendOtp.disabled = false;
