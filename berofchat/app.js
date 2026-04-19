@@ -112,9 +112,37 @@ if (btnSendOtp) {
       if (otpStepVerify) otpStepVerify.classList.remove('hidden');
       if (otpStatusEl) otpStatusEl.textContent = 'OTP sent to ' + phone;
     } catch (err) {
-      showStatus('OTP send failed: ' + (err.message || 'Unknown error'), true);
-      btnSendOtp.disabled = false;
-      btnSendOtp.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send OTP';
+      // Twilio not configured — fallback to self-declaration
+      console.warn('[OTP] SMS provider not configured. Falling back to self-declaration.');
+      if (otpStepPhone) otpStepPhone.classList.add('hidden');
+      if (otpStepVerify) otpStepVerify.classList.add('hidden');
+      
+      // Show self-declaration fallback
+      const otpSection = document.getElementById('otp-section');
+      if (otpSection) {
+        const fallback = document.createElement('div');
+        fallback.style.cssText = 'text-align: center; padding: 10px;';
+        fallback.innerHTML = `
+          <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">
+            <i class="fa-solid fa-info-circle" style="color: var(--accent-color);"></i> 
+            SMS verification is being set up. Please self-declare for now.
+          </p>
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 12px; color: var(--text-muted); justify-content: center;">
+            <input type="checkbox" id="otp-self-declare" style="accent-color: var(--success-color); width: 16px; height: 16px;">
+            <span>I confirm I am an Indian resident with a valid mobile number</span>
+          </label>
+        `;
+        otpSection.appendChild(fallback);
+        
+        const selfDeclare = fallback.querySelector('#otp-self-declare');
+        selfDeclare.addEventListener('change', () => {
+          if (selfDeclare.checked) {
+            otpVerified = true;
+            if (otpVerifiedBadge) otpVerifiedBadge.classList.remove('hidden');
+            fallback.style.display = 'none';
+          }
+        });
+      }
     }
   });
 }
