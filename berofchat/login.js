@@ -169,6 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnVerifyOtp = document.getElementById('btn-verify-otp');
     btnVerifyOtp.addEventListener('click', async () => {
         const otp = document.getElementById('signup-otp').value.trim();
+        console.log('[Verify] OTP entered:', otp, 'Phone:', currentPhone);
 
         if (otp.length !== 6) {
             showStatus('Enter the 6-digit OTP', true);
@@ -179,10 +180,13 @@ document.addEventListener('DOMContentLoaded', () => {
         btnVerifyOtp.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Verifying...';
 
         try {
+            console.log('[Verify] Calling supabase.rpc verify_otp...');
             const { data, error } = await supabase.rpc('verify_otp', {
                 p_phone: currentPhone,
                 p_otp: otp
             });
+
+            console.log('[Verify] Response data:', JSON.stringify(data), 'Error:', error);
 
             if (error || !data || !data.success) {
                 showStatus(data?.error || error?.message || 'Invalid or expired OTP', true);
@@ -193,7 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 showStatus('Phone verified! Create your password.', false);
             }
         } catch (err) {
-            showStatus('Verification error', true);
+            showStatus('Verification error: ' + err.message, true);
             console.error('[Verify Error]', err);
         } finally {
             btnVerifyOtp.disabled = false;
