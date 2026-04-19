@@ -3,8 +3,8 @@
 // Replace the placeholders below with your Supabase credentials.
 // ============================================================
 
-const SUPABASE_URL = 'https://YOUR_PROJECT_ID.supabase.co';
-const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY_HERE';
+const SUPABASE_URL = 'https://qwuozqwaakqoopswwpti.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3dW96cXdhYWtxb29wc3d3cHRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1NTc5MjEsImV4cCI6MjA5MjEzMzkyMX0.fZ8i4PcXKGGI3SjPxzTPUE5PTbWlyrYaC6W099M244w';
 
 // Initialize Supabase client (loaded from CDN in index.html)
 let supabase = null;
