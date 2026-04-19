@@ -1,5 +1,6 @@
 // ============================================================
 // BER OF CHAT — Login & Signup Logic
+// MTALKZ API Key: NuDhjmSw8RUV0Hf5YlybqbHrCY7AI5
 // ============================================================
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -21,26 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // State
     let currentPhone = '';
-    let currentPurpose = 'signup'; // 'signup' or 'login'
-
-    // Tab Switching
-    tabLogin.addEventListener('click', () => {
-        tabLogin.classList.add('active');
-        tabSignup.classList.remove('active');
-        loginForm.classList.remove('hidden');
-        signupForm.classList.add('hidden');
-        currentPurpose = 'login';
-        clearStatus();
-    });
-
-    tabSignup.addEventListener('click', () => {
-        tabSignup.classList.add('active');
-        tabLogin.classList.remove('active');
-        signupForm.classList.remove('hidden');
-        loginForm.classList.add('hidden');
-        currentPurpose = 'signup';
-        clearStatus();
-    });
 
     // --- Helper Functions ---
     function showStatus(msg, isError = false) {
@@ -53,15 +34,51 @@ document.addEventListener('DOMContentLoaded', () => {
         statusMsg.className = 'status-msg';
     }
 
-    // --- Login Flow ---
+    // Normalize phone: strip spaces/hyphens, auto-add +91 for Indian numbers
+    function normalizePhone(raw) {
+        let phone = raw.replace(/[\s\-\(\)]/g, '');
+        // If user typed a 10-digit number without country code, assume India (+91)
+        if (/^\d{10}$/.test(phone)) {
+            phone = '+91' + phone;
+        }
+        // If user typed 91XXXXXXXXXX (12 digits), add +
+        if (/^91\d{10}$/.test(phone)) {
+            phone = '+' + phone;
+        }
+        // Ensure it starts with +
+        if (!phone.startsWith('+')) {
+            phone = '+' + phone;
+        }
+        return phone;
+    }
+
+    // Tab Switching
+    tabLogin.addEventListener('click', () => {
+        tabLogin.classList.add('active');
+        tabSignup.classList.remove('active');
+        loginForm.classList.remove('hidden');
+        signupForm.classList.add('hidden');
+        clearStatus();
+    });
+
+    tabSignup.addEventListener('click', () => {
+        tabSignup.classList.add('active');
+        tabLogin.classList.remove('active');
+        signupForm.classList.remove('hidden');
+        loginForm.classList.add('hidden');
+        clearStatus();
+    });
+
+    // =========================================================
+    // LOGIN FLOW
+    // =========================================================
     const btnLogin = document.getElementById('btn-login');
     btnLogin.addEventListener('click', async () => {
-        let phone = document.getElementById('login-phone').value.trim();
-        phone = phone.replace(/[\s\-]/g, ''); // Remove spaces and hyphens
+        let phone = normalizePhone(document.getElementById('login-phone').value.trim());
         const password = document.getElementById('login-password').value;
 
-        if (!phone || !password) {
-            showStatus('Please enter phone and password', true);
+        if (!phone || phone.length < 12 || !password) {
+            showStatus('Please enter a valid phone number and password', true);
             return;
         }
 
@@ -74,43 +91,39 @@ document.addEventListener('DOMContentLoaded', () => {
                 p_password: password
             });
 
-            if (error || !data.success) {
+            if (error || !data || !data.success) {
                 showStatus(data?.error || error?.message || 'Login failed', true);
             } else {
                 showStatus('Login successful! Redirecting...', false);
-                // Store user in local storage
                 localStorage.setItem('ber_user', JSON.stringify(data.user));
-                // Redirect to main app
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 1500);
+                setTimeout(() => { window.location.href = 'index.html'; }, 1200);
             }
         } catch (err) {
             showStatus('An error occurred during login', true);
+            console.error('[Login Error]', err);
         } finally {
             btnLogin.disabled = false;
             btnLogin.innerHTML = '<span>Log In</span> <i class="fa-solid fa-right-to-bracket"></i>';
         }
     });
 
-    // --- Signup Flow Step 1: Send OTP ---
+    // =========================================================
+    // SIGNUP STEP 1: Send OTP
+    // =========================================================
     const btnSendOtp = document.getElementById('btn-send-otp');
     btnSendOtp.addEventListener('click', async () => {
         const name = document.getElementById('signup-name').value.trim();
-        let phone = document.getElementById('signup-phone').value.trim();
-        phone = phone.replace(/[\s\-]/g, ''); // Remove spaces and hyphens
+        let phone = normalizePhone(document.getElementById('signup-phone').value.trim());
         const gdprChecked = document.getElementById('signup-gdpr').checked;
 
-        if (!name || !phone) {
-            showStatus('Name and phone are required', true);
+        if (!name) {
+            showStatus('Display name is required', true);
             return;
         }
-
-        if (phone.length < 10) {
-            showStatus('Enter a valid phone number', true);
+        if (!phone || phone.length < 12) {
+            showStatus('Enter a valid phone number (e.g. 9876543210)', true);
             return;
         }
-
         if (!gdprChecked) {
             showStatus('You must consent to data processing to sign up.', true);
             return;
@@ -118,45 +131,69 @@ document.addEventListener('DOMContentLoaded', () => {
 
         btnSendOtp.disabled = true;
         btnSendOtp.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Sending...';
+        showStatus('Generating OTP...', false);
 
         try {
-            // Call Supabase Edge Function to send OTP via MTALKZ
-            const response = await fetch(`${SUPABASE_URL}/functions/v1/send-otp`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-                },
-                body: JSON.stringify({ phone, purpose: 'signup' })
+            // Step 1: Generate OTP via Supabase RPC
+            const { data: otpResult, error: otpError } = await supabase.rpc('request_otp', {
+                p_phone: phone,
+                p_purpose: 'signup'
             });
 
-            const result = await response.json();
-
-            if (result.success) {
-                currentPhone = phone;
-                signupStep1.classList.add('hidden');
-                signupStep2.classList.remove('hidden');
-                signupStep2.classList.add('fade-in');
-                showStatus('OTP sent successfully', false);
-            } else {
-                showStatus(result.error || 'Failed to send OTP', true);
+            if (otpError) {
+                showStatus('Server error: ' + otpError.message, true);
+                return;
             }
+            if (!otpResult || !otpResult.success) {
+                showStatus(otpResult?.error || 'Failed to generate OTP', true);
+                return;
+            }
+
+            const otp = otpResult.otp;
+
+            // Step 2: Send OTP via MTALKZ SMS API
+            showStatus('Sending SMS...', false);
+            const smsNumber = phone.replace('+', '');
+            const smsResponse = await fetch('https://msg.mtalkz.com/V2/http-api-post.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    apikey: 'NuDhjmSw8RUV0Hf5YlybqbHrCY7AI5',
+                    senderid: 'SHDR7I',
+                    number: smsNumber,
+                    message: `Your BER OF CHAT verification code is: ${otp}. Valid for 5 minutes. Do not share this code. - SHADER7`,
+                    format: 'json'
+                })
+            });
+
+            const smsText = await smsResponse.text();
+            console.log('[MTALKZ Response]', smsText);
+
+            // Move to step 2 regardless of SMS response (OTP is stored in DB)
+            currentPhone = phone;
+            signupStep1.classList.add('hidden');
+            signupStep2.classList.remove('hidden');
+            signupStep2.classList.add('fade-in');
+            showStatus('OTP sent to ' + phone, false);
+
         } catch (err) {
-            showStatus('Error calling OTP service', true);
-            console.error(err);
+            showStatus('Error sending OTP. Check your connection.', true);
+            console.error('[OTP Error]', err);
         } finally {
             btnSendOtp.disabled = false;
             btnSendOtp.innerHTML = '<span>Send OTP</span> <i class="fa-solid fa-paper-plane"></i>';
         }
     });
 
-    // --- Signup Flow Step 2: Verify OTP ---
+    // =========================================================
+    // SIGNUP STEP 2: Verify OTP
+    // =========================================================
     const btnVerifyOtp = document.getElementById('btn-verify-otp');
     btnVerifyOtp.addEventListener('click', async () => {
         const otp = document.getElementById('signup-otp').value.trim();
 
         if (otp.length !== 6) {
-            showStatus('Enter 6-digit OTP', true);
+            showStatus('Enter the 6-digit OTP', true);
             return;
         }
 
@@ -169,23 +206,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 p_otp: otp
             });
 
-            if (error || !data.success) {
-                showStatus(data?.error || error?.message || 'Invalid OTP', true);
+            if (error || !data || !data.success) {
+                showStatus(data?.error || error?.message || 'Invalid or expired OTP', true);
             } else {
                 signupStep2.classList.add('hidden');
                 signupStep3.classList.remove('hidden');
                 signupStep3.classList.add('fade-in');
-                showStatus('Phone verified!', false);
+                showStatus('Phone verified! Create your password.', false);
             }
         } catch (err) {
             showStatus('Verification error', true);
+            console.error('[Verify Error]', err);
         } finally {
             btnVerifyOtp.disabled = false;
             btnVerifyOtp.innerHTML = '<span>Verify OTP</span> <i class="fa-solid fa-check-double"></i>';
         }
     });
 
-    // --- Signup Flow Step 3: Complete Signup ---
+    // =========================================================
+    // SIGNUP STEP 3: Create Account
+    // =========================================================
     const btnCreateAccount = document.getElementById('btn-create-account');
     btnCreateAccount.addEventListener('click', async () => {
         const password = document.getElementById('signup-password').value;
@@ -196,14 +236,13 @@ document.addEventListener('DOMContentLoaded', () => {
             showStatus('Password must be at least 6 characters', true);
             return;
         }
-
         if (password !== confirm) {
             showStatus('Passwords do not match', true);
             return;
         }
 
         btnCreateAccount.disabled = true;
-        btnCreateAccount.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Completing...';
+        btnCreateAccount.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Creating...';
 
         try {
             const { data, error } = await supabase.rpc('signup_user', {
@@ -212,12 +251,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 p_name: name
             });
 
-            if (error || !data.success) {
+            if (error || !data || !data.success) {
                 showStatus(data?.error || error?.message || 'Signup failed', true);
             } else {
                 showStatus('Account created! Logging in...', false);
-                
-                // Auto login after signup
+
+                // Auto-login
                 const loginRes = await supabase.rpc('login_user', {
                     p_phone: currentPhone,
                     p_password: password
@@ -225,16 +264,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (loginRes.data?.success) {
                     localStorage.setItem('ber_user', JSON.stringify(loginRes.data.user));
-                    setTimeout(() => {
-                        window.location.href = 'index.html';
-                    }, 1500);
+                    setTimeout(() => { window.location.href = 'index.html'; }, 1200);
                 } else {
-                    showStatus('Account created, please log in.', false);
+                    showStatus('Account created. Please log in manually.', false);
                     tabLogin.click();
                 }
             }
         } catch (err) {
             showStatus('Signup error', true);
+            console.error('[Signup Error]', err);
         } finally {
             btnCreateAccount.disabled = false;
             btnCreateAccount.innerHTML = '<span>Complete Signup</span> <i class="fa-solid fa-circle-check"></i>';
