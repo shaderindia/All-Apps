@@ -27,7 +27,8 @@ function initSupabase() {
 
 async function logTraceEvent(eventType, senderId, roomCode, messageHash = null) {
   if (!supabase) return;
-  if (SUPABASE_URL.includes('YOUR_PROJECT_ID')) return; // Not configured yet
+  if (SUPABASE_URL.includes('YOUR_PROJECT_ID')) return;
+  if (window._gdprRejected) return; // GDPR: user rejected data processing
 
   try {
     const { error } = await supabase

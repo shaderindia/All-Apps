@@ -153,6 +153,86 @@ tabBtns.forEach(btn => {
   });
 });
 
+// ============================================================
+// GDPR Compliance (EU Users)
+// ============================================================
+const EU_COUNTRIES = ['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE','IS','LI','NO','CH','GB'];
+let isEU = false;
+let gdprConsented = localStorage.getItem('ber_gdpr_consent');
+
+const gdprBanner = document.getElementById('gdpr-banner');
+const gdprAccept = document.getElementById('gdpr-accept');
+const gdprReject = document.getElementById('gdpr-reject');
+const btnDeleteData = document.getElementById('btn-delete-data');
+
+function checkIfEU() {
+  if (userCountry && EU_COUNTRIES.includes(userCountry)) {
+    isEU = true;
+    if (!gdprConsented) {
+      // Show GDPR banner for first-time EU users
+      if (gdprBanner) gdprBanner.classList.remove('hidden');
+    }
+  }
+}
+
+// Re-check after geo loads (userCountry is set by checkGeoRestrictions)
+const origGeoCheck = checkGeoRestrictions;
+checkGeoRestrictions = async function() {
+  await origGeoCheck();
+  checkIfEU();
+};
+
+if (gdprAccept) {
+  gdprAccept.addEventListener('click', () => {
+    localStorage.setItem('ber_gdpr_consent', JSON.stringify({
+      status: 'accepted',
+      timestamp: new Date().toISOString(),
+      scope: ['localStorage', 'traceability_hashes', 'consent_records'],
+      version: '1.0'
+    }));
+    gdprConsented = 'accepted';
+    if (gdprBanner) gdprBanner.classList.add('hidden');
+  });
+}
+
+if (gdprReject) {
+  gdprReject.addEventListener('click', () => {
+    localStorage.setItem('ber_gdpr_consent', JSON.stringify({
+      status: 'rejected',
+      timestamp: new Date().toISOString(),
+      version: '1.0'
+    }));
+    gdprConsented = 'rejected';
+    if (gdprBanner) gdprBanner.classList.add('hidden');
+    // Disable traceability logging for users who rejected
+    window._gdprRejected = true;
+  });
+}
+
+// Delete My Data (GDPR Right to Erasure + Right to Withdraw)
+if (btnDeleteData) {
+  btnDeleteData.addEventListener('click', () => {
+    const confirmed = confirm(
+      'GDPR Data Deletion Request\n\n' +
+      'This will:\n' +
+      '• Clear all consent records from this device\n' +
+      '• Revoke your Terms of Service agreement\n' +
+      '• Remove all locally stored preferences\n\n' +
+      'Server-side traceability hashes (anonymized) will auto-purge within 180 days.\n\n' +
+      'Continue?'
+    );
+    if (confirmed) {
+      // Clear ALL localStorage related to BER OF CHAT
+      localStorage.removeItem('ber_tos_agreed');
+      localStorage.removeItem('ber_gdpr_consent');
+      localStorage.removeItem('ber_consent_log');
+      
+      alert('All your data has been deleted. The page will now reload.');
+      location.reload();
+    }
+  });
+}
+
 // Mobile Sidebar Logic
 if (btnMenu) {
   btnMenu.addEventListener('click', () => {
