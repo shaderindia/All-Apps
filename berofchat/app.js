@@ -87,86 +87,218 @@ if (typeof initSupabase === 'function') {
   initSupabase();
 }
 
-// India OTP UI Logic
-const btnSendOtp = document.getElementById('btn-send-otp');
-const btnVerifyOtp = document.getElementById('btn-verify-otp');
-const otpPhoneInput = document.getElementById('otp-phone');
-const otpCodeInput = document.getElementById('otp-code');
-const otpStepPhone = document.getElementById('otp-step-phone');
-const otpStepVerify = document.getElementById('otp-step-verify');
-const otpStatusEl = document.getElementById('otp-status');
-const otpVerifiedBadge = document.getElementById('otp-verified-badge');
+// ============================================================
+// Auth System (MTALKZ OTP + Password via Supabase)
+// ============================================================
+let loggedInUser = JSON.parse(localStorage.getItem('ber_user') || 'null');
+const authStatusEl = document.getElementById('auth-status');
+const authVerifiedBadge = document.getElementById('auth-verified-badge');
+const authUserDisplay = document.getElementById('auth-user-display');
 
-if (btnSendOtp) {
-  btnSendOtp.addEventListener('click', async () => {
-    const phone = otpPhoneInput ? otpPhoneInput.value.trim() : '';
+// Tab toggle
+const authTabSignup = document.getElementById('auth-tab-signup');
+const authTabLogin = document.getElementById('auth-tab-login');
+const authSignupFlow = document.getElementById('auth-signup-flow');
+const authLoginFlow = document.getElementById('auth-login-flow');
+
+if (authTabSignup) {
+  authTabSignup.addEventListener('click', () => {
+    authSignupFlow.classList.remove('hidden');
+    authLoginFlow.classList.add('hidden');
+    authTabSignup.style.background = 'var(--accent-color)';
+    authTabSignup.style.color = '#fff';
+    authTabLogin.style.background = 'transparent';
+    authTabLogin.style.color = 'var(--text-muted)';
+    if (authStatusEl) authStatusEl.textContent = '';
+  });
+}
+if (authTabLogin) {
+  authTabLogin.addEventListener('click', () => {
+    authLoginFlow.classList.remove('hidden');
+    authSignupFlow.classList.add('hidden');
+    authTabLogin.style.background = 'var(--accent-color)';
+    authTabLogin.style.color = '#fff';
+    authTabSignup.style.background = 'transparent';
+    authTabSignup.style.color = 'var(--text-muted)';
+    if (authStatusEl) authStatusEl.textContent = '';
+  });
+}
+
+function setAuthStatus(msg, isError) {
+  if (authStatusEl) {
+    authStatusEl.textContent = msg;
+    authStatusEl.style.color = isError ? 'var(--danger-color)' : 'var(--success-color)';
+  }
+}
+
+// Check if already logged in
+if (loggedInUser) {
+  otpVerified = true;
+  const authSection = document.getElementById('auth-section');
+  if (authSection) {
+    const modeToggle = document.getElementById('auth-mode-toggle');
+    if (modeToggle) modeToggle.classList.add('hidden');
+    if (authSignupFlow) authSignupFlow.classList.add('hidden');
+    if (authLoginFlow) authLoginFlow.classList.add('hidden');
+    if (authVerifiedBadge) authVerifiedBadge.classList.remove('hidden');
+    if (authUserDisplay) authUserDisplay.textContent = `${loggedInUser.display_name} (${loggedInUser.phone})`;
+  }
+}
+
+// --- SIGNUP FLOW ---
+let signupPhone = '';
+const btnAuthSendOtp = document.getElementById('btn-auth-send-otp');
+const btnAuthVerifyOtp = document.getElementById('btn-auth-verify-otp');
+const btnAuthSignup = document.getElementById('btn-auth-signup');
+const signupStepPhone = document.getElementById('signup-step-phone');
+const signupStepOtp = document.getElementById('signup-step-otp');
+const signupStepPassword = document.getElementById('signup-step-password');
+
+// Step 1: Send OTP
+if (btnAuthSendOtp) {
+  btnAuthSendOtp.addEventListener('click', async () => {
+    const phone = document.getElementById('auth-phone').value.trim();
     if (!phone || phone.length < 10) {
-      showStatus('Enter a valid Indian phone number (+91...)', true);
+      setAuthStatus('Enter a valid phone number with country code', true);
       return;
     }
+    signupPhone = phone;
+    btnAuthSendOtp.disabled = true;
+    btnAuthSendOtp.textContent = 'Sending...';
+    setAuthStatus('', false);
+
     try {
-      btnSendOtp.disabled = true;
-      btnSendOtp.textContent = 'Sending...';
-      await sendOTP(phone);
-      if (otpStepPhone) otpStepPhone.classList.add('hidden');
-      if (otpStepVerify) otpStepVerify.classList.remove('hidden');
-      if (otpStatusEl) otpStatusEl.textContent = 'OTP sent to ' + phone;
-    } catch (err) {
-      // Twilio not configured — fallback to self-declaration
-      console.warn('[OTP] SMS provider not configured. Falling back to self-declaration.');
-      if (otpStepPhone) otpStepPhone.classList.add('hidden');
-      if (otpStepVerify) otpStepVerify.classList.add('hidden');
-      
-      // Show self-declaration fallback
-      const otpSection = document.getElementById('otp-section');
-      if (otpSection) {
-        const fallback = document.createElement('div');
-        fallback.style.cssText = 'text-align: center; padding: 10px;';
-        fallback.innerHTML = `
-          <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">
-            <i class="fa-solid fa-info-circle" style="color: var(--accent-color);"></i> 
-            SMS verification is being set up. Please self-declare for now.
-          </p>
-          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 12px; color: var(--text-muted); justify-content: center;">
-            <input type="checkbox" id="otp-self-declare" style="accent-color: var(--success-color); width: 16px; height: 16px;">
-            <span>I confirm I am an Indian resident with a valid mobile number</span>
-          </label>
-        `;
-        otpSection.appendChild(fallback);
-        
-        const selfDeclare = fallback.querySelector('#otp-self-declare');
-        selfDeclare.addEventListener('change', () => {
-          if (selfDeclare.checked) {
-            otpVerified = true;
-            if (otpVerifiedBadge) otpVerifiedBadge.classList.remove('hidden');
-            fallback.style.display = 'none';
-          }
-        });
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/send-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` },
+        body: JSON.stringify({ phone: signupPhone, purpose: 'signup' })
+      });
+      const data = await res.json();
+      if (data.success) {
+        signupStepPhone.classList.add('hidden');
+        signupStepOtp.classList.remove('hidden');
+        setAuthStatus('OTP sent to ' + phone, false);
+      } else {
+        setAuthStatus(data.error || 'Failed to send OTP', true);
+        btnAuthSendOtp.disabled = false;
+        btnAuthSendOtp.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send OTP via SMS';
       }
+    } catch (err) {
+      setAuthStatus('Network error. Check your connection.', true);
+      btnAuthSendOtp.disabled = false;
+      btnAuthSendOtp.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send OTP via SMS';
     }
   });
 }
 
-if (btnVerifyOtp) {
-  btnVerifyOtp.addEventListener('click', async () => {
-    const phone = otpPhoneInput ? otpPhoneInput.value.trim() : '';
-    const code = otpCodeInput ? otpCodeInput.value.trim() : '';
+// Step 2: Verify OTP
+if (btnAuthVerifyOtp) {
+  btnAuthVerifyOtp.addEventListener('click', async () => {
+    const code = document.getElementById('auth-otp-code').value.trim();
     if (!code || code.length !== 6) {
-      if (otpStatusEl) otpStatusEl.textContent = 'Enter a valid 6-digit code.';
+      setAuthStatus('Enter the 6-digit OTP', true);
       return;
     }
+    btnAuthVerifyOtp.disabled = true;
+    btnAuthVerifyOtp.textContent = 'Verifying...';
+
     try {
-      btnVerifyOtp.disabled = true;
-      btnVerifyOtp.textContent = 'Verifying...';
-      await verifyOTP(phone, code);
-      if (otpStepVerify) otpStepVerify.classList.add('hidden');
-      if (otpVerifiedBadge) otpVerifiedBadge.classList.remove('hidden');
+      const { data, error } = await supabase.rpc('verify_otp', { p_phone: signupPhone, p_otp: code });
+      if (data && data.success) {
+        signupStepOtp.classList.add('hidden');
+        signupStepPassword.classList.remove('hidden');
+        setAuthStatus('Phone verified! Create a password.', false);
+      } else {
+        setAuthStatus(data?.error || 'Invalid OTP', true);
+        btnAuthVerifyOtp.disabled = false;
+        btnAuthVerifyOtp.innerHTML = '<i class="fa-solid fa-check-double"></i> Verify OTP';
+      }
     } catch (err) {
-      if (otpStatusEl) otpStatusEl.textContent = 'Invalid OTP. Try again.';
-      btnVerifyOtp.disabled = false;
-      btnVerifyOtp.innerHTML = '<i class="fa-solid fa-check-double"></i> Verify OTP';
+      setAuthStatus('Verification failed', true);
+      btnAuthVerifyOtp.disabled = false;
+      btnAuthVerifyOtp.innerHTML = '<i class="fa-solid fa-check-double"></i> Verify OTP';
     }
   });
+}
+
+// Step 3: Create Account
+if (btnAuthSignup) {
+  btnAuthSignup.addEventListener('click', async () => {
+    const pw = document.getElementById('auth-password').value;
+    const pwConfirm = document.getElementById('auth-password-confirm').value;
+    if (!pw || pw.length < 6) { setAuthStatus('Password must be at least 6 characters', true); return; }
+    if (pw !== pwConfirm) { setAuthStatus('Passwords do not match', true); return; }
+    
+    btnAuthSignup.disabled = true;
+    btnAuthSignup.textContent = 'Creating...';
+    
+    const displayName = document.getElementById('username-join')?.value.trim() 
+      || document.getElementById('username-create')?.value.trim() 
+      || 'User';
+
+    try {
+      const { data, error } = await supabase.rpc('signup_user', { 
+        p_phone: signupPhone, p_password: pw, p_name: displayName 
+      });
+      if (data && data.success) {
+        loggedInUser = { phone: signupPhone, display_name: displayName };
+        localStorage.setItem('ber_user', JSON.stringify(loggedInUser));
+        otpVerified = true;
+        completeAuth(displayName, signupPhone);
+        setAuthStatus('Account created!', false);
+      } else {
+        setAuthStatus(data?.error || 'Signup failed', true);
+        btnAuthSignup.disabled = false;
+        btnAuthSignup.innerHTML = '<i class="fa-solid fa-user-plus"></i> Create Account';
+      }
+    } catch (err) {
+      setAuthStatus('Error creating account', true);
+      btnAuthSignup.disabled = false;
+      btnAuthSignup.innerHTML = '<i class="fa-solid fa-user-plus"></i> Create Account';
+    }
+  });
+}
+
+// --- LOGIN FLOW ---
+const btnAuthLogin = document.getElementById('btn-auth-login');
+if (btnAuthLogin) {
+  btnAuthLogin.addEventListener('click', async () => {
+    const phone = document.getElementById('login-phone').value.trim();
+    const pw = document.getElementById('login-password').value;
+    if (!phone || phone.length < 10) { setAuthStatus('Enter your phone number', true); return; }
+    if (!pw) { setAuthStatus('Enter your password', true); return; }
+    
+    btnAuthLogin.disabled = true;
+    btnAuthLogin.textContent = 'Logging in...';
+
+    try {
+      const { data, error } = await supabase.rpc('login_user', { p_phone: phone, p_password: pw });
+      if (data && data.success) {
+        loggedInUser = data.user;
+        localStorage.setItem('ber_user', JSON.stringify(loggedInUser));
+        otpVerified = true;
+        completeAuth(data.user.display_name, data.user.phone);
+        setAuthStatus('Welcome back!', false);
+      } else {
+        setAuthStatus(data?.error || 'Login failed', true);
+        btnAuthLogin.disabled = false;
+        btnAuthLogin.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Log In';
+      }
+    } catch (err) {
+      setAuthStatus('Login error', true);
+      btnAuthLogin.disabled = false;
+      btnAuthLogin.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Log In';
+    }
+  });
+}
+
+function completeAuth(name, phone) {
+  const modeToggle = document.getElementById('auth-mode-toggle');
+  if (modeToggle) modeToggle.classList.add('hidden');
+  if (authSignupFlow) authSignupFlow.classList.add('hidden');
+  if (authLoginFlow) authLoginFlow.classList.add('hidden');
+  if (authVerifiedBadge) authVerifiedBadge.classList.remove('hidden');
+  if (authUserDisplay) authUserDisplay.textContent = `${name} (${phone})`;
 }
 
 // Tab Switching logic
