@@ -7,15 +7,18 @@ const SUPABASE_URL = 'https://qwuozqwaakqoopswwpti.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3dW96cXdhYWtxb29wc3d3cHRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1NTc5MjEsImV4cCI6MjA5MjEzMzkyMX0.fZ8i4PcXKGGI3SjPxzTPUE5PTbWlyrYaC6W099M244w';
 
 // Initialize Supabase client (loaded from CDN in index.html)
-let supabase = null;
+// IMPORTANT: The CDN sets window.supabase = library object (has .createClient)
+// We store the CLIENT instance in window.supabaseClient (has .rpc, .from, etc.)
+let supabaseClient = null;
 
 function initSupabase() {
   if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
-    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    console.log('[Supabase] Client initialized.');
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    window.supabaseClient = supabaseClient; // Expose globally for login.js
+    console.log('[Supabase] Client initialized successfully.');
     return true;
   }
-  console.warn('[Supabase] Client library not loaded. Traceability logging disabled.');
+  console.warn('[Supabase] Client library not loaded.');
   return false;
 }
 
@@ -26,12 +29,12 @@ function initSupabase() {
 // ============================================================
 
 async function logTraceEvent(eventType, senderId, roomCode, messageHash = null) {
-  if (!supabase) return;
+  if (!supabaseClient) return;
   if (SUPABASE_URL.includes('YOUR_PROJECT_ID')) return;
   if (window._gdprRejected) return; // GDPR: user rejected data processing
 
   try {
-    const { error } = await supabase
+    const { error } = await supabaseClient
       .from('legal_traceability')
       .insert({
         event_type: eventType,
@@ -83,11 +86,11 @@ async function logRoomLeave(senderId, roomCode) {
 // ============================================================
 
 async function triggerPurge() {
-  if (!supabase) return;
+  if (!supabaseClient) return;
   if (SUPABASE_URL.includes('YOUR_PROJECT_ID')) return;
 
   try {
-    const { data, error } = await supabase.rpc('purge_old_traceability');
+    const { data, error } = await supabaseClient.rpc('purge_old_traceability');
     if (error) {
       console.error('[Purge] Failed:', error.message);
     } else {

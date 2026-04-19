@@ -195,7 +195,7 @@ if (btnDeleteData) {
     if (confirmed) {
       if (loggedInUser && loggedInUser.phone) {
         try {
-          const { data, error } = await supabase.rpc('delete_user_account', { 
+          const { data, error } = await supabaseClient.rpc('delete_user_account', { 
             p_phone: loggedInUser.phone 
           });
           if (error) console.error('[GDPR] Server deletion failed:', error);

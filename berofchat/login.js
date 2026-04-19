@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typeof initSupabase === 'function') {
         initSupabase();
     }
+    // Get the CLIENT instance (not the library)
+    const sb = window.supabaseClient;
 
     // UI Elements
     const tabLogin = document.getElementById('tab-login');
@@ -85,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
         btnLogin.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Logging in...';
 
         try {
-            const { data, error } = await supabase.rpc('login_user', {
+            const { data, error } = await sb.rpc('login_user', {
                 p_phone: phone,
                 p_password: password
             });
@@ -134,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             // Call database function directly (handles OTP generation + Twilio SMS)
-            const { data, error } = await supabase.rpc('send_otp_twilio', {
+            const { data, error } = await sb.rpc('send_otp_twilio', {
                 p_phone: phone,
                 p_purpose: 'signup'
             });
@@ -178,8 +180,8 @@ document.addEventListener('DOMContentLoaded', () => {
         btnVerifyOtp.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Verifying...';
 
         try {
-            console.log('[Verify] Calling supabase.rpc verify_otp...');
-            const { data, error } = await supabase.rpc('verify_otp', {
+            console.log('[Verify] Calling sb.rpc verify_otp...');
+            const { data, error } = await sb.rpc('verify_otp', {
                 p_phone: currentPhone,
                 p_otp: otp
             });
@@ -225,7 +227,7 @@ document.addEventListener('DOMContentLoaded', () => {
         btnCreateAccount.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Creating...';
 
         try {
-            const { data, error } = await supabase.rpc('signup_user', {
+            const { data, error } = await sb.rpc('signup_user', {
                 p_phone: currentPhone,
                 p_password: password,
                 p_name: name
@@ -236,7 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 showStatus('Account created! Logging in...', false);
 
-                const loginRes = await supabase.rpc('login_user', {
+                const loginRes = await sb.rpc('login_user', {
                     p_phone: currentPhone,
                     p_password: password
                 });
