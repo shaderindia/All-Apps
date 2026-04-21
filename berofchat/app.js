@@ -397,6 +397,7 @@ function handleIncomingData(data) {
     members = data.members;
     maxRoomMembers = data.maxMembers || 10;
     updateMembersUI();
+    if (inCall) callOtherInCallMembers();
   } else if (data.type === 'join_error') {
     showStatus(data.reason, true);
     if (peer) peer.destroy();
@@ -420,6 +421,7 @@ async function toggleCall(withVideo = false) {
       callOtherInCallMembers();
     } else {
       currentConnection?.send({ type: 'call_status', inCall: true });
+      callOtherInCallMembers();
     }
   } catch (err) { showStatus('Media access failed', true); }
 }
@@ -442,7 +444,8 @@ function leaveCall() {
 
 function callOtherInCallMembers() {
   members.forEach(m => {
-    if (m.id !== myId && m.inCall && !calls[m.id]) {
+    // Only call if ID is strictly greater to prevent duplicate/racing calls in the mesh
+    if (m.id !== myId && m.inCall && !calls[m.id] && myId < m.id) {
       const call = peer.call(m.id, localStream, { metadata: { senderName: myName } });
       handleCall(call, m.name);
     }
