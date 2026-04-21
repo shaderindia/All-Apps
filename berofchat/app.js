@@ -488,8 +488,14 @@ function handleCall(call, name) {
 }
 
 function addVideoStream(id, name, stream, isLocal) {
-  if (document.getElementById(`video-wrapper-${id}`)) return;
-  const w = document.createElement('div');
+  let w = document.getElementById(`video-wrapper-${id}`);
+  if (w) {
+    // Bug fix: update stream if it changes (e.g. audio track followed by video track)
+    const v = w.querySelector('video');
+    if (v && v.srcObject !== stream) v.srcObject = stream;
+    return;
+  }
+  w = document.createElement('div');
   w.className = 'video-wrapper';
   w.id = `video-wrapper-${id}`;
   const v = document.createElement('video');
@@ -613,6 +619,8 @@ btnCreate.addEventListener('click', () => {
         if (member) member.inCall = data.inCall;
         updateMembersUI();
         broadcastToAll({ type: 'members_update', members, maxMembers: maxRoomMembers });
+        // Ensure Host connects to the new caller in the mesh
+        if (inCall) callOtherInCallMembers();
       } else handleIncomingData(data);
     });
     conn.on('close', () => {
