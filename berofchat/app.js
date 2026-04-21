@@ -109,9 +109,10 @@ let loggedInUser = JSON.parse(localStorage.getItem('ber_user') || 'null');
 
 function checkAuth() {
   if (!loggedInUser) {
-    console.log('[Auth] No session found. Redirecting to login...');
-    window.location.href = 'login.html';
-    return false;
+    console.log('[Auth] Login system disabled. Allowing direct access.');
+    // Set global myName to a default or wait for them to input it
+    myName = 'Guest-' + Math.floor(Math.random() * 10000);
+    return true; // Used to redirect to login.html
   }
   
   // Update UI with user info
@@ -130,7 +131,7 @@ if (checkAuth()) {
 if (btnLogout) {
   btnLogout.addEventListener('click', () => {
     localStorage.removeItem('ber_user');
-    window.location.href = 'login.html';
+    window.location.reload(); // Used to redirect to login.html
   });
 }
 
@@ -514,12 +515,15 @@ if (btnSubmitReport) {
 
 // Create/Join Listeners
 btnCreate.addEventListener('click', () => {
-  if (!loggedInUser) { window.location.href = 'login.html'; return; }
+  const guestNameInput = document.getElementById('guest-name-input');
+  const enteredName = guestNameInput ? guestNameInput.value.trim() : '';
+  
   if (!tosCheckbox.checked) { showStatus('Agree to Terms first.', true); return; }
   const age = calculateAge(dobInput.value);
   if (age < 19) { showStatus('Must be 19+.', true); return; }
   logConsent(age);
-  myName = loggedInUser.display_name;
+  
+  myName = enteredName || 'Guest-' + Math.floor(Math.random() * 10000);
   maxRoomMembers = parseInt(maxMembersInput.value, 10) || 10;
   if (maxRoomMembers > 10) maxRoomMembers = 10;
   if (maxRoomMembers < 2) maxRoomMembers = 2;
@@ -567,14 +571,17 @@ btnCreate.addEventListener('click', () => {
 });
 
 btnJoin.addEventListener('click', () => {
-  if (!loggedInUser) { window.location.href = 'login.html'; return; }
+  const guestNameInput = document.getElementById('guest-name-input');
+  const enteredName = guestNameInput ? guestNameInput.value.trim() : '';
+  
   const code = roomCodeInput.value.trim().toUpperCase();
   if (!code) { showStatus('Enter room code.', true); return; }
   if (!tosCheckbox.checked) { showStatus('Agree to Terms first.', true); return; }
   const age = calculateAge(dobInput.value);
   if (age < 19) { showStatus('Must be 19+.', true); return; }
   logConsent(age);
-  myName = loggedInUser.display_name;
+  
+  myName = enteredName || 'Guest-' + Math.floor(Math.random() * 10000);
   showStatus('Connecting...', false);
   peer = new Peer(getPeerConfig());
   peer.on('open', id => {
