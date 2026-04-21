@@ -45,7 +45,8 @@
       <div class="glass-panel">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
           <a href="https://shader7.com" style="color: var(--text-muted); font-size: 12px; text-decoration: none; display: flex; align-items: center; gap: 5px;"><i class="fa-solid fa-house"></i> Home</a>
-          <div id="user-profile" class="hidden" style="display: flex; align-items: center; gap: 10px;">
+          <!-- Bug #15 fix: removed inline display:flex which was overriding .hidden class -->
+          <div id="user-profile" class="hidden" style="align-items: center; gap: 10px;">
             <span id="user-name-display" style="font-size: 13px; font-weight: 600; color: var(--accent-color);"></span>
             <button id="btn-logout" style="background: none; border: none; color: #ff4757; cursor: pointer; font-size: 12px; display: flex; align-items: center; gap: 4px;"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
           </div>
@@ -184,7 +185,8 @@
             <button id="btn-end-call" class="icon-btn header-btn hangup-btn hidden" title="End Call"><i class="fa-solid fa-phone-slash"></i></button>
             <div class="divider"></div>
             <button id="btn-report" class="icon-btn header-btn danger-text" title="Report Issue" style="color: var(--danger-color);"><i class="fa-solid fa-triangle-exclamation"></i></button>
-            <button class="icon-btn header-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
+            <!-- Bug #7 fix: added id so JS can wire up the search button -->
+            <button id="btn-search" class="icon-btn header-btn" title="Search Messages"><i class="fa-solid fa-magnifying-glass"></i></button>
           </div>
         </header>
 
@@ -259,7 +261,8 @@
   </div>
 
   <!-- GDPR Cookie/Storage Consent Banner (EU only) -->
-  <div id="gdpr-banner" class="hidden" style="position: fixed; bottom: 0; left: 0; right: 0; z-index: 10000; background: rgba(14,17,26,0.97); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-top: 1px solid rgba(0,210,255,0.2); padding: 16px 24px; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 14px;">
+  <!-- Bug #5 fix: removed inline display:flex which was overriding .hidden class -->
+  <div id="gdpr-banner" class="hidden" style="position: fixed; bottom: 0; left: 0; right: 0; z-index: 10000; background: rgba(14,17,26,0.97); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-top: 1px solid rgba(0,210,255,0.2); padding: 16px 24px; flex-wrap: wrap; align-items: center; justify-content: center; gap: 14px;">
     <div style="flex: 1; min-width: 250px;">
       <p style="font-size: 13px; color: var(--text-muted); margin: 0; line-height: 1.5;"><i class="fa-solid fa-cookie-bite" style="color: var(--accent-color);"></i> <strong style="color: #000;">Your Privacy Matters.</strong> QUICK PRIVATE CHAT uses <strong>localStorage</strong> to save your consent preferences. We do <strong>not</strong> use tracking cookies. <a href="../privacy-policy.html" target="_blank" style="color: var(--accent-color);">Read our Privacy Policy</a>.</p>
     </div>

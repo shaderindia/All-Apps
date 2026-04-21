@@ -52,6 +52,7 @@ let inCall = false;
 let isVideo = false;
 let callingRestricted = false;
 let userCountry = null;
+let gdprConsented = null; // Bug #1 fix: declare before GDPR handlers use it
 
 const btnVoiceCall = document.getElementById('btn-voice-call');
 const btnVideoCall = document.getElementById('btn-video-call');
@@ -266,10 +267,15 @@ function getPeerConfig() {
 }
 
 function calculateAge(dobStr) {
+  // Bug #10 fix: proper age calculation that handles edge cases correctly
   if (!dobStr) return 0;
   const dob = new Date(dobStr);
   if (isNaN(dob.getTime())) return 0;
-  return Math.abs(new Date(Date.now() - dob.getTime()).getUTCFullYear() - 1970);
+  const today = new Date();
+  let age = today.getFullYear() - dob.getFullYear();
+  const m = today.getMonth() - dob.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) age--;
+  return age < 0 ? 0 : age;
 }
 
 function generateUUID() {
@@ -412,15 +418,21 @@ async function toggleCall(withVideo = false) {
     isVideo = withVideo;
     localStream = await navigator.mediaDevices.getUserMedia({ video: withVideo, audio: true });
     inCall = true;
-    btnEndCall.classList.remove('hidden');
+    if (btnEndCall) btnEndCall.classList.remove('hidden');
+    // Bug #8 fix: show mute buttons when call starts
+    if (btnMuteMic) btnMuteMic.classList.remove('hidden');
+    if (btnMuteCam) btnMuteCam.classList.remove('hidden');
     videoGrid.classList.remove('hidden');
     addVideoStream(myId, myName, localStream, true);
     if (isHost) {
-      members.find(m => m.id === myId).inCall = true;
+      // Bug #4 fix: null-guard before accessing .inCall
+      const selfMember = members.find(m => m.id === myId);
+      if (selfMember) selfMember.inCall = true;
       broadcastToAll({ type: 'members_update', members, maxMembers: maxRoomMembers });
       callOtherInCallMembers();
     } else {
-      currentConnection?.send({ type: 'call_status', inCall: true });
+      // Bug #2 fix: include senderId in call_status payload
+      currentConnection?.send({ type: 'call_status', inCall: true, senderId: myId });
       callOtherInCallMembers();
     }
   } catch (err) { showStatus('Media access failed', true); }
@@ -434,11 +446,28 @@ function leaveCall() {
   videoGrid.innerHTML = '';
   Object.values(calls).forEach(c => c.close());
   calls = {};
+  // Bug #9 fix: hide mute buttons and reset their state when call ends
+  if (btnEndCall) btnEndCall.classList.add('hidden');
+  if (btnMuteMic) {
+    btnMuteMic.classList.add('hidden');
+    btnMuteMic.innerHTML = '<i class="fa-solid fa-microphone"></i>';
+    btnMuteMic.style.color = '';
+  }
+  if (btnMuteCam) {
+    btnMuteCam.classList.add('hidden');
+    btnMuteCam.innerHTML = '<i class="fa-solid fa-video"></i>';
+    btnMuteCam.style.color = '';
+  }
+  isMicMuted = false;
+  isCamOff = false;
   if (isHost) {
-    members.find(m => m.id === myId).inCall = false;
+    // Bug #3 fix: null-guard before accessing .inCall
+    const selfMember = members.find(m => m.id === myId);
+    if (selfMember) selfMember.inCall = false;
     broadcastToAll({ type: 'members_update', members, maxMembers: maxRoomMembers });
   } else {
-    currentConnection?.send({ type: 'call_status', inCall: false });
+    // Bug #2 fix: include senderId in call_status payload
+    currentConnection?.send({ type: 'call_status', inCall: false, senderId: myId });
   }
 }
 
@@ -472,9 +501,10 @@ function addVideoStream(id, name, stream, isLocal) {
 
 function removeVideoStream(id) { document.getElementById(`video-wrapper-${id}`)?.remove(); }
 
-btnVoiceCall.addEventListener('click', () => toggleCall(false));
-btnVideoCall.addEventListener('click', () => toggleCall(true));
-btnEndCall.addEventListener('click', leaveCall);
+// Bug #16 fix: null-guard call control buttons
+if (btnVoiceCall) btnVoiceCall.addEventListener('click', () => toggleCall(false));
+if (btnVideoCall) btnVideoCall.addEventListener('click', () => toggleCall(true));
+if (btnEndCall) btnEndCall.addEventListener('click', leaveCall);
 
 // Mute/Unmute Controls
 if (btnMuteMic) {
@@ -493,6 +523,29 @@ if (btnMuteCam) {
     localStream.getVideoTracks().forEach(t => { t.enabled = !isCamOff; });
     btnMuteCam.innerHTML = isCamOff ? '<i class="fa-solid fa-video-slash"></i>' : '<i class="fa-solid fa-video"></i>';
     btnMuteCam.style.color = isCamOff ? 'var(--danger-color)' : '';
+  });
+}
+
+// Bug #7 fix: wire up the search button
+const btnSearch = document.getElementById('btn-search');
+if (btnSearch) {
+  btnSearch.addEventListener('click', () => {
+    const query = prompt('Search messages:');
+    if (!query || !query.trim()) return;
+    const q = query.trim().toLowerCase();
+    const allMessages = messagesContainer.querySelectorAll('.message');
+    let found = false;
+    // Remove any previous highlights
+    messagesContainer.querySelectorAll('.search-highlight').forEach(el => el.classList.remove('search-highlight'));
+    allMessages.forEach(el => {
+      if (el.textContent.toLowerCase().includes(q)) {
+        el.classList.add('search-highlight');
+        if (!found) { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); found = true; }
+      }
+    });
+    if (!found) showStatus('No messages found.', true);
+    // Auto-clear highlight after 3s
+    setTimeout(() => messagesContainer.querySelectorAll('.search-highlight').forEach(el => el.classList.remove('search-highlight')), 3000);
   });
 }
 
@@ -555,8 +608,10 @@ btnCreate.addEventListener('click', () => {
         appendMessage('System', `${data.senderName} joined the room.`, false, true);
         broadcastToAll({ type: 'members_update', members, maxMembers: maxRoomMembers });
       } else if (data.type === 'call_status') {
+        // Bug #2 fix: senderId is now included in the payload; Bug #11 fix: updateMembersUI
         const member = members.find(m => m.id === data.senderId);
         if (member) member.inCall = data.inCall;
+        updateMembersUI();
         broadcastToAll({ type: 'members_update', members, maxMembers: maxRoomMembers });
       } else handleIncomingData(data);
     });
@@ -613,11 +668,14 @@ function enterChatScreen() {
   if (typeof logRoomJoin === 'function') logRoomJoin(myId, roomCode);
 }
 
-copyCodeBtn.addEventListener('click', () => {
-  navigator.clipboard.writeText(roomCode);
-  copyCodeBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
-  setTimeout(() => { copyCodeBtn.innerHTML = '<i class="fa-solid fa-copy"></i>'; }, 2000);
-});
+// Bug #17 fix: null-guard copyCodeBtn
+if (copyCodeBtn) {
+  copyCodeBtn.addEventListener('click', () => {
+    navigator.clipboard.writeText(roomCode);
+    copyCodeBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
+    setTimeout(() => { copyCodeBtn.innerHTML = '<i class="fa-solid fa-copy"></i>'; }, 2000);
+  });
+}
 
 function sendMessage() {
   const text = messageInput.value.trim();

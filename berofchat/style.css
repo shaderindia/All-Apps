@@ -361,7 +361,8 @@ input:focus {
 
 .room-info {
   padding: 20px;
-  background: rgba(0,0,0,0.2);
+  /* Bug #13 fix: lighter bg to match light sidebar theme */
+  background: rgba(0,0,0,0.06);
   border-bottom: 1px solid rgba(0,0,0,0.05);
   position: relative;
 }
@@ -500,7 +501,8 @@ input:focus {
 
 .sidebar-footer {
   padding: 16px 20px;
-  background: rgba(0,0,0,0.2);
+  /* Bug #13 fix: lighter footer bg to match light sidebar theme */
+  background: rgba(0,0,0,0.06);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -572,17 +574,42 @@ input:focus {
   background: url('data:image/svg+xml;utf8,<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h20v20H0z" fill="%230e111a"/><circle cx="10" cy="10" r="1" fill="%23ffffff" fill-opacity="0.05"/></svg>');
 }
 
+/* Bug #12 fix: chat header & input area — use light-mode compatible background */
 .chat-header {
   padding: 16px 24px;
-  background: rgba(22, 25, 37, 0.8);
+  background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(0,0,0,0.05);
+  border-bottom: 1px solid rgba(0,0,0,0.08);
   display: flex;
   justify-content: space-between;
   align-items: center;
   z-index: 10;
 }
+
+.chat-input-area {
+  padding: 16px 24px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Bug #7 fix: Search highlight style */
+.search-highlight {
+  outline: 2px solid var(--accent-color);
+  border-radius: 6px;
+  animation: highlightPulse 0.4s ease;
+}
+
+@keyframes highlightPulse {
+  0%   { outline-width: 0px; }
+  50%  { outline-width: 4px; }
+  100% { outline-width: 2px; }
+}
+
 
 .header-info h3 {
   font-size: 16px;
@@ -714,6 +741,11 @@ input:focus {
   margin-left: 12px;
 }
 
+/* Bug #14 fix: timestamp should be light on dark sent-message background */
+.sent .msg-time {
+  color: rgba(255,255,255,0.65);
+}
+
 .chat-input-area {
   padding: 16px 24px;
   background: rgba(22, 25, 37, 0.8);
@@ -843,6 +875,16 @@ input:focus {
 
 .hidden {
   display: none !important;
+}
+
+/* Bug #5 fix: GDPR banner uses flex when visible (after .hidden is removed) */
+#gdpr-banner:not(.hidden) {
+  display: flex !important;
+}
+
+/* Bug #15 fix: user-profile uses flex when visible */
+#user-profile:not(.hidden) {
+  display: flex !important;
 }
 
 .mobile-only {
