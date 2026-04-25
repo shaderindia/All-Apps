@@ -1,148 +1,1256 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>QUICK PRIVATE CHAT | Secure P2P Messaging & Video Calls</title>
-  <meta name="description" content="QUICK PRIVATE CHAT is a free, real-time, peer-to-peer (P2P) messaging application. Connect securely with auto-generated room codes, text chat, voice, and video calls without any server tracking.">
-  <meta name="keywords" content="p2p chat, peer to peer messaging, webrtc video call, secure chat room, anonymous chat, quick private chat">
-  <link rel="canonical" href="https://shader7.com/berofchat/">
-  
-  <!-- Open Graph -->
-  <meta property="og:title" content="QUICK PRIVATE CHAT | Secure P2P Messaging">
-  <meta property="og:description" content="Real-time P2P messaging and video calling with zero server tracking.">
-  <meta property="og:url" content="https://shader7.com/berofchat/">
-  <meta property="og:type" content="website">
-  
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="QUICK PRIVATE CHAT | Secure P2P Messaging">
-  <meta name="twitter:description" content="Real-time P2P messaging and video calling with zero server tracking.">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#ffffff">
+  <title>QUICK PRIVATE CHAT | Private P2P Messaging & WebRTC Calls</title>
 
-  <link rel="stylesheet" href="style.css?v=2.0.0">
+  <meta
+    name="description"
+    content="ITS IN DEVELOPMENT MIGHT NOT WORK AS EXPECTED YOU WILL FIND CHANGES DAILY THANK YOU FOR YOUR PATIENCE, QUICK PRIVATE CHAT is a fast private chat app with peer-to-peer messaging and WebRTC voice/video where possible. Signaling or relay services may be used to connect users."
+  />
+  <meta
+    name="keywords"
+    content="p2p chat, peer to peer messaging, webrtc video call, private chat room, anonymous chat, quick private chat"
+  />
+  <link rel="canonical" href="https://shader7.com/berofchat/" />
+
+  <meta property="og:title" content="QUICK PRIVATE CHAT | Private P2P Messaging" />
+  <meta
+    property="og:description"
+    content="Private peer-to-peer messaging and WebRTC calls where possible. Signaling or relay services may be used when needed."
+  />
+  <meta property="og:url" content="https://shader7.com/berofchat/" />
+  <meta property="og:type" content="website" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="QUICK PRIVATE CHAT | Private P2P Messaging" />
+  <meta
+    name="twitter:description"
+    content="Private peer-to-peer messaging and WebRTC calls where possible. Signaling or relay services may be used when needed."
+  />
+
+  <meta http-equiv="Permissions-Policy" content="camera=(self), microphone=(self), geolocation=(), payment=(), usb=(), interest-cohort=()" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <meta name="theme-color" content="#ffffff" />
+
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="style.css?v=2.2.0" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet"
+  />
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    rel="stylesheet"
+  />
+
   <style>
-    /* Critical: screens must be hidden unless active */
-    .screen { display: none !important; visibility: hidden !important; }
-    .screen.active { display: flex !important; visibility: visible !important; }
+    :root {
+      --accent-color: #00a8ff;
+      --accent-2: #7c3aed;
+      --danger-color: #ff4757;
+      --success-color: #10b981;
+      --warning-color: #f59e0b;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --surface: rgba(255, 255, 255, 0.84);
+      --border: rgba(15, 23, 42, 0.1);
+      --shadow: 0 28px 90px rgba(15, 23, 42, 0.14);
+      --grad-primary: linear-gradient(135deg, #00a8ff, #7c3aed);
+      --grad-insta: linear-gradient(45deg, #f58529, #dd2a7b, #8134af, #515bd4);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      margin: 0;
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text-main);
+      background:
+        radial-gradient(circle at top left, rgba(0, 168, 255, 0.2), transparent 35%),
+        radial-gradient(circle at bottom right, rgba(124, 58, 237, 0.18), transparent 38%),
+        linear-gradient(135deg, #f8fafc, #eef2ff);
+    }
+
+    button,
+    input,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    a {
+      color: var(--accent-color);
+    }
+
+    .hidden {
+      display: none !important;
+      visibility: hidden !important;
+    }
+
+    .screen {
+      display: none !important;
+      visibility: hidden !important;
+    }
+
+    .screen.active {
+      display: flex !important;
+      visibility: visible !important;
+    }
+
+    .sr-only {
+      position: absolute !important;
+      width: 1px !important;
+      height: 1px !important;
+      padding: 0 !important;
+      margin: -1px !important;
+      overflow: hidden !important;
+      clip: rect(0, 0, 0, 0) !important;
+      white-space: nowrap !important;
+      border: 0 !important;
+    }
+
+    #app {
+      width: 100%;
+      min-height: 100vh;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .bg-shapes {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .shape {
+      position: absolute;
+      border-radius: 999px;
+      filter: blur(8px);
+      opacity: 0.55;
+      animation: qpcFloat 13s ease-in-out infinite;
+    }
+
+    .shape-1 {
+      width: 230px;
+      height: 230px;
+      top: 8%;
+      left: 7%;
+      background: rgba(0, 168, 255, 0.2);
+    }
+
+    .shape-2 {
+      width: 320px;
+      height: 320px;
+      right: 6%;
+      bottom: 10%;
+      background: rgba(124, 58, 237, 0.17);
+      animation-delay: -4s;
+    }
+
+    .shape-3 {
+      width: 170px;
+      height: 170px;
+      right: 24%;
+      top: 18%;
+      background: rgba(16, 185, 129, 0.14);
+      animation-delay: -8s;
+    }
+
+    @keyframes qpcFloat {
+      0%, 100% {
+        transform: translate3d(0, 0, 0) scale(1);
+      }
+
+      50% {
+        transform: translate3d(18px, -18px, 0) scale(1.04);
+      }
+    }
+
+    #entry-screen {
+      min-height: 100vh;
+      align-items: center;
+      justify-content: center;
+      padding: 28px 16px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .glass-panel {
+      width: min(100%, 500px);
+      background: var(--surface);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.72);
+      border-radius: 30px;
+      box-shadow: var(--shadow);
+      padding: 26px;
+    }
+
+    .top-bar,
+    .profile-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .home-link,
+    .mini-link,
+    .text-btn {
+      color: var(--text-muted);
+      font-size: 12px;
+      text-decoration: none;
+      border: none;
+      background: transparent;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .home-link:hover,
+    .mini-link:hover,
+    .text-btn:hover {
+      color: var(--accent-color);
+    }
+
+    .logo {
+      text-align: center;
+      margin: 20px 0 8px;
+    }
+
+    .logo-icon {
+      width: 78px;
+      height: 78px;
+      margin: 0 auto 16px;
+      border-radius: 26px;
+      display: grid;
+      place-items: center;
+      background: var(--grad-primary);
+      color: #fff;
+      font-size: 32px;
+      box-shadow: 0 18px 38px rgba(0, 168, 255, 0.25);
+    }
+
+    .logo h1 {
+      margin: 0;
+      font-size: clamp(28px, 5vw, 38px);
+      letter-spacing: -0.05em;
+      line-height: 0.95;
+    }
+
+    .subtitle {
+      max-width: 400px;
+      margin: 12px auto 18px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .btn {
+      min-height: 48px;
+      border: none;
+      border-radius: 15px;
+      padding: 12px 16px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .primary-btn {
+      width: 100%;
+      background: #111827;
+      color: #fff;
+      box-shadow: 0 16px 32px rgba(15, 23, 42, 0.16);
+    }
+
+    .gradient-btn {
+      background: var(--grad-primary);
+      color: #fff;
+      box-shadow: 0 16px 34px rgba(0, 168, 255, 0.24);
+    }
+
+    .install-btn {
+      width: 100%;
+      margin-bottom: 14px;
+      color: var(--accent-color);
+      background: rgba(0, 168, 255, 0.09);
+      border: 1px solid rgba(0, 168, 255, 0.24);
+      box-shadow: none;
+    }
+
+    .ios-install-tip {
+      margin: 0 0 16px;
+      color: var(--text-muted);
+      text-align: center;
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    .form-group,
+    .age-verification,
+    .privacy-toggle,
+    .tos-verification,
+    .legal-card {
+      margin-top: 14px;
+    }
+
+    .field-label {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .input-group {
+      width: 100%;
+      min-height: 50px;
+      padding: 0 14px;
+      border-radius: 15px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.74);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .input-group:focus-within,
+    input[type="date"]:focus,
+    textarea:focus {
+      border-color: rgba(0, 168, 255, 0.6);
+      box-shadow: 0 0 0 4px rgba(0, 168, 255, 0.12);
+    }
+
+    .input-group i {
+      width: 18px;
+      text-align: center;
+      color: var(--text-muted);
+    }
+
+    .input-group input {
+      width: 100%;
+      min-height: 48px;
+      border: none;
+      outline: none;
+      background: transparent;
+      color: var(--text-main);
+    }
+
+    input[type="date"] {
+      width: 100%;
+      min-height: 48px;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      padding: 0 14px;
+      outline: none;
+      background: rgba(255, 255, 255, 0.74);
+      color: var(--text-main);
+    }
+
+    .tabs {
+      margin: 18px 0 14px;
+      padding: 6px;
+      border-radius: 17px;
+      background: rgba(15, 23, 42, 0.06);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
+    }
+
+    .tab-btn {
+      padding: 12px 10px;
+      border: none;
+      border-radius: 13px;
+      background: transparent;
+      color: var(--text-muted);
+      font-weight: 900;
+    }
+
+    .tab-btn.active {
+      background: #fff;
+      color: var(--text-main);
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+    }
+
+    .form-container {
+      display: none;
+    }
+
+    .form-container.active {
+      display: block;
+      animation: qpcFadeUp 0.2s ease;
+    }
+
+    .form-container .input-group {
+      margin-bottom: 12px;
+    }
+
+    @keyframes qpcFadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .check-card {
+      padding: 12px;
+      border-radius: 15px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.64);
+    }
+
+    .check-card label {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .check-card input[type="checkbox"] {
+      width: 17px;
+      height: 17px;
+      flex: 0 0 auto;
+      margin-top: 1px;
+      accent-color: var(--accent-color);
+    }
+
+    .check-card span {
+      color: var(--text-muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .status-msg {
+      min-height: 22px;
+      margin-top: 12px;
+      text-align: center;
+      color: var(--danger-color);
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+
+    .legal-card {
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .legal-actions {
+      display: grid;
+      gap: 7px;
+      margin-bottom: 8px;
+    }
+
+    .legal-card p {
+      margin: 8px 0;
+      color: var(--text-muted);
+      font-size: 10.5px;
+      line-height: 1.55;
+    }
+
+    .danger-link {
+      color: var(--danger-color);
+    }
+
+    #chat-screen {
+      width: 100%;
+      min-height: 100vh;
+      position: relative;
+      z-index: 1;
+      background: #f8fafc;
+    }
+
+    .sidebar {
+      width: 310px;
+      flex: 0 0 310px;
+      min-height: 100vh;
+      padding: 18px;
+      background: #0f172a;
+      color: #e5e7eb;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 18px 0 52px rgba(15, 23, 42, 0.15);
+    }
+
+    .sidebar-header,
+    .sidebar-footer,
+    .section-title,
+    .code-box,
+    .user-profile {
+      display: flex;
+      align-items: center;
+    }
+
+    .sidebar-header,
+    .sidebar-footer,
+    .section-title {
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: 0.02em;
+    }
+
+    .brand i {
+      color: var(--accent-color);
+    }
+
+    .room-info {
+      margin: 24px 0;
+      padding: 16px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      background: rgba(255, 255, 255, 0.045);
+    }
+
+    .label {
+      color: #94a3b8;
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .code-box {
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 9px;
+      padding: 12px;
+      border-radius: 15px;
+      background: rgba(255, 255, 255, 0.08);
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+    }
+
+    .role-badge,
+    .count-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 10px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      color: #dbeafe;
+      background: rgba(0, 168, 255, 0.14);
+      border: 1px solid rgba(0, 168, 255, 0.26);
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .count-badge {
+      min-width: 28px;
+      height: 28px;
+      margin: 0;
+      color: #fff;
+    }
+
+    .members-section {
+      flex: 1;
+      min-height: 0;
+    }
+
+    #members-list {
+      list-style: none;
+      padding: 0;
+      margin: 12px 0 0;
+      display: grid;
+      gap: 8px;
+      overflow: auto;
+    }
+
+    #members-list li {
+      padding: 10px 12px;
+      border-radius: 14px;
+      color: #e2e8f0;
+      background: rgba(255, 255, 255, 0.06);
+      font-size: 13px;
+    }
+
+    .sidebar-footer {
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.09);
+    }
+
+    .user-profile {
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .avatar {
+      width: 42px;
+      height: 42px;
+      flex: 0 0 auto;
+      border-radius: 15px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-weight: 900;
+    }
+
+    .gradient-avatar {
+      background: var(--grad-primary);
+    }
+
+    .user-details {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .name {
+      color: #fff;
+      font-weight: 900;
+      max-width: 155px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #94a3b8;
+      font-size: 12px;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--success-color);
+      box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.12);
+    }
+
+    .chat-area {
+      flex: 1;
+      min-width: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background:
+        radial-gradient(circle at top right, rgba(0, 168, 255, 0.08), transparent 30%),
+        #f8fafc;
+    }
+
+    .chat-header {
+      min-height: 74px;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: rgba(255, 255, 255, 0.86);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .header-info h3 {
+      margin: 0;
+      font-size: 18px;
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .status-text {
+      margin-top: 4px;
+      color: var(--text-muted);
+      font-size: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .divider {
+      width: 1px;
+      height: 28px;
+      margin: 0 4px;
+      background: var(--border);
+    }
+
+    .icon-btn {
+      width: 42px;
+      height: 42px;
+      border: none;
+      border-radius: 14px;
+      display: inline-grid;
+      place-items: center;
+      color: inherit;
+      background: rgba(15, 23, 42, 0.06);
+      transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
+    }
+
+    .icon-btn:hover {
+      transform: translateY(-1px);
+      background: rgba(0, 168, 255, 0.1);
+      color: var(--accent-color);
+    }
+
+    .header-btn {
+      color: #334155;
+    }
+
+    .danger-btn,
+    .danger-text {
+      color: var(--danger-color);
+    }
+
+    .hangup-btn {
+      color: #fff;
+      background: var(--danger-color);
+    }
+
+    .success-btn {
+      color: #fff;
+      background: var(--success-color);
+    }
+
+    .video-grid {
+      padding: 16px 20px 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+
+    .messages-container {
+      flex: 1;
+      overflow: auto;
+      padding: 22px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .system-msg {
+      display: flex;
+      justify-content: center;
+    }
+
+    .sys-content {
+      max-width: 720px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.78);
+      border: 1px solid var(--border);
+      font-size: 12px;
+      line-height: 1.45;
+      text-align: center;
+    }
+
+    .chat-input-area {
+      padding: 14px 20px 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.86);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-top: 1px solid var(--border);
+    }
+
+    .input-wrapper {
+      flex: 1;
+      min-width: 0;
+      min-height: 52px;
+      padding: 0 8px 0 16px;
+      border-radius: 17px;
+      border: 1px solid var(--border);
+      background: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .input-wrapper input {
+      flex: 1;
+      min-width: 0;
+      min-height: 50px;
+      border: none;
+      outline: none;
+      background: transparent;
+    }
+
+    .send-btn {
+      width: 52px;
+      height: 52px;
+      padding: 0;
+      border-radius: 17px;
+      color: #fff;
+      background: var(--grad-primary);
+      box-shadow: 0 14px 28px rgba(0, 168, 255, 0.22);
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      padding: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(15, 23, 42, 0.45);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .modal-content {
+      width: min(100%, 440px);
+      padding: 24px;
+      border-radius: 26px;
+      background: rgba(255, 255, 255, 0.96);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+
+    .modal-content h2 {
+      margin: 8px 0;
+      letter-spacing: -0.03em;
+    }
+
+    .modal-content p {
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .pulsing-icon {
+      font-size: 34px;
+      color: var(--accent-color);
+      animation: qpcPulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes qpcPulse {
+      0%, 100% {
+        transform: scale(1);
+        opacity: 0.86;
+      }
+
+      50% {
+        transform: scale(1.08);
+        opacity: 1;
+      }
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 18px;
+    }
+
+    .modal-actions .btn {
+      flex: 1;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 110px;
+      padding: 12px;
+      border-radius: 15px;
+      border: 1px solid var(--border);
+      background: rgba(15, 23, 42, 0.04);
+      color: var(--text-main);
+      resize: vertical;
+      outline: none;
+    }
+
+    #gdpr-banner {
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 10000;
+      padding: 16px 24px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      background: rgba(255, 255, 255, 0.97);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(0, 168, 255, 0.18);
+      box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.05);
+    }
+
+    #gdpr-banner p {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .cookie-actions {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .cookie-btn {
+      padding: 9px 16px;
+      border-radius: 11px;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .cookie-secondary {
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      background: transparent;
+    }
+
+    .cookie-primary {
+      border: none;
+      color: #fff;
+      background: var(--grad-primary);
+      box-shadow: 0 0 15px rgba(0, 168, 255, 0.24);
+    }
+
+    .mobile-only {
+      display: none;
+    }
+
+    @media (max-width: 840px) {
+      .mobile-only {
+        display: inline-grid;
+      }
+
+      .sidebar {
+        position: fixed;
+        inset: 0 auto 0 0;
+        z-index: 5000;
+        transform: translateX(-100%);
+        transition: transform 0.22s ease;
+      }
+
+      .sidebar.active {
+        transform: translateX(0);
+      }
+
+      .chat-header {
+        padding-inline: 12px;
+      }
+
+      .header-actions {
+        gap: 4px;
+      }
+
+      .divider {
+        display: none;
+      }
+
+      .icon-btn {
+        width: 40px;
+        height: 40px;
+      }
+
+      .messages-container {
+        padding: 16px 12px;
+      }
+
+      .chat-input-area {
+        padding: 12px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .glass-panel {
+        padding: 20px;
+        border-radius: 24px;
+      }
+
+      .logo-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 22px;
+      }
+
+      .modal-actions {
+        flex-direction: column;
+      }
+
+      .cookie-actions {
+        width: 100%;
+      }
+
+      .cookie-btn {
+        flex: 1;
+      }
+
+      .ios-install-tip {
+        text-align: left;
+      }
+    }
   </style>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 </head>
+
 <body>
   <div id="app">
-    <!-- Background Animated Shapes for Entry -->
-    <div class="bg-shapes" id="bg-shapes">
+    <div class="bg-shapes" id="bg-shapes" aria-hidden="true">
       <div class="shape shape-1"></div>
       <div class="shape shape-2"></div>
       <div class="shape shape-3"></div>
     </div>
 
-    <!-- Entry Screen -->
     <div id="entry-screen" class="screen active">
-      <div class="glass-panel">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-          <a href="https://shader7.com" style="color: var(--text-muted); font-size: 12px; text-decoration: none; display: flex; align-items: center; gap: 5px;"><i class="fa-solid fa-house"></i> Home</a>
-          <!-- Bug #15 fix: removed inline display:flex which was overriding .hidden class -->
-          <div id="user-profile" class="hidden" style="align-items: center; gap: 10px;">
-            <span id="user-name-display" style="font-size: 13px; font-weight: 600; color: var(--accent-color);"></span>
-            <button id="btn-logout" style="background: none; border: none; color: #ff4757; cursor: pointer; font-size: 12px; display: flex; align-items: center; gap: 4px;"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+      <div class="glass-panel" role="main" aria-labelledby="app-title">
+        <div class="top-bar">
+          <a href="https://shader7.com" rel="noopener noreferrer" class="home-link">
+            <i class="fa-solid fa-house" aria-hidden="true"></i>
+            Home
+          </a>
+
+          <div id="user-profile" class="profile-row hidden">
+            <span id="user-name-display" style="font-size: 13px; font-weight: 800; color: var(--accent-color);"></span>
+            <button id="btn-logout" class="text-btn" type="button" style="color: var(--danger-color);">
+              <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i>
+              Logout
+            </button>
           </div>
         </div>
+
         <div class="logo">
-          <div class="logo-icon"><i class="fa-solid fa-user-secret"></i></div>
-          <h1>Quick Private Chat</h1>
+          <div class="logo-icon">
+            <i class="fa-solid fa-user-secret" aria-hidden="true"></i>
+          </div>
+          <h1 id="app-title">Quick Private Chat</h1>
         </div>
-        <p class="subtitle">Start a private chat instantly — no login, no server.</p>
-        
-        <button id="btn-install" class="btn primary-btn install-btn hidden" style="margin-bottom: 20px; background: rgba(0, 210, 255, 0.1); color: var(--accent-color); border: 1px solid var(--accent-color);"><i class="fa-solid fa-download"></i> Install App (Desktop / Android)</button>
-        <p class="ios-install-tip" style="font-size: 11px; color: var(--text-muted); margin-bottom: 15px;">iOS Users: Tap <strong>Share</strong> then <strong>Add to Home Screen</strong> to install.</p>
-        
-        <!-- Display Name Input (For No-Login Flow) -->
-        <div class="form-group" style="margin-bottom: 20px;">
-          <label style="display: flex; flex-direction: column; align-items: flex-start; gap: 8px; width: 100%;">
-            <span style="font-size: 13px; color: var(--text-muted);">Your Name</span>
-            <div class="input-group" style="width: 100%; margin-bottom: 0;">
-              <i class="fa-solid fa-user"></i>
-              <input type="text" id="guest-name-input" placeholder="e.g. John Doe" autocomplete="off" maxlength="20" style="width: 100%;">
+
+        <p class="subtitle">
+          Start a private chat instantly — no account required. Peer-to-peer where possible; signaling or relay services may be used.
+        </p>
+
+        <button id="btn-install" class="btn install-btn hidden" type="button">
+          <i class="fa-solid fa-download" aria-hidden="true"></i>
+          Install App
+        </button>
+
+        <p class="ios-install-tip">
+          iOS users: tap <strong>Share</strong>, then <strong>Add to Home Screen</strong> to install.
+        </p>
+
+        <div class="form-group">
+          <label class="field-label" for="guest-name-input">
+            Your Display Name
+            <div class="input-group">
+              <i class="fa-solid fa-user" aria-hidden="true"></i>
+              <input
+                type="text"
+                id="guest-name-input"
+                placeholder="e.g. Alex"
+                autocomplete="nickname"
+                maxlength="20"
+                required
+              />
             </div>
           </label>
         </div>
 
-        <div class="tabs">
-          <button class="tab-btn active" data-target="join-form">Join Room</button>
-          <button class="tab-btn" data-target="create-form">Create Room</button>
+        <div class="tabs" role="tablist" aria-label="Room actions">
+          <button class="tab-btn active" type="button" role="tab" aria-selected="true" data-target="join-form">
+            Join Room
+          </button>
+          <button class="tab-btn" type="button" role="tab" aria-selected="false" data-target="create-form">
+            Create Room
+          </button>
         </div>
 
-        <div id="join-form" class="form-container active">
+        <div id="join-form" class="form-container active" role="tabpanel">
+          <label class="sr-only" for="room-code-input">Room Code</label>
           <div class="input-group">
-            <i class="fa-solid fa-hashtag"></i>
-            <input type="text" id="room-code-input" placeholder="Enter Room Code" autocomplete="off" maxlength="8" style="text-transform: uppercase;">
+            <i class="fa-solid fa-hashtag" aria-hidden="true"></i>
+            <input
+              type="text"
+              id="room-code-input"
+              placeholder="Enter Room Code"
+              autocomplete="off"
+              maxlength="8"
+              autocapitalize="characters"
+              spellcheck="false"
+              style="text-transform: uppercase;"
+            />
           </div>
-          <button id="btn-join" class="btn primary-btn"><i class="fa-solid fa-right-to-bracket"></i> Join Chat</button>
+
+          <button id="btn-join" class="btn primary-btn" type="button">
+            <i class="fa-solid fa-right-to-bracket" aria-hidden="true"></i>
+            Join Chat
+          </button>
         </div>
 
-        <div id="create-form" class="form-container">
+        <div id="create-form" class="form-container" role="tabpanel">
+          <label class="sr-only" for="max-members-create">Maximum Members</label>
           <div class="input-group">
-            <i class="fa-solid fa-users"></i>
-            <input type="number" id="max-members-create" placeholder="Max Members (up to 10)" autocomplete="off" min="2" max="10" value="10">
+            <i class="fa-solid fa-users" aria-hidden="true"></i>
+            <input
+              type="number"
+              id="max-members-create"
+              placeholder="Max Members, up to 10"
+              autocomplete="off"
+              min="2"
+              max="10"
+              value="10"
+            />
           </div>
-          <button id="btn-create" class="btn primary-btn gradient-btn"><i class="fa-solid fa-magic"></i> Generate & Host Room</button>
+
+          <button id="btn-create" class="btn primary-btn gradient-btn" type="button">
+            <i class="fa-solid fa-magic" aria-hidden="true"></i>
+            Generate & Host Room
+          </button>
         </div>
-        
+
         <div class="age-verification">
-          <label style="display: flex; flex-direction: column; align-items: flex-start; gap: 8px; width: 100%;">
-            <span style="font-size: 13px; color: var(--text-muted);">Date of Birth (You must be 19+)</span>
-            <input type="date" id="dob-input" style="background: rgba(0,0,0,0.05); color: #111827; border: 1px solid rgba(0,0,0,0.1); border-radius: 8px; padding: 10px; width: 100%;">
+          <label class="field-label" for="dob-input">
+            Date of Birth — required to confirm you are 19+
+            <input type="date" id="dob-input" autocomplete="bday" />
+          </label>
+          <p style="font-size: 11px; color: var(--text-muted); margin: 7px 0 0; line-height: 1.45;">
+            Your age check should be processed locally where possible. Avoid storing full date of birth unless legally required.
+          </p>
+        </div>
+
+        <div class="privacy-toggle check-card">
+          <label for="mask-ip-checkbox">
+            <input type="checkbox" id="mask-ip-checkbox" />
+            <span>
+              <strong>Hide my IP from other chat members where possible</strong><br />
+              Attempts to use a TURN relay. Relay providers may still process connection metadata.
+            </span>
           </label>
         </div>
 
-        <!-- Phone Auth moved to login.html -->
-        <div class="privacy-toggle" style="margin-top: 15px; background: rgba(0,0,0,0.02); padding: 10px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.05);">
-          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-            <input type="checkbox" id="mask-ip-checkbox" style="accent-color: var(--accent-color); width: 16px; height: 16px;">
-            <span style="font-size: 12px; color: var(--text-muted);"><strong>Mask IP Address</strong> <br><span style="font-size: 10px;">(Routes traffic via TURN Relay to hide your identity)</span></span>
+        <div class="tos-verification check-card">
+          <label for="tos-checkbox">
+            <input type="checkbox" id="tos-checkbox" />
+            <span>
+              I agree to the
+              <a href="../terms.html" target="_blank" rel="noopener noreferrer">Terms of Service</a>
+              and
+              <a href="../privacy-policy.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.
+            </span>
           </label>
         </div>
 
-        <div class="tos-verification" style="margin-top: 15px;">
-          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-            <input type="checkbox" id="tos-checkbox" style="accent-color: var(--accent-color); width: 16px; height: 16px;">
-            <span style="font-size: 12px; color: var(--text-muted);">I agree to the <a href="../terms.html" target="_blank" style="color: var(--accent-color);">Terms of Service</a> & <a href="../privacy-policy.html" target="_blank" style="color: var(--accent-color);">Privacy Policy</a>.</span>
-          </label>
-        </div>
-        
-        <div class="status-msg" id="entry-status"></div>
+        <div class="status-msg" id="entry-status" role="status" aria-live="polite"></div>
 
-        <div style="text-align: center; margin-top: 15px; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 15px;">
-          <button id="btn-download-logs" style="background: none; border: none; color: var(--text-muted); font-size: 11px; text-decoration: underline; cursor: pointer; margin-bottom: 8px; display: block; width: 100%;">Download Consent Audit Logs</button>
-          <button id="btn-delete-data" style="background: none; border: none; color: var(--danger-color); font-size: 11px; text-decoration: underline; cursor: pointer; margin-bottom: 8px; display: block; width: 100%;"><i class="fa-solid fa-trash-can"></i> Delete My Data & Revoke Consent (GDPR / CCPA / LGPD)</button>
-          <p style="font-size: 10px; color: var(--text-muted); margin-bottom: 8px; line-height: 1.4;">Data Controller: SHADER7 (nxdecore@gmail.com). Traceability hashes retained 180 days per Indian IT Rules 2021. We do <strong>not sell personal information</strong> (CCPA §1798.120).</p>
-          <a href="https://instagram.com/nishix_vamp" target="_blank" style="color: var(--text-muted); font-size: 12px; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 6px; transition: color 0.3s;">
-            <i class="fa-brands fa-instagram" style="background: var(--grad-insta); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i> @nishix_vamp
+        <div class="legal-card">
+          <div class="legal-actions">
+            <button id="btn-download-logs" class="text-btn" type="button">
+              Download Consent Audit Logs
+            </button>
+
+            <button id="btn-delete-data" class="text-btn danger-link" type="button">
+              <i class="fa-solid fa-trash-can" aria-hidden="true"></i>
+              Delete My Data & Revoke Consent
+            </button>
+          </div>
+
+          <p>
+            Data Controller: SHADER7.
+            Privacy contact:
+            <a href="mailto:nxdecore@gmail.com">nxdecore@gmail.com</a>.
+            Grievance contact:
+            <a href="mailto:nxdecore@gmail.com">nxdecore@gmail.com</a>.
+            We do not sell or share personal information for cross-context behavioral advertising.
+          </p>
+
+          <p>
+            QUICK PRIVATE CHAT is not directed to children. Users must be 19+ to use this service.
+          </p>
+
+          <a
+            href="https://instagram.com/nishix_vamp"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="mini-link"
+          >
+            <i class="fa-brands fa-instagram" style="background: var(--grad-insta); -webkit-background-clip: text; -webkit-text-fill-color: transparent;" aria-hidden="true"></i>
+            @nishix_vamp
           </a>
         </div>
       </div>
     </div>
 
-    <!-- Chat Screen -->
     <div id="chat-screen" class="screen">
-      <!-- Sidebar -->
-      <aside class="sidebar">
+      <aside class="sidebar" id="sidebar" aria-label="Room sidebar">
         <div class="sidebar-header">
           <div class="brand">
-            <i class="fa-brands fa-nfc-symbol"></i> <span>BER</span>
+            <i class="fa-brands fa-nfc-symbol" aria-hidden="true"></i>
+            <span>BER</span>
           </div>
-          <button id="btn-close-sidebar" class="icon-btn mobile-only" title="Close Sidebar"><i class="fa-solid fa-xmark"></i></button>
+
+          <button id="btn-close-sidebar" class="icon-btn mobile-only" type="button" title="Close Sidebar" aria-label="Close sidebar">
+            <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+          </button>
         </div>
-        
+
         <div class="room-info">
           <span class="label">Current Room</span>
           <div class="code-box">
             <span id="display-room-code">----</span>
-            <button id="copy-code-btn" title="Copy Room Code"><i class="fa-solid fa-copy"></i></button>
+            <button id="copy-code-btn" class="icon-btn" type="button" title="Copy Room Code" aria-label="Copy room code">
+              <i class="fa-solid fa-copy" aria-hidden="true"></i>
+            </button>
           </div>
           <div class="role-badge" id="my-role-badge">Host</div>
         </div>
@@ -152,129 +1260,719 @@
             <span class="label">Members</span>
             <span class="count-badge" id="member-count">1</span>
           </div>
-          <ul id="members-list">
-            <!-- Members populated here dynamically -->
-          </ul>
+
+          <ul id="members-list" aria-label="Room members"></ul>
         </div>
 
         <div class="sidebar-footer">
           <div class="user-profile">
-            <div class="avatar gradient-avatar" id="my-avatar">U</div>
+            <div class="avatar gradient-avatar" id="my-avatar" aria-hidden="true">U</div>
             <div class="user-details">
               <span id="my-name" class="name">User</span>
-              <span class="status"><span class="status-dot"></span>Online</span>
+              <span class="status">
+                <span class="status-dot" aria-hidden="true"></span>
+                Online
+              </span>
             </div>
           </div>
-          <button id="btn-leave" class="icon-btn danger-btn" title="Leave Room"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+
+          <button id="btn-leave" class="icon-btn danger-btn" type="button" title="Leave Room" aria-label="Leave room">
+            <i class="fa-solid fa-arrow-right-from-bracket" aria-hidden="true"></i>
+          </button>
         </div>
       </aside>
 
-      <!-- Main Chat Area -->
       <main class="chat-area">
         <header class="chat-header">
-          <button id="btn-menu" class="icon-btn mobile-only" title="Open Menu"><i class="fa-solid fa-bars"></i></button>
+          <button id="btn-menu" class="icon-btn mobile-only" type="button" title="Open Menu" aria-label="Open menu">
+            <i class="fa-solid fa-bars" aria-hidden="true"></i>
+          </button>
+
           <div class="header-info">
-            <h3 id="chat-header-title">Global Lounge</h3>
-            <span class="status-text"><i class="fa-solid fa-lock"></i> End-to-End P2P Encrypted</span>
+            <h3 id="chat-header-title">Private Room</h3>
+            <span class="status-text">
+              <i class="fa-solid fa-lock" aria-hidden="true"></i>
+              WebRTC transport encrypted where supported
+            </span>
           </div>
+
           <div class="header-actions">
-            <button id="btn-voice-call" class="icon-btn header-btn" title="Join Voice Call"><i class="fa-solid fa-phone"></i></button>
-            <button id="btn-video-call" class="icon-btn header-btn" title="Join Video Call"><i class="fa-solid fa-video"></i></button>
-            <button id="btn-mute-mic" class="icon-btn header-btn hidden" title="Mute Mic"><i class="fa-solid fa-microphone"></i></button>
-            <button id="btn-mute-cam" class="icon-btn header-btn hidden" title="Turn Off Camera"><i class="fa-solid fa-video"></i></button>
-            <button id="btn-end-call" class="icon-btn header-btn hangup-btn hidden" title="End Call"><i class="fa-solid fa-phone-slash"></i></button>
-            <div class="divider"></div>
-            <button id="btn-report" class="icon-btn header-btn danger-text" title="Report Issue" style="color: var(--danger-color);"><i class="fa-solid fa-triangle-exclamation"></i></button>
-            <!-- Bug #7 fix: added id so JS can wire up the search button -->
-            <button id="btn-search" class="icon-btn header-btn" title="Search Messages"><i class="fa-solid fa-magnifying-glass"></i></button>
+            <button id="btn-voice-call" class="icon-btn header-btn" type="button" title="Join Voice Call" aria-label="Join voice call">
+              <i class="fa-solid fa-phone" aria-hidden="true"></i>
+            </button>
+
+            <button id="btn-video-call" class="icon-btn header-btn" type="button" title="Join Video Call" aria-label="Join video call">
+              <i class="fa-solid fa-video" aria-hidden="true"></i>
+            </button>
+
+            <button id="btn-mute-mic" class="icon-btn header-btn hidden" type="button" title="Mute Mic" aria-label="Mute microphone">
+              <i class="fa-solid fa-microphone" aria-hidden="true"></i>
+            </button>
+
+            <button id="btn-mute-cam" class="icon-btn header-btn hidden" type="button" title="Turn Off Camera" aria-label="Turn off camera">
+              <i class="fa-solid fa-video" aria-hidden="true"></i>
+            </button>
+
+            <button id="btn-end-call" class="icon-btn header-btn hangup-btn hidden" type="button" title="End Call" aria-label="End call">
+              <i class="fa-solid fa-phone-slash" aria-hidden="true"></i>
+            </button>
+
+            <div class="divider" aria-hidden="true"></div>
+
+            <button id="btn-report" class="icon-btn header-btn danger-text" type="button" title="Report Issue" aria-label="Report issue">
+              <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+            </button>
+
+            <button id="btn-search" class="icon-btn header-btn" type="button" title="Search Messages" aria-label="Search messages">
+              <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+            </button>
           </div>
         </header>
 
-        <div id="video-grid" class="video-grid hidden"></div>
+        <div id="video-grid" class="video-grid hidden" aria-label="Video call participants"></div>
 
-        <div class="messages-container" id="messages-container">
-          <!-- Welcome Message -->
+        <div class="messages-container" id="messages-container" aria-live="polite">
           <div class="system-msg">
             <div class="sys-content">
-              <i class="fa-solid fa-shield-halved"></i> Welcome to QUICK PRIVATE CHAT. Your connection is peer-to-peer.
+              <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
+              Welcome to QUICK PRIVATE CHAT. Messages are exchanged peer-to-peer where possible. Signaling or relay services may be used.
             </div>
           </div>
         </div>
 
         <footer class="chat-input-area">
-          <button class="icon-btn attach-btn"><i class="fa-solid fa-plus"></i></button>
+          <button class="icon-btn attach-btn" type="button" title="Attach file" aria-label="Attach file">
+            <i class="fa-solid fa-plus" aria-hidden="true"></i>
+          </button>
+
           <div class="input-wrapper">
-            <input type="text" id="message-input" placeholder="Message Room..." autocomplete="off">
-            <button class="icon-btn emoji-btn"><i class="fa-regular fa-face-smile"></i></button>
+            <label class="sr-only" for="message-input">Message Room</label>
+            <input type="text" id="message-input" placeholder="Message Room..." autocomplete="off" />
+
+            <button class="icon-btn emoji-btn" type="button" title="Emoji" aria-label="Open emoji picker">
+              <i class="fa-regular fa-face-smile" aria-hidden="true"></i>
+            </button>
           </div>
-          <button id="btn-send" class="btn send-btn"><i class="fa-solid fa-paper-plane"></i></button>
+
+          <button id="btn-send" class="btn send-btn" type="button" title="Send message" aria-label="Send message">
+            <i class="fa-solid fa-paper-plane" aria-hidden="true"></i>
+          </button>
         </footer>
       </main>
     </div>
   </div>
 
-  <!-- Incoming Call Modal -->
-  <div id="incoming-call-modal" class="modal-overlay hidden">
+  <div id="incoming-call-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="caller-name-display">
     <div class="modal-content">
-      <div class="pulsing-icon"><i class="fa-solid fa-phone-volume"></i></div>
+      <div class="pulsing-icon" aria-hidden="true">
+        <i class="fa-solid fa-phone-volume"></i>
+      </div>
+
       <h2 id="caller-name-display">Someone</h2>
       <p>is starting a call.</p>
+
       <div class="modal-actions">
-        <button id="btn-decline-call" class="btn danger-btn"><i class="fa-solid fa-phone-slash"></i> Decline</button>
-        <button id="btn-accept-call" class="btn success-btn"><i class="fa-solid fa-phone"></i> Answer</button>
+        <button id="btn-decline-call" class="btn danger-btn" type="button">
+          <i class="fa-solid fa-phone-slash" aria-hidden="true"></i>
+          Decline
+        </button>
+
+        <button id="btn-accept-call" class="btn success-btn" type="button">
+          <i class="fa-solid fa-phone" aria-hidden="true"></i>
+          Answer
+        </button>
       </div>
     </div>
   </div>
 
-  <!-- Grievance Report Modal -->
-  <div id="report-modal" class="modal-overlay hidden">
-    <div class="modal-content" style="max-width: 400px;">
-      <div class="pulsing-icon" style="color: var(--danger-color); animation: none; font-size: 30px;"><i class="fa-solid fa-triangle-exclamation"></i></div>
-      <h2 style="font-size: 18px;">Report a Grievance</h2>
-      <p style="font-size: 12px; margin-bottom: 15px; color: var(--text-muted);">Please describe the abuse or issue. Reports are sent to the Resident Grievance Officer.</p>
-      <textarea id="report-text" rows="4" placeholder="Describe the violation here..." style="width: 100%; background: rgba(0,0,0,0.05); color: #111827; border: 1px solid rgba(0,0,0,0.1); border-radius: 8px; padding: 10px; margin-bottom: 15px; resize: none;"></textarea>
-      <div class="modal-actions">
-        <button id="btn-cancel-report" class="btn primary-btn" style="background: rgba(0,0,0,0.05); border:none;"><i class="fa-solid fa-xmark"></i> Cancel</button>
-        <button id="btn-submit-report" class="btn danger-btn" style="background: var(--danger-color); color: white; border: none;"><i class="fa-solid fa-paper-plane"></i> Submit Report</button>
+  <div id="report-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="report-title">
+    <div class="modal-content" style="max-width: 430px;">
+      <div class="pulsing-icon" style="color: var(--danger-color); animation: none; font-size: 30px;" aria-hidden="true">
+        <i class="fa-solid fa-triangle-exclamation"></i>
       </div>
-    </div>
-  </div>
 
-  <!-- Terms and Conditions Popup -->
-  <div id="tos-modal" class="modal-overlay">
-    <div class="modal-content" style="max-width: 450px; text-align: left;">
-      <div class="pulsing-icon" style="color: var(--accent-color); animation: none; text-align: center;"><i class="fa-solid fa-file-contract"></i></div>
-      <h2 style="text-align: center; margin-bottom: 10px;">Before You Start</h2>
-      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px; line-height: 1.5;">
-        By using <strong>QUICK PRIVATE CHAT</strong>, you acknowledge that you are <strong>19 years or older</strong> and agree to our <a href="../terms.html" target="_blank" style="color: var(--accent-color);">Terms of Service</a> and <a href="../privacy-policy.html" target="_blank" style="color: var(--accent-color);">Privacy Policy</a>.
+      <h2 id="report-title" style="font-size: 20px;">Report a Grievance</h2>
+
+      <p style="font-size: 13px; margin-bottom: 15px;">
+        Reports are sent to our grievance/privacy contact for review. Please do not include sensitive personal information unless necessary.
       </p>
-      <ul style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px; padding-left: 15px;">
-        <li>Your messages are P2P encrypted.</li>
-        <li>We do not store your data on any server.</li>
-        <li>Regional restrictions apply (UAE/China).</li>
-      </ul>
-      <div class="modal-actions" style="display: flex; flex-direction: column; gap: 10px;">
-        <button id="btn-accept-tos" class="btn gradient-btn" style="width: 100%;"><i class="fa-solid fa-check"></i> I Agree & Continue</button>
-        <button onclick="window.location.href='https://shader7.com'" class="btn primary-btn" style="width: 100%; background: rgba(0,0,0,0.05); border: none;">No, Take me Back</button>
+
+      <label class="sr-only" for="report-text">Describe the issue</label>
+      <textarea id="report-text" rows="4" placeholder="Describe the issue or abuse here..."></textarea>
+
+      <div class="modal-actions">
+        <button id="btn-cancel-report" class="btn primary-btn" type="button" style="background: rgba(15,23,42,0.08); color: var(--text-main); box-shadow: none;">
+          <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+          Cancel
+        </button>
+
+        <button id="btn-submit-report" class="btn danger-btn" type="button" style="background: var(--danger-color); color: white; border: none;">
+          <i class="fa-solid fa-paper-plane" aria-hidden="true"></i>
+          Submit Report
+        </button>
       </div>
     </div>
   </div>
 
-  <!-- GDPR Cookie/Storage Consent Banner (EU only) -->
-  <!-- Bug #5 fix: removed inline display:flex which was overriding .hidden class -->
-  <div id="gdpr-banner" class="hidden" style="position: fixed; bottom: 0; left: 0; right: 0; z-index: 10000; background: rgba(255,255,255,0.97); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-top: 1px solid rgba(0,210,255,0.2); padding: 16px 24px; flex-wrap: wrap; align-items: center; justify-content: center; gap: 14px; box-shadow: 0 -10px 30px rgba(0,0,0,0.05);">
-    <div style="flex: 1; min-width: 250px;">
-      <p style="font-size: 13px; color: var(--text-muted); margin: 0; line-height: 1.5;"><i class="fa-solid fa-cookie-bite" style="color: var(--accent-color);"></i> <strong style="color: #000;">Your Privacy Matters.</strong> QUICK PRIVATE CHAT uses <strong>localStorage</strong> to save your consent preferences. We do <strong>not</strong> use tracking cookies. <a href="../privacy-policy.html" target="_blank" style="color: var(--accent-color);">Read our Privacy Policy</a>.</p>
+  <div id="tos-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="tos-title">
+    <div class="modal-content" style="max-width: 470px; text-align: left;">
+      <div class="pulsing-icon" style="color: var(--accent-color); animation: none; text-align: center;" aria-hidden="true">
+        <i class="fa-solid fa-file-contract"></i>
+      </div>
+
+      <h2 id="tos-title" style="text-align: center; margin-bottom: 10px;">Before You Start</h2>
+
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px; line-height: 1.55;">
+        By using <strong>QUICK PRIVATE CHAT</strong>, you confirm that you are <strong>19 years or older</strong> and agree to our
+        <a href="../terms.html" target="_blank" rel="noopener noreferrer">Terms of Service</a>
+        and
+        <a href="../privacy-policy.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.
+      </p>
+
+      <ul style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px; padding-left: 18px; line-height: 1.55;">
+        <li>Messages are exchanged peer-to-peer where possible.</li>
+        <li>Signaling or relay services may be used to establish connections.</li>
+        <li>WebRTC uses transport encryption where supported.</li>
+        <li>Regional or legal restrictions may apply.</li>
+      </ul>
+
+      <div class="modal-actions" style="display: flex; flex-direction: column; gap: 10px;">
+        <button id="btn-accept-tos" class="btn gradient-btn" type="button" style="width: 100%;">
+          <i class="fa-solid fa-check" aria-hidden="true"></i>
+          I Agree & Continue
+        </button>
+
+        <button onclick="window.location.href='https://shader7.com'" class="btn primary-btn" type="button" style="width: 100%; background: rgba(15,23,42,0.08); color: var(--text-main); box-shadow: none;">
+          No, Take Me Back
+        </button>
+      </div>
     </div>
-    <div style="display: flex; gap: 8px; flex-shrink: 0;">
-      <button id="gdpr-reject" style="padding: 8px 16px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); background: transparent; color: var(--text-muted); cursor: pointer; font-size: 12px; font-weight: 600;">Reject All</button>
-      <button id="gdpr-accept" style="padding: 8px 16px; border-radius: 8px; border: none; background: var(--grad-primary); color: white; cursor: pointer; font-size: 12px; font-weight: 600; box-shadow: 0 0 15px rgba(0,210,255,0.3);">Accept & Continue</button>
+  </div>
+
+  <div id="gdpr-banner" class="hidden" role="region" aria-label="Privacy preferences">
+    <div style="flex: 1; min-width: 250px;">
+      <p>
+        <i class="fa-solid fa-cookie-bite" style="color: var(--accent-color);" aria-hidden="true"></i>
+        <strong style="color: #000;">Your Privacy Matters.</strong>
+        QUICK PRIVATE CHAT uses essential localStorage to remember consent and app preferences.
+        We do not use advertising cookies. If analytics or nonessential storage is added later, consent should be requested first.
+        <a href="../privacy-policy.html" target="_blank" rel="noopener noreferrer">Read our Privacy Policy</a>.
+      </p>
+    </div>
+
+    <div class="cookie-actions">
+      <button id="gdpr-reject" class="cookie-btn cookie-secondary" type="button">Essential Only</button>
+      <button id="gdpr-accept" class="cookie-btn cookie-primary" type="button">Accept Preferences</button>
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js?v=3.0.0"></script>
   <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
-  <script src="app.js?v=5.0.0"></script>
+  <script src="app.js?v=5.1.0"></script>
+
+  <script>
+    (function () {
+      "use strict";
+
+      const $ = (selector) => document.querySelector(selector);
+      const $$ = (selector) => Array.from(document.querySelectorAll(selector));
+
+      const entryScreen = $("#entry-screen");
+      const chatScreen = $("#chat-screen");
+      const sidebar = $("#sidebar");
+
+      function setEntryStatus(message, type = "error") {
+        const status = $("#entry-status");
+        if (!status) return;
+
+        status.textContent = message || "";
+        status.style.color =
+          type === "success"
+            ? "var(--success-color)"
+            : type === "warning"
+              ? "var(--warning-color)"
+              : "var(--danger-color)";
+      }
+
+      function generateRoomCode(length = 6) {
+        const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+        let code = "";
+
+        if (window.crypto && crypto.getRandomValues) {
+          const values = new Uint32Array(length);
+          crypto.getRandomValues(values);
+          for (let i = 0; i < length; i++) {
+            code += chars[values[i] % chars.length];
+          }
+          return code;
+        }
+
+        for (let i = 0; i < length; i++) {
+          code += chars[Math.floor(Math.random() * chars.length)];
+        }
+
+        return code;
+      }
+
+      function sanitizeName(value) {
+        return String(value || "")
+          .replace(/[<>]/g, "")
+          .replace(/\s+/g, " ")
+          .trim()
+          .slice(0, 20);
+      }
+
+      function getAgeFromDob(dobValue) {
+        if (!dobValue) return null;
+
+        const birthDate = new Date(dobValue + "T00:00:00");
+        if (Number.isNaN(birthDate.getTime())) return null;
+
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        const dayDiff = today.getDate() - birthDate.getDate();
+
+        if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+          age--;
+        }
+
+        return age;
+      }
+
+      function validateEntry(options = {}) {
+        const requireRoomCode = Boolean(options.requireRoomCode);
+        const name = sanitizeName($("#guest-name-input")?.value);
+        const dobValue = $("#dob-input")?.value;
+        const age = getAgeFromDob(dobValue);
+        const tosChecked = Boolean($("#tos-checkbox")?.checked);
+        const roomCode = String($("#room-code-input")?.value || "").trim().toUpperCase();
+
+        if (!name) {
+          setEntryStatus("Please enter your display name.");
+          $("#guest-name-input")?.focus();
+          return false;
+        }
+
+        if (age === null) {
+          setEntryStatus("Please enter a valid date of birth.");
+          $("#dob-input")?.focus();
+          return false;
+        }
+
+        if (age < 19) {
+          setEntryStatus("You must be 19 or older to use this service.");
+          $("#dob-input")?.focus();
+          return false;
+        }
+
+        if (!tosChecked) {
+          setEntryStatus("Please agree to the Terms of Service and Privacy Policy.");
+          $("#tos-checkbox")?.focus();
+          return false;
+        }
+
+        if (requireRoomCode && !roomCode) {
+          setEntryStatus("Please enter a room code.");
+          $("#room-code-input")?.focus();
+          return false;
+        }
+
+        setEntryStatus("");
+        return true;
+      }
+
+      function enterRoomUI(roomCode, role) {
+        const name = sanitizeName($("#guest-name-input")?.value) || "User";
+        const initial = name.charAt(0).toUpperCase() || "U";
+
+        if ($("#display-room-code")) $("#display-room-code").textContent = roomCode;
+        if ($("#chat-header-title")) $("#chat-header-title").textContent = "Room " + roomCode;
+        if ($("#my-role-badge")) $("#my-role-badge").textContent = role || "Host";
+        if ($("#my-name")) $("#my-name").textContent = name;
+        if ($("#my-avatar")) $("#my-avatar").textContent = initial;
+        if ($("#member-count")) $("#member-count").textContent = "1";
+
+        const membersList = $("#members-list");
+        if (membersList && !membersList.children.length) {
+          const li = document.createElement("li");
+          li.textContent = name + " — " + (role || "Host");
+          membersList.appendChild(li);
+        }
+
+        entryScreen?.classList.remove("active");
+        chatScreen?.classList.add("active");
+        sidebar?.classList.remove("active");
+
+        try {
+          localStorage.setItem("qpc_last_name", name);
+          localStorage.setItem("qpc_last_room", roomCode);
+        } catch (error) {}
+      }
+
+      function addSystemMessage(message) {
+        const container = $("#messages-container");
+        if (!container) return;
+
+        const wrap = document.createElement("div");
+        wrap.className = "system-msg";
+
+        const content = document.createElement("div");
+        content.className = "sys-content";
+        content.textContent = message;
+
+        wrap.appendChild(content);
+        container.appendChild(wrap);
+        container.scrollTop = container.scrollHeight;
+      }
+
+      function createRoomFallback() {
+        const roomCode = generateRoomCode(6);
+        enterRoomUI(roomCode, "Host");
+        addSystemMessage("Room created. Share the room code with another member. If your app.js signaling is configured, peers can connect through your normal app logic.");
+      }
+
+      function joinRoomFallback() {
+        const input = $("#room-code-input");
+        const roomCode = String(input?.value || "").trim().toUpperCase();
+        enterRoomUI(roomCode, "Member");
+        addSystemMessage("Joined room locally. If your app.js signaling is configured, peers can connect through your normal app logic.");
+      }
+
+      function sendLocalMessageFallback() {
+        const input = $("#message-input");
+        const container = $("#messages-container");
+        const name = sanitizeName($("#guest-name-input")?.value) || "You";
+
+        if (!input || !container) return;
+
+        const text = input.value.trim();
+        if (!text) return;
+
+        const msg = document.createElement("div");
+        msg.style.alignSelf = "flex-end";
+        msg.style.maxWidth = "min(76%, 620px)";
+        msg.style.padding = "12px 14px";
+        msg.style.borderRadius = "18px 18px 6px 18px";
+        msg.style.background = "var(--grad-primary)";
+        msg.style.color = "#fff";
+        msg.style.boxShadow = "0 12px 24px rgba(0,168,255,0.16)";
+        msg.innerHTML = "<strong style='font-size:11px;opacity:.86;display:block;margin-bottom:4px;'></strong><span></span>";
+
+        msg.querySelector("strong").textContent = name;
+        msg.querySelector("span").textContent = text;
+
+        container.appendChild(msg);
+        container.scrollTop = container.scrollHeight;
+        input.value = "";
+      }
+
+      function initializeTabs() {
+        $$(".tab-btn").forEach((button) => {
+          button.addEventListener("click", () => {
+            const targetId = button.getAttribute("data-target");
+            if (!targetId) return;
+
+            $$(".tab-btn").forEach((btn) => {
+              btn.classList.remove("active");
+              btn.setAttribute("aria-selected", "false");
+            });
+
+            $$(".form-container").forEach((panel) => {
+              panel.classList.remove("active");
+            });
+
+            button.classList.add("active");
+            button.setAttribute("aria-selected", "true");
+
+            const target = document.getElementById(targetId);
+            if (target) target.classList.add("active");
+
+            setEntryStatus("");
+          });
+        });
+      }
+
+      function initializeInputGuards() {
+        const roomInput = $("#room-code-input");
+        if (roomInput) {
+          roomInput.addEventListener("input", () => {
+            roomInput.value = roomInput.value
+              .replace(/[^a-zA-Z0-9]/g, "")
+              .toUpperCase()
+              .slice(0, 8);
+          });
+        }
+
+        const maxMembers = $("#max-members-create");
+        if (maxMembers) {
+          maxMembers.addEventListener("change", () => {
+            const value = Number(maxMembers.value || 10);
+
+            if (!Number.isFinite(value)) {
+              maxMembers.value = "10";
+              return;
+            }
+
+            if (value > 10) maxMembers.value = "10";
+            if (value < 2) maxMembers.value = "2";
+          });
+        }
+
+        const nameInput = $("#guest-name-input");
+        if (nameInput) {
+          try {
+            const savedName = localStorage.getItem("qpc_last_name");
+            if (savedName && !nameInput.value) nameInput.value = savedName;
+          } catch (error) {}
+
+          nameInput.addEventListener("input", () => {
+            nameInput.value = nameInput.value.replace(/[<>]/g, "").slice(0, 20);
+          });
+        }
+      }
+
+      function initializeConsent() {
+        const tosModal = $("#tos-modal");
+        const acceptTosBtn = $("#btn-accept-tos");
+
+        try {
+          const acceptedTos = localStorage.getItem("qpc_tos_accepted") === "true";
+          if (!acceptedTos && tosModal) tosModal.classList.remove("hidden");
+        } catch (error) {
+          if (tosModal) tosModal.classList.remove("hidden");
+        }
+
+        acceptTosBtn?.addEventListener("click", () => {
+          try {
+            localStorage.setItem("qpc_tos_accepted", "true");
+            localStorage.setItem("qpc_tos_accepted_at", new Date().toISOString());
+          } catch (error) {}
+
+          const tosCheckbox = $("#tos-checkbox");
+          if (tosCheckbox) tosCheckbox.checked = true;
+
+          tosModal?.classList.add("hidden");
+        });
+
+        const gdprBanner = $("#gdpr-banner");
+
+        try {
+          const storageChoice = localStorage.getItem("qpc_storage_choice");
+          if (!storageChoice && gdprBanner) gdprBanner.classList.remove("hidden");
+        } catch (error) {
+          if (gdprBanner) gdprBanner.classList.remove("hidden");
+        }
+
+        function closeBanner(choice) {
+          try {
+            localStorage.setItem("qpc_storage_choice", choice);
+            localStorage.setItem("qpc_storage_choice_at", new Date().toISOString());
+          } catch (error) {}
+
+          gdprBanner?.classList.add("hidden");
+        }
+
+        $("#gdpr-accept")?.addEventListener("click", () => closeBanner("accepted_preferences"));
+        $("#gdpr-reject")?.addEventListener("click", () => closeBanner("essential_only"));
+      }
+
+      function initializeButtons() {
+        const createBtn = $("#btn-create");
+        const joinBtn = $("#btn-join");
+
+        createBtn?.addEventListener("click", (event) => {
+          if (!validateEntry()) {
+            event.preventDefault();
+            return;
+          }
+
+          setEntryStatus("Creating room...", "success");
+
+          window.__qpcCreateClickedAt = Date.now();
+
+          setTimeout(() => {
+            const stillOnEntry = entryScreen?.classList.contains("active");
+
+            if (stillOnEntry) {
+              console.warn("[QPC] app.js did not switch screens after create click. Running safe fallback UI.");
+              createRoomFallback();
+            }
+          }, 650);
+        });
+
+        joinBtn?.addEventListener("click", (event) => {
+          if (!validateEntry({ requireRoomCode: true })) {
+            event.preventDefault();
+            return;
+          }
+
+          setEntryStatus("Joining room...", "success");
+
+          setTimeout(() => {
+            const stillOnEntry = entryScreen?.classList.contains("active");
+
+            if (stillOnEntry) {
+              console.warn("[QPC] app.js did not switch screens after join click. Running safe fallback UI.");
+              joinRoomFallback();
+            }
+          }, 650);
+        });
+
+        $("#btn-send")?.addEventListener("click", () => {
+          setTimeout(() => {
+            const input = $("#message-input");
+            if (input && input.value.trim()) sendLocalMessageFallback();
+          }, 50);
+        });
+
+        $("#message-input")?.addEventListener("keydown", (event) => {
+          if (event.key === "Enter" && !event.shiftKey) {
+            event.preventDefault();
+            $("#btn-send")?.click();
+          }
+        });
+
+        $("#btn-menu")?.addEventListener("click", () => sidebar?.classList.add("active"));
+        $("#btn-close-sidebar")?.addEventListener("click", () => sidebar?.classList.remove("active"));
+
+        $("#btn-leave")?.addEventListener("click", () => {
+          chatScreen?.classList.remove("active");
+          entryScreen?.classList.add("active");
+          sidebar?.classList.remove("active");
+          setEntryStatus("");
+        });
+
+        $("#btn-report")?.addEventListener("click", () => {
+          $("#report-modal")?.classList.remove("hidden");
+        });
+
+        $("#btn-cancel-report")?.addEventListener("click", () => {
+          $("#report-modal")?.classList.add("hidden");
+        });
+
+        $("#btn-submit-report")?.addEventListener("click", () => {
+          const reportText = $("#report-text");
+
+          if (!reportText?.value.trim()) {
+            alert("Please describe the issue before submitting.");
+            reportText?.focus();
+            return;
+          }
+
+          const subject = encodeURIComponent("QUICK PRIVATE CHAT Grievance Report");
+          const body = encodeURIComponent(reportText.value.trim());
+
+          window.location.href = "mailto:nxdecore@gmail.com?subject=" + subject + "&body=" + body;
+          $("#report-modal")?.classList.add("hidden");
+        });
+
+        $("#copy-code-btn")?.addEventListener("click", async () => {
+          const code = $("#display-room-code")?.textContent?.trim();
+
+          if (!code || code === "----") return;
+
+          try {
+            await navigator.clipboard.writeText(code);
+            addSystemMessage("Room code copied.");
+          } catch (error) {
+            prompt("Copy room code:", code);
+          }
+        });
+
+        $("#btn-download-logs")?.addEventListener("click", () => {
+          const logs = {
+            tosAccepted: localStorage.getItem("qpc_tos_accepted"),
+            tosAcceptedAt: localStorage.getItem("qpc_tos_accepted_at"),
+            storageChoice: localStorage.getItem("qpc_storage_choice"),
+            storageChoiceAt: localStorage.getItem("qpc_storage_choice_at"),
+            lastRoom: localStorage.getItem("qpc_last_room")
+          };
+
+          const blob = new Blob([JSON.stringify(logs, null, 2)], {
+            type: "application/json"
+          });
+
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "quick-private-chat-consent-log.json";
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          URL.revokeObjectURL(url);
+        });
+
+        $("#btn-delete-data")?.addEventListener("click", () => {
+          const confirmed = window.confirm("Delete local app data and revoke consent on this device?");
+          if (!confirmed) return;
+
+          try {
+            Object.keys(localStorage)
+              .filter((key) => key.startsWith("qpc_") || key.includes("berofchat"))
+              .forEach((key) => localStorage.removeItem(key));
+          } catch (error) {}
+
+          window.location.reload();
+        });
+      }
+
+      function initializeInstallPrompt() {
+        let deferredPrompt = null;
+        const installBtn = $("#btn-install");
+
+        window.addEventListener("beforeinstallprompt", (event) => {
+          event.preventDefault();
+          deferredPrompt = event;
+          installBtn?.classList.remove("hidden");
+        });
+
+        installBtn?.addEventListener("click", async () => {
+          if (!deferredPrompt) return;
+
+          deferredPrompt.prompt();
+
+          try {
+            await deferredPrompt.userChoice;
+          } catch (error) {}
+
+          deferredPrompt = null;
+          installBtn.classList.add("hidden");
+        });
+      }
+
+      function initializeDiagnostics() {
+        window.addEventListener("error", (event) => {
+          console.error("[QPC runtime error]", event.error || event.message);
+        });
+
+        window.addEventListener("unhandledrejection", (event) => {
+          console.error("[QPC promise rejection]", event.reason);
+        });
+
+        const createBtn = $("#btn-create");
+        if (!createBtn) {
+          console.error("[QPC] Missing #btn-create. Generate button cannot work.");
+        }
+
+        if (!$("#create-form")) {
+          console.error("[QPC] Missing #create-form.");
+        }
+
+        if (!$("#entry-screen") || !$("#chat-screen")) {
+          console.error("[QPC] Missing required screen elements.");
+        }
+      }
+
+      initializeTabs();
+      initializeInputGuards();
+      initializeConsent();
+      initializeButtons();
+      initializeInstallPrompt();
+      initializeDiagnostics();
+    })();
+  </script>
 </body>
 </html>
