@@ -92,8 +92,10 @@ async function checkGeoRestrictions() {
       const gdprBanner = document.getElementById('gdpr-banner');
       if (gdprBanner) gdprBanner.classList.remove('hidden');
     }
+    renderLegalGuide(data.country_code);
   } catch (err) {
     console.error('Geo-fencing check failed.');
+    renderLegalGuide(null);
   }
 }
 checkGeoRestrictions();
@@ -102,6 +104,7 @@ checkGeoRestrictions();
 if (typeof initSupabase === 'function') {
   initSupabase();
 }
+window.__qpcCoreReady = true;
 
 // ============================================================
 // Auth Session Check
@@ -561,6 +564,53 @@ const btnReport = document.getElementById('btn-report');
 const btnCancelReport = document.getElementById('btn-cancel-report');
 const btnSubmitReport = document.getElementById('btn-submit-report');
 const reportText = document.getElementById('report-text');
+const btnLegalGuide = document.getElementById('btn-legal-guide');
+const legalGuideModal = document.getElementById('legal-guide-modal');
+const btnCloseLegalGuide = document.getElementById('btn-close-legal-guide');
+const legalCountryDetected = document.getElementById('legal-country-detected');
+const legalRegionRules = document.getElementById('legal-region-rules');
+const legalCountryInput = document.getElementById('legal-country-input');
+
+const LEGAL_BASELINE = [
+  'Publish clear Terms of Service and Privacy Policy.',
+  'Provide an abuse/grievance reporting channel and response workflow.',
+  'Implement age checks and parental-safety controls where required.',
+  'Define data retention periods and deletion request handling.'
+];
+
+const LEGAL_REGION_GUIDANCE = {
+  EU: ['GDPR lawful basis, consent logs, and DSAR handling.', 'Cookie/storage consent before non-essential processing.'],
+  US: ['State privacy laws vary (CCPA/CPRA and other state acts).', 'Review telecom/recording laws for call features by state.'],
+  IN: ['DPDP Act compliance and grievance officer process.', 'Maintain lawful interception/traceability obligations where applicable.'],
+  BR: ['LGPD legal basis, purpose limitation, and user rights workflow.'],
+  GB: ['UK GDPR + Data Protection Act requirements.', 'Age-appropriate design considerations when relevant users include minors.'],
+  CA: ['PIPEDA and provincial privacy rules may both apply.', 'Use explicit language for consent and withdrawal rights.'],
+  OTHER: ['Local telecom/VoIP rules may restrict calling features.', 'Check country-specific data transfer and breach notification rules.']
+};
+
+function getRegionKey(countryCode) {
+  if (!countryCode) return 'OTHER';
+  if (EU_COUNTRIES.includes(countryCode)) return 'EU';
+  if (countryCode === 'US') return 'US';
+  if (countryCode === 'IN') return 'IN';
+  if (countryCode === 'BR') return 'BR';
+  if (countryCode === 'GB') return 'GB';
+  if (countryCode === 'CA') return 'CA';
+  return 'OTHER';
+}
+
+function renderLegalGuide(countryCode = userCountry) {
+  const regionKey = getRegionKey(countryCode);
+  if (legalCountryDetected) legalCountryDetected.textContent = countryCode || 'Unknown';
+  if (!legalRegionRules) return;
+  const regional = LEGAL_REGION_GUIDANCE[regionKey] || LEGAL_REGION_GUIDANCE.OTHER;
+  legalRegionRules.innerHTML = '';
+  [...LEGAL_BASELINE, ...regional].forEach(rule => {
+    const li = document.createElement('li');
+    li.textContent = rule;
+    legalRegionRules.appendChild(li);
+  });
+}
 
 if (btnReport) btnReport.addEventListener('click', () => { if (reportModal) reportModal.classList.remove('hidden'); });
 if (btnCancelReport) btnCancelReport.addEventListener('click', () => { if (reportModal) reportModal.classList.add('hidden'); if (reportText) reportText.value = ''; });
@@ -572,6 +622,20 @@ if (btnSubmitReport) {
     if (reportModal) reportModal.classList.add('hidden');
     reportText.value = '';
     alert('Report prepared. Your email client will open to submit the report to the Resident Grievance Officer.');
+  });
+}
+
+if (btnLegalGuide) btnLegalGuide.addEventListener('click', () => {
+  renderLegalGuide(userCountry);
+  if (legalGuideModal) legalGuideModal.classList.remove('hidden');
+});
+if (btnCloseLegalGuide) btnCloseLegalGuide.addEventListener('click', () => {
+  if (legalGuideModal) legalGuideModal.classList.add('hidden');
+});
+if (legalCountryInput) {
+  legalCountryInput.addEventListener('input', () => {
+    const code = legalCountryInput.value.trim().toUpperCase().slice(0, 2);
+    if (code.length === 2) renderLegalGuide(code);
   });
 }
 
@@ -678,10 +742,14 @@ function enterChatScreen() {
 
 // Bug #17 fix: null-guard copyCodeBtn
 if (copyCodeBtn) {
-  copyCodeBtn.addEventListener('click', () => {
-    navigator.clipboard.writeText(roomCode);
-    copyCodeBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
-    setTimeout(() => { copyCodeBtn.innerHTML = '<i class="fa-solid fa-copy"></i>'; }, 2000);
+  copyCodeBtn.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(roomCode);
+      copyCodeBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
+      setTimeout(() => { copyCodeBtn.innerHTML = '<i class="fa-solid fa-copy"></i>'; }, 2000);
+    } catch (err) {
+      showStatus('Copy failed. Please copy manually.', true);
+    }
   });
 }
 

@@ -1704,6 +1704,11 @@
 
         <div class="legal-card">
           <div class="legal-actions">
+            <button id="btn-legal-guide" class="text-btn" type="button">
+              <i class="fa-solid fa-scale-balanced" aria-hidden="true"></i>
+              Open Country Legal Checklist
+            </button>
+
             <button id="btn-download-logs" class="text-btn" type="button">
               Download Consent Audit Logs
             </button>
@@ -1918,6 +1923,33 @@
         <button id="btn-submit-report" class="btn danger-btn" type="button" style="background: var(--danger-color); color: white; border: none;">
           <i class="fa-solid fa-paper-plane" aria-hidden="true"></i>
           Submit Report
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="legal-guide-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="legal-guide-title">
+    <div class="modal-content" style="max-width: 560px; text-align: left;">
+      <h2 id="legal-guide-title" style="margin-bottom: 8px;">Country Legal Checklist</h2>
+      <p style="font-size: 13px; color: var(--text-muted); line-height: 1.55; margin-bottom: 12px;">
+        This is a product-readiness checklist, not legal advice. Laws vary by country and can change frequently.
+        Review with qualified legal counsel before launch.
+      </p>
+
+      <label class="field-label" for="legal-country-input" style="font-size: 12px; margin-bottom: 8px; display: block;">
+        Country code (ISO-2)
+      </label>
+      <input id="legal-country-input" type="text" maxlength="2" placeholder="e.g. US, IN, BR" style="margin-bottom: 10px;" />
+
+      <p style="font-size: 12px; margin-bottom: 8px;">
+        Detected country: <strong id="legal-country-detected">Unknown</strong>
+      </p>
+      <ul id="legal-region-rules" style="font-size: 13px; color: var(--text-main); line-height: 1.5; padding-left: 18px; margin-bottom: 16px;"></ul>
+
+      <div class="modal-actions">
+        <button id="btn-close-legal-guide" class="btn primary-btn" type="button" style="width: 100%;">
+          <i class="fa-solid fa-check" aria-hidden="true"></i>
+          Close
         </button>
       </div>
     </div>
@@ -2301,6 +2333,7 @@
       function initializeButtons() {
         const createBtn = $("#btn-create");
         const joinBtn = $("#btn-join");
+        const coreAppReady = Boolean(window.__qpcCoreReady);
 
         createBtn?.addEventListener("click", (event) => {
           if (!validateEntry()) {
@@ -2314,7 +2347,7 @@
           setTimeout(() => {
             const stillOnEntry = entryScreen?.classList.contains("active");
 
-            if (stillOnEntry) {
+            if (stillOnEntry && !coreAppReady) {
               console.warn("[QPC] app.js did not switch screens after create click. Running safe fallback UI.");
               createRoomFallback();
             }
@@ -2332,7 +2365,7 @@
           setTimeout(() => {
             const stillOnEntry = entryScreen?.classList.contains("active");
 
-            if (stillOnEntry) {
+            if (stillOnEntry && !coreAppReady) {
               console.warn("[QPC] app.js did not switch screens after join click. Running safe fallback UI.");
               joinRoomFallback();
             }
@@ -2340,6 +2373,7 @@
         });
 
         $("#btn-send")?.addEventListener("click", () => {
+          if (coreAppReady) return;
           setTimeout(() => {
             const input = $("#message-input");
             if (input && input.value.trim()) sendLocalMessageFallback();
