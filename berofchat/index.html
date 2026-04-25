@@ -1551,7 +1551,104 @@
         transition-duration: 0.001ms !important;
       }
     }
-  </style>
+  
+
+    /* ================= RESPONSIVE POLISH (MOBILE / TABLET / DESKTOP) ================= */
+    @media (max-width: 767px) {
+      .glass-panel {
+        width: min(100%, 96vw);
+        padding: 22px 14px;
+        border-radius: 18px;
+      }
+
+      .chat-header {
+        padding: 10px 10px;
+        gap: 8px;
+      }
+
+      .header-info h3 {
+        font-size: 15px;
+      }
+
+      .header-actions {
+        gap: 6px;
+      }
+
+      .chat-input-area {
+        padding: 10px;
+      }
+
+      .input-wrapper input {
+        min-height: 44px;
+        font-size: 15px;
+      }
+
+      .btn.send-btn,
+      .icon-btn {
+        min-height: 44px;
+        min-width: 44px;
+      }
+
+      .messages-container {
+        padding: 12px 10px 86px;
+      }
+    }
+
+    @media (min-width: 768px) and (max-width: 1024px) {
+      #app {
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+
+      .sidebar {
+        width: min(320px, 34vw);
+      }
+
+      .chat-area {
+        min-width: 0;
+      }
+
+      .glass-panel {
+        width: min(92vw, 560px);
+      }
+
+      .messages-container {
+        padding-inline: 16px;
+      }
+    }
+
+    @media (min-width: 1200px) {
+      body {
+        padding: 18px;
+      }
+
+      #app {
+        max-width: 1360px;
+        margin: 0 auto;
+        border-radius: 24px;
+        box-shadow: 0 20px 60px rgba(15, 23, 42, 0.14);
+        border: 1px solid rgba(15, 23, 42, 0.07);
+      }
+
+      #chat-screen.active {
+        max-width: 1360px;
+        margin: 0 auto;
+      }
+
+      .messages-container {
+        max-width: 920px;
+        width: 100%;
+        margin: 0 auto;
+      }
+
+      .chat-input-area {
+        max-width: 920px;
+        width: calc(100% - 24px);
+        margin: 0 auto 10px;
+        border-radius: 16px;
+      }
+    }
+</style>
 </head>
 
 <body>
@@ -1704,6 +1801,11 @@
 
         <div class="legal-card">
           <div class="legal-actions">
+            <button id="btn-legal-guide" class="text-btn" type="button">
+              <i class="fa-solid fa-scale-balanced" aria-hidden="true"></i>
+              Open Country Legal Checklist
+            </button>
+
             <button id="btn-download-logs" class="text-btn" type="button">
               Download Consent Audit Logs
             </button>
@@ -1918,6 +2020,33 @@
         <button id="btn-submit-report" class="btn danger-btn" type="button" style="background: var(--danger-color); color: white; border: none;">
           <i class="fa-solid fa-paper-plane" aria-hidden="true"></i>
           Submit Report
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="legal-guide-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="legal-guide-title">
+    <div class="modal-content" style="max-width: 560px; text-align: left;">
+      <h2 id="legal-guide-title" style="margin-bottom: 8px;">Country Legal Checklist</h2>
+      <p style="font-size: 13px; color: var(--text-muted); line-height: 1.55; margin-bottom: 12px;">
+        This is a product-readiness checklist, not legal advice. Laws vary by country and can change frequently.
+        Review with qualified legal counsel before launch.
+      </p>
+
+      <label class="field-label" for="legal-country-input" style="font-size: 12px; margin-bottom: 8px; display: block;">
+        Country code (ISO-2)
+      </label>
+      <input id="legal-country-input" type="text" maxlength="2" placeholder="e.g. US, IN, BR" style="margin-bottom: 10px;" />
+
+      <p style="font-size: 12px; margin-bottom: 8px;">
+        Detected country: <strong id="legal-country-detected">Unknown</strong>
+      </p>
+      <ul id="legal-region-rules" style="font-size: 13px; color: var(--text-main); line-height: 1.5; padding-left: 18px; margin-bottom: 16px;"></ul>
+
+      <div class="modal-actions">
+        <button id="btn-close-legal-guide" class="btn primary-btn" type="button" style="width: 100%;">
+          <i class="fa-solid fa-check" aria-hidden="true"></i>
+          Close
         </button>
       </div>
     </div>
@@ -2301,6 +2430,7 @@
       function initializeButtons() {
         const createBtn = $("#btn-create");
         const joinBtn = $("#btn-join");
+        const coreAppReady = Boolean(window.__qpcCoreReady);
 
         createBtn?.addEventListener("click", (event) => {
           if (!validateEntry()) {
@@ -2314,7 +2444,7 @@
           setTimeout(() => {
             const stillOnEntry = entryScreen?.classList.contains("active");
 
-            if (stillOnEntry) {
+            if (stillOnEntry && !coreAppReady) {
               console.warn("[QPC] app.js did not switch screens after create click. Running safe fallback UI.");
               createRoomFallback();
             }
@@ -2332,7 +2462,7 @@
           setTimeout(() => {
             const stillOnEntry = entryScreen?.classList.contains("active");
 
-            if (stillOnEntry) {
+            if (stillOnEntry && !coreAppReady) {
               console.warn("[QPC] app.js did not switch screens after join click. Running safe fallback UI.");
               joinRoomFallback();
             }
@@ -2340,6 +2470,7 @@
         });
 
         $("#btn-send")?.addEventListener("click", () => {
+          if (coreAppReady) return;
           setTimeout(() => {
             const input = $("#message-input");
             if (input && input.value.trim()) sendLocalMessageFallback();
