@@ -11,7 +11,7 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
     <title>Free Bill Splitter & Roommate Expense Calculator | SHADER7</title>
     <meta name="description" content="Split bills and shared expenses easily with roommates, friends, or travel partners. Free online calculator with instant PDF settlement reports. No login required.">
     <meta name="keywords" content="bill splitter, expense splitter, roommate expense calculator, split money, shared expenses, fairshare, shader7">
@@ -20,53 +20,10 @@
 
     <link rel="canonical" href="https://shader7.com/fairshare/">
 
-    <meta property="og:type" content="website">
-    <meta property="og:site_name" content="Shader7">
-    <meta property="og:locale" content="en_US">
-    <meta property="og:url" content="https://shader7.com/fairshare/">
-    <meta property="og:title" content="Free Bill Splitter & Shared Expense Calculator">
-    <meta property="og:description" content="Split bills and shared expenses easily with friends. Free online calculator with instant PDF reports.">
-    <meta property="og:image" content="https://shader7.com/og-image.jpg">
-
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:site" content="@nishix_vamp">
-    <meta name="twitter:creator" content="@nishix_vamp">
-    <meta name="twitter:url" content="https://shader7.com/fairshare/">
-    <meta name="twitter:title" content="Free Bill Splitter & Shared Expense Calculator">
-    <meta name="twitter:description" content="Split bills and shared expenses easily with friends. Free online calculator with instant PDF reports.">
-    <meta name="twitter:image" content="https://shader7.com/og-image.jpg">
-
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "SoftwareApplication",
-      "name": "FairShare Expense Splitter",
-      "url": "https://shader7.com/fairshare/",
-      "operatingSystem": "All",
-      "applicationCategory": "FinanceApplication",
-      "offers": {
-        "@type": "Offer",
-        "price": "0.00",
-        "priceCurrency": "USD"
-      },
-      "description": "A free online tool to calculate and settle shared bills and monthly expenses among roommates or groups. Includes PDF report generation.",
-      "creator": {
-        "@type": "Person",
-        "name": "Nishikant Xalxo",
-        "url": "https://instagram.com/nishix_vamp"
-      }
-    }
-    </script>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"></noscript>
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
@@ -177,7 +134,7 @@
             width: 100%;
             height: 100%;
             background-color: rgba(255, 255, 255, 0.8);
-            display: flex;
+            display: none;
             justify-content: center;
             align-items: center;
             z-index: 1001;
@@ -185,6 +142,9 @@
             color: #6366f1;
             flex-direction: column;
             gap: 1rem;
+        }
+        .loading-overlay.is-visible {
+            display: flex;
         }
         .spinner {
             border: 4px solid rgba(0, 0, 0, 0.1);
@@ -220,9 +180,6 @@
             text-transform: uppercase;
             font-size: 0.875rem;
         }
-        .settlement-table tbody tr:last-child td {
-            border-bottom: none;
-        }
         .payment-list li {
             background-color: #e0e7ff;
             margin-bottom: 0.5rem;
@@ -231,87 +188,13 @@
             font-weight: 500;
             color: #312e81;
         }
-        /* A4 Report Styles */
         #reportContent {
-            background-color: white;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
             position: absolute;
-            top: -9999px;
-            left: -9999px;
-            z-index: -1;
-            box-sizing: border-box;
-            font-size: 10pt;
-            line-height: 1.4;
-            color: #1e293b;
-        }
-        #reportContent .report-page {
+            top: 0;
+            left: -99999px;
             width: 210mm;
-            min-height: 297mm;
-            padding: 20mm;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            page-break-after: always;
-        }
-        #reportContent .report-page:last-child {
-            page-break-after: auto;
-        }
-        #reportContent h3 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 1rem;
-            color: #4f46e5;
-        }
-        #reportContent table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 1.5rem;
-            font-size: 0.9rem;
-        }
-        #reportContent th, #reportContent td {
-            border: 1px solid #e2e8f0;
-            padding: 8px 12px;
-            text-align: left;
-        }
-        #reportContent th {
-            background-color: #f8fafc;
-            font-weight: 600;
-        }
-        #reportContent .report-header, #reportContent .report-footer {
-            text-align: center;
-            padding-bottom: 1rem;
-            color: #475569;
-        }
-        #reportContent .report-footer {
-            padding-top: 1rem;
-            border-top: 1px solid #e2e8f0;
-            font-size: 0.8rem;
-        }
-        #reportContent .report-section-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 0.75rem;
-            color: #334155;
-            border-bottom: 1px solid #cbd5e1;
-            padding-bottom: 0.5rem;
-        }
-        #reportContent .report-total-summary {
-            font-size: 1.2rem;
-            font-weight: 700;
-            text-align: right;
-            margin-top: 1rem;
-            color: #1e293b;
-        }
-        #reportContent .payment-list-printable li {
-            background-color: #e0e7ff;
-            margin-bottom: 0.5rem;
-            padding: 0.75rem 1rem;
-            border-radius: 0.5rem;
-            font-weight: 500;
-            color: #312e81;
-            list-style: none;
+            background: white;
+            z-index: -1;
         }
         #a4PreviewCanvas {
             border: 1px solid #cbd5e1;
@@ -323,22 +206,6 @@
             max-width: 100%;
             height: auto;
             aspect-ratio: 210 / 297;
-        }
-        .share-btn {
-            background-color: #1c9bef;
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.75rem;
-            font-weight: 600;
-            transition: all 0.2s ease-in-out;
-            border: none;
-            cursor: pointer;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        }
-        .share-btn:hover {
-            transform: translateY(-2px);
-            background-color: #1a8ad6;
-            box-shadow: 0 6px 10px -1px rgba(0, 0, 0, 0.15), 0 3px 6px -1px rgba(0, 0, 0, 0.08);
         }
         .back-nav {
             position: absolute;
@@ -356,14 +223,16 @@
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
-    <div id="loadingOverlay" class="loading-overlay hidden">
+    <div id="loadingOverlay" class="loading-overlay">
         <div class="spinner"></div>
-        <p>Calculating...</p>
+        <p>Working on it...</p>
     </div>
 
     <div id="messageBox" class="message-box">
-        <p id="messageText"></p>
-        <button id="messageBoxOk">OK</button>
+        <div id="messageContent">
+            <p id="messageText"></p>
+        </div>
+        <button id="messageBoxOk" type="button">OK</button>
     </div>
     <div id="overlay" class="overlay"></div>
 
@@ -377,21 +246,17 @@
         <div class="card">
             <h2 class="text-2xl font-bold mb-4 text-center">Add Roommates</h2>
             <div class="flex flex-col md:flex-row gap-4 mb-4">
-                <input type="text" id="roommateNameInput" placeholder="Enter roommate name" class="flex-grow">
-                <button id="addRoommateBtn" class="btn-primary">Add Roommate</button>
+                <input type="text" id="roommateNameInput" placeholder="Enter roommate name" class="flex-grow" autocomplete="off">
+                <button id="addRoommateBtn" class="btn-primary" type="button">Add Roommate</button>
             </div>
-            <div id="roommatesList" class="space-y-2">
-                <p id="noRoommatesMessage" class="text-gray-500 text-center">No roommates added yet.</p>
-            </div>
+            <div id="roommatesList" class="space-y-2"></div>
         </div>
 
         <div class="card">
             <h2 class="text-2xl font-bold mb-4 text-center">Enter Monthly Spending</h2>
-            <div id="spendingInputs" class="space-y-4">
-                <p id="noSpendingMessage" class="text-gray-500 text-center">Add roommates first to enter spending.</p>
-                </div>
+            <div id="spendingInputs" class="space-y-4"></div>
             <div class="flex justify-end mt-6">
-                <button id="calculateBillBtn" class="btn-primary" disabled>Calculate Bill</button>
+                <button id="calculateBillBtn" class="btn-primary" type="button" disabled>Calculate Bill</button>
             </div>
         </div>
 
@@ -411,56 +276,68 @@
                             <th class="py-3 px-4">Status</th>
                         </tr>
                     </thead>
-                    <tbody id="individualBalancesTableBody">
-                        </tbody>
+                    <tbody id="individualBalancesTableBody"></tbody>
                 </table>
             </div>
 
             <h3 class="text-xl font-bold mb-3">Payment Instructions:</h3>
-            <ul id="paymentInstructionsList" class="payment-list">
-                </ul>
+            <ul id="paymentInstructionsList" class="payment-list"></ul>
             <p id="noPaymentsNeeded" class="text-gray-500 text-center hidden">Everyone is settled, no payments needed!</p>
         </div>
 
         <div class="card">
             <h2 class="text-2xl font-bold mb-4 text-center">Generate Printable Report</h2>
-
-            <div class="flex justify-center gap-4 mt-6">
-                <button id="generateReportPreviewBtn" class="btn-primary">Generate Report Preview</button>
-                <button id="downloadPdfBtn" class="btn-secondary hidden">Download PDF</button>
+            <div class="flex flex-col sm:flex-row justify-center gap-4 mt-6">
+                <button id="generateReportPreviewBtn" class="btn-primary" type="button">Generate Report Preview</button>
+                <button id="downloadPdfBtn" class="btn-secondary hidden" type="button">Download PDF</button>
             </div>
-
             <div class="mt-8 text-center" id="a4PreviewArea" style="display: none;">
-                <h3 class="text-xl font-bold mb-4">Report Preview (A4 Size - Ready for Download)</h3>
+                <h3 class="text-xl font-bold mb-4">Report Preview</h3>
                 <canvas id="a4PreviewCanvas" class="border border-gray-300"></canvas>
             </div>
-
-            <div id="reportContent">
-                </div>
+            <div id="reportContent" aria-hidden="true"></div>
         </div>
 
         <div class="flex justify-center mt-6">
-            <button id="resetAllBtn" class="btn-secondary">Reset All Data</button>
-        </div>
-
-        <div class="card">
-            <h2 class="text-2xl font-bold mb-4 text-center">Share This App</h2>
-            <div class="flex justify-center mt-6">
-                <button id="shareAppBtn" class="share-btn">Share FairShare Expenses</button>
-            </div>
+            <button id="resetAllBtn" class="btn-secondary text-red-600 bg-red-100 hover:bg-red-200" type="button">Reset All Data</button>
         </div>
     </main>
 
     <footer class="bg-gray-800 text-gray-300 py-4 text-center text-sm rounded-t-xl shadow-inner mt-auto">
-        <p>&copy; <script>document.write(new Date().getFullYear())</script> SHADER7 - Free Apps for You. All rights reserved.</p>
-        <p class="mt-2">Developed by Nishikant Xalxo - <a href="https://www.instagram.com/nishix_vamp" target="_blank" rel="noopener noreferrer" class="text-blue-300 hover:underline">@nishix_vamp</a></p>
+        <p>&copy; <span id="footerYear"></span> SHADER7 - Free Apps for You. All rights reserved.</p>
     </footer>
 
     <script>
-        // Ensure jsPDF is loaded before trying to use it
-        const { jsPDF } = window.jspdf;
+        // --- State Variables ---
+        let roommates = [];
+        let currentSettlementData = null;
+        const LOCAL_STORAGE_KEY = 'roommateSlipBillData';
+        const CURRENCY = 'INR';
 
-        // --- Utility Functions for Message Box and Loading Overlay ---
+        // --- Safe String Handler ---
+        function escapeHTML(value) {
+            return String(value ?? '').replace(/[&<>'"]/g, char => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                "'": '&#39;',
+                '"': '&quot;'
+            }[char]));
+        }
+
+        function formatMoney(amount) {
+            return `${CURRENCY} ${(Number(amount) || 0).toFixed(2)}`;
+        }
+
+        function createEmptyMessage(id, text) {
+            const p = document.createElement('p');
+            p.id = id;
+            p.className = 'text-gray-500 text-center';
+            p.textContent = text;
+            return p;
+        }
+
+        // --- UI Utilities ---
         function showMessage(message) {
             document.getElementById('messageText').textContent = message;
             document.getElementById('messageBox').style.display = 'flex';
@@ -473,123 +350,123 @@
         }
 
         function showLoading(message = 'Calculating...') {
-            document.getElementById('loadingOverlay').querySelector('p').textContent = message;
-            document.getElementById('loadingOverlay').classList.remove('hidden');
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.querySelector('p').textContent = message;
+            overlay.classList.add('is-visible');
         }
 
         function hideLoading() {
-            document.getElementById('loadingOverlay').classList.add('hidden');
+            document.getElementById('loadingOverlay').classList.remove('is-visible');
         }
 
-        document.getElementById('messageBoxOk').addEventListener('click', hideMessage);
+        function setReportButtonsState(hasReport) {
+            document.getElementById('downloadPdfBtn').classList.toggle('hidden', !hasReport);
+            document.getElementById('a4PreviewArea').style.display = hasReport ? 'block' : 'none';
+        }
 
-        // --- DOM Elements ---
-        const roommateNameInput = document.getElementById('roommateNameInput');
-        const addRoommateBtn = document.getElementById('addRoommateBtn');
-        const roommatesList = document.getElementById('roommatesList');
-        const noRoommatesMessage = document.getElementById('noRoommatesMessage');
-        const spendingInputsDiv = document.getElementById('spendingInputs');
-        const noSpendingMessage = document.getElementById('noSpendingMessage');
-        const calculateBillBtn = document.getElementById('calculateBillBtn');
-        const billSettlementSection = document.getElementById('billSettlementSection');
-        const totalSpentSpan = document.getElementById('totalSpent');
-        const averageAmountSpan = document.getElementById('averageAmount');
-        const individualBalancesTableBody = document.getElementById('individualBalancesTableBody');
-        const paymentInstructionsList = document.getElementById('paymentInstructionsList');
-        const noPaymentsNeeded = document.getElementById('noPaymentsNeeded');
-        const resetAllBtn = document.getElementById('resetAllBtn');
+        function clearSettlementAndReport() {
+            currentSettlementData = null;
+            document.getElementById('billSettlementSection').classList.add('hidden');
+            document.getElementById('reportContent').innerHTML = '';
+            setReportButtonsState(false);
+        }
 
-        const generateReportPreviewBtn = document.getElementById('generateReportPreviewBtn');
-        const downloadPdfBtn = document.getElementById('downloadPdfBtn');
-        const a4PreviewCanvas = document.getElementById('a4PreviewCanvas');
-        const a4PreviewArea = document.getElementById('a4PreviewArea');
-        const reportContentDiv = document.getElementById('reportContent');
-        const shareAppBtn = document.getElementById('shareAppBtn');
-
-
-        // --- State Variable (Array to store roommate data) ---
-        let roommates = [];
-        let currentSettlementData = null; 
-
-        // --- Local Storage Key ---
-        const LOCAL_STORAGE_KEY = 'roommateSlipBillData';
-
-        // --- Functions ---
-
+        // --- Data Functions ---
         function saveRoommates() {
             try {
                 localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(roommates));
             } catch (e) {
-                console.error("Error saving to local storage:", e);
-                showMessage("Failed to save data. Browser storage might be full or blocked.");
+                console.error('Local storage error:', e);
             }
         }
 
         function loadRoommates() {
             try {
                 const storedData = localStorage.getItem(LOCAL_STORAGE_KEY);
-                if (storedData) {
-                    roommates = JSON.parse(storedData);
-                } else {
-                    roommates = [];
-                }
+                const parsed = storedData ? JSON.parse(storedData) : [];
+
+                roommates = Array.isArray(parsed)
+                    ? parsed
+                        .filter(r => r && Number.isFinite(Number(r.id)) && String(r.name ?? '').trim())
+                        .map(r => ({
+                            id: Number(r.id),
+                            name: String(r.name).trim(),
+                            spent: Math.max(0, Number(r.spent) || 0)
+                        }))
+                    : [];
             } catch (e) {
-                console.error("Error loading from local storage:", e);
-                showMessage("Failed to load saved data. Your previous roommates might not be available.");
-                roommates = []; 
+                console.error('Corrupt data found, resetting:', e);
+                roommates = [];
+                localStorage.removeItem(LOCAL_STORAGE_KEY);
             }
         }
 
+        // --- Core UI Rendering ---
         function renderRoommatesAndSpendingInputs() {
-            roommatesList.innerHTML = '';
-            spendingInputsDiv.innerHTML = '';
+            const roommatesList = document.getElementById('roommatesList');
+            const spendingInputsDiv = document.getElementById('spendingInputs');
+            const calculateBillBtn = document.getElementById('calculateBillBtn');
+
+            roommatesList.replaceChildren();
+            spendingInputsDiv.replaceChildren();
 
             if (roommates.length === 0) {
-                noRoommatesMessage.classList.remove('hidden');
-                roommatesList.appendChild(noRoommatesMessage);
-                noSpendingMessage.classList.remove('hidden');
-                spendingInputsDiv.appendChild(noSpendingMessage);
+                roommatesList.appendChild(createEmptyMessage('noRoommatesMessage', 'No roommates added yet.'));
+                spendingInputsDiv.appendChild(createEmptyMessage('noSpendingMessage', 'Add roommates first to enter spending.'));
                 calculateBillBtn.disabled = true;
-            } else {
-                noRoommatesMessage.classList.add('hidden');
-                noSpendingMessage.classList.add('hidden');
-                calculateBillBtn.disabled = false; 
-
-                roommates.forEach(roommate => {
-                    const roommateItem = document.createElement('div');
-                    roommateItem.classList.add('roommate-item');
-                    roommateItem.innerHTML = `
-                        <span>${roommate.name}</span>
-                        <button data-id="${roommate.id}" class="text-red-600 hover:text-red-800 text-sm delete-roommate-btn">Delete</button>
-                    `;
-                    roommatesList.appendChild(roommateItem);
-
-                    const spendingInputGroup = document.createElement('div');
-                    spendingInputGroup.classList.add('flex', 'flex-col', 'md:flex-row', 'items-start', 'md:items-center', 'gap-2');
-                    spendingInputGroup.innerHTML = `
-                        <label for="spent-${roommate.id}" class="w-32 font-medium">${roommate.name}:</label>
-                        <input type="number" id="spent-${roommate.id}" placeholder="Amount spent" min="0" step="0.01" value="${roommate.spent || ''}"
-                               class="flex-grow spending-input rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                    `;
-                    spendingInputsDiv.appendChild(spendingInputGroup);
-                });
-
-                document.querySelectorAll('.delete-roommate-btn').forEach(button => {
-                    button.addEventListener('click', (event) => {
-                        const idToDelete = parseInt(event.target.dataset.id);
-                        deleteRoommate(idToDelete);
-                    });
-                });
+                clearSettlementAndReport();
+                return;
             }
-            billSettlementSection.classList.add('hidden');
-            a4PreviewArea.style.display = 'none';
-            downloadPdfBtn.classList.add('hidden');
+
+            calculateBillBtn.disabled = false;
+
+            roommates.forEach(roommate => {
+                const roommateItem = document.createElement('div');
+                roommateItem.className = 'roommate-item';
+
+                const nameSpan = document.createElement('span');
+                nameSpan.textContent = roommate.name;
+
+                const deleteButton = document.createElement('button');
+                deleteButton.type = 'button';
+                deleteButton.dataset.id = String(roommate.id);
+                deleteButton.className = 'text-red-600 hover:text-red-800 text-sm delete-roommate-btn';
+                deleteButton.textContent = 'Delete';
+                deleteButton.addEventListener('click', () => deleteRoommate(roommate.id));
+
+                roommateItem.append(nameSpan, deleteButton);
+                roommatesList.appendChild(roommateItem);
+
+                const spendingInputGroup = document.createElement('div');
+                spendingInputGroup.className = 'flex flex-col md:flex-row items-start md:items-center gap-2';
+
+                const label = document.createElement('label');
+                label.htmlFor = `spent-${roommate.id}`;
+                label.className = 'w-32 font-medium truncate';
+                label.textContent = `${roommate.name}:`;
+
+                const input = document.createElement('input');
+                input.type = 'number';
+                input.id = `spent-${roommate.id}`;
+                input.placeholder = 'Amount spent';
+                input.min = '0';
+                input.step = '0.01';
+                input.inputMode = 'decimal';
+                input.value = roommate.spent > 0 ? String(roommate.spent) : '';
+                input.className = 'flex-grow spending-input rounded-md shadow-sm';
+                input.addEventListener('input', clearSettlementAndReport);
+
+                spendingInputGroup.append(label, input);
+                spendingInputsDiv.appendChild(spendingInputGroup);
+            });
         }
 
         function addRoommate() {
-            const name = roommateNameInput.value.trim();
+            const input = document.getElementById('roommateNameInput');
+            const name = input.value.trim().replace(/\s+/g, ' ');
+
             if (!name) {
-                showMessage("Please enter a roommate name.");
+                showMessage('Please enter a roommate name.');
                 return;
             }
 
@@ -598,460 +475,309 @@
                 return;
             }
 
-            const newRoommate = {
-                id: Date.now(), 
-                name: name,
-                spent: 0 
-            };
-            roommates.push(newRoommate);
+            roommates.push({
+                id: Date.now() + Math.floor(Math.random() * 1000),
+                name,
+                spent: 0
+            });
+
             saveRoommates();
             renderRoommatesAndSpendingInputs();
-            roommateNameInput.value = ''; 
+            input.value = '';
+            input.focus();
         }
 
         function deleteRoommate(id) {
-            const originalMessageBoxContent = document.getElementById('messageText').innerHTML;
-            document.getElementById('messageText').innerHTML = `
-                <p>Are you sure you want to delete this roommate? Their spending data will be lost.</p>
-                <div class="flex gap-4 mt-4">
-                    <button id="confirmDeleteBtn" class="btn-primary px-4 py-2 text-sm">Yes, Delete</button>
-                    <button id="cancelDeleteBtn" class="btn-secondary px-4 py-2 text-sm">Cancel</button>
-                </div>
-            `;
-            document.getElementById('messageBox').style.display = 'flex';
-            document.getElementById('overlay').style.display = 'block';
-
-            document.getElementById('confirmDeleteBtn').onclick = () => {
-                roommates = roommates.filter(r => r.id !== id);
-                saveRoommates();
-                renderRoommatesAndSpendingInputs();
-                hideMessage();
-                showMessage("Roommate deleted.");
-                document.getElementById('messageText').innerHTML = originalMessageBoxContent;
-            };
-
-            document.getElementById('cancelDeleteBtn').onclick = () => {
-                hideMessage();
-                document.getElementById('messageText').innerHTML = originalMessageBoxContent;
-            };
+            roommates = roommates.filter(r => r.id !== Number(id));
+            saveRoommates();
+            renderRoommatesAndSpendingInputs();
+            clearSettlementAndReport();
         }
 
         function calculateBill() {
-            showLoading();
-            billSettlementSection.classList.remove('hidden');
-            individualBalancesTableBody.innerHTML = ''; 
-            paymentInstructionsList.innerHTML = ''; 
-            noPaymentsNeeded.classList.add('hidden'); 
-            a4PreviewArea.style.display = 'none'; 
-            downloadPdfBtn.classList.add('hidden'); 
-
             if (roommates.length === 0) {
-                hideLoading();
-                showMessage("Please add at least one roommate to calculate the bill.");
+                showMessage('Add at least one roommate first.');
                 return;
             }
 
-            let totalSpent = 0;
-            roommates.forEach(roommate => {
-                const inputElement = document.getElementById(`spent-${roommate.id}`);
-                const spentAmount = parseFloat(inputElement.value) || 0; 
-                roommate.spent = spentAmount;
-                totalSpent += spentAmount;
-            });
-            saveRoommates(); 
+            showLoading('Crunching numbers...');
 
-            const numberOfRoommates = roommates.length;
-            const averageAmount = totalSpent / numberOfRoommates;
+            try {
+                const tableBody = document.getElementById('individualBalancesTableBody');
+                const instructionsList = document.getElementById('paymentInstructionsList');
+                const noPayments = document.getElementById('noPaymentsNeeded');
 
-            totalSpentSpan.textContent = `${totalSpent.toFixed(2)}`;
-            averageAmountSpan.textContent = `${averageAmount.toFixed(2)}`;
+                tableBody.replaceChildren();
+                instructionsList.replaceChildren();
+                noPayments.classList.add('hidden');
 
-            const balances = roommates.map(roommate => {
-                const balance = roommate.spent - averageAmount;
-                let statusText = '';
-                let balanceClass = '';
-                let formattedBalance = ''; 
+                let totalSpent = 0;
 
-                const epsilon = 0.01; 
-                if (balance < -epsilon) {
-                    balanceClass = 'text-red-600 font-semibold';
-                    statusText = 'Owes';
-                    formattedBalance = balance.toFixed(2); 
-                } else if (balance > epsilon) {
-                    balanceClass = 'text-green-600 font-semibold';
-                    statusText = 'Is Owed';
-                    formattedBalance = `+${balance.toFixed(2)}`; 
-                } else {
-                    balanceClass = 'text-gray-500 italic';
-                    statusText = 'Settled';
-                    formattedBalance = (0).toFixed(2); 
-                }
+                roommates = roommates.map(roommate => {
+                    const inputElement = document.getElementById(`spent-${roommate.id}`);
+                    const spent = inputElement ? Math.max(0, Number.parseFloat(inputElement.value) || 0) : 0;
+                    const roundedSpent = Math.round(spent * 100) / 100;
 
-                return {
-                    name: roommate.name,
-                    spent: roommate.spent,
-                    balance: balance, 
-                    formattedBalance: formattedBalance, 
-                    statusText: statusText,
-                    balanceClass: balanceClass
-                };
-            });
+                    if (inputElement) inputElement.value = roundedSpent ? roundedSpent.toFixed(2) : '';
+                    totalSpent += roundedSpent;
 
-            balances.forEach(item => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td class="py-3 px-4">${item.name}</td>
-                    <td class="py-3 px-4 text-right">${item.spent.toFixed(2)}</td>
-                    <td class="py-3 px-4 text-right ${item.balanceClass}">${item.formattedBalance}</td>
-                    <td class="py-3 px-4 ${item.balanceClass}">${item.statusText}</td>
-                `;
-                individualBalancesTableBody.appendChild(row);
-            });
-
-            let debtors = balances.filter(item => item.balance < -0.01)
-                                  .sort((a, b) => a.balance - b.balance); 
-            let creditors = balances.filter(item => item.balance > 0.01)
-                                   .sort((a, b) => b.balance - a.balance); 
-
-            const payments = [];
-            while (debtors.length > 0 && creditors.length > 0) {
-                let debtor = debtors[0];
-                let creditor = creditors[0];
-
-                const amountToTransfer = Math.min(Math.abs(debtor.balance), creditor.balance);
-
-                payments.push({
-                    from: debtor.name,
-                    to: creditor.name,
-                    amount: amountToTransfer
+                    return { ...roommate, spent: roundedSpent };
                 });
 
-                debtor.balance += amountToTransfer;
-                creditor.balance -= amountToTransfer;
-
-                if (Math.abs(debtor.balance) < 0.01) {
-                    debtors.shift();
-                }
-                if (creditor.balance < 0.01) {
-                    creditors.shift();
-                }
-
-                debtors.sort((a, b) => a.balance - b.balance);
-                creditors.sort((a, b) => b.balance - a.balance);
-            }
-
-            if (payments.length === 0) {
-                noPaymentsNeeded.classList.remove('hidden');
-            } else {
-                payments.forEach(payment => {
-                    const listItem = document.createElement('li');
-                    listItem.textContent = `${payment.from} pays ${payment.to}: ${payment.amount.toFixed(2)}`;
-                    paymentInstructionsList.appendChild(listItem);
-                });
-            }
-            hideLoading();
-
-            currentSettlementData = {
-                totalSpent: totalSpent,
-                averageAmount: averageAmount,
-                balances: balances, 
-                payments: payments
-            };
-        }
-
-        function resetAllData() {
-            const originalMessageBoxContent = document.getElementById('messageText').innerHTML;
-            document.getElementById('messageText').innerHTML = `
-                <p>Are you sure you want to clear ALL roommate data and spending? This action cannot be undone.</p>
-                <div class="flex gap-4 mt-4">
-                    <button id="confirmResetBtn" class="btn-primary px-4 py-2 text-sm">Yes, Reset All</button>
-                    <button id="cancelResetBtn" class="btn-secondary px-4 py-2 text-sm">Cancel</button>
-                </div>
-            `;
-            document.getElementById('messageBox').style.display = 'flex';
-            document.getElementById('overlay').style.display = 'block';
-
-            document.getElementById('confirmResetBtn').onclick = () => {
-                roommates = [];
-                currentSettlementData = null; 
+                totalSpent = Math.round(totalSpent * 100) / 100;
                 saveRoommates();
-                renderRoommatesAndSpendingInputs();
-                billSettlementSection.classList.add('hidden'); 
-                a4PreviewArea.style.display = 'none'; 
-                downloadPdfBtn.classList.add('hidden'); 
-                hideMessage();
-                showMessage("All data reset successfully.");
-                document.getElementById('messageText').innerHTML = originalMessageBoxContent;
-            };
 
-            document.getElementById('cancelResetBtn').onclick = () => {
-                hideMessage();
-                document.getElementById('messageText').innerHTML = originalMessageBoxContent;
-            };
-        }
+                const averageAmount = Math.round((totalSpent / roommates.length) * 100) / 100;
 
-        function generateReportHtml(data) {
-            const date = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' });
+                document.getElementById('totalSpent').textContent = formatMoney(totalSpent);
+                document.getElementById('averageAmount').textContent = formatMoney(averageAmount);
 
-            let individualBalancesHtml = '';
-            if (data.balances.length > 0) {
-                individualBalancesHtml = `
-                    <table style="width:100%; border-collapse:collapse; margin-bottom:1.5rem; font-size:0.9rem;">
-                        <thead>
-                            <tr>
-                                <th style="border:1px solid #e2e8f0; padding:8px 12px; text-align:left; background-color:#f8fafc; font-weight:600; color:#475569; text-transform:uppercase; font-size:0.875rem;">Roommate</th>
-                                <th style="border:1px solid #e2e8f0; padding:8px 12px; text-align:right; background-color:#f8fafc; font-weight:600; color:#475569; text-transform:uppercase; font-size:0.875rem;">Amount Spent</th>
-                                <th style="border:1px solid #e2e8f0; padding:8px 12px; text-align:right; background-color:#f8fafc; font-weight:600; color:#475569; text-transform:uppercase; font-size:0.875rem;">Balance</th>
-                                <th style="border:1px solid #e2e8f0; padding:8px 12px; text-align:left; background-color:#f8fafc; font-weight:600; color:#475569; text-transform:uppercase; font-size:0.875rem;">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                `;
-                data.balances.forEach(item => {
-                    let inlineBalanceStyle = '';
-                    if (item.balanceClass.includes('text-red')) {
-                        inlineBalanceStyle = 'color:#dc2626; font-weight:bold;';
-                    } else if (item.balanceClass.includes('text-green')) {
-                        inlineBalanceStyle = 'color:#16a34a; font-weight:bold;';
-                    } else if (item.balanceClass.includes('text-gray')) {
-                        inlineBalanceStyle = 'color:#64748b; font-style:italic;';
+                const balances = roommates.map(r => {
+                    const balance = Math.round((r.spent - averageAmount) * 100) / 100;
+                    const status = balance < -0.009 ? 'Owes' : balance > 0.009 ? 'Is Owed' : 'Settled';
+                    const balanceClass = balance < -0.009 ? 'text-red-600' : balance > 0.009 ? 'text-green-600' : 'text-gray-500';
+
+                    return { ...r, balance, status, balanceClass };
+                });
+
+                balances.forEach(item => {
+                    const row = document.createElement('tr');
+
+                    const nameCell = document.createElement('td');
+                    nameCell.className = 'py-3 px-4';
+                    nameCell.textContent = item.name;
+
+                    const spentCell = document.createElement('td');
+                    spentCell.className = 'py-3 px-4 text-right';
+                    spentCell.textContent = formatMoney(item.spent);
+
+                    const balanceCell = document.createElement('td');
+                    balanceCell.className = `py-3 px-4 text-right ${item.balanceClass}`;
+                    balanceCell.textContent = formatMoney(item.balance);
+
+                    const statusCell = document.createElement('td');
+                    statusCell.className = `py-3 px-4 ${item.balanceClass}`;
+                    statusCell.textContent = item.status;
+
+                    row.append(nameCell, spentCell, balanceCell, statusCell);
+                    tableBody.appendChild(row);
+                });
+
+                const debtors = balances
+                    .filter(i => i.balance < -0.009)
+                    .map(i => ({ ...i, amount: Math.round(Math.abs(i.balance) * 100) / 100 }))
+                    .sort((a, b) => b.amount - a.amount);
+
+                const creditors = balances
+                    .filter(i => i.balance > 0.009)
+                    .map(i => ({ ...i, amount: Math.round(i.balance * 100) / 100 }))
+                    .sort((a, b) => b.amount - a.amount);
+
+                const payments = [];
+                let debtorIndex = 0;
+                let creditorIndex = 0;
+                let loopCounter = 0;
+                const maxLoops = roommates.length * roommates.length + 10;
+
+                while (debtorIndex < debtors.length && creditorIndex < creditors.length && loopCounter < maxLoops) {
+                    loopCounter++;
+
+                    const debtor = debtors[debtorIndex];
+                    const creditor = creditors[creditorIndex];
+                    const amount = Math.round(Math.min(debtor.amount, creditor.amount) * 100) / 100;
+
+                    if (amount >= 0.01) {
+                        payments.push({
+                            from: debtor.name,
+                            to: creditor.name,
+                            amount
+                        });
                     }
 
-                    individualBalancesHtml += `
-                        <tr>
-                            <td style="border:1px solid #e2e8f0; padding:8px 12px;">${item.name}</td>
-                            <td style="border:1px solid #e2e8f0; padding:8px 12px; text-align:right;">${item.spent.toFixed(2)}</td>
-                            <td style="border:1px solid #e2e8f0; padding:8px 12px; text-align:right; ${inlineBalanceStyle}">${item.formattedBalance}</td>
-                            <td style="border:1px solid #e2e8f0; padding:8px 12px; ${inlineBalanceStyle}">${item.statusText}</td>
-                        </tr>
-                    `;
-                });
-                individualBalancesHtml += `
-                        </tbody>
+                    debtor.amount = Math.round((debtor.amount - amount) * 100) / 100;
+                    creditor.amount = Math.round((creditor.amount - amount) * 100) / 100;
+
+                    if (debtor.amount < 0.01) debtorIndex++;
+                    if (creditor.amount < 0.01) creditorIndex++;
+                }
+
+                if (payments.length === 0) {
+                    noPayments.classList.remove('hidden');
+                } else {
+                    payments.forEach(p => {
+                        const li = document.createElement('li');
+                        li.textContent = `${p.from} pays ${p.to}: ${formatMoney(p.amount)}`;
+                        instructionsList.appendChild(li);
+                    });
+                }
+
+                currentSettlementData = { totalSpent, averageAmount, balances, payments };
+                document.getElementById('billSettlementSection').classList.remove('hidden');
+                setReportButtonsState(false);
+            } catch (err) {
+                console.error('Calculation Error:', err);
+                showMessage('An error occurred during calculation. Please reset the data and try again.');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function buildReportContent() {
+            if (!currentSettlementData) return null;
+
+            const paymentItems = currentSettlementData.payments.length
+                ? currentSettlementData.payments
+                    .map(p => `<li>${escapeHTML(p.from)} pays ${escapeHTML(p.to)}: ${formatMoney(p.amount)}</li>`)
+                    .join('')
+                : '<li>Everyone is settled. No payments needed.</li>';
+
+            const balanceRows = currentSettlementData.balances.map(item => `
+                <tr>
+                    <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">${escapeHTML(item.name)}</td>
+                    <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: right;">${formatMoney(item.spent)}</td>
+                    <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: right;">${formatMoney(item.balance)}</td>
+                    <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">${escapeHTML(item.status)}</td>
+                </tr>
+            `).join('');
+
+            return `
+                <div class="report-page" style="box-sizing: border-box; padding: 20mm; background: white; color: #111827; font-family: Arial, sans-serif; width: 210mm; min-height: 297mm;">
+                    <h1 style="text-align:center; color: #4f46e5; margin: 0 0 6mm;">FairShare Expenses Report</h1>
+                    <p style="text-align:center; color: #6b7280; margin-bottom: 10mm;">Generated on ${escapeHTML(new Date().toLocaleDateString())}</p>
+
+                    <div style="margin-bottom: 8mm; font-size: 16px;">
+                        <p><strong>Total Group Spending:</strong> ${formatMoney(currentSettlementData.totalSpent)}</p>
+                        <p><strong>Average Amount Per Person:</strong> ${formatMoney(currentSettlementData.averageAmount)}</p>
+                    </div>
+
+                    <h2 style="font-size: 20px; margin: 0 0 4mm; color: #312e81;">Individual Balances</h2>
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 10mm; font-size: 13px;">
+                        <thead>
+                            <tr style="background: #f3f4f6;">
+                                <th style="padding: 8px; text-align: left; border-bottom: 1px solid #d1d5db;">Roommate</th>
+                                <th style="padding: 8px; text-align: right; border-bottom: 1px solid #d1d5db;">Spent</th>
+                                <th style="padding: 8px; text-align: right; border-bottom: 1px solid #d1d5db;">Balance</th>
+                                <th style="padding: 8px; text-align: left; border-bottom: 1px solid #d1d5db;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>${balanceRows}</tbody>
                     </table>
-                `;
-            } else {
-                individualBalancesHtml = `<p style="text-align:center; color:#64748b; font-style:italic; margin-top:1rem;">No roommates added.</p>`;
-            }
 
-
-            let paymentInstructionsHtml = '';
-            if (data.payments.length === 0) {
-                paymentInstructionsHtml = `<p style="text-align:center; color:#64748b; font-style:italic; margin-top:1rem;">Everyone is settled, no payments needed!</p>`;
-            } else {
-                paymentInstructionsHtml = `<ul class="payment-list-printable" style="list-style:none; padding:0;">`;
-                data.payments.forEach(payment => {
-                    paymentInstructionsHtml += `
-                        <li style="background-color:#e0e7ff; margin-bottom:0.5rem; padding:0.75rem 1rem; border-radius:0.5rem; font-weight:500; color:#312e81;">
-                            ${payment.from} pays ${payment.to}: ${payment.amount.toFixed(2)}
-                        </li>
-                    `;
-                });
-                paymentInstructionsHtml += `</ul>`;
-            }
-
-            const reportHtml = `
-                <div class="report-page">
-                    <div>
-                        <div class="report-header" style="text-align:center; padding-bottom:1rem; color:#475569;">
-                            <h3 style="font-size:1.5rem; font-weight:700; text-align:center; margin-bottom:0.5rem; color:#4f46e5;">FairShare Expenses Report</h3>
-                            <p style="font-size:0.9rem;">Date Generated: ${date}</p>
-                        </div>
-                        <div style="margin-bottom:1.5rem;">
-                            <p style="font-size:1.1rem; font-weight:600; margin-bottom:0.5rem;">Overall Summary:</p>
-                            <p style="font-size:1rem; margin-bottom:0.2rem;">Total Group Spending: <span style="font-weight:700; color:#4f46e5;">${data.totalSpent.toFixed(2)}</span></p>
-                            <p style="font-size:1rem;">Average Amount Per Person: <span style="font-weight:700; color:#6d28d9;">${data.averageAmount.toFixed(2)}</span></p>
-                        </div>
-
-                        <div style="margin-bottom:1.5rem;">
-                            <p style="font-size:1.1rem; font-weight:600; margin-bottom:0.5rem;">Individual Balances:</p>
-                            ${individualBalancesHtml}
-                        </div>
-
-                        <div>
-                            <p style="font-size:1.1rem; font-weight:600; margin-bottom:0.5rem;">Payment Instructions:</p>
-                            ${paymentInstructionsHtml}
-                        </div>
-                    </div>
-                    <div class="report-footer" style="text-align:center; padding-top:1rem; border-top:1px solid #e2e8f0; font-size:0.8rem; color:#475569;">
-                        <p>&copy; ${new Date().getFullYear()} FairShare Expenses. All rights reserved.</p>
-                        <p style="margin-top:0.2rem;">Developed by Nishikant Xalxo - @nishix_vamp</p>
-                        <p style="margin-top:0.2rem;">Page 1 of 1</p>
-                    </div>
+                    <h2 style="font-size: 20px; margin: 0 0 4mm; color: #312e81;">Settlement Instructions</h2>
+                    <ul style="font-size: 15px; line-height: 1.7; padding-left: 20px;">${paymentItems}</ul>
                 </div>
             `;
-            return reportHtml;
+        }
+
+        async function waitForPdfLibraries() {
+            const startedAt = Date.now();
+            while ((!window.html2canvas || !window.jspdf) && Date.now() - startedAt < 4000) {
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+            if (!window.html2canvas) throw new Error('html2canvas failed to load.');
+            if (!window.jspdf) throw new Error('jsPDF failed to load.');
         }
 
         async function renderA4ReportPreview() {
             if (!currentSettlementData) {
-                showMessage("Please calculate the bill first to generate a report.");
+                showMessage('Calculate bill first!');
                 return;
             }
 
-            showLoading('Generating report preview...');
-            
-            const reportHtml = generateReportHtml(currentSettlementData);
-            reportContentDiv.innerHTML = reportHtml;
-
-            a4PreviewArea.style.display = 'block'; 
-            downloadPdfBtn.classList.add('hidden'); 
-
-            const A4_WIDTH_MM = 210;
-            const A4_HEIGHT_MM = 297;
-            const PREVIEW_DPI = 96; 
-            const A4_WIDTH_PX_96DPI = (A4_WIDTH_MM / 25.4) * PREVIEW_DPI;
-            const A4_HEIGHT_PX_96DPI = (A4_HEIGHT_MM / 25.4) * PREVIEW_DPI;
-
-            a4PreviewCanvas.width = A4_WIDTH_PX_96DPI * window.devicePixelRatio;
-            a4PreviewCanvas.height = A4_HEIGHT_PX_96DPI * window.devicePixelRatio;
-            const ctx = a4PreviewCanvas.getContext('2d');
-            ctx.clearRect(0, 0, a4PreviewCanvas.width, a4PreviewCanvas.height);
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(0, 0, a4PreviewCanvas.width, a4PreviewCanvas.height);
+            showLoading('Generating preview...');
 
             try {
-                reportContentDiv.style.position = 'absolute';
-                reportContentDiv.style.left = '-9999px';
-                reportContentDiv.style.display = 'block';
+                await waitForPdfLibraries();
 
-                const pageElement = reportContentDiv.querySelector('.report-page');
+                const content = document.getElementById('reportContent');
+                content.innerHTML = buildReportContent();
 
-                if (!pageElement) {
-                     throw new Error("Report page element not found for capture.");
-                }
-
-                await html2canvas(pageElement, {
-                    scale: window.devicePixelRatio, 
-                    logging: false,
-                    useCORS: true,
-                }).then(canvas => {
-                    if (canvas.width === 0 || canvas.height === 0) {
-                        throw new Error(`Captured canvas has zero dimensions (width: ${canvas.width}, height: ${canvas.height}).`);
-                    }
-                    ctx.drawImage(canvas, 0, 0, a4PreviewCanvas.width, a4PreviewCanvas.height);
-                    downloadPdfBtn.classList.remove('hidden'); 
-                }).catch(error => {
-                    console.error("html2canvas error for preview:", error);
-                    throw new Error("Error generating preview: " + error.message);
-                });
-            } catch (error) {
-                console.error("Caught error during preview generation:", error);
-                showMessage("Failed to generate report preview. " + error.message);
-                a4PreviewArea.style.display = 'none'; 
-                downloadPdfBtn.classList.add('hidden'); 
-            } finally {
-                hideLoading();
-                reportContentDiv.style.display = 'none';
-                reportContentDiv.style.position = 'absolute';
-                reportContentDiv.style.left = '-9999px';
-                reportContentDiv.innerHTML = ''; 
-            }
-        }
-
-        async function downloadPdfReport() {
-            if (!currentSettlementData) {
-                showMessage("Please calculate the bill first to generate a report.");
-                return;
-            }
-
-            showLoading('Preparing PDF for download...');
-            
-            const reportHtml = generateReportHtml(currentSettlementData);
-            reportContentDiv.innerHTML = reportHtml;
-
-            const PDF_DPI = 300;
-            const A4_WIDTH_MM = 210;
-            const A4_HEIGHT_MM = 297;
-
-            const A4_WIDTH_PX_AT_DPI = (A4_WIDTH_MM / 25.4) * PDF_DPI;
-            const A4_HEIGHT_PX_AT_DPI = (A4_HEIGHT_MM / 25.4) * PDF_DPI;
-            const STANDARD_BROWSER_DPI = 96; 
-
-            const doc = new jsPDF('p', 'px', [A4_WIDTH_PX_AT_DPI, A4_HEIGHT_PX_AT_DPI]);
-
-            try {
-                reportContentDiv.style.position = 'absolute';
-                reportContentDiv.style.left = '-9999px';
-                reportContentDiv.style.display = 'block';
-
-                const pageElement = reportContentDiv.querySelector('.report-page');
-                if (!pageElement) {
-                     throw new Error("Report page element not found for PDF capture.");
-                }
-
-                await html2canvas(pageElement, {
-                    scale: PDF_DPI / STANDARD_BROWSER_DPI, 
-                    logging: false,
-                    useCORS: true,
-                }).then(canvas => {
-                    if (canvas.width === 0 || canvas.height === 0) {
-                        throw new Error(`Captured canvas for PDF has zero dimensions (width: ${canvas.width}, height: ${canvas.height}).`);
-                    }
-                    const imgData = canvas.toDataURL('image/jpeg', 1.0); 
-                    doc.addImage(imgData, 'JPEG', 0, 0, A4_WIDTH_PX_AT_DPI, A4_HEIGHT_PX_AT_DPI);
-                }).catch(error => {
-                    console.error("html2canvas error for PDF:", error);
-                    throw new Error("Error during PDF image capture: " + error.message);
+                const page = content.querySelector('.report-page');
+                const canvas = await html2canvas(page, {
+                    scale: 2,
+                    backgroundColor: '#ffffff',
+                    useCORS: true
                 });
 
-                doc.save(`FairShare_Report_${new Date().toLocaleDateString('en-IN').replace(/\//g, '-')}.pdf`);
-                showMessage('PDF downloaded successfully!');
+                const previewCanvas = document.getElementById('a4PreviewCanvas');
+                previewCanvas.width = canvas.width;
+                previewCanvas.height = canvas.height;
+                previewCanvas.getContext('2d').drawImage(canvas, 0, 0);
 
-            } catch (error) {
-                console.error("Caught error during PDF download:", error);
-                showMessage("Failed to download PDF. " + error.message);
-            } finally {
-                hideLoading();
-                reportContentDiv.style.display = 'none';
-                reportContentDiv.style.position = 'absolute';
-                reportContentDiv.style.left = '-9999px';
-                reportContentDiv.innerHTML = ''; 
-            }
-        }
-
-        async function shareApp() {
-            const appUrl = window.location.href;
-            const shareData = {
-                title: 'FairShare Expenses',
-                text: 'Easily calculate and settle monthly expenses with your roommates using FairShare Expenses!',
-                url: appUrl,
-            };
-
-            try {
-                if (navigator.share) {
-                    await navigator.share(shareData);
-                    console.log('App shared successfully!');
-                } else {
-                    await navigator.clipboard.writeText(appUrl);
-                    showMessage('App link copied to clipboard! You can paste it to share.');
-                }
+                setReportButtonsState(true);
             } catch (err) {
-                console.error('Error sharing the app:', err);
-                if (err.name !== 'AbortError') { 
-                    showMessage('Could not share the app. Please copy the link manually: ' + appUrl);
-                }
+                console.error('Preview Error:', err);
+                showMessage('Preview failed. Please check that html2canvas and jsPDF are loading correctly.');
+            } finally {
+                hideLoading();
             }
         }
 
-        addRoommateBtn.addEventListener('click', addRoommate);
-        roommateNameInput.addEventListener('keypress', (event) => {
-            if (event.key === 'Enter') {
-                event.preventDefault(); 
-                addRoommate();
+        async function downloadPdf() {
+            if (!currentSettlementData) {
+                showMessage('Calculate bill first!');
+                return;
             }
-        });
-        calculateBillBtn.addEventListener('click', calculateBill);
-        resetAllBtn.addEventListener('click', resetAllData);
-        generateReportPreviewBtn.addEventListener('click', renderA4ReportPreview); 
-        downloadPdfBtn.addEventListener('click', downloadPdfReport);
-        shareAppBtn.addEventListener('click', shareApp); 
 
+            showLoading('Preparing PDF...');
+
+            try {
+                await waitForPdfLibraries();
+
+                const { jsPDF } = window.jspdf;
+                const content = document.getElementById('reportContent');
+
+                if (!content.querySelector('.report-page')) {
+                    content.innerHTML = buildReportContent();
+                }
+
+                const page = content.querySelector('.report-page');
+                const canvas = await html2canvas(page, {
+                    scale: 2,
+                    backgroundColor: '#ffffff',
+                    useCORS: true
+                });
+
+                const imageData = canvas.toDataURL('image/png');
+                const doc = new jsPDF('p', 'mm', 'a4');
+                doc.addImage(imageData, 'PNG', 0, 0, 210, 297);
+                doc.save('FairShare_Report.pdf');
+            } catch (err) {
+                console.error('PDF Error:', err);
+                showMessage('Failed to generate PDF. Make sure browser extensions are not blocking the PDF libraries.');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function resetAllData() {
+            if (!confirm('Are you sure you want to completely erase all data?')) return;
+
+            roommates = [];
+            currentSettlementData = null;
+            localStorage.removeItem(LOCAL_STORAGE_KEY);
+            renderRoommatesAndSpendingInputs();
+            clearSettlementAndReport();
+        }
+
+        // --- Initialization ---
         document.addEventListener('DOMContentLoaded', () => {
-            showLoading("Loading saved data...");
+            document.getElementById('footerYear').textContent = String(new Date().getFullYear());
+
             loadRoommates();
             renderRoommatesAndSpendingInputs();
-            hideLoading();
+
+            document.getElementById('addRoommateBtn').addEventListener('click', addRoommate);
+            document.getElementById('roommateNameInput').addEventListener('keydown', e => {
+                if (e.key === 'Enter') addRoommate();
+            });
+
+            document.getElementById('calculateBillBtn').addEventListener('click', calculateBill);
+            document.getElementById('messageBoxOk').addEventListener('click', hideMessage);
+            document.getElementById('overlay').addEventListener('click', hideMessage);
+            document.getElementById('generateReportPreviewBtn').addEventListener('click', renderA4ReportPreview);
+            document.getElementById('downloadPdfBtn').addEventListener('click', downloadPdf);
+            document.getElementById('resetAllBtn').addEventListener('click', resetAllData);
         });
     </script>
 </body>
