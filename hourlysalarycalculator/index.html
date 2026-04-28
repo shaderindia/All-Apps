@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Advanced Hourly Salary Calculator | Free Wage, Weekend Pay & PDF Tool - SHADER7</title>
-  <meta name="description" content="Free advanced hourly salary calculator for monthly pay, weekend rates, daily work logs, RON to INR conversion, and downloadable PDF or JPG salary reports." />
-  <meta name="keywords" content="hourly salary calculator, salary calculator Romania, wage calculator, monthly salary calculator, weekend pay calculator, RON to INR converter, overtime calculator, SHADER7" />
+  <title>Advanced Hourly Salary Calculator | Night, C Shift, Weekend Pay & PDF Tool - SHADER7</title>
+  <meta name="description" content="Free advanced hourly salary calculator for monthly pay, night shift multiplier, C shift multiplier, weekend rates, daily work logs, RON to INR conversion, and downloadable PDF or JPG salary reports." />
+  <meta name="keywords" content="hourly salary calculator, salary calculator Romania, wage calculator, monthly salary calculator, weekend pay calculator, RON to INR converter, overtime calculator, night shift calculator, C shift salary calculator, SHADER7" />
   <meta name="author" content="Nishikant Xalxo" />
   <meta name="robots" content="index, follow, max-image-preview:large" />
   <meta name="theme-color" content="#4361ee" />
@@ -48,7 +48,7 @@
         "browserRequirements": "Requires JavaScript",
         "isAccessibleForFree": true,
         "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-        "description": "A free online salary calculator for hourly, monthly, and annual salary estimates, weekend multipliers, RON to INR conversion, saved monthly logs, and PDF/JPG report generation.",
+        "description": "A free online salary calculator for hourly, monthly, and annual salary estimates, weekend, night shift, and C shift multipliers, RON to INR conversion, saved monthly logs, and PDF/JPG report generation.",
         "creator": { "@type": "Person", "name": "Nishikant Xalxo", "url": "https://instagram.com/nishix_vamp" }
       },
       {
@@ -171,6 +171,11 @@
       transition: border-color .2s ease, box-shadow .2s ease;
     }
     input:focus, select:focus { border-color: var(--accent); box-shadow: var(--focus); }
+    input.input-error, select.input-error { border-color: var(--danger); background: #fff7f7; box-shadow: 0 0 0 4px rgba(239, 68, 68, .12); }
+    .field-warning { display: none; color: var(--danger); font-size: .78rem; font-weight: 700; }
+    .field-warning.is-visible { display: block; }
+    .salary-alert { display: none; margin-top: 12px; border: 1px solid rgba(239, 68, 68, .26); background: #fff7f7; color: #b91c1c; border-radius: 12px; padding: 10px 12px; font-weight: 700; }
+    .salary-alert.is-visible { display: flex; align-items: center; gap: 8px; }
     .actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 18px; }
     .btn {
       border: 0;
@@ -280,10 +285,11 @@
       <a class="home-link" href="/" aria-label="Back to home"><i class="fa-solid fa-arrow-left"></i> Home</a>
       <div class="hero-content">
         <h1>Advanced Hourly Salary Calculator</h1>
-        <p>Calculate monthly pay from daily hours, weekend multipliers, RON to INR conversion, saved monthly logs, and downloadable salary reports.</p>
+        <p>Calculate monthly pay from daily hours, weekend, night shift, and C shift multipliers, RON to INR conversion, saved monthly logs, and downloadable salary reports.</p>
         <p id="motivational-message" aria-live="polite"></p>
         <div class="hero-badges" aria-label="Features">
           <span class="badge">Weekend rates</span>
+          <span class="badge">Night shift rates</span><span class="badge">C shift rates</span>
           <span class="badge">PDF/JPG report</span>
           <span class="badge">RON → INR</span>
           <span class="badge">Mobile friendly</span>
@@ -310,12 +316,14 @@
         <div class="form-group"><label for="employee-name-input">Employee Name</label><input type="text" id="employee-name-input" placeholder="Your name" autocomplete="name" /></div>
         <div class="form-group"><label for="company-name">Company Name</label><input type="text" id="company-name" placeholder="Company name" autocomplete="organization" /></div>
         <div class="form-group"><label for="month-year-picker">Select Month and Year</label><input type="month" id="month-year-picker" /></div>
-        <div class="form-group"><label for="salary">Base Salary (RON)</label><input type="number" id="salary" min="0" step="0.01" inputmode="decimal" placeholder="Example: 4000" /></div>
+        <div class="form-group"><label for="salary">Base Salary (RON)</label><input type="number" id="salary" min="0" step="0.01" inputmode="decimal" placeholder="Example: 4000" aria-describedby="salary-warning" /><small id="salary-warning" class="field-warning" aria-live="polite">⚠ Base salary is missing. Enter it to calculate salary correctly.</small></div>
         <div class="form-group"><label for="fixedBaseHours">Fixed Base Hours per Month</label><input type="number" id="fixedBaseHours" min="1" step="0.5" inputmode="decimal" value="160" placeholder="Example: 160" /></div>
         <div class="form-group"><label for="weekendRate">Weekend Rate Multiplier</label><select id="weekendRate"><option value="1">1x</option><option value="1.25">1.25x</option><option value="1.5">1.5x</option><option value="2">2x</option></select></div>
+        <div class="form-group"><label for="nightRate">Night Shift Multiplier</label><select id="nightRate"><option value="1">1x - No extra</option><option value="1.1">1.10x</option><option value="1.15">1.15x</option><option value="1.25" selected>1.25x</option><option value="1.5">1.5x</option><option value="2">2x</option></select><small class="subtle">Applies when shift is set to Night. Weekend + Night are multiplied together.</small></div>
+        <div class="form-group"><label for="cShiftRate">C Shift Multiplier</label><select id="cShiftRate"><option value="1">1x - No extra</option><option value="1.1">1.10x</option><option value="1.15">1.15x</option><option value="1.25" selected>1.25x</option><option value="1.5">1.5x</option><option value="2">2x</option></select><small class="subtle">Applies when shift is set to C. Weekend + C Shift are multiplied together.</small></div>
       </form>
 
-      <div class="calendar-toolbar"><h3>Daily Work Log</h3><p class="subtle">Tip: choose a shift to auto-fill hours.</p></div>
+      <div class="calendar-toolbar"><h3>Daily Work Log</h3><p class="subtle">Tip: choose a shift to auto-fill hours. Night Shift and C Shift use their own multipliers.</p></div>
       <div id="calendar-container" class="calendar-wrapper" aria-live="polite"><p class="subtle" style="padding:16px;text-align:center;">Please select a month and year to generate the calendar.</p></div>
 
       <div class="actions" aria-label="Actions">
@@ -330,6 +338,7 @@
         <div class="salary-box"><span>Total Monthly Salary</span><strong id="total-salary">0.00 RON</strong></div>
         <div class="salary-box"><span>Approximate INR</span><strong id="total-salary-in-rupees">N/A</strong></div>
       </div>
+      <div id="salary-alert" class="salary-alert" role="alert"><i class="fa-solid fa-triangle-exclamation"></i><span>Please enter your Base Salary (RON). Calculations are currently showing 0.</span></div>
     </section>
 
     <section class="card" aria-labelledby="currency-title">
@@ -386,7 +395,7 @@
       if (!monthYearValue) { container.innerHTML = '<p class="subtle" style="padding:16px;text-align:center;">Please select a month and year to generate the calendar.</p>'; recalculateSalary(); return; }
       const [yearStr, monthStr] = monthYearValue.split('-'); const year = Number(yearStr); const month = Number(monthStr); const daysInMonth = new Date(year, month, 0).getDate(); const firstDayOfMonth = new Date(year, month - 1, 1).getDay();
       let hoursOptions = '<option value="">Hrs</option>'; for (let h = 0; h <= 16; h += 0.5) hoursOptions += `<option value="${h}">${h}</option>`;
-      const shiftOptions = '<option value="">Shift</option><option value="8">8 hrs</option><option value="12">12 hrs</option><option value="0">Off</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="Day">Day</option><option value="Night">Night</option><option value="OT">OT</option>';
+      const shiftOptions = '<option value="">Shift</option><option value="8">8 hrs</option><option value="12">12 hrs</option><option value="0">Off</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="Day">Day</option><option value="Night">Night Shift</option><option value="OT">OT</option>';
       let html = '<table class="calendar-table"><thead><tr>'; ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(day => html += `<th scope="col">${day}</th>`); html += '</tr></thead><tbody><tr>';
       for (let i = 0; i < firstDayOfMonth; i++) html += '<td class="empty-day" aria-hidden="true"></td>';
       for (let day = 1; day <= daysInMonth; day++) {
@@ -400,18 +409,68 @@
 
     function bindCalendarEvents() { $$('.hours-select').forEach(select => select.addEventListener('change', recalculateSalary)); $$('.shift-select').forEach(select => select.addEventListener('change', event => setHoursFromShift(event.currentTarget))); }
     function setHoursFromShift(shiftSelectElement) { const selectedValue = shiftSelectElement.value; const hoursSelectElement = $(`#hours-${shiftSelectElement.dataset.day}`); const shiftHoursMap = { '8': '8', '12': '12', '0': '0', A: '8', B: '8', C: '8', Day: '12', Night: '12', OT: '' }; if (Object.prototype.hasOwnProperty.call(shiftHoursMap, selectedValue)) hoursSelectElement.value = shiftHoursMap[selectedValue]; recalculateSalary(); }
-    function collectMonthData() { const hours = {}; const shifts = {}; $$('.hours-select').forEach(select => { hours[select.dataset.day] = select.value; }); $$('.shift-select').forEach(select => { shifts[select.dataset.day] = select.value; }); return { hours, shifts, employeeName: $('#employee-name-input').value.trim(), companyName: $('#company-name').value.trim(), salary: $('#salary').value, fixedBaseHours: $('#fixedBaseHours').value, weekendRate: $('#weekendRate').value, savedDate: new Date().toISOString() }; }
+    function collectMonthData() { const hours = {}; const shifts = {}; $$('.hours-select').forEach(select => { hours[select.dataset.day] = select.value; }); $$('.shift-select').forEach(select => { shifts[select.dataset.day] = select.value; }); return { hours, shifts, employeeName: $('#employee-name-input').value.trim(), companyName: $('#company-name').value.trim(), salary: $('#salary').value, fixedBaseHours: $('#fixedBaseHours').value, weekendRate: $('#weekendRate').value, nightRate: $('#nightRate').value, cShiftRate: $('#cShiftRate').value, savedDate: new Date().toISOString() }; }
     function saveMonthData() { const monthKey = getMonthKey(); if (!monthKey) return showToast('Please select a month and year first.'); if (!$('#employee-name-input').value.trim() || !$('#company-name').value.trim()) return showToast('Please enter employee and company name first.'); try { localStorage.setItem(`calendarData_${monthKey}`, JSON.stringify(collectMonthData())); showToast(`Data for ${monthKey} saved.`); } catch (error) { console.error(error); showToast('Could not save data. Browser storage may be full.'); } }
-    function loadMonthData() { const monthKey = getMonthKey(); if (!monthKey) return; const storedData = localStorage.getItem(`calendarData_${monthKey}`); if (!storedData) { $$('.hours-select, .shift-select').forEach(select => { select.value = ''; }); recalculateSalary(); return; } try { const monthData = JSON.parse(storedData); const idMap = { employeeName: 'employee-name-input', companyName: 'company-name', salary: 'salary', fixedBaseHours: 'fixedBaseHours', weekendRate: 'weekendRate' }; Object.keys(idMap).forEach(key => { if (monthData[key] !== undefined) $(`#${idMap[key]}`).value = monthData[key]; }); $$('.hours-select').forEach(select => { select.value = monthData.hours?.[select.dataset.day] ?? ''; }); $$('.shift-select').forEach(select => { select.value = monthData.shifts?.[select.dataset.day] ?? ''; }); updateEmployeeInfo(); recalculateSalary(); } catch (error) { console.error(error); showToast('Saved data looks corrupted and could not be loaded.'); } }
+    function loadMonthData() { const monthKey = getMonthKey(); if (!monthKey) return; const storedData = localStorage.getItem(`calendarData_${monthKey}`); if (!storedData) { $$('.hours-select, .shift-select').forEach(select => { select.value = ''; }); recalculateSalary(); return; } try { const monthData = JSON.parse(storedData); const idMap = { employeeName: 'employee-name-input', companyName: 'company-name', salary: 'salary', fixedBaseHours: 'fixedBaseHours', weekendRate: 'weekendRate', nightRate: 'nightRate', cShiftRate: 'cShiftRate' }; Object.keys(idMap).forEach(key => { if (monthData[key] !== undefined) $(`#${idMap[key]}`).value = monthData[key]; }); $$('.hours-select').forEach(select => { select.value = monthData.hours?.[select.dataset.day] ?? ''; }); $$('.shift-select').forEach(select => { select.value = monthData.shifts?.[select.dataset.day] ?? ''; }); updateEmployeeInfo(); recalculateSalary(); } catch (error) { console.error(error); showToast('Saved data looks corrupted and could not be loaded.'); } }
     function clearAllHours() { if (!confirm('Clear all hours and shifts for this selected month?')) return; $$('.hours-select, .shift-select').forEach(select => { select.value = ''; }); const monthKey = getMonthKey(); if (monthKey) localStorage.removeItem(`calendarData_${monthKey}`); recalculateSalary(); showToast('Hours cleared.'); }
 
+    function isNightShift(day) {
+      const shiftSelect = $(`#shift-${day}`);
+      return (shiftSelect?.value || '').toLowerCase() === 'night';
+    }
+
+    function isCShift(day) {
+      const shiftSelect = $(`#shift-${day}`);
+      return (shiftSelect?.value || '').toLowerCase() === 'c';
+    }
+
+    function updateSalaryValidation(totalHours = 0) {
+      const salaryInput = $('#salary');
+      const salaryWarning = $('#salary-warning');
+      const salaryAlert = $('#salary-alert');
+      const salary = parseFloat(salaryInput.value) || 0;
+      const shouldWarn = salary <= 0 && totalHours > 0;
+      salaryInput.classList.toggle('input-error', shouldWarn);
+      salaryInput.setAttribute('aria-invalid', shouldWarn ? 'true' : 'false');
+      salaryWarning?.classList.toggle('is-visible', shouldWarn);
+      salaryAlert?.classList.toggle('is-visible', shouldWarn);
+    }
+
     function recalculateSalary() {
-      const salary = Math.max(0, parseFloat($('#salary').value) || 0); const fixedBaseHours = Math.max(0, parseFloat($('#fixedBaseHours').value) || 0); const weekendRateMultiplier = Math.max(0, parseFloat($('#weekendRate').value) || 1);
-      let totalWeekdayHours = 0; let totalWeekendHours = 0;
-      $$('.hours-select').forEach(select => { const hours = Math.max(0, parseFloat(select.value) || 0); if (select.dataset.isWeekend === 'true') totalWeekendHours += hours; else totalWeekdayHours += hours; });
-      const hourlyRate = fixedBaseHours > 0 ? salary / fixedBaseHours : 0; const weekdayPay = totalWeekdayHours * hourlyRate; const weekendPay = totalWeekendHours * hourlyRate * weekendRateMultiplier; const calculatedSalary = weekdayPay + weekendPay; const totalHours = totalWeekdayHours + totalWeekendHours; const salaryInINR = convertSalaryToINR(calculatedSalary);
-      state.lastSalary = { hourlyRate, totalWeekdayHours, totalWeekendHours, totalHours, calculatedSalary, salaryInINR };
-      $('#hourly-rate').textContent = `${formatNumber(hourlyRate)} RON/hr`; $('#total-salary').textContent = `${formatNumber(calculatedSalary)} RON`; $('#summary-hours').textContent = `${formatNumber(totalHours, totalHours % 1 ? 1 : 0)} hrs`; $('#summary-salary').textContent = `${formatNumber(calculatedSalary)} RON`;
+      const salary = Math.max(0, parseFloat($('#salary').value) || 0);
+      const fixedBaseHours = Math.max(0, parseFloat($('#fixedBaseHours').value) || 0);
+      const weekendRateMultiplier = Math.max(0, parseFloat($('#weekendRate').value) || 1);
+      const nightRateMultiplier = Math.max(0, parseFloat($('#nightRate').value) || 1);
+      const cShiftRateMultiplier = Math.max(0, parseFloat($('#cShiftRate').value) || 1);
+      let totalWeekdayHours = 0;
+      let totalWeekendHours = 0;
+      let totalNightHours = 0;
+      let totalCShiftHours = 0;
+      let calculatedSalary = 0;
+      const hourlyRate = fixedBaseHours > 0 ? salary / fixedBaseHours : 0;
+
+      $$('.hours-select').forEach(select => {
+        const hours = Math.max(0, parseFloat(select.value) || 0);
+        const isWeekend = select.dataset.isWeekend === 'true';
+        const isNight = isNightShift(select.dataset.day);
+        const isC = isCShift(select.dataset.day);
+        if (isWeekend) totalWeekendHours += hours; else totalWeekdayHours += hours;
+        if (isNight) totalNightHours += hours;
+        if (isC) totalCShiftHours += hours;
+        const effectiveMultiplier = (isWeekend ? weekendRateMultiplier : 1) * (isNight ? nightRateMultiplier : 1) * (isC ? cShiftRateMultiplier : 1);
+        calculatedSalary += hours * hourlyRate * effectiveMultiplier;
+      });
+
+      const totalHours = totalWeekdayHours + totalWeekendHours;
+      const salaryInINR = convertSalaryToINR(calculatedSalary);
+      state.lastSalary = { hourlyRate, totalWeekdayHours, totalWeekendHours, totalNightHours, totalCShiftHours, totalHours, calculatedSalary, salaryInINR };
+      $('#hourly-rate').textContent = `${formatNumber(hourlyRate)} RON/hr`;
+      $('#total-salary').textContent = `${formatNumber(calculatedSalary)} RON`;
+      $('#summary-hours').textContent = `${formatNumber(totalHours, totalHours % 1 ? 1 : 0)} hrs`;
+      $('#summary-salary').textContent = `${formatNumber(calculatedSalary)} RON`;
+      $('#total-salary-in-rupees').textContent = `${formatNumber(salaryInINR)} INR`;
+      $('#hourly-rate').title = `Weekday: ${formatNumber(totalWeekdayHours, totalWeekdayHours % 1 ? 1 : 0)} hrs • Weekend: ${formatNumber(totalWeekendHours, totalWeekendHours % 1 ? 1 : 0)} hrs • Night: ${formatNumber(totalNightHours, totalNightHours % 1 ? 1 : 0)} hrs • C Shift: ${formatNumber(totalCShiftHours, totalCShiftHours % 1 ? 1 : 0)} hrs`;
+      updateSalaryValidation(totalHours);
     }
 
     async function fetchJSONWithTimeout(url, timeoutMs = 9000) {
@@ -541,15 +600,57 @@
     function convertSalaryToINR(ronAmount) { let ronToInrRate = parseFloat($('#exchange-rate-manual').value) || 0; if (state.autoUpdateRate && state.exchangeRates.RON && state.exchangeRates.INR) { ronToInrRate = state.exchangeRates.INR / state.exchangeRates.RON; $('#exchange-rate-manual').value = ronToInrRate.toFixed(4); } const inrAmount = ronToInrRate > 0 ? ronAmount * ronToInrRate : 0; $('#total-salary-in-rupees').textContent = ronToInrRate > 0 ? `${formatNumber(inrAmount)} INR` : 'N/A'; return inrAmount; }
     function updateRONtoINRforSalary() { if (state.autoUpdateRate && state.exchangeRates.RON && state.exchangeRates.INR) $('#exchange-rate-manual').value = (state.exchangeRates.INR / state.exchangeRates.RON).toFixed(4); recalculateSalary(); }
 
-    function validateReportInputs() { if (!$('#employee-name-input').value.trim() || !$('#company-name').value.trim()) return 'Please enter both employee name and company name.'; if (!getMonthKey()) return 'Please select a month and year.'; if ((parseFloat($('#salary').value) || 0) <= 0 || (parseFloat($('#fixedBaseHours').value) || 0) <= 0) return 'Please enter valid base salary and fixed base hours.'; return ''; }
+    function validateReportInputs() { if (!$('#employee-name-input').value.trim() || !$('#company-name').value.trim()) return 'Please enter both employee name and company name.'; if (!getMonthKey()) return 'Please select a month and year.'; if ((parseFloat($('#salary').value) || 0) <= 0) { updateSalaryValidation(1); $('#salary').focus(); return 'Please enter your base salary before generating the report.'; } if ((parseFloat($('#fixedBaseHours').value) || 0) <= 0) return 'Please enter valid fixed base hours.'; return ''; }
     function showReportPreview() { const validationMessage = validateReportInputs(); if (validationMessage) return showToast(validationMessage); const hasHours = $$('.hours-select').some(select => (parseFloat(select.value) || 0) > 0); if (!hasHours && !confirm('No hours have been entered. Generate a report anyway?')) return; $('#report-preview-content').innerHTML = generateReportHTML(); $('#report-preview-modal').classList.remove('hidden'); resetZoom(); }
 
     function generateReportHTML() {
-      const employeeName = escapeHTML($('#employee-name-input').value.trim() || 'N/A'); const companyName = escapeHTML($('#company-name').value.trim() || 'N/A'); const salary = Math.max(0, parseFloat($('#salary').value) || 0); const fixedBaseHours = Math.max(0, parseFloat($('#fixedBaseHours').value) || 0); const [yearStr, monthStr] = getMonthKey().split('-'); const year = Number(yearStr); const month = Number(monthStr); const weekendRate = Math.max(0, parseFloat($('#weekendRate').value) || 1); const exchangeRate = Math.max(0, parseFloat($('#exchange-rate-manual').value) || 0); const monthName = new Date(year, month - 1).toLocaleString('default', { month: 'long' }); const daysInMonth = new Date(year, month, 0).getDate(); const hourlyRate = fixedBaseHours > 0 ? salary / fixedBaseHours : 0;
-      let totalWeekdayHours = 0, totalWeekendHours = 0, daysWorked = 0, daysOff = 0; const leftRows = [], rightRows = [];
-      for (let day = 1; day <= daysInMonth; day++) { const dateObj = new Date(year, month - 1, day); const hoursSelect = $(`#hours-${day}`); const shiftSelect = $(`#shift-${day}`); const hrs = Math.max(0, parseFloat(hoursSelect?.value) || 0); const isWeekend = hoursSelect?.dataset.isWeekend === 'true'; const shiftText = escapeHTML(shiftSelect?.options[shiftSelect.selectedIndex]?.text || 'N/A'); const multiplier = isWeekend ? weekendRate : 1; const dailyPay = hrs * hourlyRate * multiplier; if (isWeekend) totalWeekendHours += hrs; else totalWeekdayHours += hrs; if (hrs > 0) daysWorked++; else daysOff++; const dateLabel = `${dateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })} (${dateObj.toLocaleDateString('en-GB', { weekday: 'short' })}) - ${shiftText}`; const row = `<tr><td>${dateLabel}</td><td>${formatNumber(hrs, hrs % 1 ? 1 : 0)} hrs${isWeekend ? ' (Weekend)' : ''}</td><td>${formatNumber(dailyPay)} RON</td></tr>`; if (day <= 15) leftRows.push(row); else rightRows.push(row); }
-      const totalHours = totalWeekdayHours + totalWeekendHours; const totalSalaryRON = totalWeekdayHours * hourlyRate + totalWeekendHours * hourlyRate * weekendRate; const totalSalaryINR = totalSalaryRON * exchangeRate;
-      return `<div class="report-watermark">${companyName}</div><div class="report-company-name">${companyName}</div><div class="report-header"><h2>Salary Report</h2><p>For ${monthName} ${year}</p></div><div class="report-details"><div><p><strong>Employee:</strong> ${employeeName}</p><p><strong>Base Salary:</strong> ${formatNumber(salary)} RON</p><p><strong>Fixed Base Hours:</strong> ${formatNumber(fixedBaseHours, fixedBaseHours % 1 ? 1 : 0)}</p><p><strong>Hourly Rate:</strong> ${formatNumber(hourlyRate)} RON</p><p><strong>Weekend Multiplier:</strong> ${weekendRate}x</p></div><div><p><strong>Total Hours:</strong> ${formatNumber(totalHours, totalHours % 1 ? 1 : 0)}</p><p><strong>Weekday Hours:</strong> ${formatNumber(totalWeekdayHours, totalWeekdayHours % 1 ? 1 : 0)}</p><p><strong>Weekend Hours:</strong> ${formatNumber(totalWeekendHours, totalWeekendHours % 1 ? 1 : 0)}</p><p><strong>Days Worked:</strong> ${daysWorked} | <strong>Days Off:</strong> ${daysOff}</p><p><strong>Total Salary:</strong> ${formatNumber(totalSalaryRON)} RON</p><p><strong>Total Salary:</strong> ${formatNumber(totalSalaryINR)} INR</p></div></div><h3 style="text-align:center;margin:12pt 0 8pt;font-size:12pt;">Daily Work Log</h3><div class="report-table-container"><table class="report-table"><thead><tr><th>Date, Day & Shift</th><th>Hours</th><th>Daily Pay</th></tr></thead><tbody>${leftRows.join('')}</tbody></table><table class="report-table"><thead><tr><th>Date, Day & Shift</th><th>Hours</th><th>Daily Pay</th></tr></thead><tbody>${rightRows.join('')}</tbody></table></div><div class="report-footer"><div><p><strong>Employee Signature:</strong> ______________________________</p><p><strong>Date:</strong> ____________________</p></div><div class="right"><p><strong>Employer Signature:</strong> ______________________________</p><p><strong>Date:</strong> ____________________</p></div></div>`;
+      const employeeName = escapeHTML($('#employee-name-input').value.trim() || 'N/A');
+      const companyName = escapeHTML($('#company-name').value.trim() || 'N/A');
+      const salary = Math.max(0, parseFloat($('#salary').value) || 0);
+      const fixedBaseHours = Math.max(0, parseFloat($('#fixedBaseHours').value) || 0);
+      const [yearStr, monthStr] = getMonthKey().split('-');
+      const year = Number(yearStr);
+      const month = Number(monthStr);
+      const weekendRate = Math.max(0, parseFloat($('#weekendRate').value) || 1);
+      const nightRate = Math.max(0, parseFloat($('#nightRate').value) || 1);
+      const cShiftRate = Math.max(0, parseFloat($('#cShiftRate').value) || 1);
+      const exchangeRate = Math.max(0, parseFloat($('#exchange-rate-manual').value) || 0);
+      const monthName = new Date(year, month - 1).toLocaleString('default', { month: 'long' });
+      const daysInMonth = new Date(year, month, 0).getDate();
+      const hourlyRate = fixedBaseHours > 0 ? salary / fixedBaseHours : 0;
+
+      let totalWeekdayHours = 0, totalWeekendHours = 0, totalNightHours = 0, totalCShiftHours = 0, daysWorked = 0, daysOff = 0, totalSalaryRON = 0;
+      const leftRows = [], rightRows = [];
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dateObj = new Date(year, month - 1, day);
+        const hoursSelect = $(`#hours-${day}`);
+        const shiftSelect = $(`#shift-${day}`);
+        const hrs = Math.max(0, parseFloat(hoursSelect?.value) || 0);
+        const isWeekend = hoursSelect?.dataset.isWeekend === 'true';
+        const shiftValue = (shiftSelect?.value || '').toLowerCase();
+        const isNight = shiftValue === 'night';
+        const isC = shiftValue === 'c';
+        const shiftText = escapeHTML(shiftSelect?.options[shiftSelect.selectedIndex]?.text || 'N/A');
+        const effectiveMultiplier = (isWeekend ? weekendRate : 1) * (isNight ? nightRate : 1) * (isC ? cShiftRate : 1);
+        const dailyPay = hrs * hourlyRate * effectiveMultiplier;
+        totalSalaryRON += dailyPay;
+        if (isWeekend) totalWeekendHours += hrs; else totalWeekdayHours += hrs;
+        if (isNight) totalNightHours += hrs;
+        if (isC) totalCShiftHours += hrs;
+        if (hrs > 0) daysWorked++; else daysOff++;
+        const labels = [];
+        if (isWeekend) labels.push('Weekend');
+        if (isNight) labels.push(`Night x${nightRate}`);
+        if (isC) labels.push(`C Shift x${cShiftRate}`);
+        const hoursLabel = `${formatNumber(hrs, hrs % 1 ? 1 : 0)} hrs${labels.length ? ` (${labels.join(' + ')})` : ''}`;
+        const dateLabel = `${dateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })} (${dateObj.toLocaleDateString('en-GB', { weekday: 'short' })}) - ${shiftText}`;
+        const row = `<tr><td>${dateLabel}</td><td>${hoursLabel}</td><td>${formatNumber(dailyPay)} RON</td></tr>`;
+        if (day <= 15) leftRows.push(row); else rightRows.push(row);
+      }
+
+      const totalHours = totalWeekdayHours + totalWeekendHours;
+      const totalSalaryINR = totalSalaryRON * exchangeRate;
+      return `<div class="report-watermark">${companyName}</div><div class="report-company-name">${companyName}</div><div class="report-header"><h2>Salary Report</h2><p>For ${monthName} ${year}</p></div><div class="report-details"><div><p><strong>Employee:</strong> ${employeeName}</p><p><strong>Base Salary:</strong> ${formatNumber(salary)} RON</p><p><strong>Fixed Base Hours:</strong> ${formatNumber(fixedBaseHours, fixedBaseHours % 1 ? 1 : 0)}</p><p><strong>Hourly Rate:</strong> ${formatNumber(hourlyRate)} RON</p><p><strong>Weekend Multiplier:</strong> ${weekendRate}x</p><p><strong>Night Shift Multiplier:</strong> ${nightRate}x</p><p><strong>C Shift Multiplier:</strong> ${cShiftRate}x</p></div><div><p><strong>Total Hours:</strong> ${formatNumber(totalHours, totalHours % 1 ? 1 : 0)}</p><p><strong>Weekday Hours:</strong> ${formatNumber(totalWeekdayHours, totalWeekdayHours % 1 ? 1 : 0)}</p><p><strong>Weekend Hours:</strong> ${formatNumber(totalWeekendHours, totalWeekendHours % 1 ? 1 : 0)}</p><p><strong>Night Shift Hours:</strong> ${formatNumber(totalNightHours, totalNightHours % 1 ? 1 : 0)}</p><p><strong>C Shift Hours:</strong> ${formatNumber(totalCShiftHours, totalCShiftHours % 1 ? 1 : 0)}</p><p><strong>Days Worked:</strong> ${daysWorked} | <strong>Days Off:</strong> ${daysOff}</p><p><strong>Total Salary:</strong> ${formatNumber(totalSalaryRON)} RON</p><p><strong>Total Salary:</strong> ${formatNumber(totalSalaryINR)} INR</p></div></div><h3 style="text-align:center;margin:12pt 0 8pt;font-size:12pt;">Daily Work Log</h3><div class="report-table-container"><table class="report-table"><thead><tr><th>Date, Day & Shift</th><th>Hours</th><th>Daily Pay</th></tr></thead><tbody>${leftRows.join('')}</tbody></table><table class="report-table"><thead><tr><th>Date, Day & Shift</th><th>Hours</th><th>Daily Pay</th></tr></thead><tbody>${rightRows.join('')}</tbody></table></div><div class="report-footer"><div><p><strong>Employee Signature:</strong> ______________________________</p><p><strong>Date:</strong> ____________________</p></div><div class="right"><p><strong>Employer Signature:</strong> ______________________________</p><p><strong>Date:</strong> ____________________</p></div></div>`;
     }
 
     function hideReportPreview() { $('#report-preview-modal').classList.add('hidden'); }
@@ -580,7 +681,7 @@
     async function shareApp() { const shareData = { title: document.title, text: 'Check out this advanced salary calculator.', url: window.location.href }; if (navigator.share) { try { await navigator.share(shareData); } catch (error) { if (error.name !== 'AbortError') showToast('Sharing failed.'); } } else { try { await navigator.clipboard.writeText(window.location.href); showToast('Link copied to clipboard.'); } catch { showToast(`Copy this link: ${window.location.href}`); } } }
 
     function bindStaticEvents() {
-      $('#employee-name-input').addEventListener('input', updateEmployeeInfo); $('#company-name').addEventListener('input', updateEmployeeInfo); $('#month-year-picker').addEventListener('change', generateCalendarAndLoadData); $('#salary').addEventListener('input', recalculateSalary); $('#fixedBaseHours').addEventListener('input', recalculateSalary); $('#weekendRate').addEventListener('change', recalculateSalary); $('#clear-hours-btn').addEventListener('click', clearAllHours); $('#save-month-btn').addEventListener('click', saveMonthData); $('#report-btn').addEventListener('click', showReportPreview); $('#share-btn').addEventListener('click', shareApp); $('#refresh-rates').addEventListener('click', fetchExchangeRates); $('#amount-input').addEventListener('input', convertCurrency); $('#from-currency-select').addEventListener('change', convertCurrency); $('#to-currency-select').addEventListener('change', convertCurrency); $('#exchange-rate-manual').addEventListener('input', () => { state.autoUpdateRate = false; $('#auto-update-rate').checked = false; recalculateSalary(); }); $('#auto-update-rate').addEventListener('change', event => { state.autoUpdateRate = event.currentTarget.checked; if (state.autoUpdateRate) updateRONtoINRforSalary(); else recalculateSalary(); }); $('#modal-close-btn').addEventListener('click', hideReportPreview); $('#zoom-out-btn').addEventListener('click', () => zoomReport(-.1)); $('#zoom-in-btn').addEventListener('click', () => zoomReport(.1)); $('#modal-download-pdf-btn').addEventListener('click', () => downloadReport('pdf')); $('#modal-download-jpg-btn').addEventListener('click', () => downloadReport('jpg')); $('#report-preview-modal').addEventListener('click', event => { if (event.target.id === 'report-preview-modal') hideReportPreview(); }); document.addEventListener('keydown', event => { if (event.key === 'Escape' && !$('#report-preview-modal').classList.contains('hidden')) hideReportPreview(); }); }
+      $('#employee-name-input').addEventListener('input', updateEmployeeInfo); $('#company-name').addEventListener('input', updateEmployeeInfo); $('#month-year-picker').addEventListener('change', generateCalendarAndLoadData); $('#salary').addEventListener('input', recalculateSalary); $('#salary').addEventListener('blur', () => updateSalaryValidation($$('.hours-select').some(select => (parseFloat(select.value) || 0) > 0) ? 1 : 0)); $('#fixedBaseHours').addEventListener('input', recalculateSalary); $('#weekendRate').addEventListener('change', recalculateSalary); $('#nightRate').addEventListener('change', recalculateSalary); $('#cShiftRate').addEventListener('change', recalculateSalary); $('#clear-hours-btn').addEventListener('click', clearAllHours); $('#save-month-btn').addEventListener('click', saveMonthData); $('#report-btn').addEventListener('click', showReportPreview); $('#share-btn').addEventListener('click', shareApp); $('#refresh-rates').addEventListener('click', fetchExchangeRates); $('#amount-input').addEventListener('input', convertCurrency); $('#from-currency-select').addEventListener('change', convertCurrency); $('#to-currency-select').addEventListener('change', convertCurrency); $('#exchange-rate-manual').addEventListener('input', () => { state.autoUpdateRate = false; $('#auto-update-rate').checked = false; recalculateSalary(); }); $('#auto-update-rate').addEventListener('change', event => { state.autoUpdateRate = event.currentTarget.checked; if (state.autoUpdateRate) updateRONtoINRforSalary(); else recalculateSalary(); }); $('#modal-close-btn').addEventListener('click', hideReportPreview); $('#zoom-out-btn').addEventListener('click', () => zoomReport(-.1)); $('#zoom-in-btn').addEventListener('click', () => zoomReport(.1)); $('#modal-download-pdf-btn').addEventListener('click', () => downloadReport('pdf')); $('#modal-download-jpg-btn').addEventListener('click', () => downloadReport('jpg')); $('#report-preview-modal').addEventListener('click', event => { if (event.target.id === 'report-preview-modal') hideReportPreview(); }); document.addEventListener('keydown', event => { if (event.key === 'Escape' && !$('#report-preview-modal').classList.contains('hidden')) hideReportPreview(); }); }
 
     document.addEventListener('DOMContentLoaded', () => { bindStaticEvents(); updateDate(); displayMotivationalMessage(); updateEmployeeInfo(); const now = new Date(); $('#month-year-picker').value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`; generateCalendarAndLoadData(); fetchExchangeRates(); recalculateSalary(); });
   </script>
