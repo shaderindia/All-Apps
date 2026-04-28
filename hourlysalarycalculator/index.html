@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Advanced Hourly Salary Calculator | Free Wage, Weekend Pay & PDF Tool - SHADER7</title>
+  <meta name="description" content="Free advanced hourly salary calculator for monthly pay, weekend rates, daily work logs, RON to INR conversion, and downloadable PDF or JPG salary reports." />
+  <meta name="keywords" content="hourly salary calculator, salary calculator Romania, wage calculator, monthly salary calculator, weekend pay calculator, RON to INR converter, overtime calculator, SHADER7" />
+  <meta name="author" content="Nishikant Xalxo" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta name="theme-color" content="#4361ee" />
+  <link rel="canonical" href="https://shader7.com/hourlysalarycalculator/" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Shader7" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:url" content="https://shader7.com/hourlysalarycalculator/" />
+  <meta property="og:title" content="Advanced Hourly Salary Calculator | Free Pay & Wage Tool" />
+  <meta property="og:description" content="Calculate hourly, monthly, and annual salary instantly. Track weekend pay, generate salary reports, and convert RON to INR." />
+  <meta property="og:image" content="https://shader7.com/og-image.jpg" />
+  <meta property="og:image:alt" content="Shader7 advanced salary calculator preview" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@nishix_vamp" />
+  <meta name="twitter:creator" content="@nishix_vamp" />
+  <meta name="twitter:title" content="Advanced Hourly Salary Calculator | Free Pay & Wage Tool" />
+  <meta name="twitter:description" content="Calculate hourly, monthly, and annual salary instantly. Track weekend pay and generate PDF salary reports." />
+  <meta name="twitter:image" content="https://shader7.com/og-image.jpg" />
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-FCJR8H4DME"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-FCJR8H4DME');
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebApplication",
+        "name": "Shader7 Advanced Hourly Salary Calculator",
+        "url": "https://shader7.com/hourlysalarycalculator/",
+        "applicationCategory": "FinanceApplication",
+        "operatingSystem": "All",
+        "browserRequirements": "Requires JavaScript",
+        "isAccessibleForFree": true,
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "description": "A free online salary calculator for hourly, monthly, and annual salary estimates, weekend multipliers, RON to INR conversion, saved monthly logs, and PDF/JPG report generation.",
+        "creator": { "@type": "Person", "name": "Nishikant Xalxo", "url": "https://instagram.com/nishix_vamp" }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "How is hourly salary calculated?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Hourly rate is calculated by dividing the base monthly salary by fixed base hours per month." }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I include weekend pay?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Yes. Weekend hours can be multiplied by a selected weekend rate such as 1x, 1.25x, 1.5x, or 2x." }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I generate a salary report?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Yes. The calculator can preview and export a monthly salary report as PDF or JPG." }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" /></noscript>
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" /></noscript>
+
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <style>
+    :root {
+      --primary: #4361ee;
+      --primary-dark: #3f37c9;
+      --accent: #4895ef;
+      --bg: #f5f7ff;
+      --surface: #fff;
+      --soft: #f8fafc;
+      --text: #1f2937;
+      --muted: #64748b;
+      --border: #e5e7eb;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --radius: 16px;
+      --shadow: 0 10px 30px rgba(15, 23, 42, .1);
+      --focus: 0 0 0 4px rgba(72, 149, 239, .24);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: var(--text);
+      background: radial-gradient(circle at top left, #eaf0ff 0, var(--bg) 42%, #fff 100%);
+      line-height: 1.55;
+    }
+    a { color: inherit; }
+    button, input, select { font: inherit; }
+    button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible { outline: none; box-shadow: var(--focus); }
+    .page-shell { width: min(1120px, calc(100% - 28px)); margin: 0 auto; padding: 20px 0 36px; }
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border-radius: 24px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: #fff;
+      box-shadow: var(--shadow);
+      padding: clamp(24px, 4vw, 42px);
+      margin-bottom: 22px;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 85% 15%, rgba(255,255,255,.22), transparent 35%);
+      pointer-events: none;
+    }
+    .home-link, .hero-content { position: relative; z-index: 1; }
+    .home-link { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; margin-bottom: 18px; opacity: .95; }
+    .hero-content { display: grid; gap: 10px; }
+    .hero h1 { font-size: clamp(1.9rem, 5vw, 3.3rem); line-height: 1.08; margin: 0; }
+    .hero p { max-width: 780px; margin: 0; opacity: .92; }
+    .hero-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .badge { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.22); padding: 7px 11px; border-radius: 999px; font-size: .84rem; }
+    .card {
+      background: rgba(255,255,255,.94);
+      border: 1px solid rgba(226, 232, 240, .78);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: clamp(16px, 3vw, 28px);
+      margin-bottom: 20px;
+      backdrop-filter: blur(10px);
+    }
+    .top-row { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; flex-wrap: wrap; margin-bottom: 18px; }
+    .top-row h2 { margin: 0; font-size: clamp(1.35rem, 3vw, 1.8rem); }
+    .subtle { color: var(--muted); font-size: .94rem; }
+    .summary-strip { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 22px; }
+    .summary-item { background: var(--soft); border: 1px solid var(--border); border-radius: 14px; padding: 14px; }
+    .summary-item span { display: block; color: var(--muted); font-size: .8rem; }
+    .summary-item strong { display: block; margin-top: 3px; font-size: .98rem; word-break: break-word; }
+    .form-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+    .form-group { display: grid; gap: 7px; }
+    label { font-weight: 600; color: #475569; font-size: .9rem; }
+    input, select {
+      width: 100%;
+      border: 1.8px solid var(--border);
+      border-radius: 12px;
+      background: #fff;
+      padding: 12px 13px;
+      color: var(--text);
+      min-height: 46px;
+      transition: border-color .2s ease, box-shadow .2s ease;
+    }
+    input:focus, select:focus { border-color: var(--accent); box-shadow: var(--focus); }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 18px; }
+    .btn {
+      border: 0;
+      min-height: 44px;
+      border-radius: 12px;
+      padding: 11px 17px;
+      cursor: pointer;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      color: #fff;
+      background: var(--primary);
+      font-weight: 700;
+      transition: transform .18s ease, box-shadow .18s ease, opacity .18s ease;
+    }
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(15,23,42,.16); }
+    .btn:disabled { opacity: .65; cursor: not-allowed; transform: none; }
+    .btn.secondary { background: var(--primary-dark); }
+    .btn.warning { background: var(--warning); }
+    .btn.neutral { background: #64748b; }
+    .btn.danger { background: var(--danger); }
+    .salary-panel { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 18px; }
+    .salary-box { background: linear-gradient(135deg, #f8fbff, #eef4ff); border: 1px solid #dbeafe; border-radius: 16px; padding: 16px; }
+    .salary-box span { display: block; color: var(--muted); font-size: .82rem; }
+    .salary-box strong { display: block; margin-top: 4px; color: var(--primary); font-size: clamp(1.05rem, 2.5vw, 1.4rem); }
+    .calendar-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 24px 0 10px; flex-wrap: wrap; }
+    .calendar-toolbar h3 { margin: 0; }
+    .calendar-wrapper { overflow-x: auto; border: 1px solid var(--border); border-radius: 16px; background: #fff; }
+    .calendar-table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 760px; }
+    .calendar-table th { position: sticky; top: 0; z-index: 2; background: #eef4ff; color: var(--primary-dark); padding: 11px 8px; font-size: .86rem; }
+    .calendar-table td { border-top: 1px solid var(--border); border-right: 1px solid var(--border); min-width: 106px; vertical-align: top; padding: 9px; background: #fff; }
+    .calendar-table td:last-child, .calendar-table th:last-child { border-right: 0; }
+    .calendar-day { display: grid; gap: 6px; }
+    .day-number { display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: .92rem; }
+    .weekend-label { color: var(--danger); font-size: .7rem; font-weight: 700; }
+    .weekend { background: #fff7f7 !important; }
+    .empty-day { background: #f8fafc !important; }
+    .day-inputs { display: grid; grid-template-columns: 1fr; gap: 6px; }
+    .day-inputs select { min-height: 34px; padding: 6px 7px; border-radius: 9px; font-size: .78rem; }
+    .currency-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .live-rates { background: #f0f5ff; border: 1px solid #dbeafe; border-radius: 16px; padding: 16px; }
+    .live-rates-title { display: flex; align-items: center; gap: 9px; font-weight: 800; color: var(--primary-dark); margin-bottom: 12px; }
+    .rates-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 9px; }
+    .rate-item { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 10px; text-align: center; }
+    .rate-item strong { display: block; }
+    .rate-item span { color: var(--primary); font-size: .86rem; }
+    .converter { display: grid; gap: 13px; }
+    .converter-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .converter-result { background: #eef6ff; border: 1px solid #dbeafe; color: var(--primary-dark); border-radius: 14px; padding: 14px; text-align: center; font-weight: 800; min-height: 52px; display: grid; place-items: center; }
+    .switch-line { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+    .switch { position: relative; display: inline-block; width: 50px; height: 28px; flex: 0 0 auto; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; inset: 0; cursor: pointer; background: #cbd5e1; border-radius: 999px; transition: .2s; }
+    .slider::before { content: ''; position: absolute; width: 20px; height: 20px; left: 4px; top: 4px; background: #fff; border-radius: 50%; transition: .2s; box-shadow: 0 1px 4px rgba(0,0,0,.18); }
+    .switch input:checked + .slider { background: var(--primary); }
+    .switch input:checked + .slider::before { transform: translateX(22px); }
+    .hidden { display: none !important; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    .toast { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%) translateY(120%); background: #111827; color: #fff; padding: 12px 16px; border-radius: 999px; box-shadow: var(--shadow); z-index: 2000; opacity: 0; transition: .25s ease; max-width: calc(100% - 24px); text-align: center; font-size: .92rem; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .spinner { width: 18px; height: 18px; border: 3px solid rgba(67,97,238,.25); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .modal { position: fixed; inset: 0; z-index: 1000; background: rgba(15, 23, 42, .74); display: grid; grid-template-rows: auto 1fr; gap: 12px; padding: 14px; }
+    .report-controls { width: min(960px, 100%); margin: 0 auto; background: rgba(255,255,255,.96); border-radius: 16px; padding: 10px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; align-items: center; }
+    .zoom-controls { display: flex; gap: 6px; align-items: center; }
+    .zoom-controls span { min-width: 48px; text-align: center; font-weight: 800; }
+    .report-scroll { width: min(960px, 100%); margin: 0 auto; overflow: auto; display: flex; align-items: flex-start; justify-content: center; }
+    #report-preview-content { background: #fff; width: 210mm; min-height: 297mm; padding: 12mm; transform-origin: top center; transition: transform .18s ease; box-shadow: 0 10px 40px rgba(0,0,0,.35); font-size: 10pt; color: #333; position: relative; }
+    .report-company-name { text-align: center; font-size: 16pt; font-weight: 800; color: #1f2937; margin-bottom: 8pt; word-break: break-word; }
+    .report-header { text-align: center; margin-bottom: 14pt; }
+    .report-header h2 { margin: 0 0 3pt; font-size: 18pt; }
+    .report-details { display: grid; grid-template-columns: 1fr 1fr; gap: 12pt; margin-bottom: 12pt; }
+    .report-details p { margin: 0 0 4pt; }
+    .report-table-container { display: grid; grid-template-columns: 1fr 1fr; gap: 8pt; }
+    .report-table { width: 100%; border-collapse: collapse; }
+    .report-table th, .report-table td { border: 1px solid #ddd; padding: 5pt; text-align: left; font-size: 7.8pt; vertical-align: top; }
+    .report-table th { background: #f3f4f6; }
+    .report-footer { display: grid; grid-template-columns: 1fr 1fr; gap: 10pt; margin-top: 24pt; font-size: 9pt; }
+    .report-footer .right { text-align: right; }
+    .report-watermark { position: absolute; inset: 0; display: grid; place-items: center; transform: rotate(-35deg); font-size: 3rem; font-weight: 800; color: rgba(0,0,0,.045); pointer-events: none; user-select: none; white-space: nowrap; overflow: hidden; }
+    details { border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; background: #fff; margin-top: 10px; }
+    summary { cursor: pointer; }
+    .credits { text-align: center; color: var(--muted); font-size: .9rem; margin-top: 22px; }
+    @media (max-width: 900px) {
+      .summary-strip, .salary-panel { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .form-grid, .currency-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 620px) {
+      .page-shell { width: min(100% - 18px, 1120px); padding-top: 10px; }
+      .hero { border-radius: 18px; }
+      .summary-strip, .salary-panel, .converter-row { grid-template-columns: 1fr; }
+      .actions { display: grid; grid-template-columns: 1fr; }
+      .btn { width: 100%; }
+      .calendar-toolbar { align-items: flex-start; }
+      .calendar-table { min-width: 680px; }
+      .calendar-table td { min-width: 96px; padding: 7px; }
+      .modal { padding: 8px; }
+      .report-controls { justify-content: center; }
+      #report-preview-content { transform-origin: top center; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page-shell">
+    <header class="hero">
+      <a class="home-link" href="/" aria-label="Back to home"><i class="fa-solid fa-arrow-left"></i> Home</a>
+      <div class="hero-content">
+        <h1>Advanced Hourly Salary Calculator</h1>
+        <p>Calculate monthly pay from daily hours, weekend multipliers, RON to INR conversion, saved monthly logs, and downloadable salary reports.</p>
+        <p id="motivational-message" aria-live="polite"></p>
+        <div class="hero-badges" aria-label="Features">
+          <span class="badge">Weekend rates</span>
+          <span class="badge">PDF/JPG report</span>
+          <span class="badge">RON → INR</span>
+          <span class="badge">Mobile friendly</span>
+        </div>
+      </div>
+    </header>
+
+    <section id="app-section" class="card" aria-labelledby="calculator-title">
+      <div class="top-row">
+        <div>
+          <h2 id="calculator-title">Welcome, <span id="employee-display-name">Guest</span>!</h2>
+          <p class="subtle">Your saved month data stays locally in this browser.</p>
+        </div>
+      </div>
+
+      <div class="summary-strip" aria-label="Current summary">
+        <div class="summary-item"><span>Today</span><strong id="current-date">—</strong></div>
+        <div class="summary-item"><span>Employee</span><strong id="employee-info-display">N/A</strong></div>
+        <div class="summary-item"><span>Total Hours</span><strong id="summary-hours">0</strong></div>
+        <div class="summary-item"><span>Estimated Salary</span><strong id="summary-salary">0.00 RON</strong></div>
+      </div>
+
+      <form class="form-grid" onsubmit="return false;" autocomplete="on">
+        <div class="form-group"><label for="employee-name-input">Employee Name</label><input type="text" id="employee-name-input" placeholder="Your name" autocomplete="name" /></div>
+        <div class="form-group"><label for="company-name">Company Name</label><input type="text" id="company-name" placeholder="Company name" autocomplete="organization" /></div>
+        <div class="form-group"><label for="month-year-picker">Select Month and Year</label><input type="month" id="month-year-picker" /></div>
+        <div class="form-group"><label for="salary">Base Salary (RON)</label><input type="number" id="salary" min="0" step="0.01" inputmode="decimal" placeholder="Example: 4000" /></div>
+        <div class="form-group"><label for="fixedBaseHours">Fixed Base Hours per Month</label><input type="number" id="fixedBaseHours" min="1" step="0.5" inputmode="decimal" value="160" placeholder="Example: 160" /></div>
+        <div class="form-group"><label for="weekendRate">Weekend Rate Multiplier</label><select id="weekendRate"><option value="1">1x</option><option value="1.25">1.25x</option><option value="1.5">1.5x</option><option value="2">2x</option></select></div>
+      </form>
+
+      <div class="calendar-toolbar"><h3>Daily Work Log</h3><p class="subtle">Tip: choose a shift to auto-fill hours.</p></div>
+      <div id="calendar-container" class="calendar-wrapper" aria-live="polite"><p class="subtle" style="padding:16px;text-align:center;">Please select a month and year to generate the calendar.</p></div>
+
+      <div class="actions" aria-label="Actions">
+        <button class="btn warning" type="button" id="clear-hours-btn"><i class="fa-solid fa-trash"></i> Remove All Hours</button>
+        <button class="btn" type="button" id="save-month-btn"><i class="fa-solid fa-floppy-disk"></i> Save This Month</button>
+        <button class="btn secondary" type="button" id="report-btn"><i class="fa-solid fa-eye"></i> Generate Report</button>
+        <button class="btn neutral" type="button" id="share-btn"><i class="fa-solid fa-share-nodes"></i> Share App</button>
+      </div>
+
+      <div class="salary-panel" aria-label="Calculated salary">
+        <div class="salary-box"><span>Hourly Rate</span><strong id="hourly-rate">0.00 RON</strong></div>
+        <div class="salary-box"><span>Total Monthly Salary</span><strong id="total-salary">0.00 RON</strong></div>
+        <div class="salary-box"><span>Approximate INR</span><strong id="total-salary-in-rupees">N/A</strong></div>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="currency-title">
+      <div class="top-row"><div><h2 id="currency-title">Currency Converter</h2><p class="subtle">Live rates use EUR as the API base. Salary INR conversion can be auto-updated or manually edited.</p></div><button class="btn neutral" type="button" id="refresh-rates"><i class="fa-solid fa-rotate"></i> Refresh Rates</button></div>
+      <div class="currency-grid">
+        <div class="live-rates"><div class="live-rates-title"><i class="fa-solid fa-chart-line"></i><span>Live Exchange Rates</span><span id="rate-loading" class="hidden" aria-label="Loading exchange rates"><span class="spinner"></span></span></div><div class="rates-grid" id="live-rates-grid"></div><p class="subtle" style="font-size:.78rem;margin:12px 0 0;">Rates from Frankfurter API, updated daily when available.</p></div>
+        <div class="converter">
+          <div class="form-group"><label for="amount-input">Amount to Convert</label><input type="number" id="amount-input" min="0" step="0.01" inputmode="decimal" placeholder="Enter amount" /></div>
+          <div class="converter-row"><div class="form-group"><label for="from-currency-select">From Currency</label><select id="from-currency-select"></select></div><div class="form-group"><label for="to-currency-select">To Currency</label><select id="to-currency-select"></select></div></div>
+          <div id="conversion-result" class="converter-result" aria-live="polite">Enter amount and select currencies.</div>
+          <div class="form-group"><label for="exchange-rate-manual">RON to INR Exchange Rate for Salary</label><input type="number" id="exchange-rate-manual" value="18.5" step="0.0001" min="0" inputmode="decimal" /><div class="switch-line"><label class="switch" aria-label="Auto-update RON to INR rate"><input type="checkbox" id="auto-update-rate" checked /><span class="slider"></span></label><span class="subtle">Auto-update RON to INR rate</span></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="faq-title">
+      <h2 id="faq-title">Salary Calculator FAQ</h2>
+      <details><summary><strong>How is my hourly rate calculated?</strong></summary><p>Your base salary is divided by fixed base hours. Example: 4000 RON / 160 hours = 25 RON/hour.</p></details>
+      <details><summary><strong>Does weekend work pay extra?</strong></summary><p>Weekend hours are multiplied by the weekend rate you choose. Weekday hours stay at the regular hourly rate.</p></details>
+      <details><summary><strong>Where is my data stored?</strong></summary><p>Your saved monthly data is stored in your browser localStorage. It is not uploaded to a server by this page.</p></details>
+    </section>
+
+    <footer class="credits"><p>&copy; <span id="copyright-year"></span> SHADER7 - Free Apps for You. All rights reserved.</p><p>Built with <span style="color:#ef4444;">&hearts;</span> by <a href="https://www.instagram.com/nishix_vamp" target="_blank" rel="noopener noreferrer">Nishikant Xalxo</a></p></footer>
+  </main>
+
+  <div id="report-preview-modal" class="modal hidden" role="dialog" aria-modal="true" aria-label="Salary report preview">
+    <div class="report-controls">
+      <button class="btn secondary" id="modal-download-pdf-btn" type="button"><i class="fa-solid fa-file-pdf"></i> Download PDF</button>
+      <div class="zoom-controls"><button class="btn neutral" type="button" id="zoom-out-btn" aria-label="Zoom out"><i class="fa-solid fa-magnifying-glass-minus"></i></button><span id="zoom-level">100%</span><button class="btn neutral" type="button" id="zoom-in-btn" aria-label="Zoom in"><i class="fa-solid fa-magnifying-glass-plus"></i></button></div>
+      <button class="btn secondary" id="modal-download-jpg-btn" type="button"><i class="fa-solid fa-file-image"></i> Download JPG</button>
+      <button class="btn danger" id="modal-close-btn" type="button"><i class="fa-solid fa-xmark"></i> Close</button>
+    </div>
+    <div id="report-scrollable-content" class="report-scroll"><div id="report-preview-content"></div></div>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    'use strict';
+    const state = { currentZoom: 1, exchangeRates: {}, availableCurrencies: {}, autoUpdateRate: true, lastSalary: { hourlyRate: 0, totalWeekdayHours: 0, totalWeekendHours: 0, totalHours: 0, calculatedSalary: 0, salaryInINR: 0 } };
+    const $ = (selector, root = document) => root.querySelector(selector);
+    const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
+
+    function escapeHTML(value) { return String(value ?? '').replace(/[&<>'"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char])); }
+    function formatNumber(value, decimals = 2) { return Number(value || 0).toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals }); }
+    function showToast(message) { const toast = $('#toast'); toast.textContent = message; toast.classList.add('show'); clearTimeout(showToast.timer); showToast.timer = setTimeout(() => toast.classList.remove('show'), 2600); }
+    function updateDate() { const now = new Date(); $('#current-date').textContent = now.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }); $('#copyright-year').textContent = now.getFullYear(); }
+    function displayMotivationalMessage() { const messages = ["Believe you can and you're halfway there. - Theodore Roosevelt", "The future belongs to those who believe in the beauty of their dreams. - Eleanor Roosevelt", "The only way to do great work is to love what you do. - Steve Jobs", "Strive not to be a success, but rather to be of value. - Albert Einstein", "Keep pushing forward. Your consistency matters.", "Your dedication today shapes your success tomorrow."]; $('#motivational-message').textContent = messages[Math.floor(Math.random() * messages.length)]; }
+    function updateEmployeeInfo() { const employeeName = $('#employee-name-input').value.trim(); const companyName = $('#company-name').value.trim(); $('#employee-display-name').textContent = employeeName || 'Guest'; $('#employee-info-display').textContent = employeeName && companyName ? `${employeeName} / ${companyName}` : employeeName || (companyName ? `Company: ${companyName}` : 'N/A'); }
+    function getDateSuffix(day) { if (day > 3 && day < 21) return 'th'; return ['th', 'st', 'nd', 'rd'][day % 10] || 'th'; }
+    function getMonthKey() { return $('#month-year-picker').value || null; }
+
+    function generateCalendarAndLoadData() {
+      const monthYearValue = getMonthKey(); const container = $('#calendar-container');
+      if (!monthYearValue) { container.innerHTML = '<p class="subtle" style="padding:16px;text-align:center;">Please select a month and year to generate the calendar.</p>'; recalculateSalary(); return; }
+      const [yearStr, monthStr] = monthYearValue.split('-'); const year = Number(yearStr); const month = Number(monthStr); const daysInMonth = new Date(year, month, 0).getDate(); const firstDayOfMonth = new Date(year, month - 1, 1).getDay();
+      let hoursOptions = '<option value="">Hrs</option>'; for (let h = 0; h <= 16; h += 0.5) hoursOptions += `<option value="${h}">${h}</option>`;
+      const shiftOptions = '<option value="">Shift</option><option value="8">8 hrs</option><option value="12">12 hrs</option><option value="0">Off</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="Day">Day</option><option value="Night">Night</option><option value="OT">OT</option>';
+      let html = '<table class="calendar-table"><thead><tr>'; ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(day => html += `<th scope="col">${day}</th>`); html += '</tr></thead><tbody><tr>';
+      for (let i = 0; i < firstDayOfMonth; i++) html += '<td class="empty-day" aria-hidden="true"></td>';
+      for (let day = 1; day <= daysInMonth; day++) {
+        const weekday = new Date(year, month - 1, day).getDay(); const isWeekend = weekday === 0 || weekday === 6;
+        html += `<td class="${isWeekend ? 'weekend' : ''}"><div class="calendar-day"><div class="day-number"><span>${day}${getDateSuffix(day)}</span>${isWeekend ? '<span class="weekend-label">Weekend</span>' : ''}</div><div class="day-inputs"><label class="sr-only" for="hours-${day}">Hours for day ${day}</label><select id="hours-${day}" class="hours-select" data-day="${day}" data-is-weekend="${isWeekend}">${hoursOptions}</select><label class="sr-only" for="shift-${day}">Shift for day ${day}</label><select id="shift-${day}" class="shift-select" data-day="${day}">${shiftOptions}</select></div></div></td>`;
+        if ((firstDayOfMonth + day) % 7 === 0 && day < daysInMonth) html += '</tr><tr>';
+      }
+      const remainingCells = (7 - ((firstDayOfMonth + daysInMonth) % 7)) % 7; for (let i = 0; i < remainingCells; i++) html += '<td class="empty-day" aria-hidden="true"></td>'; html += '</tr></tbody></table>';
+      container.innerHTML = html; bindCalendarEvents(); loadMonthData();
+    }
+
+    function bindCalendarEvents() { $$('.hours-select').forEach(select => select.addEventListener('change', recalculateSalary)); $$('.shift-select').forEach(select => select.addEventListener('change', event => setHoursFromShift(event.currentTarget))); }
+    function setHoursFromShift(shiftSelectElement) { const selectedValue = shiftSelectElement.value; const hoursSelectElement = $(`#hours-${shiftSelectElement.dataset.day}`); const shiftHoursMap = { '8': '8', '12': '12', '0': '0', A: '8', B: '8', C: '8', Day: '12', Night: '12', OT: '' }; if (Object.prototype.hasOwnProperty.call(shiftHoursMap, selectedValue)) hoursSelectElement.value = shiftHoursMap[selectedValue]; recalculateSalary(); }
+    function collectMonthData() { const hours = {}; const shifts = {}; $$('.hours-select').forEach(select => { hours[select.dataset.day] = select.value; }); $$('.shift-select').forEach(select => { shifts[select.dataset.day] = select.value; }); return { hours, shifts, employeeName: $('#employee-name-input').value.trim(), companyName: $('#company-name').value.trim(), salary: $('#salary').value, fixedBaseHours: $('#fixedBaseHours').value, weekendRate: $('#weekendRate').value, savedDate: new Date().toISOString() }; }
+    function saveMonthData() { const monthKey = getMonthKey(); if (!monthKey) return showToast('Please select a month and year first.'); if (!$('#employee-name-input').value.trim() || !$('#company-name').value.trim()) return showToast('Please enter employee and company name first.'); try { localStorage.setItem(`calendarData_${monthKey}`, JSON.stringify(collectMonthData())); showToast(`Data for ${monthKey} saved.`); } catch (error) { console.error(error); showToast('Could not save data. Browser storage may be full.'); } }
+    function loadMonthData() { const monthKey = getMonthKey(); if (!monthKey) return; const storedData = localStorage.getItem(`calendarData_${monthKey}`); if (!storedData) { $$('.hours-select, .shift-select').forEach(select => { select.value = ''; }); recalculateSalary(); return; } try { const monthData = JSON.parse(storedData); const idMap = { employeeName: 'employee-name-input', companyName: 'company-name', salary: 'salary', fixedBaseHours: 'fixedBaseHours', weekendRate: 'weekendRate' }; Object.keys(idMap).forEach(key => { if (monthData[key] !== undefined) $(`#${idMap[key]}`).value = monthData[key]; }); $$('.hours-select').forEach(select => { select.value = monthData.hours?.[select.dataset.day] ?? ''; }); $$('.shift-select').forEach(select => { select.value = monthData.shifts?.[select.dataset.day] ?? ''; }); updateEmployeeInfo(); recalculateSalary(); } catch (error) { console.error(error); showToast('Saved data looks corrupted and could not be loaded.'); } }
+    function clearAllHours() { if (!confirm('Clear all hours and shifts for this selected month?')) return; $$('.hours-select, .shift-select').forEach(select => { select.value = ''; }); const monthKey = getMonthKey(); if (monthKey) localStorage.removeItem(`calendarData_${monthKey}`); recalculateSalary(); showToast('Hours cleared.'); }
+
+    function recalculateSalary() {
+      const salary = Math.max(0, parseFloat($('#salary').value) || 0); const fixedBaseHours = Math.max(0, parseFloat($('#fixedBaseHours').value) || 0); const weekendRateMultiplier = Math.max(0, parseFloat($('#weekendRate').value) || 1);
+      let totalWeekdayHours = 0; let totalWeekendHours = 0;
+      $$('.hours-select').forEach(select => { const hours = Math.max(0, parseFloat(select.value) || 0); if (select.dataset.isWeekend === 'true') totalWeekendHours += hours; else totalWeekdayHours += hours; });
+      const hourlyRate = fixedBaseHours > 0 ? salary / fixedBaseHours : 0; const weekdayPay = totalWeekdayHours * hourlyRate; const weekendPay = totalWeekendHours * hourlyRate * weekendRateMultiplier; const calculatedSalary = weekdayPay + weekendPay; const totalHours = totalWeekdayHours + totalWeekendHours; const salaryInINR = convertSalaryToINR(calculatedSalary);
+      state.lastSalary = { hourlyRate, totalWeekdayHours, totalWeekendHours, totalHours, calculatedSalary, salaryInINR };
+      $('#hourly-rate').textContent = `${formatNumber(hourlyRate)} RON/hr`; $('#total-salary').textContent = `${formatNumber(calculatedSalary)} RON`; $('#summary-hours').textContent = `${formatNumber(totalHours, totalHours % 1 ? 1 : 0)} hrs`; $('#summary-salary').textContent = `${formatNumber(calculatedSalary)} RON`;
+    }
+
+    async function fetchJSONWithTimeout(url, timeoutMs = 9000) {
+      const controller = new AbortController();
+      const timeout = window.setTimeout(() => controller.abort(), timeoutMs);
+      try {
+        const response = await fetch(url, { signal: controller.signal, cache: 'no-store', headers: { accept: 'application/json' } });
+        if (!response.ok) throw new Error(`${url} returned HTTP ${response.status}`);
+        return await response.json();
+      } finally {
+        window.clearTimeout(timeout);
+      }
+    }
+
+    function normalizeCurrencyName(value, code) {
+      if (typeof value === 'string') return value;
+      if (value && typeof value === 'object') return value.name || value.label || value.description || code;
+      return code;
+    }
+
+    function normalizeCurrencies(rawCurrencies, rateCodes) {
+      const normalized = {};
+      if (rawCurrencies && !Array.isArray(rawCurrencies) && typeof rawCurrencies === 'object') {
+        Object.entries(rawCurrencies).forEach(([code, value]) => { normalized[code] = normalizeCurrencyName(value, code); });
+      }
+      rateCodes.forEach(code => { if (!normalized[code]) normalized[code] = code; });
+      return normalized;
+    }
+
+    async function fetchExchangeRates() {
+      const loading = $('#rate-loading');
+      const grid = $('#live-rates-grid');
+      loading.classList.remove('hidden');
+      grid.innerHTML = '<p style="grid-column:1/-1;color:#475569;">Loading live rates...</p>';
+
+      const providers = [
+        {
+          name: 'Frankfurter v2',
+          ratesUrl: 'https://api.frankfurter.dev/v2/rates?base=EUR',
+          currenciesUrl: 'https://api.frankfurter.dev/v2/currencies'
+        },
+        {
+          name: 'Frankfurter v1',
+          ratesUrl: 'https://api.frankfurter.dev/v1/latest?base=EUR',
+          currenciesUrl: 'https://api.frankfurter.dev/v1/currencies'
+        },
+        {
+          name: 'Frankfurter legacy',
+          ratesUrl: 'https://api.frankfurter.app/latest?from=EUR',
+          currenciesUrl: 'https://api.frankfurter.app/currencies'
+        }
+      ];
+
+      let lastError = null;
+      for (const provider of providers) {
+        try {
+          const [ratesData, currenciesData] = await Promise.all([
+            fetchJSONWithTimeout(provider.ratesUrl),
+            fetchJSONWithTimeout(provider.currenciesUrl)
+          ]);
+
+          const rawRates = ratesData.rates || ratesData.data || {};
+          const parsedRates = {};
+          Object.entries(rawRates).forEach(([code, value]) => {
+            const numericValue = typeof value === 'number' ? value : Number(value?.value ?? value?.rate ?? value);
+            if (Number.isFinite(numericValue) && numericValue > 0) parsedRates[code] = numericValue;
+          });
+          parsedRates.EUR = 1;
+
+          if (!parsedRates.RON || !parsedRates.INR) throw new Error(`${provider.name} did not return RON/INR rates.`);
+
+          state.exchangeRates = parsedRates;
+          state.availableCurrencies = normalizeCurrencies(currenciesData, Object.keys(parsedRates));
+          state.exchangeRateSource = provider.name;
+          state.exchangeRateDate = ratesData.date || ratesData.updated || ratesData.time_last_update_utc || '';
+
+          populateCurrencySelects();
+          displayLiveRates();
+          convertCurrency();
+          if (state.autoUpdateRate) updateRONtoINRforSalary();
+          showToast(`Exchange rates updated from ${provider.name}.`);
+          return;
+        } catch (error) {
+          lastError = error;
+          console.warn(`Exchange rate provider failed: ${provider.name}`, error);
+        }
+      }
+
+      console.error(lastError);
+      grid.innerHTML = '<p style="color:#dc2626;grid-column:1/-1;">Live rates could not be loaded. Check internet/ad-block settings, or enter the RON to INR rate manually.</p>';
+      $('#conversion-result').textContent = 'Live currency data unavailable.';
+      showToast('Live exchange rates are unavailable right now. Manual salary rate still works.');
+    }
+
+    function populateCurrencySelects() {
+      const fromSelect = $('#from-currency-select');
+      const toSelect = $('#to-currency-select');
+      const previousFrom = fromSelect.value || 'RON';
+      const previousTo = toSelect.value || 'INR';
+      fromSelect.innerHTML = '';
+      toSelect.innerHTML = '';
+      Object.keys(state.exchangeRates).sort().forEach(code => {
+        const label = `${code} - ${state.availableCurrencies[code] || code}`;
+        fromSelect.add(new Option(label, code));
+        toSelect.add(new Option(label, code));
+      });
+      fromSelect.value = state.exchangeRates[previousFrom] ? previousFrom : 'RON';
+      toSelect.value = state.exchangeRates[previousTo] ? previousTo : 'INR';
+    }
+
+    function displayLiveRates() {
+      const ratesGrid = $('#live-rates-grid');
+      ratesGrid.innerHTML = '';
+      const meta = document.createElement('p');
+      meta.style.cssText = 'grid-column:1/-1;margin:0 0 4px;color:#64748b;font-size:.78rem;text-align:center;';
+      meta.textContent = `Source: ${state.exchangeRateSource || 'Frankfurter'}${state.exchangeRateDate ? ` • Date: ${state.exchangeRateDate}` : ''}`;
+      ratesGrid.appendChild(meta);
+      ['RON','USD','GBP','INR','JPY','AUD','CAD','CHF','CNY'].forEach(code => {
+        if (!state.exchangeRates[code]) return;
+        const item = document.createElement('div');
+        item.className = 'rate-item';
+        item.innerHTML = `<strong>${code}</strong><span>1 EUR = ${formatNumber(state.exchangeRates[code], 4)}</span>`;
+        ratesGrid.appendChild(item);
+      });
+    }
+    function convertCurrency() { const amount = parseFloat($('#amount-input').value) || 0; const fromCurrency = $('#from-currency-select').value; const toCurrency = $('#to-currency-select').value; const resultElement = $('#conversion-result'); if (!amount || !state.exchangeRates[fromCurrency] || !state.exchangeRates[toCurrency]) { resultElement.textContent = 'Enter amount and select currencies.'; return; } const amountInEUR = amount / state.exchangeRates[fromCurrency]; const convertedAmount = amountInEUR * state.exchangeRates[toCurrency]; resultElement.textContent = `${formatNumber(amount)} ${fromCurrency} = ${formatNumber(convertedAmount)} ${toCurrency}`; }
+    function convertSalaryToINR(ronAmount) { let ronToInrRate = parseFloat($('#exchange-rate-manual').value) || 0; if (state.autoUpdateRate && state.exchangeRates.RON && state.exchangeRates.INR) { ronToInrRate = state.exchangeRates.INR / state.exchangeRates.RON; $('#exchange-rate-manual').value = ronToInrRate.toFixed(4); } const inrAmount = ronToInrRate > 0 ? ronAmount * ronToInrRate : 0; $('#total-salary-in-rupees').textContent = ronToInrRate > 0 ? `${formatNumber(inrAmount)} INR` : 'N/A'; return inrAmount; }
+    function updateRONtoINRforSalary() { if (state.autoUpdateRate && state.exchangeRates.RON && state.exchangeRates.INR) $('#exchange-rate-manual').value = (state.exchangeRates.INR / state.exchangeRates.RON).toFixed(4); recalculateSalary(); }
+
+    function validateReportInputs() { if (!$('#employee-name-input').value.trim() || !$('#company-name').value.trim()) return 'Please enter both employee name and company name.'; if (!getMonthKey()) return 'Please select a month and year.'; if ((parseFloat($('#salary').value) || 0) <= 0 || (parseFloat($('#fixedBaseHours').value) || 0) <= 0) return 'Please enter valid base salary and fixed base hours.'; return ''; }
+    function showReportPreview() { const validationMessage = validateReportInputs(); if (validationMessage) return showToast(validationMessage); const hasHours = $$('.hours-select').some(select => (parseFloat(select.value) || 0) > 0); if (!hasHours && !confirm('No hours have been entered. Generate a report anyway?')) return; $('#report-preview-content').innerHTML = generateReportHTML(); $('#report-preview-modal').classList.remove('hidden'); resetZoom(); }
+
+    function generateReportHTML() {
+      const employeeName = escapeHTML($('#employee-name-input').value.trim() || 'N/A'); const companyName = escapeHTML($('#company-name').value.trim() || 'N/A'); const salary = Math.max(0, parseFloat($('#salary').value) || 0); const fixedBaseHours = Math.max(0, parseFloat($('#fixedBaseHours').value) || 0); const [yearStr, monthStr] = getMonthKey().split('-'); const year = Number(yearStr); const month = Number(monthStr); const weekendRate = Math.max(0, parseFloat($('#weekendRate').value) || 1); const exchangeRate = Math.max(0, parseFloat($('#exchange-rate-manual').value) || 0); const monthName = new Date(year, month - 1).toLocaleString('default', { month: 'long' }); const daysInMonth = new Date(year, month, 0).getDate(); const hourlyRate = fixedBaseHours > 0 ? salary / fixedBaseHours : 0;
+      let totalWeekdayHours = 0, totalWeekendHours = 0, daysWorked = 0, daysOff = 0; const leftRows = [], rightRows = [];
+      for (let day = 1; day <= daysInMonth; day++) { const dateObj = new Date(year, month - 1, day); const hoursSelect = $(`#hours-${day}`); const shiftSelect = $(`#shift-${day}`); const hrs = Math.max(0, parseFloat(hoursSelect?.value) || 0); const isWeekend = hoursSelect?.dataset.isWeekend === 'true'; const shiftText = escapeHTML(shiftSelect?.options[shiftSelect.selectedIndex]?.text || 'N/A'); const multiplier = isWeekend ? weekendRate : 1; const dailyPay = hrs * hourlyRate * multiplier; if (isWeekend) totalWeekendHours += hrs; else totalWeekdayHours += hrs; if (hrs > 0) daysWorked++; else daysOff++; const dateLabel = `${dateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })} (${dateObj.toLocaleDateString('en-GB', { weekday: 'short' })}) - ${shiftText}`; const row = `<tr><td>${dateLabel}</td><td>${formatNumber(hrs, hrs % 1 ? 1 : 0)} hrs${isWeekend ? ' (Weekend)' : ''}</td><td>${formatNumber(dailyPay)} RON</td></tr>`; if (day <= 15) leftRows.push(row); else rightRows.push(row); }
+      const totalHours = totalWeekdayHours + totalWeekendHours; const totalSalaryRON = totalWeekdayHours * hourlyRate + totalWeekendHours * hourlyRate * weekendRate; const totalSalaryINR = totalSalaryRON * exchangeRate;
+      return `<div class="report-watermark">${companyName}</div><div class="report-company-name">${companyName}</div><div class="report-header"><h2>Salary Report</h2><p>For ${monthName} ${year}</p></div><div class="report-details"><div><p><strong>Employee:</strong> ${employeeName}</p><p><strong>Base Salary:</strong> ${formatNumber(salary)} RON</p><p><strong>Fixed Base Hours:</strong> ${formatNumber(fixedBaseHours, fixedBaseHours % 1 ? 1 : 0)}</p><p><strong>Hourly Rate:</strong> ${formatNumber(hourlyRate)} RON</p><p><strong>Weekend Multiplier:</strong> ${weekendRate}x</p></div><div><p><strong>Total Hours:</strong> ${formatNumber(totalHours, totalHours % 1 ? 1 : 0)}</p><p><strong>Weekday Hours:</strong> ${formatNumber(totalWeekdayHours, totalWeekdayHours % 1 ? 1 : 0)}</p><p><strong>Weekend Hours:</strong> ${formatNumber(totalWeekendHours, totalWeekendHours % 1 ? 1 : 0)}</p><p><strong>Days Worked:</strong> ${daysWorked} | <strong>Days Off:</strong> ${daysOff}</p><p><strong>Total Salary:</strong> ${formatNumber(totalSalaryRON)} RON</p><p><strong>Total Salary:</strong> ${formatNumber(totalSalaryINR)} INR</p></div></div><h3 style="text-align:center;margin:12pt 0 8pt;font-size:12pt;">Daily Work Log</h3><div class="report-table-container"><table class="report-table"><thead><tr><th>Date, Day & Shift</th><th>Hours</th><th>Daily Pay</th></tr></thead><tbody>${leftRows.join('')}</tbody></table><table class="report-table"><thead><tr><th>Date, Day & Shift</th><th>Hours</th><th>Daily Pay</th></tr></thead><tbody>${rightRows.join('')}</tbody></table></div><div class="report-footer"><div><p><strong>Employee Signature:</strong> ______________________________</p><p><strong>Date:</strong> ____________________</p></div><div class="right"><p><strong>Employer Signature:</strong> ______________________________</p><p><strong>Date:</strong> ____________________</p></div></div>`;
+    }
+
+    function hideReportPreview() { $('#report-preview-modal').classList.add('hidden'); }
+    function zoomReport(factor) { state.currentZoom = Math.max(.45, Math.min(2, state.currentZoom + factor)); $('#report-preview-content').style.transform = `scale(${state.currentZoom})`; $('#zoom-level').textContent = `${Math.round(state.currentZoom * 100)}%`; }
+    function resetZoom() { state.currentZoom = window.matchMedia('(max-width: 620px)').matches ? .55 : 1; $('#report-preview-content').style.transform = `scale(${state.currentZoom})`; $('#zoom-level').textContent = `${Math.round(state.currentZoom * 100)}%`; }
+
+    async function downloadReport(format) {
+      const reportElement = $('#report-preview-content'); const pdfBtn = $('#modal-download-pdf-btn'); const jpgBtn = $('#modal-download-jpg-btn'); const targetBtn = format === 'pdf' ? pdfBtn : jpgBtn; const originalText = targetBtn.innerHTML;
+      if (!window.html2canvas) return showToast('Report library is still loading. Try again in a moment.');
+      targetBtn.disabled = true; targetBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Generating ${format.toUpperCase()}...`;
+      const originalTransform = reportElement.style.transform;
+      try {
+        reportElement.style.transform = 'scale(1)';
+        const canvas = await html2canvas(reportElement, { scale: 3, useCORS: true, logging: false, backgroundColor: '#ffffff', windowWidth: reportElement.scrollWidth, windowHeight: reportElement.scrollHeight });
+        const safeName = ($('#employee-name-input').value.trim() || 'Employee').replace(/[^a-z0-9_-]+/gi, '_'); const safeCompany = ($('#company-name').value.trim() || 'Company').replace(/[^a-z0-9_-]+/gi, '_'); const filePrefix = `Salary_Report_${safeName}_${safeCompany}_${getMonthKey()}`;
+        if (format === 'pdf') {
+          if (!window.jspdf?.jsPDF) return showToast('PDF library is still loading. Try again in a moment.');
+          const { jsPDF } = window.jspdf; const pdf = new jsPDF('p', 'mm', 'a4'); const pageWidth = pdf.internal.pageSize.getWidth(); const pageHeight = pdf.internal.pageSize.getHeight(); const margin = 6; const usableWidth = pageWidth - margin * 2; const usableHeight = pageHeight - margin * 2; const imgWidth = canvas.width; const imgHeight = canvas.height; const pageCanvas = document.createElement('canvas'); const pageCtx = pageCanvas.getContext('2d'); const sliceHeight = Math.floor(imgWidth * (usableHeight / usableWidth)); pageCanvas.width = imgWidth;
+          let renderedHeight = 0; let pageIndex = 0;
+          while (renderedHeight < imgHeight) { const currentSliceHeight = Math.min(sliceHeight, imgHeight - renderedHeight); pageCanvas.height = currentSliceHeight; pageCtx.clearRect(0, 0, pageCanvas.width, pageCanvas.height); pageCtx.drawImage(canvas, 0, renderedHeight, imgWidth, currentSliceHeight, 0, 0, imgWidth, currentSliceHeight); const pageData = pageCanvas.toDataURL('image/png', 1); if (pageIndex > 0) pdf.addPage(); const drawnHeight = currentSliceHeight * usableWidth / imgWidth; pdf.addImage(pageData, 'PNG', margin, margin, usableWidth, drawnHeight, undefined, 'FAST'); renderedHeight += currentSliceHeight; pageIndex++; }
+          pdf.save(`${filePrefix}.pdf`);
+        } else { const link = document.createElement('a'); link.download = `${filePrefix}.jpg`; link.href = canvas.toDataURL('image/jpeg', .95); document.body.appendChild(link); link.click(); link.remove(); }
+        showToast(`${format.toUpperCase()} downloaded.`);
+      } catch (error) { console.error(error); showToast('Could not generate report. Please try again.'); }
+      finally { reportElement.style.transform = originalTransform; targetBtn.disabled = false; targetBtn.innerHTML = originalText; }
+    }
+
+    async function shareApp() { const shareData = { title: document.title, text: 'Check out this advanced salary calculator.', url: window.location.href }; if (navigator.share) { try { await navigator.share(shareData); } catch (error) { if (error.name !== 'AbortError') showToast('Sharing failed.'); } } else { try { await navigator.clipboard.writeText(window.location.href); showToast('Link copied to clipboard.'); } catch { showToast(`Copy this link: ${window.location.href}`); } } }
+
+    function bindStaticEvents() {
+      $('#employee-name-input').addEventListener('input', updateEmployeeInfo); $('#company-name').addEventListener('input', updateEmployeeInfo); $('#month-year-picker').addEventListener('change', generateCalendarAndLoadData); $('#salary').addEventListener('input', recalculateSalary); $('#fixedBaseHours').addEventListener('input', recalculateSalary); $('#weekendRate').addEventListener('change', recalculateSalary); $('#clear-hours-btn').addEventListener('click', clearAllHours); $('#save-month-btn').addEventListener('click', saveMonthData); $('#report-btn').addEventListener('click', showReportPreview); $('#share-btn').addEventListener('click', shareApp); $('#refresh-rates').addEventListener('click', fetchExchangeRates); $('#amount-input').addEventListener('input', convertCurrency); $('#from-currency-select').addEventListener('change', convertCurrency); $('#to-currency-select').addEventListener('change', convertCurrency); $('#exchange-rate-manual').addEventListener('input', () => { state.autoUpdateRate = false; $('#auto-update-rate').checked = false; recalculateSalary(); }); $('#auto-update-rate').addEventListener('change', event => { state.autoUpdateRate = event.currentTarget.checked; if (state.autoUpdateRate) updateRONtoINRforSalary(); else recalculateSalary(); }); $('#modal-close-btn').addEventListener('click', hideReportPreview); $('#zoom-out-btn').addEventListener('click', () => zoomReport(-.1)); $('#zoom-in-btn').addEventListener('click', () => zoomReport(.1)); $('#modal-download-pdf-btn').addEventListener('click', () => downloadReport('pdf')); $('#modal-download-jpg-btn').addEventListener('click', () => downloadReport('jpg')); $('#report-preview-modal').addEventListener('click', event => { if (event.target.id === 'report-preview-modal') hideReportPreview(); }); document.addEventListener('keydown', event => { if (event.key === 'Escape' && !$('#report-preview-modal').classList.contains('hidden')) hideReportPreview(); }); }
+
+    document.addEventListener('DOMContentLoaded', () => { bindStaticEvents(); updateDate(); displayMotivationalMessage(); updateEmployeeInfo(); const now = new Date(); $('#month-year-picker').value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`; generateCalendarAndLoadData(); fetchExchangeRates(); recalculateSalary(); });
+  </script>
+</body>
+</html>
