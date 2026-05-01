@@ -27,7 +27,7 @@
 
     .app {
       width: 100%;
-      max-width: 620px;
+      max-width: 660px;
       background: rgba(255, 255, 255, 0.14);
       backdrop-filter: blur(16px);
       border-radius: 24px;
@@ -174,11 +174,18 @@
       gap: 12px;
     }
 
+    .row-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+    }
+
     .hint {
       font-size: 12px;
-      opacity: 0.8;
+      opacity: 0.84;
       margin-top: -6px;
       margin-bottom: 10px;
+      line-height: 1.4;
     }
 
     .checkbox-row {
@@ -322,7 +329,7 @@
       text-decoration: underline;
     }
 
-    @media (max-width: 520px) {
+    @media (max-width: 560px) {
       body {
         padding: 12px;
         align-items: flex-start;
@@ -342,7 +349,8 @@
         font-size: 23px;
       }
 
-      .row {
+      .row,
+      .row-3 {
         grid-template-columns: 1fr;
       }
     }
@@ -384,20 +392,38 @@
       <option value="image/png">PNG</option>
     </select>
 
-    <div class="row">
+    <div class="row-3">
       <div>
-        <label for="customWidth">Custom Width</label>
-        <input type="number" id="customWidth" placeholder="Optional e.g. 800" min="1">
+        <label for="dimensionUnit">Size Unit</label>
+        <select id="dimensionUnit">
+          <option value="px">PX</option>
+          <option value="cm">CM</option>
+          <option value="mm">MM</option>
+          <option value="inch">INCH</option>
+        </select>
       </div>
 
       <div>
-        <label for="customHeight">Custom Height</label>
-        <input type="number" id="customHeight" placeholder="Optional e.g. 600" min="1">
+        <label for="customWidth">Width</label>
+        <input type="number" id="customWidth" placeholder="Optional" min="0" step="0.01">
+      </div>
+
+      <div>
+        <label for="customHeight">Height</label>
+        <input type="number" id="customHeight" placeholder="Optional" min="0" step="0.01">
       </div>
     </div>
 
-    <div class="hint">
-      Without crop, the image keeps its original ratio. With crop, it matches your custom size ratio.
+    <div id="dpiBox">
+      <label for="dpiInput">DPI for CM / MM / INCH</label>
+      <input type="number" id="dpiInput" value="300" min="1">
+      <div class="hint">
+        Physical units are converted to pixels using DPI. Example: 1 inch at 300 DPI = 300 px.
+      </div>
+    </div>
+
+    <div class="hint" id="dimensionHint">
+      Without crop, the image keeps its original ratio. With crop, it matches your selected width and height ratio.
     </div>
 
     <div class="checkbox-row">
@@ -413,7 +439,7 @@
     </div>
 
     <button id="compressBtn" class="compress-btn" onclick="compressImage()">
-      Compress Photo
+      Crop / Compress Photo
     </button>
 
     <button class="reset-btn" onclick="resetApp()">
@@ -429,7 +455,7 @@
     <div class="info" id="info"></div>
 
     <p class="footer-note">
-      Note: PNG size control is limited in browsers. For strongest compression, use JPG.
+      Note: JPG is best for reaching 100 KB. PNG size control is limited in browsers.
     </p>
 
     <footer>
@@ -471,6 +497,8 @@
     const compressBtn = document.getElementById("compressBtn");
     const customWidthInput = document.getElementById("customWidth");
     const customHeightInput = document.getElementById("customHeight");
+    const dimensionUnitInput = document.getElementById("dimensionUnit");
+    const dpiInput = document.getElementById("dpiInput");
     const formatInput = document.getElementById("format");
     const targetSizeInput = document.getElementById("targetSize");
 
@@ -480,8 +508,12 @@
 
     photoInput.addEventListener("change", handlePhotoUpload);
     cropToggle.addEventListener("change", handleCropToggle);
-    customWidthInput.addEventListener("input", resetCropBoxIfVisible);
-    customHeightInput.addEventListener("input", resetCropBoxIfVisible);
+
+    customWidthInput.addEventListener("input", handleDimensionChange);
+    customHeightInput.addEventListener("input", handleDimensionChange);
+    dimensionUnitInput.addEventListener("change", handleDimensionChange);
+    dpiInput.addEventListener("input", handleDimensionChange);
+
     formatInput.addEventListener("change", handleFormatChange);
 
     cropBox.addEventListener("pointerdown", startCropAction);
@@ -522,7 +554,7 @@
 
           sourcePreview.onload = function() {
             uploadStatus.innerHTML =
-              "✅ Photo uploaded successfully.<br>Scroll down and click <b>Compress Photo</b>.";
+              "✅ Photo uploaded successfully.<br>Set size, enable crop if needed, then click <b>Crop / Compress Photo</b>.";
 
             if (cropToggle.checked) {
               showCropArea();
@@ -562,6 +594,33 @@
       clearResult();
     }
 
+    function handleDimensionChange() {
+      clearResult();
+      updateDimensionHint();
+
+      if (cropToggle.checked && cropArea.style.display === "block") {
+        resetCropBox();
+      }
+    }
+
+    function updateDimensionHint() {
+      const size = getRequestedPixelSize();
+
+      if (size.width && size.height) {
+        document.getElementById("dimensionHint").innerHTML =
+          `Selected output size: <b>${size.width} × ${size.height}px</b>. Crop box ratio will match this size.`;
+      } else if (size.width && !size.height) {
+        document.getElementById("dimensionHint").innerHTML =
+          `Selected width: <b>${size.width}px</b>. Height will be calculated automatically.`;
+      } else if (!size.width && size.height) {
+        document.getElementById("dimensionHint").innerHTML =
+          `Selected height: <b>${size.height}px</b>. Width will be calculated automatically.`;
+      } else {
+        document.getElementById("dimensionHint").innerHTML =
+          "Without crop, the image keeps its original ratio. With crop, it matches your selected width and height ratio.";
+      }
+    }
+
     function handleCropToggle() {
       clearResult();
 
@@ -588,20 +647,54 @@
       }, 80);
     }
 
-    function resetCropBoxIfVisible() {
-      clearResult();
+    function getRequestedPixelSize() {
+      const widthValue = parseFloat(customWidthInput.value);
+      const heightValue = parseFloat(customHeightInput.value);
+      const unit = dimensionUnitInput.value;
+      const dpi = parseFloat(dpiInput.value) || 300;
 
-      if (cropToggle.checked && cropArea.style.display === "block") {
-        resetCropBox();
+      let width = null;
+      let height = null;
+
+      if (widthValue > 0) {
+        width = convertToPixels(widthValue, unit, dpi);
       }
+
+      if (heightValue > 0) {
+        height = convertToPixels(heightValue, unit, dpi);
+      }
+
+      return {
+        width: width,
+        height: height
+      };
+    }
+
+    function convertToPixels(value, unit, dpi) {
+      if (unit === "px") {
+        return Math.round(value);
+      }
+
+      if (unit === "inch") {
+        return Math.round(value * dpi);
+      }
+
+      if (unit === "cm") {
+        return Math.round((value / 2.54) * dpi);
+      }
+
+      if (unit === "mm") {
+        return Math.round((value / 25.4) * dpi);
+      }
+
+      return Math.round(value);
     }
 
     function getCropAspectRatio() {
-      const customWidth = parseInt(customWidthInput.value);
-      const customHeight = parseInt(customHeightInput.value);
+      const requestedSize = getRequestedPixelSize();
 
-      if (customWidth > 0 && customHeight > 0) {
-        return customWidth / customHeight;
+      if (requestedSize.width && requestedSize.height) {
+        return requestedSize.width / requestedSize.height;
       }
 
       return originalImage.width / originalImage.height;
@@ -625,6 +718,16 @@
 
       cropWidth = Math.max(50, cropWidth);
       cropHeight = Math.max(50, cropHeight);
+
+      if (cropWidth > previewWidth) {
+        cropWidth = previewWidth;
+        cropHeight = cropWidth / aspectRatio;
+      }
+
+      if (cropHeight > previewHeight) {
+        cropHeight = previewHeight;
+        cropWidth = cropHeight * aspectRatio;
+      }
 
       cropBox.style.width = cropWidth + "px";
       cropBox.style.height = cropHeight + "px";
@@ -729,37 +832,46 @@
 
       const targetKB = parseInt(targetSizeInput.value);
       const outputFormat = formatInput.value;
-      const customWidth = parseInt(customWidthInput.value);
-      const customHeight = parseInt(customHeightInput.value);
       const cropEnabled = cropToggle.checked;
+      const requestedSize = getRequestedPixelSize();
 
       if (!targetKB || targetKB < 10) {
         alert("Target size must be at least 10 KB.");
         return;
       }
 
-      if ((customWidthInput.value && customWidth < 1) || (customHeightInput.value && customHeight < 1)) {
-        alert("Custom width and height must be valid positive numbers.");
+      if (dimensionUnitInput.value !== "px") {
+        const dpi = parseFloat(dpiInput.value);
+
+        if (!dpi || dpi < 1) {
+          alert("Please enter a valid DPI value.");
+          return;
+        }
+      }
+
+      if ((customWidthInput.value && parseFloat(customWidthInput.value) <= 0) ||
+          (customHeightInput.value && parseFloat(customHeightInput.value) <= 0)) {
+        alert("Width and height must be positive numbers.");
         return;
       }
 
       compressBtn.disabled = true;
-      compressBtn.innerText = "Compressing...";
+      compressBtn.innerText = "Processing...";
 
       setTimeout(function() {
         try {
-          processCompression(targetKB, outputFormat, customWidth, customHeight, cropEnabled);
+          processImage(targetKB, outputFormat, requestedSize, cropEnabled);
         } catch (error) {
-          alert("Something went wrong while compressing. Try a smaller image.");
+          alert("Something went wrong while processing. Try a smaller image.");
           console.error(error);
         }
 
         compressBtn.disabled = false;
-        compressBtn.innerText = "Compress Photo";
+        compressBtn.innerText = "Crop / Compress Photo";
       }, 80);
     }
 
-    function processCompression(targetKB, outputFormat, customWidth, customHeight, cropEnabled) {
+    function processImage(targetKB, outputFormat, requestedSize, cropEnabled) {
       const canvas = document.getElementById("canvas");
       const ctx = canvas.getContext("2d");
 
@@ -789,8 +901,8 @@
       const outputSize = calculateOutputSize(
         sourceWidth,
         sourceHeight,
-        customWidth,
-        customHeight,
+        requestedSize.width,
+        requestedSize.height,
         cropEnabled
       );
 
@@ -820,27 +932,20 @@
       );
 
       let quality = 0.92;
-      let compressedDataUrl = canvas.toDataURL(outputFormat, quality);
-      let sizeKB = getDataUrlSizeKB(compressedDataUrl);
+      let finalDataUrl = canvas.toDataURL(outputFormat, quality);
+      let sizeKB = getDataUrlSizeKB(finalDataUrl);
 
       if (outputFormat === "image/jpeg") {
         while (sizeKB > targetKB && quality > 0.12) {
           quality -= 0.04;
-          compressedDataUrl = canvas.toDataURL(outputFormat, quality);
-          sizeKB = getDataUrlSizeKB(compressedDataUrl);
+          finalDataUrl = canvas.toDataURL(outputFormat, quality);
+          sizeKB = getDataUrlSizeKB(finalDataUrl);
         }
 
-        /*
-          If quality reduction is not enough, gently reduce dimensions.
-          This improves chances of reaching 100 KB.
-        */
         let resizeAttempts = 0;
 
         while (sizeKB > targetKB && resizeAttempts < 8) {
           resizeAttempts++;
-
-          const tempImage = new Image();
-          tempImage.src = compressedDataUrl;
 
           const newWidth = Math.max(1, Math.round(canvas.width * 0.9));
           const newHeight = Math.max(1, Math.round(canvas.height * 0.9));
@@ -866,59 +971,49 @@
           );
 
           quality = 0.7;
-          compressedDataUrl = canvas.toDataURL(outputFormat, quality);
-          sizeKB = getDataUrlSizeKB(compressedDataUrl);
+          finalDataUrl = canvas.toDataURL(outputFormat, quality);
+          sizeKB = getDataUrlSizeKB(finalDataUrl);
         }
-
-        showResult(
-          compressedDataUrl,
-          sizeKB,
-          outputFormat,
-          canvas.width,
-          canvas.height,
-          quality,
-          targetKB
-        );
-      } else {
-        showResult(
-          compressedDataUrl,
-          sizeKB,
-          outputFormat,
-          outputSize.width,
-          outputSize.height,
-          quality,
-          targetKB
-        );
       }
+
+      showResult(
+        finalDataUrl,
+        sizeKB,
+        outputFormat,
+        canvas.width,
+        canvas.height,
+        quality,
+        targetKB
+      );
     }
 
-    function calculateOutputSize(sourceWidth, sourceHeight, customWidth, customHeight, cropEnabled) {
+    function calculateOutputSize(sourceWidth, sourceHeight, requestedWidth, requestedHeight, cropEnabled) {
       const sourceRatio = sourceWidth / sourceHeight;
 
       let width;
       let height;
 
-      if (customWidth > 0 && customHeight > 0) {
+      if (requestedWidth && requestedHeight) {
         if (cropEnabled) {
-          width = customWidth;
-          height = customHeight;
+          width = requestedWidth;
+          height = requestedHeight;
         } else {
-          const targetRatio = customWidth / customHeight;
+          const targetRatio = requestedWidth / requestedHeight;
 
           if (sourceRatio > targetRatio) {
-            width = customWidth;
-            height = Math.round(customWidth / sourceRatio);
+            width = requestedWidth;
+            height = Math.round(requestedWidth / sourceRatio);
           } else {
-            height = customHeight;
-            width = Math.round(customHeight * sourceRatio);
+            height = requestedHeight;
+            width = Math.round(requestedHeight * sourceRatio);
           }
         }
-      } else if (customWidth > 0) {
-        width = customWidth;
-        height = Math.round(customWidth / sourceRatio);
-      } else if (customHeight > 0) {
-        height = customHeight;
-        width = Math.round(customHeight * sourceRatio);
+      } else if (requestedWidth && !requestedHeight) {
+        width = requestedWidth;
+        height = Math.round(requestedWidth / sourceRatio);
+      } else if (!requestedWidth && requestedHeight) {
+        height = requestedHeight;
+        width = Math.round(requestedHeight * sourceRatio);
       } else {
         width = sourceWidth;
         height = sourceHeight;
@@ -944,22 +1039,27 @@
       const extension = format === "image/png" ? "png" : "jpg";
 
       downloadBtn.href = dataUrl;
-      downloadBtn.download = "compressed-photo." + extension;
+      downloadBtn.download = "cropped-compressed-photo." + extension;
       downloadBtn.style.display = "block";
 
       info.style.display = "block";
 
       let message = `
-        ✅ Compression complete<br>
-        Final Size: <b>${sizeKB} KB</b><br>
-        Output Resolution: <b>${width} × ${height}px</b>
+        ✅ Image ready for download<br>
+        Final File Size: <b>${sizeKB} KB</b><br>
+        Final Resolution: <b>${width} × ${height}px</b>
       `;
+
+      if (dimensionUnitInput.value !== "px") {
+        message += `<br>Unit Used: <b>${dimensionUnitInput.value.toUpperCase()}</b>`;
+        message += `<br>DPI Used: <b>${dpiInput.value}</b>`;
+      }
 
       if (format === "image/jpeg") {
         message += `<br>Quality: <b>${Math.round(quality * 100)}%</b>`;
 
         if (sizeKB > targetKB) {
-          message += `<br>⚠️ Could not fully reach ${targetKB} KB. Try smaller width or height.`;
+          message += `<br>⚠️ Could not fully reach ${targetKB} KB. Try smaller dimensions.`;
         }
       }
 
@@ -1001,8 +1101,11 @@
 
       targetSizeInput.value = "100";
       formatInput.value = "image/jpeg";
+
+      dimensionUnitInput.value = "px";
       customWidthInput.value = "";
       customHeightInput.value = "";
+      dpiInput.value = "300";
 
       cropToggle.checked = false;
       cropArea.style.display = "none";
@@ -1010,9 +1113,10 @@
       sourcePreview.src = "";
 
       clearResult();
+      updateDimensionHint();
 
       compressBtn.disabled = false;
-      compressBtn.innerText = "Compress Photo";
+      compressBtn.innerText = "Crop / Compress Photo";
 
       window.scrollTo({
         top: 0,
@@ -1023,6 +1127,8 @@
     function clamp(value, min, max) {
       return Math.max(min, Math.min(value, max));
     }
+
+    updateDimensionHint();
   </script>
 
 </body>
