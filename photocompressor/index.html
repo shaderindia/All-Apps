@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Photo Compressor - Shader7.Com</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(34, 197, 94, 0.35), transparent 35%),
+        linear-gradient(135deg, #0f172a, #1d4ed8);
+      color: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 620px;
+      background: rgba(255, 255, 255, 0.14);
+      backdrop-filter: blur(16px);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 25px 55px rgba(0, 0, 0, 0.38);
+      border: 1px solid rgba(255,255,255,0.18);
+    }
+
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 26px;
+      margin: 0;
+      line-height: 1.2;
+    }
+
+    .subtitle {
+      margin: 6px 0 0;
+      font-size: 14px;
+      opacity: 0.85;
+    }
+
+    .home-btn {
+      background: #ffffff;
+      color: #2563eb;
+      text-decoration: none;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-weight: bold;
+      white-space: nowrap;
+      transition: 0.2s;
+    }
+
+    .home-btn:hover {
+      transform: translateY(-1px);
+      background: #e0f2fe;
+    }
+
+    .upload-box {
+      border: 2px dashed rgba(255,255,255,0.75);
+      border-radius: 18px;
+      padding: 28px 20px;
+      text-align: center;
+      cursor: pointer;
+      margin-bottom: 14px;
+      transition: 0.2s;
+      background: rgba(255,255,255,0.06);
+    }
+
+    .upload-box:hover {
+      background: rgba(255,255,255,0.12);
+      transform: translateY(-1px);
+    }
+
+    .upload-icon {
+      font-size: 42px;
+      margin-bottom: 8px;
+    }
+
+    .upload-box p {
+      margin: 8px 0 5px;
+      font-weight: bold;
+      word-break: break-word;
+    }
+
+    .upload-box small {
+      opacity: 0.85;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .upload-status {
+      display: none;
+      background: rgba(34, 197, 94, 0.18);
+      border: 1px solid rgba(34, 197, 94, 0.75);
+      color: #ffffff;
+      padding: 13px;
+      border-radius: 14px;
+      margin-bottom: 15px;
+      text-align: center;
+      font-weight: bold;
+      line-height: 1.5;
+    }
+
+    .warning-status {
+      display: none;
+      background: rgba(249, 115, 22, 0.2);
+      border: 1px solid rgba(249, 115, 22, 0.8);
+      color: #ffffff;
+      padding: 12px;
+      border-radius: 14px;
+      margin-bottom: 15px;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    label {
+      display: block;
+      margin-top: 12px;
+      margin-bottom: 6px;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    input,
+    select,
+    button {
+      width: 100%;
+      padding: 13px;
+      border-radius: 12px;
+      border: none;
+      margin-bottom: 12px;
+      font-size: 15px;
+      outline: none;
+    }
+
+    input,
+    select {
+      background: #ffffff;
+      color: #111827;
+    }
+
+    input:focus,
+    select:focus {
+      box-shadow: 0 0 0 3px rgba(34,197,94,0.35);
+    }
+
+    input[type="checkbox"] {
+      width: auto;
+      margin-right: 8px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .hint {
+      font-size: 12px;
+      opacity: 0.8;
+      margin-top: -6px;
+      margin-bottom: 10px;
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      margin: 8px 0 14px;
+      font-weight: bold;
+    }
+
+    .crop-area {
+      display: none;
+      position: relative;
+      width: 100%;
+      border-radius: 16px;
+      margin: 15px 0;
+      background: rgba(0,0,0,0.25);
+      overflow: hidden;
+      touch-action: none;
+    }
+
+    #sourcePreview {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: 520px;
+      object-fit: contain;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    #cropBox {
+      position: absolute;
+      border: 2px solid #ffffff;
+      box-shadow: 0 0 0 9999px rgba(0,0,0,0.48);
+      cursor: move;
+      display: none;
+      touch-action: none;
+      border-radius: 6px;
+    }
+
+    .resize-handle {
+      position: absolute;
+      right: -10px;
+      bottom: -10px;
+      width: 20px;
+      height: 20px;
+      background: #22c55e;
+      border: 2px solid #ffffff;
+      border-radius: 50%;
+      cursor: nwse-resize;
+    }
+
+    .compress-btn {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 16px;
+      transition: 0.2s;
+      margin-top: 5px;
+    }
+
+    .compress-btn:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.05);
+    }
+
+    .compress-btn:disabled {
+      background: #64748b;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .reset-btn {
+      background: rgba(255,255,255,0.16);
+      color: #ffffff;
+      border: 1px solid rgba(255,255,255,0.3);
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .reset-btn:hover {
+      background: rgba(255,255,255,0.25);
+    }
+
+    #resultPreview {
+      max-width: 100%;
+      border-radius: 16px;
+      margin-top: 15px;
+      display: none;
+      border: 1px solid rgba(255,255,255,0.25);
+    }
+
+    .download-btn {
+      display: none;
+      text-align: center;
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      color: white;
+      text-decoration: none;
+      padding: 13px;
+      border-radius: 12px;
+      font-weight: bold;
+      margin-top: 12px;
+      transition: 0.2s;
+    }
+
+    .download-btn:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.05);
+    }
+
+    .info {
+      font-size: 14px;
+      opacity: 0.96;
+      margin-top: 12px;
+      line-height: 1.6;
+      text-align: center;
+      background: rgba(255,255,255,0.09);
+      border-radius: 14px;
+      padding: 12px;
+      display: none;
+    }
+
+    .footer-note {
+      text-align: center;
+      margin-top: 12px;
+      font-size: 12px;
+      opacity: 0.75;
+      line-height: 1.4;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 14px;
+    }
+
+    footer a {
+      color: #ffffff;
+      font-weight: bold;
+      text-decoration: underline;
+    }
+
+    @media (max-width: 520px) {
+      body {
+        padding: 12px;
+        align-items: flex-start;
+      }
+
+      .app {
+        padding: 18px;
+        border-radius: 20px;
+      }
+
+      .top {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      h1 {
+        font-size: 23px;
+      }
+
+      .row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="app">
+
+    <div class="top">
+      <div>
+        <h1>Photo Compressor</h1>
+        <p class="subtitle">Compress, resize, crop, and download your photo.</p>
+      </div>
+
+      <a class="home-btn" href="https://shader7.com" target="_blank">
+        Shader7.Com
+      </a>
+    </div>
+
+    <div class="upload-box" onclick="document.getElementById('photoInput').click()">
+      <div class="upload-icon">📷</div>
+      <p id="uploadText">Click to upload photo</p>
+      <small>PNG, JPG, JPEG, WEBP supported</small>
+      <input type="file" id="photoInput" accept="image/*">
+    </div>
+
+    <div id="uploadStatus" class="upload-status"></div>
+    <div id="warningStatus" class="warning-status"></div>
+
+    <label for="targetSize">Target Size KB</label>
+    <input type="number" id="targetSize" value="100" min="10">
+    <div class="hint">Default is 100 KB. JPG gives better compression than PNG.</div>
+
+    <label for="format">Output Format</label>
+    <select id="format">
+      <option value="image/jpeg">JPG</option>
+      <option value="image/png">PNG</option>
+    </select>
+
+    <div class="row">
+      <div>
+        <label for="customWidth">Custom Width</label>
+        <input type="number" id="customWidth" placeholder="Optional e.g. 800" min="1">
+      </div>
+
+      <div>
+        <label for="customHeight">Custom Height</label>
+        <input type="number" id="customHeight" placeholder="Optional e.g. 600" min="1">
+      </div>
+    </div>
+
+    <div class="hint">
+      Without crop, the image keeps its original ratio. With crop, it matches your custom size ratio.
+    </div>
+
+    <div class="checkbox-row">
+      <input type="checkbox" id="cropToggle">
+      <span>Enable cropping</span>
+    </div>
+
+    <div class="crop-area" id="cropArea">
+      <img id="sourcePreview" alt="Original Preview">
+      <div id="cropBox">
+        <div class="resize-handle"></div>
+      </div>
+    </div>
+
+    <button id="compressBtn" class="compress-btn" onclick="compressImage()">
+      Compress Photo
+    </button>
+
+    <button class="reset-btn" onclick="resetApp()">
+      Reset
+    </button>
+
+    <img id="resultPreview" alt="Compressed Preview">
+
+    <a id="downloadBtn" class="download-btn" download="compressed-photo.jpg">
+      Download Photo
+    </a>
+
+    <div class="info" id="info"></div>
+
+    <p class="footer-note">
+      Note: PNG size control is limited in browsers. For strongest compression, use JPG.
+    </p>
+
+    <footer>
+      Credits:
+      <a href="https://instagram.com/nishix_vamp" target="_blank">
+        @nishix_vamp
+      </a>
+    </footer>
+
+  </div>
+
+  <canvas id="canvas" style="display:none;"></canvas>
+
+  <script>
+    let selectedFile = null;
+    let originalImage = new Image();
+    let imageLoaded = false;
+
+    let isDragging = false;
+    let isResizing = false;
+
+    let startX = 0;
+    let startY = 0;
+    let startLeft = 0;
+    let startTop = 0;
+    let startWidth = 0;
+    let startHeight = 0;
+
+    const photoInput = document.getElementById("photoInput");
+    const uploadText = document.getElementById("uploadText");
+    const uploadStatus = document.getElementById("uploadStatus");
+    const warningStatus = document.getElementById("warningStatus");
+
+    const cropToggle = document.getElementById("cropToggle");
+    const cropArea = document.getElementById("cropArea");
+    const sourcePreview = document.getElementById("sourcePreview");
+    const cropBox = document.getElementById("cropBox");
+
+    const compressBtn = document.getElementById("compressBtn");
+    const customWidthInput = document.getElementById("customWidth");
+    const customHeightInput = document.getElementById("customHeight");
+    const formatInput = document.getElementById("format");
+    const targetSizeInput = document.getElementById("targetSize");
+
+    const resultPreview = document.getElementById("resultPreview");
+    const downloadBtn = document.getElementById("downloadBtn");
+    const info = document.getElementById("info");
+
+    photoInput.addEventListener("change", handlePhotoUpload);
+    cropToggle.addEventListener("change", handleCropToggle);
+    customWidthInput.addEventListener("input", resetCropBoxIfVisible);
+    customHeightInput.addEventListener("input", resetCropBoxIfVisible);
+    formatInput.addEventListener("change", handleFormatChange);
+
+    cropBox.addEventListener("pointerdown", startCropAction);
+    document.addEventListener("pointermove", moveCropBox);
+    document.addEventListener("pointerup", stopCropAction);
+
+    function handlePhotoUpload(e) {
+      selectedFile = e.target.files[0];
+
+      clearResult();
+
+      if (!selectedFile) return;
+
+      if (!selectedFile.type.startsWith("image/")) {
+        alert("Please upload a valid image file.");
+        photoInput.value = "";
+        selectedFile = null;
+        return;
+      }
+
+      imageLoaded = false;
+      compressBtn.disabled = true;
+      uploadText.innerText = selectedFile.name;
+
+      uploadStatus.style.display = "block";
+      uploadStatus.innerHTML = "⏳ Loading photo...";
+
+      const reader = new FileReader();
+
+      reader.onload = function(event) {
+        originalImage = new Image();
+
+        originalImage.onload = function() {
+          imageLoaded = true;
+          compressBtn.disabled = false;
+
+          sourcePreview.src = event.target.result;
+
+          sourcePreview.onload = function() {
+            uploadStatus.innerHTML =
+              "✅ Photo uploaded successfully.<br>Scroll down and click <b>Compress Photo</b>.";
+
+            if (cropToggle.checked) {
+              showCropArea();
+            }
+
+            setTimeout(function() {
+              compressBtn.scrollIntoView({
+                behavior: "smooth",
+                block: "center"
+              });
+            }, 300);
+          };
+        };
+
+        originalImage.onerror = function() {
+          imageLoaded = false;
+          compressBtn.disabled = false;
+          uploadStatus.style.display = "none";
+          alert("Could not load this image. Try another photo.");
+        };
+
+        originalImage.src = event.target.result;
+      };
+
+      reader.readAsDataURL(selectedFile);
+    }
+
+    function handleFormatChange() {
+      if (formatInput.value === "image/png") {
+        warningStatus.style.display = "block";
+        warningStatus.innerHTML =
+          "⚠️ PNG may not reach the exact target KB. Use JPG for better compression.";
+      } else {
+        warningStatus.style.display = "none";
+      }
+
+      clearResult();
+    }
+
+    function handleCropToggle() {
+      clearResult();
+
+      if (cropToggle.checked) {
+        if (!selectedFile || !imageLoaded) {
+          alert("Please upload a photo first.");
+          cropToggle.checked = false;
+          return;
+        }
+
+        showCropArea();
+      } else {
+        cropArea.style.display = "none";
+        cropBox.style.display = "none";
+      }
+    }
+
+    function showCropArea() {
+      cropArea.style.display = "block";
+      cropBox.style.display = "block";
+
+      setTimeout(function() {
+        resetCropBox();
+      }, 80);
+    }
+
+    function resetCropBoxIfVisible() {
+      clearResult();
+
+      if (cropToggle.checked && cropArea.style.display === "block") {
+        resetCropBox();
+      }
+    }
+
+    function getCropAspectRatio() {
+      const customWidth = parseInt(customWidthInput.value);
+      const customHeight = parseInt(customHeightInput.value);
+
+      if (customWidth > 0 && customHeight > 0) {
+        return customWidth / customHeight;
+      }
+
+      return originalImage.width / originalImage.height;
+    }
+
+    function resetCropBox() {
+      const previewWidth = sourcePreview.clientWidth;
+      const previewHeight = sourcePreview.clientHeight;
+
+      if (!previewWidth || !previewHeight) return;
+
+      const aspectRatio = getCropAspectRatio();
+
+      let cropWidth = previewWidth * 0.75;
+      let cropHeight = cropWidth / aspectRatio;
+
+      if (cropHeight > previewHeight * 0.75) {
+        cropHeight = previewHeight * 0.75;
+        cropWidth = cropHeight * aspectRatio;
+      }
+
+      cropWidth = Math.max(50, cropWidth);
+      cropHeight = Math.max(50, cropHeight);
+
+      cropBox.style.width = cropWidth + "px";
+      cropBox.style.height = cropHeight + "px";
+      cropBox.style.left = (previewWidth - cropWidth) / 2 + "px";
+      cropBox.style.top = (previewHeight - cropHeight) / 2 + "px";
+    }
+
+    function startCropAction(e) {
+      e.preventDefault();
+
+      const rect = cropBox.getBoundingClientRect();
+
+      startX = e.clientX;
+      startY = e.clientY;
+      startLeft = cropBox.offsetLeft;
+      startTop = cropBox.offsetTop;
+      startWidth = rect.width;
+      startHeight = rect.height;
+
+      if (e.target.classList.contains("resize-handle")) {
+        isResizing = true;
+      } else {
+        isDragging = true;
+      }
+
+      try {
+        cropBox.setPointerCapture(e.pointerId);
+      } catch (error) {}
+    }
+
+    function moveCropBox(e) {
+      if (!isDragging && !isResizing) return;
+
+      e.preventDefault();
+
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+
+      const areaWidth = sourcePreview.clientWidth;
+      const areaHeight = sourcePreview.clientHeight;
+
+      if (isDragging) {
+        let newLeft = startLeft + dx;
+        let newTop = startTop + dy;
+
+        newLeft = clamp(newLeft, 0, areaWidth - cropBox.offsetWidth);
+        newTop = clamp(newTop, 0, areaHeight - cropBox.offsetHeight);
+
+        cropBox.style.left = newLeft + "px";
+        cropBox.style.top = newTop + "px";
+      }
+
+      if (isResizing) {
+        const aspectRatio = getCropAspectRatio();
+
+        let newWidth = startWidth + dx;
+        let newHeight = newWidth / aspectRatio;
+
+        if (newWidth < 50) {
+          newWidth = 50;
+          newHeight = newWidth / aspectRatio;
+        }
+
+        if (newHeight < 50) {
+          newHeight = 50;
+          newWidth = newHeight * aspectRatio;
+        }
+
+        const maxWidth = areaWidth - cropBox.offsetLeft;
+        const maxHeight = areaHeight - cropBox.offsetTop;
+
+        if (newWidth > maxWidth) {
+          newWidth = maxWidth;
+          newHeight = newWidth / aspectRatio;
+        }
+
+        if (newHeight > maxHeight) {
+          newHeight = maxHeight;
+          newWidth = newHeight * aspectRatio;
+        }
+
+        cropBox.style.width = newWidth + "px";
+        cropBox.style.height = newHeight + "px";
+      }
+    }
+
+    function stopCropAction() {
+      isDragging = false;
+      isResizing = false;
+    }
+
+    function compressImage() {
+      if (!selectedFile) {
+        alert("Please upload a photo first.");
+        return;
+      }
+
+      if (!imageLoaded) {
+        alert("Image is still loading. Please try again.");
+        return;
+      }
+
+      const targetKB = parseInt(targetSizeInput.value);
+      const outputFormat = formatInput.value;
+      const customWidth = parseInt(customWidthInput.value);
+      const customHeight = parseInt(customHeightInput.value);
+      const cropEnabled = cropToggle.checked;
+
+      if (!targetKB || targetKB < 10) {
+        alert("Target size must be at least 10 KB.");
+        return;
+      }
+
+      if ((customWidthInput.value && customWidth < 1) || (customHeightInput.value && customHeight < 1)) {
+        alert("Custom width and height must be valid positive numbers.");
+        return;
+      }
+
+      compressBtn.disabled = true;
+      compressBtn.innerText = "Compressing...";
+
+      setTimeout(function() {
+        try {
+          processCompression(targetKB, outputFormat, customWidth, customHeight, cropEnabled);
+        } catch (error) {
+          alert("Something went wrong while compressing. Try a smaller image.");
+          console.error(error);
+        }
+
+        compressBtn.disabled = false;
+        compressBtn.innerText = "Compress Photo";
+      }, 80);
+    }
+
+    function processCompression(targetKB, outputFormat, customWidth, customHeight, cropEnabled) {
+      const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
+
+      let sourceX = 0;
+      let sourceY = 0;
+      let sourceWidth = originalImage.naturalWidth || originalImage.width;
+      let sourceHeight = originalImage.naturalHeight || originalImage.height;
+
+      if (cropEnabled) {
+        const previewWidth = sourcePreview.clientWidth;
+        const previewHeight = sourcePreview.clientHeight;
+
+        const scaleX = sourceWidth / previewWidth;
+        const scaleY = sourceHeight / previewHeight;
+
+        sourceX = Math.round(cropBox.offsetLeft * scaleX);
+        sourceY = Math.round(cropBox.offsetTop * scaleY);
+        sourceWidth = Math.round(cropBox.offsetWidth * scaleX);
+        sourceHeight = Math.round(cropBox.offsetHeight * scaleY);
+
+        sourceX = clamp(sourceX, 0, originalImage.width - 1);
+        sourceY = clamp(sourceY, 0, originalImage.height - 1);
+        sourceWidth = clamp(sourceWidth, 1, originalImage.width - sourceX);
+        sourceHeight = clamp(sourceHeight, 1, originalImage.height - sourceY);
+      }
+
+      const outputSize = calculateOutputSize(
+        sourceWidth,
+        sourceHeight,
+        customWidth,
+        customHeight,
+        cropEnabled
+      );
+
+      canvas.width = outputSize.width;
+      canvas.height = outputSize.height;
+
+      if (outputFormat === "image/jpeg") {
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      } else {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = "high";
+
+      ctx.drawImage(
+        originalImage,
+        sourceX,
+        sourceY,
+        sourceWidth,
+        sourceHeight,
+        0,
+        0,
+        outputSize.width,
+        outputSize.height
+      );
+
+      let quality = 0.92;
+      let compressedDataUrl = canvas.toDataURL(outputFormat, quality);
+      let sizeKB = getDataUrlSizeKB(compressedDataUrl);
+
+      if (outputFormat === "image/jpeg") {
+        while (sizeKB > targetKB && quality > 0.12) {
+          quality -= 0.04;
+          compressedDataUrl = canvas.toDataURL(outputFormat, quality);
+          sizeKB = getDataUrlSizeKB(compressedDataUrl);
+        }
+
+        /*
+          If quality reduction is not enough, gently reduce dimensions.
+          This improves chances of reaching 100 KB.
+        */
+        let resizeAttempts = 0;
+
+        while (sizeKB > targetKB && resizeAttempts < 8) {
+          resizeAttempts++;
+
+          const tempImage = new Image();
+          tempImage.src = compressedDataUrl;
+
+          const newWidth = Math.max(1, Math.round(canvas.width * 0.9));
+          const newHeight = Math.max(1, Math.round(canvas.height * 0.9));
+
+          canvas.width = newWidth;
+          canvas.height = newHeight;
+
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = "high";
+
+          ctx.drawImage(
+            originalImage,
+            sourceX,
+            sourceY,
+            sourceWidth,
+            sourceHeight,
+            0,
+            0,
+            newWidth,
+            newHeight
+          );
+
+          quality = 0.7;
+          compressedDataUrl = canvas.toDataURL(outputFormat, quality);
+          sizeKB = getDataUrlSizeKB(compressedDataUrl);
+        }
+
+        showResult(
+          compressedDataUrl,
+          sizeKB,
+          outputFormat,
+          canvas.width,
+          canvas.height,
+          quality,
+          targetKB
+        );
+      } else {
+        showResult(
+          compressedDataUrl,
+          sizeKB,
+          outputFormat,
+          outputSize.width,
+          outputSize.height,
+          quality,
+          targetKB
+        );
+      }
+    }
+
+    function calculateOutputSize(sourceWidth, sourceHeight, customWidth, customHeight, cropEnabled) {
+      const sourceRatio = sourceWidth / sourceHeight;
+
+      let width;
+      let height;
+
+      if (customWidth > 0 && customHeight > 0) {
+        if (cropEnabled) {
+          width = customWidth;
+          height = customHeight;
+        } else {
+          const targetRatio = customWidth / customHeight;
+
+          if (sourceRatio > targetRatio) {
+            width = customWidth;
+            height = Math.round(customWidth / sourceRatio);
+          } else {
+            height = customHeight;
+            width = Math.round(customHeight * sourceRatio);
+          }
+        }
+      } else if (customWidth > 0) {
+        width = customWidth;
+        height = Math.round(customWidth / sourceRatio);
+      } else if (customHeight > 0) {
+        height = customHeight;
+        width = Math.round(customHeight * sourceRatio);
+      } else {
+        width = sourceWidth;
+        height = sourceHeight;
+      }
+
+      return {
+        width: Math.max(1, Math.round(width)),
+        height: Math.max(1, Math.round(height))
+      };
+    }
+
+    function getDataUrlSizeKB(dataUrl) {
+      const base64 = dataUrl.split(",")[1];
+      const padding = (base64.match(/=/g) || []).length;
+      const bytes = (base64.length * 3 / 4) - padding;
+      return Math.round(bytes / 1024);
+    }
+
+    function showResult(dataUrl, sizeKB, format, width, height, quality, targetKB) {
+      resultPreview.src = dataUrl;
+      resultPreview.style.display = "block";
+
+      const extension = format === "image/png" ? "png" : "jpg";
+
+      downloadBtn.href = dataUrl;
+      downloadBtn.download = "compressed-photo." + extension;
+      downloadBtn.style.display = "block";
+
+      info.style.display = "block";
+
+      let message = `
+        ✅ Compression complete<br>
+        Final Size: <b>${sizeKB} KB</b><br>
+        Output Resolution: <b>${width} × ${height}px</b>
+      `;
+
+      if (format === "image/jpeg") {
+        message += `<br>Quality: <b>${Math.round(quality * 100)}%</b>`;
+
+        if (sizeKB > targetKB) {
+          message += `<br>⚠️ Could not fully reach ${targetKB} KB. Try smaller width or height.`;
+        }
+      }
+
+      if (format === "image/png") {
+        message += `<br>⚠️ PNG compression is limited. Use JPG for better 100 KB compression.`;
+      }
+
+      info.innerHTML = message;
+
+      setTimeout(function() {
+        resultPreview.scrollIntoView({
+          behavior: "smooth",
+          block: "center"
+        });
+      }, 200);
+    }
+
+    function clearResult() {
+      resultPreview.style.display = "none";
+      resultPreview.src = "";
+      downloadBtn.style.display = "none";
+      downloadBtn.href = "";
+      info.style.display = "none";
+      info.innerHTML = "";
+    }
+
+    function resetApp() {
+      selectedFile = null;
+      imageLoaded = false;
+
+      photoInput.value = "";
+      uploadText.innerText = "Click to upload photo";
+
+      uploadStatus.style.display = "none";
+      uploadStatus.innerHTML = "";
+
+      warningStatus.style.display = "none";
+      warningStatus.innerHTML = "";
+
+      targetSizeInput.value = "100";
+      formatInput.value = "image/jpeg";
+      customWidthInput.value = "";
+      customHeightInput.value = "";
+
+      cropToggle.checked = false;
+      cropArea.style.display = "none";
+      cropBox.style.display = "none";
+      sourcePreview.src = "";
+
+      clearResult();
+
+      compressBtn.disabled = false;
+      compressBtn.innerText = "Compress Photo";
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    }
+
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(value, max));
+    }
+  </script>
+
+</body>
+</html>
