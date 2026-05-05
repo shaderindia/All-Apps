@@ -1551,104 +1551,7 @@
         transition-duration: 0.001ms !important;
       }
     }
-  
-
-    /* ================= RESPONSIVE POLISH (MOBILE / TABLET / DESKTOP) ================= */
-    @media (max-width: 767px) {
-      .glass-panel {
-        width: min(100%, 96vw);
-        padding: 22px 14px;
-        border-radius: 18px;
-      }
-
-      .chat-header {
-        padding: 10px 10px;
-        gap: 8px;
-      }
-
-      .header-info h3 {
-        font-size: 15px;
-      }
-
-      .header-actions {
-        gap: 6px;
-      }
-
-      .chat-input-area {
-        padding: 10px;
-      }
-
-      .input-wrapper input {
-        min-height: 44px;
-        font-size: 15px;
-      }
-
-      .btn.send-btn,
-      .icon-btn {
-        min-height: 44px;
-        min-width: 44px;
-      }
-
-      .messages-container {
-        padding: 12px 10px 86px;
-      }
-    }
-
-    @media (min-width: 768px) and (max-width: 1024px) {
-      #app {
-        max-width: 1000px;
-        margin: 0 auto;
-      }
-
-      .sidebar {
-        width: min(320px, 34vw);
-      }
-
-      .chat-area {
-        min-width: 0;
-      }
-
-      .glass-panel {
-        width: min(92vw, 560px);
-      }
-
-      .messages-container {
-        padding-inline: 16px;
-      }
-    }
-
-    @media (min-width: 1200px) {
-      body {
-        padding: 18px;
-      }
-
-      #app {
-        max-width: 1360px;
-        margin: 0 auto;
-        border-radius: 24px;
-        box-shadow: 0 20px 60px rgba(15, 23, 42, 0.14);
-        border: 1px solid rgba(15, 23, 42, 0.07);
-      }
-
-      #chat-screen.active {
-        max-width: 1360px;
-        margin: 0 auto;
-      }
-
-      .messages-container {
-        max-width: 920px;
-        width: 100%;
-        margin: 0 auto;
-      }
-
-      .chat-input-area {
-        max-width: 920px;
-        width: calc(100% - 24px);
-        margin: 0 auto 10px;
-        border-radius: 16px;
-      }
-    }
-</style>
+  </style>
 </head>
 
 <body>
@@ -1714,15 +1617,15 @@
         </div>
 
         <div class="tabs" role="tablist" aria-label="Room actions">
-          <button class="tab-btn active" type="button" role="tab" aria-selected="true" data-target="join-form">
+          <button id="tab-join" class="tab-btn active" type="button" role="tab" aria-selected="true" aria-controls="join-form" data-target="join-form">
             Join Room
           </button>
-          <button class="tab-btn" type="button" role="tab" aria-selected="false" data-target="create-form">
+          <button id="tab-create" class="tab-btn" type="button" role="tab" aria-selected="false" aria-controls="create-form" data-target="create-form">
             Create Room
           </button>
         </div>
 
-        <div id="join-form" class="form-container active" role="tabpanel">
+        <div id="join-form" class="form-container active" role="tabpanel" aria-labelledby="tab-join">
           <label class="sr-only" for="room-code-input">Room Code</label>
           <div class="input-group">
             <i class="fa-solid fa-hashtag" aria-hidden="true"></i>
@@ -1744,7 +1647,7 @@
           </button>
         </div>
 
-        <div id="create-form" class="form-container" role="tabpanel">
+        <div id="create-form" class="form-container" role="tabpanel" aria-labelledby="tab-create">
           <label class="sr-only" for="max-members-create">Maximum Members</label>
           <div class="input-group">
             <i class="fa-solid fa-users" aria-hidden="true"></i>
@@ -2120,6 +2023,70 @@
       const chatScreen = $("#chat-screen");
       const sidebar = $("#sidebar");
 
+      // ---- Country legal rules (minimal example) ----
+      const LEGAL_RULES = {
+        US: [
+          "COPPA (Children’s Online Privacy Protection Act)",
+          "CCPA / CPRA (California privacy laws)",
+          "CALOPPA (California Online Privacy Protection Act)",
+          "State-level data breach notification laws"
+        ],
+        GB: [
+          "UK GDPR (retained EU GDPR)",
+          "Data Protection Act 2018",
+          "PECR (Privacy and Electronic Communications Regulations)"
+        ],
+        DE: [
+          "GDPR (EU General Data Protection Regulation)",
+          "BDSG (German Federal Data Protection Act)",
+          "Telemediengesetz (TMG)"
+        ],
+        IN: [
+          "Digital Personal Data Protection Act 2023",
+          "IT Act 2000"
+        ],
+        BR: [
+          "LGPD (Lei Geral de Proteção de Dados)"
+        ],
+        DEFAULT: [
+          "Check local data protection and privacy laws",
+          "Consider age‑verification requirements",
+          "Review e‑privacy / cookie regulations",
+          "Assess content liability and intermediary rules"
+        ]
+      };
+
+      function detectCountryCode() {
+        // try to guess from navigator.language
+        const lang = navigator.language || "en-US";
+        if (lang && lang.includes("-")) {
+          return lang.split("-")[1].toUpperCase();
+        }
+        return "US"; // fallback
+      }
+
+      function showLegalRules(countryCode) {
+        const rulesList = $("#legal-region-rules");
+        const detectedSpan = $("#legal-country-detected");
+        if (!rulesList || !detectedSpan) return;
+
+        const code = (countryCode || "").toUpperCase().trim();
+        detectedSpan.textContent = code || "Unknown";
+
+        let rules = LEGAL_RULES[code];
+        if (!rules) {
+          rules = LEGAL_RULES.DEFAULT;
+        }
+
+        rulesList.innerHTML = "";
+        rules.forEach(rule => {
+          const li = document.createElement("li");
+          li.textContent = rule;
+          rulesList.appendChild(li);
+        });
+      }
+
+      // ---- Viewport & helpers ----
       function setRealViewportHeight() {
         document.documentElement.style.setProperty("--vh", window.innerHeight * 0.01 + "px");
       }
@@ -2430,7 +2397,6 @@
       function initializeButtons() {
         const createBtn = $("#btn-create");
         const joinBtn = $("#btn-join");
-        const coreAppReady = Boolean(window.__qpcCoreReady);
 
         createBtn?.addEventListener("click", (event) => {
           if (!validateEntry()) {
@@ -2443,8 +2409,8 @@
 
           setTimeout(() => {
             const stillOnEntry = entryScreen?.classList.contains("active");
-
-            if (stillOnEntry && !coreAppReady) {
+            // live check, not captured
+            if (stillOnEntry && !window.__qpcCoreReady) {
               console.warn("[QPC] app.js did not switch screens after create click. Running safe fallback UI.");
               createRoomFallback();
             }
@@ -2461,8 +2427,7 @@
 
           setTimeout(() => {
             const stillOnEntry = entryScreen?.classList.contains("active");
-
-            if (stillOnEntry && !coreAppReady) {
+            if (stillOnEntry && !window.__qpcCoreReady) {
               console.warn("[QPC] app.js did not switch screens after join click. Running safe fallback UI.");
               joinRoomFallback();
             }
@@ -2470,7 +2435,7 @@
         });
 
         $("#btn-send")?.addEventListener("click", () => {
-          if (coreAppReady) return;
+          if (window.__qpcCoreReady) return;   // core takes over
           setTimeout(() => {
             const input = $("#message-input");
             if (input && input.value.trim()) sendLocalMessageFallback();
@@ -2581,6 +2546,27 @@
           } catch (error) {}
 
           window.location.reload();
+        });
+
+        // Legal Guide modal
+        const legalGuideModal = $("#legal-guide-modal");
+        const legalCountryInput = $("#legal-country-input");
+
+        $("#btn-legal-guide")?.addEventListener("click", () => {
+          if (legalGuideModal) {
+            legalGuideModal.classList.remove("hidden");
+            const detected = detectCountryCode();
+            showLegalRules(detected);
+            if (legalCountryInput) legalCountryInput.value = detected;
+          }
+        });
+
+        $("#btn-close-legal-guide")?.addEventListener("click", () => {
+          legalGuideModal?.classList.add("hidden");
+        });
+
+        legalCountryInput?.addEventListener("input", () => {
+          showLegalRules(legalCountryInput.value);
         });
       }
 
