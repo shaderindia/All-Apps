@@ -238,9 +238,12 @@ const tosModal = document.getElementById('tos-modal');
 const btnAcceptTos = document.getElementById('btn-accept-tos');
 
 function checkTosAgreement() {
-  if (localStorage.getItem('ber_tos_agreed') === 'true') {
+  const acceptedLegacy = localStorage.getItem('ber_tos_agreed') === 'true';
+  const acceptedQpc = localStorage.getItem('qpc_tos_accepted') === 'true';
+  if (acceptedLegacy || acceptedQpc) {
     if (tosModal) tosModal.classList.add('hidden');
     if (tosCheckbox) tosCheckbox.checked = true;
+    if (acceptedQpc && !acceptedLegacy) localStorage.setItem('ber_tos_agreed', 'true');
   }
 }
 if (btnAcceptTos) {
@@ -251,6 +254,33 @@ if (btnAcceptTos) {
   });
 }
 checkTosAgreement();
+
+function hasAcceptedTos() {
+  const acceptedLegacy = localStorage.getItem('ber_tos_agreed') === 'true';
+  const acceptedQpc = localStorage.getItem('qpc_tos_accepted') === 'true';
+  return acceptedLegacy || acceptedQpc || (tosCheckbox ? tosCheckbox.checked : false);
+}
+
+function validateEntryRequirements() {
+  if (!hasAcceptedTos()) {
+    showStatus('Please accept Terms of Service before continuing.', true);
+    return null;
+  }
+
+  if (!dobInput || !dobInput.value) {
+    showStatus('Enter your date of birth to continue.', true);
+    return null;
+  }
+
+  const age = calculateAge(dobInput.value);
+  if (age < 19) {
+    showStatus('You must be 19+ to use BER OF CHAT.', true);
+    return null;
+  }
+
+  logConsent(age);
+  return age;
+}
 
 // Utilities
 function getPeerConfig() {
@@ -641,13 +671,15 @@ if (legalCountryInput) {
 
 // Create/Join Listeners
 btnCreate.addEventListener('click', () => {
+  if (typeof Peer === 'undefined') {
+    showStatus('Realtime service unavailable. Refresh and try again.', true);
+    return;
+  }
+
   const guestNameInput = document.getElementById('guest-name-input');
   const enteredName = guestNameInput ? guestNameInput.value.trim() : '';
   
-  if (!tosCheckbox.checked) { showStatus('Agree to Terms first.', true); return; }
-  const age = calculateAge(dobInput.value);
-  if (age < 19) { showStatus('Must be 19+.', true); return; }
-  logConsent(age);
+  if (!validateEntryRequirements()) return;
   
   myName = enteredName || 'Guest-' + Math.floor(Math.random() * 10000);
   maxRoomMembers = parseInt(maxMembersInput.value, 10) || 10;
@@ -701,15 +733,17 @@ btnCreate.addEventListener('click', () => {
 });
 
 btnJoin.addEventListener('click', () => {
+  if (typeof Peer === 'undefined') {
+    showStatus('Realtime service unavailable. Refresh and try again.', true);
+    return;
+  }
+
   const guestNameInput = document.getElementById('guest-name-input');
   const enteredName = guestNameInput ? guestNameInput.value.trim() : '';
   
   const code = roomCodeInput.value.trim().toUpperCase();
   if (!code) { showStatus('Enter room code.', true); return; }
-  if (!tosCheckbox.checked) { showStatus('Agree to Terms first.', true); return; }
-  const age = calculateAge(dobInput.value);
-  if (age < 19) { showStatus('Must be 19+.', true); return; }
-  logConsent(age);
+  if (!validateEntryRequirements()) return;
   
   myName = enteredName || 'Guest-' + Math.floor(Math.random() * 10000);
   showStatus('Connecting...', false);
