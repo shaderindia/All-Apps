@@ -786,6 +786,40 @@
       display: flex;
       align-items: center;
       gap: 8px;
+      position: relative;
+    }
+
+    .emoji-picker {
+      position: absolute;
+      right: 6px;
+      bottom: 58px;
+      width: min(280px, calc(100vw - 34px));
+      padding: 10px;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.98);
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 7px;
+      z-index: 30;
+    }
+
+    .emoji-picker button {
+      width: 100%;
+      min-height: 38px;
+      border: none;
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.055);
+      font-size: 20px;
+      display: grid;
+      place-items: center;
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+
+    .emoji-picker button:hover {
+      transform: translateY(-1px);
+      background: rgba(0, 168, 255, 0.12);
     }
 
     .input-wrapper input {
@@ -1311,16 +1345,16 @@
         </div>
 
         <p class="subtitle">
-          Start a private chat instantly — no account required. Peer-to-peer where possible; signaling or relay services may be used.
+          Welcome to try QUICK PRIVATE CHAT. This app is still under development, so you may find some issues. Please report any bugs or problems so we can improve it. Peer-to-peer where possible; signaling or relay services may be used.
         </p>
 
-        <button id="btn-install" class="btn install-btn hidden" type="button">
+        <button id="btn-install" class="btn install-btn" type="button">
           <i class="fa-solid fa-download" aria-hidden="true"></i>
           Install App
         </button>
 
         <p class="ios-install-tip">
-          iOS users: tap <strong>Share</strong>, then <strong>Add to Home Screen</strong> to install.
+          Install QUICK PRIVATE CHAT on your phone or PC for faster access. iPhone users can use <strong>Share</strong> → <strong>Add to Home Screen</strong>.
         </p>
 
         <div class="form-group">
@@ -1574,7 +1608,7 @@
           <div class="system-msg">
             <div class="sys-content">
               <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
-              Welcome to QUICK PRIVATE CHAT. Messages are exchanged peer-to-peer where possible. Signaling or relay services may be used.
+              Welcome to QUICK PRIVATE CHAT. This app is under development — please try it and report any problems. Messages are exchanged peer-to-peer where possible. Signaling or relay services may be used.
             </div>
           </div>
         </div>
@@ -1588,9 +1622,32 @@
             <label class="sr-only" for="message-input">Message Room</label>
             <input type="text" id="message-input" placeholder="Message Room..." autocomplete="off" />
 
-            <button class="icon-btn emoji-btn" type="button" title="Emoji" aria-label="Open emoji picker">
+            <button id="btn-emoji" class="icon-btn emoji-btn" type="button" title="Emoji" aria-label="Open emoji picker">
               <i class="fa-regular fa-face-smile" aria-hidden="true"></i>
             </button>
+
+            <div id="emoji-picker" class="emoji-picker hidden" aria-label="Emoji picker">
+              <button type="button">😀</button>
+              <button type="button">😂</button>
+              <button type="button">😊</button>
+              <button type="button">😍</button>
+              <button type="button">😎</button>
+              <button type="button">🥲</button>
+              <button type="button">😢</button>
+              <button type="button">😡</button>
+              <button type="button">👍</button>
+              <button type="button">🙏</button>
+              <button type="button">❤️</button>
+              <button type="button">🔥</button>
+              <button type="button">🎉</button>
+              <button type="button">✅</button>
+              <button type="button">❌</button>
+              <button type="button">👋</button>
+              <button type="button">🤝</button>
+              <button type="button">💬</button>
+              <button type="button">🔒</button>
+              <button type="button">⚠️</button>
+            </div>
           </div>
 
           <button id="btn-send" class="btn send-btn" type="button" title="Send message" aria-label="Send message">
@@ -1675,6 +1732,33 @@
         <button id="btn-close-legal-guide" class="btn primary-btn" type="button" style="width: 100%;">
           <i class="fa-solid fa-check" aria-hidden="true"></i>
           Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="install-help-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="install-help-title">
+    <div class="modal-content" style="max-width: 480px; text-align: left;">
+      <div class="pulsing-icon" style="color: var(--accent-color); animation: none; text-align: center;" aria-hidden="true">
+        <i class="fa-solid fa-mobile-screen-button"></i>
+      </div>
+
+      <h2 id="install-help-title" style="text-align: center; margin-bottom: 10px;">Install QUICK PRIVATE CHAT</h2>
+
+      <p style="font-size: 13px; color: var(--text-muted); line-height: 1.55; margin-bottom: 12px;">
+        If your browser shows an install prompt, use it. If not, follow these steps:
+      </p>
+
+      <ul style="font-size: 13px; color: var(--text-main); line-height: 1.65; padding-left: 18px; margin-bottom: 18px;">
+        <li><strong>Android Chrome:</strong> tap the browser menu ⋮, then tap <strong>Add to Home screen</strong> or <strong>Install app</strong>.</li>
+        <li><strong>iPhone Safari:</strong> tap <strong>Share</strong>, then <strong>Add to Home Screen</strong>.</li>
+        <li><strong>Desktop Chrome/Edge:</strong> click the install icon in the address bar, or open the browser menu and choose <strong>Install</strong>.</li>
+      </ul>
+
+      <div class="modal-actions">
+        <button id="btn-close-install-help" class="btn primary-btn" type="button" style="width: 100%;">
+          <i class="fa-solid fa-check" aria-hidden="true"></i>
+          Got It
         </button>
       </div>
     </div>
@@ -1943,7 +2027,39 @@
             sidebar?.classList.remove("active");
             reportModal?.classList.add("hidden");
             legalGuideModal?.classList.add("hidden");
+            document.querySelector("#install-help-modal")?.classList.add("hidden");
+            document.querySelector("#emoji-picker")?.classList.add("hidden");
           }
+        });
+
+        const emojiBtn = $("#btn-emoji");
+        const emojiPicker = $("#emoji-picker");
+        const messageInput = $("#message-input");
+
+        emojiBtn?.addEventListener("click", (event) => {
+          event.stopPropagation();
+          emojiPicker?.classList.toggle("hidden");
+        });
+
+        emojiPicker?.addEventListener("click", (event) => {
+          const button = event.target.closest("button");
+          if (!button || !messageInput) return;
+
+          const emoji = button.textContent || "";
+          const start = messageInput.selectionStart ?? messageInput.value.length;
+          const end = messageInput.selectionEnd ?? messageInput.value.length;
+
+          messageInput.value = messageInput.value.slice(0, start) + emoji + messageInput.value.slice(end);
+          messageInput.focus();
+          messageInput.selectionStart = messageInput.selectionEnd = start + emoji.length;
+          emojiPicker.classList.add("hidden");
+        });
+
+        document.addEventListener("click", (event) => {
+          if (!emojiPicker || emojiPicker.classList.contains("hidden")) return;
+          const clickedEmoji = emojiPicker.contains(event.target);
+          const clickedEmojiBtn = emojiBtn && emojiBtn.contains(event.target);
+          if (!clickedEmoji && !clickedEmojiBtn) emojiPicker.classList.add("hidden");
         });
 
         $("#btn-report")?.addEventListener("click", () => reportModal?.classList.remove("hidden"));
@@ -2012,6 +2128,12 @@
       function initializeInstallPrompt() {
         let deferredPrompt = null;
         const installBtn = $("#btn-install");
+        const installHelpModal = $("#install-help-modal");
+        const closeInstallHelpBtn = $("#btn-close-install-help");
+
+        function isAppInstalled() {
+          return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+        }
 
         window.addEventListener("beforeinstallprompt", (event) => {
           event.preventDefault();
@@ -2020,11 +2142,23 @@
         });
 
         installBtn?.addEventListener("click", async () => {
-          if (!deferredPrompt) return;
-          deferredPrompt.prompt();
-          try { await deferredPrompt.userChoice; } catch (error) {}
-          deferredPrompt = null;
-          installBtn.classList.add("hidden");
+          if (isAppInstalled()) {
+            installHelpModal?.classList.remove("hidden");
+            return;
+          }
+
+          if (deferredPrompt) {
+            deferredPrompt.prompt();
+            try { await deferredPrompt.userChoice; } catch (error) {}
+            deferredPrompt = null;
+            return;
+          }
+
+          installHelpModal?.classList.remove("hidden");
+        });
+
+        closeInstallHelpBtn?.addEventListener("click", () => {
+          installHelpModal?.classList.add("hidden");
         });
       }
 
