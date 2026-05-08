@@ -65,6 +65,7 @@
     const content = document.createElement("div");
     content.className = "sys-content";
     content.textContent = text;
+    wrap.appendChild(content);
     messagesContainer.appendChild(wrap);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
   }
@@ -338,7 +339,24 @@
     conn.on("open", () => {
       roomMembers.set(conn.peer, { name: "Unknown", role: "Member", conn });
       conn.send({ type: "member-info", name: myName, role: isHost ? "Host" : "Member" });
-      conn.on("data", data => handleDataMessage(conn.peer, data));
+
+      if (isHost) {
+        const members = Array.from(roomMembers.entries()).map(([id, info]) => ({
+          id,
+          name: info.name,
+          role: info.role
+        }));
+        conn.send({ type: "member-list", members });
+      }
+
+      conn.on("data", data => {
+        const wasUnknown = roomMembers.get(conn.peer)?.name === "Unknown";
+        handleDataMessage(conn.peer, data);
+
+        if (isHost && wasUnknown && data?.type === "member-info") {
+          sendToAll({ type: "new-member", id: conn.peer, name: data.name, role: data.role });
+        }
+      });
       conn.on("close", () => removeMember(conn.peer));
       conn.on("error", () => removeMember(conn.peer));
     });
