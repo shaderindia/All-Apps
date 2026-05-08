@@ -106,7 +106,9 @@
     if (peerId === myPeerId || roomMembers.has(peerId)) return;
     const conn = peer.connect(peerId, { reliable: true });
     conn.on("open", () => {
-      // Once opened, we wait for the 'welcome' or data to get name
+      const prev = roomMembers.get(peerId) || {};
+      roomMembers.set(peerId, { name: prev.name || "Unknown", role: prev.role || "Member", conn });
+      conn.send({ type: "member-info", name: myName, role: isHost ? "Host" : "Member" });
       conn.on("data", data => handleDataMessage(peerId, data));
       conn.on("close", () => removeMember(peerId));
       conn.on("error", err => {
@@ -126,7 +128,7 @@
     switch (data.type) {
       case "member-info":
         // Introduced by host/another peer
-        roomMembers.set(senderId, { name: data.name, role: data.role, conn: peerConnections[senderId] });
+        roomMembers.set(senderId, { name: data.name, role: data.role, conn: roomMembers.get(senderId)?.conn || null });
         updateMemberUI();
         addSystemMessage(`${data.name} joined the room.`);
         // Also store the connection object (we may not have it yet, we'll assign in connectToPeer)
@@ -175,16 +177,6 @@
     }
   }
 
-  // Store DataConnections as they become open
-  peer.on("connection", conn => {
-    conn.on("open", () => {
-      // We'll send our info first
-      conn.send({ type: "member-info", name: myName, role: isHost ? "Host" : "Member" });
-      conn.on("data", data => handleDataMessage(conn.peer, data));
-      conn.on("close", () => removeMember(conn.peer));
-      conn.on("error", () => removeMember(conn.peer));
-    });
-  });
 
   function sendToAll(data) {
     roomMembers.forEach((info, pid) => {
@@ -306,50 +298,6 @@
     }
   }
 
-  peer.on("call", call => {
-    // Save and show incoming modal
-    const callerName = call.metadata?.callerName || "Someone";
-    callerNameDisplay.textContent = callerName;
-    incomingCallModal.classList.remove("hidden");
-
-    btnAcceptCall.onclick = async () => {
-      incomingCallModal.classList.add("hidden");
-      try {
-        localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: call.metadata?.mediaType === "video" });
-        call.answer(localStream);
-        currentCallPeers.add(call);
-        showCallButtons();
-        videoGrid.classList.remove("hidden");
-
-        // Show local video
-        const localVideo = document.createElement("video");
-        localVideo.muted = true;
-        localVideo.srcObject = localStream;
-        localVideo.autoplay = true;
-        localVideo.playsInline = true;
-        localVideo.setAttribute("data-peer-id", "me");
-        videoGrid.appendChild(localVideo);
-
-        call.on("stream", remoteStream => addRemoteStream(call.peer, remoteStream));
-        call.on("close", () => {
-          currentCallPeers.delete(call);
-          removeRemoteStream(call.peer);
-          if (currentCallPeers.size === 0) endCallUI();
-        });
-        call.on("error", () => {
-          currentCallPeers.delete(call);
-        });
-      } catch (err) {
-        alert("Could not answer call.");
-        incomingCallModal.classList.add("hidden");
-      }
-    };
-
-    btnDeclineCall.onclick = () => {
-      call.close();
-      incomingCallModal.classList.add("hidden");
-    };
-  });
 
   function addRemoteStream(peerId, stream) {
     const existing = videoGrid.querySelector(`[data-peer-id="${peerId}"]`);
@@ -385,6 +333,57 @@
     window.__qpcCoreReady = true;  // tell inline script that we're alive
   });
 
+
+  peer.on("connection", conn => {
+    conn.on("open", () => {
+      roomMembers.set(conn.peer, { name: "Unknown", role: "Member", conn });
+      conn.send({ type: "member-info", name: myName, role: isHost ? "Host" : "Member" });
+      conn.on("data", data => handleDataMessage(conn.peer, data));
+      conn.on("close", () => removeMember(conn.peer));
+      conn.on("error", () => removeMember(conn.peer));
+    });
+  });
+
+  peer.on("call", call => {
+    const callerName = call.metadata?.callerName || "Someone";
+    callerNameDisplay.textContent = callerName;
+    incomingCallModal.classList.remove("hidden");
+
+    btnAcceptCall.onclick = async () => {
+      incomingCallModal.classList.add("hidden");
+      try {
+        localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: call.metadata?.mediaType === "video" });
+        call.answer(localStream);
+        currentCallPeers.add(call);
+        showCallButtons();
+        videoGrid.classList.remove("hidden");
+
+        const localVideo = document.createElement("video");
+        localVideo.muted = true;
+        localVideo.srcObject = localStream;
+        localVideo.autoplay = true;
+        localVideo.playsInline = true;
+        localVideo.setAttribute("data-peer-id", "me");
+        videoGrid.appendChild(localVideo);
+
+        call.on("stream", remoteStream => addRemoteStream(call.peer, remoteStream));
+        call.on("close", () => {
+          currentCallPeers.delete(call);
+          removeRemoteStream(call.peer);
+          if (currentCallPeers.size === 0) endCallUI();
+        });
+        call.on("error", () => currentCallPeers.delete(call));
+      } catch (err) {
+        alert("Could not answer call.");
+        incomingCallModal.classList.add("hidden");
+      }
+    };
+
+    btnDeclineCall.onclick = () => {
+      call.close();
+      incomingCallModal.classList.add("hidden");
+    };
+  });
   peer.on("error", err => {
     console.error("PeerJS error:", err);
     if (entryScreen.classList.contains("active")) {
