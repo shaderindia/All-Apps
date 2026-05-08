@@ -8,12 +8,14 @@
 
   <meta
     name="description"
-    content="the app is under development you may find some issue QUICK PRIVATE CHAT is a fast private chat app with peer-to-peer messaging and WebRTC voice/video where possible. Signaling or relay services may be used to connect users."
+    content="QUICK PRIVATE CHAT is under development. Start a private chat with peer-to-peer messaging and WebRTC voice/video where possible. Signaling or relay services may be used to connect users."
   />
   <meta
     name="keywords"
-    content="p2p chat, peer to peer messaging, webrtc video call, private chat room, private chat, quick private chat"
+    content="p2p chat, peer to peer messaging, webrtc video call, private chat room, private chat, quick private chat, shader7"
   />
+  <meta name="author" content="SHADER7" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
   <link rel="canonical" href="https://shader7.com/berofchat/" />
 
   <meta property="og:title" content="QUICK PRIVATE CHAT | Private P2P Messaging" />
@@ -23,6 +25,7 @@
   />
   <meta property="og:url" content="https://shader7.com/berofchat/" />
   <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="SHADER7" />
 
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="QUICK PRIVATE CHAT | Private P2P Messaging" />
@@ -36,7 +39,6 @@
   <meta name="theme-color" content="#ffffff" />
 
   <link rel="manifest" href="manifest.json" />
-  <link rel="stylesheet" href="style.css?v=2.3.0" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -66,9 +68,7 @@
       --vh: 1vh;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     html,
     body {
@@ -86,15 +86,11 @@
       text-size-adjust: 100%;
     }
 
-    body {
-      min-height: 100svh;
-    }
+    body { min-height: 100svh; }
 
     button,
     input,
-    textarea {
-      font: inherit;
-    }
+    textarea { font: inherit; }
 
     button {
       cursor: pointer;
@@ -104,35 +100,18 @@
     button,
     a,
     input,
-    textarea {
-      touch-action: manipulation;
-    }
+    textarea { touch-action: manipulation; }
 
     button,
     .btn,
     .icon-btn,
-    .tab-btn {
-      user-select: none;
-    }
+    .tab-btn { user-select: none; }
 
-    a {
-      color: var(--accent-color);
-    }
+    a { color: var(--accent-color); }
 
-    .hidden {
-      display: none !important;
-      visibility: hidden !important;
-    }
-
-    .screen {
-      display: none !important;
-      visibility: hidden !important;
-    }
-
-    .screen.active {
-      display: flex !important;
-      visibility: visible !important;
-    }
+    .hidden { display: none !important; visibility: hidden !important; }
+    .screen { display: none !important; visibility: hidden !important; }
+    .screen.active { display: flex !important; visibility: visible !important; }
 
     .sr-only {
       position: absolute !important;
@@ -196,13 +175,8 @@
     }
 
     @keyframes qpcFloat {
-      0%, 100% {
-        transform: translate3d(0, 0, 0) scale(1);
-      }
-
-      50% {
-        transform: translate3d(18px, -18px, 0) scale(1.04);
-      }
+      0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+      50% { transform: translate3d(18px, -18px, 0) scale(1.04); }
     }
 
     #entry-screen {
@@ -249,9 +223,7 @@
 
     .home-link:hover,
     .mini-link:hover,
-    .text-btn:hover {
-      color: var(--accent-color);
-    }
+    .text-btn:hover { color: var(--accent-color); }
 
     .logo {
       text-align: center;
@@ -300,13 +272,8 @@
       transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
     }
 
-    .btn:hover {
-      transform: translateY(-1px);
-    }
-
-    .btn:active {
-      transform: translateY(0);
-    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
 
     .primary-btn {
       width: 100%;
@@ -342,9 +309,7 @@
     .age-verification,
     .privacy-toggle,
     .tos-verification,
-    .legal-card {
-      margin-top: 14px;
-    }
+    .legal-card { margin-top: 14px; }
 
     .field-label {
       width: 100%;
@@ -371,7 +336,8 @@
 
     .input-group:focus-within,
     input[type="date"]:focus,
-    textarea:focus {
+    textarea:focus,
+    #legal-country-input:focus {
       border-color: rgba(0, 168, 255, 0.6);
       box-shadow: 0 0 0 4px rgba(0, 168, 255, 0.12);
     }
@@ -391,7 +357,8 @@
       color: var(--text-main);
     }
 
-    input[type="date"] {
+    input[type="date"],
+    #legal-country-input {
       width: 100%;
       min-height: 48px;
       border: 1px solid var(--border);
@@ -427,29 +394,17 @@
       box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
     }
 
-    .form-container {
-      display: none;
-    }
-
+    .form-container { display: none; }
     .form-container.active {
       display: block;
       animation: qpcFadeUp 0.2s ease;
     }
 
-    .form-container .input-group {
-      margin-bottom: 12px;
-    }
+    .form-container .input-group { margin-bottom: 12px; }
 
     @keyframes qpcFadeUp {
-      from {
-        opacity: 0;
-        transform: translateY(6px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .check-card {
@@ -509,9 +464,7 @@
       line-height: 1.55;
     }
 
-    .danger-link {
-      color: var(--danger-color);
-    }
+    .danger-link { color: var(--danger-color); }
 
     #chat-screen {
       width: 100%;
@@ -558,9 +511,7 @@
       letter-spacing: 0.02em;
     }
 
-    .brand i {
-      color: var(--accent-color);
-    }
+    .brand i { color: var(--accent-color); }
 
     .room-info {
       margin: 24px 0;
@@ -612,10 +563,7 @@
       color: #fff;
     }
 
-    .members-section {
-      flex: 1;
-      min-height: 0;
-    }
+    .members-section { flex: 1; min-height: 0; }
 
     #members-list {
       list-style: none;
@@ -640,10 +588,7 @@
       border-top: 1px solid rgba(255, 255, 255, 0.09);
     }
 
-    .user-profile {
-      gap: 10px;
-      min-width: 0;
-    }
+    .user-profile { gap: 10px; min-width: 0; }
 
     .avatar {
       width: 42px;
@@ -656,9 +601,7 @@
       font-weight: 900;
     }
 
-    .gradient-avatar {
-      background: var(--grad-primary);
-    }
+    .gradient-avatar { background: var(--grad-primary); }
 
     .user-details {
       min-width: 0;
@@ -714,10 +657,7 @@
       border-bottom: 1px solid var(--border);
     }
 
-    .header-info {
-      flex: 1;
-      min-width: 0;
-    }
+    .header-info { flex: 1; min-width: 0; }
 
     .header-info h3 {
       margin: 0;
@@ -768,14 +708,9 @@
       color: var(--accent-color);
     }
 
-    .header-btn {
-      color: #334155;
-    }
-
+    .header-btn { color: #334155; }
     .danger-btn,
-    .danger-text {
-      color: var(--danger-color);
-    }
+    .danger-text { color: var(--danger-color); }
 
     .hangup-btn {
       color: #fff;
@@ -792,6 +727,15 @@
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 12px;
+    }
+
+    .video-grid video {
+      width: 100%;
+      min-height: 160px;
+      border-radius: 18px;
+      background: #020617;
+      object-fit: cover;
+      box-shadow: 0 12px 26px rgba(15, 23, 42, 0.12);
     }
 
     .messages-container {
@@ -903,15 +847,8 @@
     }
 
     @keyframes qpcPulse {
-      0%, 100% {
-        transform: scale(1);
-        opacity: 0.86;
-      }
-
-      50% {
-        transform: scale(1.08);
-        opacity: 1;
-      }
+      0%, 100% { transform: scale(1); opacity: 0.86; }
+      50% { transform: scale(1.08); opacity: 1; }
     }
 
     .modal-actions {
@@ -921,9 +858,7 @@
       margin-top: 18px;
     }
 
-    .modal-actions .btn {
-      flex: 1;
-    }
+    .modal-actions .btn { flex: 1; }
 
     textarea {
       width: 100%;
@@ -989,108 +924,41 @@
       box-shadow: 0 0 15px rgba(0, 168, 255, 0.24);
     }
 
-    .mobile-only {
-      display: none;
-    }
+    .mobile-only { display: none; }
 
-    /* Desktop */
     @media (min-width: 1025px) {
-      #entry-screen {
-        padding: 48px 24px;
-      }
-
-      .glass-panel {
-        width: min(100%, 520px);
-        padding: 32px;
-      }
-
-      .logo-icon {
-        width: 84px;
-        height: 84px;
-        font-size: 34px;
-      }
-
-      .logo h1 {
-        font-size: 40px;
-      }
-
-      .subtitle {
-        font-size: 15px;
-      }
-
-      .chat-header {
-        padding-inline: 26px;
-      }
-
-      .messages-container {
-        padding: 28px;
-      }
-
-      .chat-input-area {
-        padding: 18px 28px 22px;
-      }
+      #entry-screen { padding: 48px 24px; }
+      .glass-panel { width: min(100%, 520px); padding: 32px; }
+      .logo-icon { width: 84px; height: 84px; font-size: 34px; }
+      .logo h1 { font-size: 40px; }
+      .subtitle { font-size: 15px; }
+      .chat-header { padding-inline: 26px; }
+      .messages-container { padding: 28px; }
+      .chat-input-area { padding: 18px 28px 22px; }
     }
 
-    /* Large desktop */
     @media (min-width: 1280px) {
-      .sidebar {
-        width: 340px;
-        flex-basis: 340px;
-        padding: 22px;
-      }
-
-      .messages-container {
-        max-width: 1100px;
-        width: 100%;
-        margin-inline: auto;
-      }
-
-      .chat-input-area {
-        justify-content: center;
-      }
-
-      .chat-input-area > .input-wrapper {
-        max-width: 900px;
-      }
-
+      .sidebar { width: 340px; flex-basis: 340px; padding: 22px; }
+      .messages-container,
       .video-grid {
         max-width: 1100px;
         width: 100%;
         margin-inline: auto;
       }
+      .chat-input-area { justify-content: center; }
+      .chat-input-area > .input-wrapper { max-width: 900px; }
     }
 
-    /* Laptop / tablet */
     @media (max-width: 1024px) {
-      .glass-panel {
-        width: min(100%, 500px);
-      }
-
-      .sidebar {
-        width: 288px;
-        flex-basis: 288px;
-      }
-
-      .header-actions {
-        gap: 5px;
-      }
-
-      .icon-btn {
-        width: 40px;
-        height: 40px;
-      }
+      .glass-panel { width: min(100%, 500px); }
+      .sidebar { width: 288px; flex-basis: 288px; }
+      .header-actions { gap: 5px; }
+      .icon-btn { width: 40px; height: 40px; }
     }
 
-    /* Tablet and mobile chat */
     @media (max-width: 840px) {
-      #chat-screen {
-        min-height: 100svh;
-      }
-
-      .chat-area {
-        width: 100%;
-        min-height: 100svh;
-      }
+      #chat-screen { min-height: 100svh; }
+      .chat-area { width: 100%; min-height: 100svh; }
 
       .sidebar {
         position: fixed;
@@ -1106,13 +974,8 @@
         border-radius: 0 24px 24px 0;
       }
 
-      .sidebar.active {
-        transform: translateX(0);
-      }
-
-      .mobile-only {
-        display: inline-grid;
-      }
+      .sidebar.active { transform: translateX(0); }
+      .mobile-only { display: inline-grid; }
 
       .chat-header {
         min-height: 68px;
@@ -1120,21 +983,10 @@
         gap: 10px;
       }
 
-      .header-info h3 {
-        font-size: 16px;
-      }
-
-      .status-text {
-        font-size: 11px;
-      }
-
-      .header-actions {
-        gap: 4px;
-      }
-
-      .header-actions .divider {
-        display: none;
-      }
+      .header-info h3 { font-size: 16px; }
+      .status-text { font-size: 11px; }
+      .header-actions { gap: 4px; }
+      .header-actions .divider { display: none; }
 
       .header-btn,
       .icon-btn {
@@ -1191,7 +1043,6 @@
       }
     }
 
-    /* Mobile entry */
     @media (max-width: 600px) {
       body {
         background:
@@ -1215,19 +1066,13 @@
         border-radius: 24px;
       }
 
-      .top-bar {
-        margin-bottom: 8px;
-      }
+      .top-bar { margin-bottom: 8px; }
 
       .home-link,
       .text-btn,
-      .mini-link {
-        font-size: 11.5px;
-      }
+      .mini-link { font-size: 11.5px; }
 
-      .logo {
-        margin-top: 12px;
-      }
+      .logo { margin-top: 12px; }
 
       .logo-icon {
         width: 66px;
@@ -1237,33 +1082,17 @@
         margin-bottom: 12px;
       }
 
-      .logo h1 {
-        font-size: 30px;
-        line-height: 1;
-      }
-
-      .subtitle {
-        font-size: 13px;
-        margin: 10px auto 14px;
-      }
-
-      .ios-install-tip {
-        font-size: 10.5px;
-        margin-bottom: 12px;
-      }
+      .logo h1 { font-size: 30px; line-height: 1; }
+      .subtitle { font-size: 13px; margin: 10px auto 14px; }
+      .ios-install-tip { font-size: 10.5px; margin-bottom: 12px; }
 
       .form-group,
       .age-verification,
       .privacy-toggle,
       .tos-verification,
-      .legal-card {
-        margin-top: 11px;
-      }
+      .legal-card { margin-top: 11px; }
 
-      .field-label {
-        font-size: 12px;
-        gap: 7px;
-      }
+      .field-label { font-size: 12px; gap: 7px; }
 
       .input-group,
       input[type="date"] {
@@ -1271,9 +1100,7 @@
         border-radius: 14px;
       }
 
-      .input-group {
-        padding-inline: 12px;
-      }
+      .input-group { padding-inline: 12px; }
 
       .input-group input {
         min-height: 44px;
@@ -1282,9 +1109,7 @@
 
       input,
       textarea,
-      select {
-        font-size: 16px !important;
-      }
+      select { font-size: 16px !important; }
 
       .tabs {
         margin: 14px 0 12px;
@@ -1304,27 +1129,11 @@
         font-size: 14px;
       }
 
-      .check-card {
-        padding: 10px;
-        border-radius: 14px;
-      }
-
-      .check-card span {
-        font-size: 11.5px;
-      }
-
-      .status-msg {
-        font-size: 12px;
-        margin-top: 9px;
-      }
-
-      .legal-card {
-        padding-top: 12px;
-      }
-
-      .legal-card p {
-        font-size: 9.8px;
-      }
+      .check-card { padding: 10px; border-radius: 14px; }
+      .check-card span { font-size: 11.5px; }
+      .status-msg { font-size: 12px; margin-top: 9px; }
+      .legal-card { padding-top: 12px; }
+      .legal-card p { font-size: 9.8px; }
 
       .bg-shapes .shape-1 {
         width: 160px;
@@ -1340,9 +1149,7 @@
         bottom: 8%;
       }
 
-      .bg-shapes .shape-3 {
-        display: none;
-      }
+      .bg-shapes .shape-3 { display: none; }
 
       .modal-overlay {
         padding: 12px;
@@ -1356,45 +1163,18 @@
         padding: 20px;
       }
 
-      .modal-actions {
-        flex-direction: column;
-      }
-
-      .modal-actions .btn {
-        width: 100%;
-      }
+      .modal-actions { flex-direction: column; }
+      .modal-actions .btn { width: 100%; }
     }
 
-    /* Small phones */
     @media (max-width: 420px) {
-      #entry-screen {
-        padding-inline: 10px;
-      }
-
-      .glass-panel {
-        padding: 16px;
-        border-radius: 22px;
-      }
-
-      .logo h1 {
-        font-size: 27px;
-      }
-
-      .subtitle {
-        font-size: 12.5px;
-      }
-
-      .tabs {
-        grid-template-columns: 1fr;
-      }
-
-      .tab-btn {
-        width: 100%;
-      }
-
-      .header-actions {
-        gap: 3px;
-      }
+      #entry-screen { padding-inline: 10px; }
+      .glass-panel { padding: 16px; border-radius: 22px; }
+      .logo h1 { font-size: 27px; }
+      .subtitle { font-size: 12.5px; }
+      .tabs { grid-template-columns: 1fr; }
+      .tab-btn { width: 100%; }
+      .header-actions { gap: 3px; }
 
       .header-btn,
       .icon-btn {
@@ -1403,13 +1183,8 @@
         border-radius: 12px;
       }
 
-      .chat-header {
-        gap: 8px;
-      }
-
-      .header-info h3 {
-        font-size: 15px;
-      }
+      .chat-header { gap: 8px; }
+      .header-info h3 { font-size: 15px; }
 
       .status-text {
         max-width: 170px;
@@ -1418,59 +1193,25 @@
         text-overflow: ellipsis;
       }
 
-      .attach-btn {
-        display: none;
-      }
-
-      .chat-input-area {
-        gap: 7px;
-      }
-
-      .send-btn {
-        width: 46px;
-        height: 46px;
-      }
+      .attach-btn { display: none; }
+      .chat-input-area { gap: 7px; }
+      .send-btn { width: 46px; height: 46px; }
     }
 
-    /* Very small phones */
     @media (max-width: 360px) {
-      .glass-panel {
-        padding: 14px;
-      }
-
-      .logo-icon {
-        width: 58px;
-        height: 58px;
-        font-size: 24px;
-      }
-
-      .logo h1 {
-        font-size: 24px;
-      }
-
-      .subtitle {
-        font-size: 12px;
-      }
+      .glass-panel { padding: 14px; }
+      .logo-icon { width: 58px; height: 58px; font-size: 24px; }
+      .logo h1 { font-size: 24px; }
+      .subtitle { font-size: 12px; }
 
       .header-actions #btn-search,
-      .header-actions #btn-report {
-        display: none;
-      }
+      .header-actions #btn-report { display: none; }
 
-      .status-text {
-        max-width: 145px;
-      }
-
-      .input-wrapper {
-        padding-left: 11px;
-      }
-
-      .emoji-btn {
-        display: none;
-      }
+      .status-text { max-width: 145px; }
+      .input-wrapper { padding-left: 11px; }
+      .emoji-btn { display: none; }
     }
 
-    /* Landscape phones */
     @media (max-height: 560px) and (orientation: landscape) {
       #entry-screen {
         align-items: flex-start;
@@ -1478,13 +1219,8 @@
         padding-bottom: 10px;
       }
 
-      .glass-panel {
-        max-width: 760px;
-      }
-
-      .logo {
-        margin-top: 6px;
-      }
+      .glass-panel { max-width: 760px; }
+      .logo { margin-top: 6px; }
 
       .logo-icon {
         width: 52px;
@@ -1494,32 +1230,22 @@
         margin-bottom: 8px;
       }
 
-      .logo h1 {
-        font-size: 26px;
-      }
-
-      .subtitle {
-        margin-bottom: 10px;
-      }
+      .logo h1 { font-size: 26px; }
+      .subtitle { margin-bottom: 10px; }
 
       .form-group,
       .age-verification,
       .privacy-toggle,
-      .tos-verification {
-        margin-top: 8px;
-      }
+      .tos-verification { margin-top: 8px; }
     }
 
-    /* Cookie banner mobile */
     @media (max-width: 700px) {
       #gdpr-banner {
         padding: 13px 14px calc(13px + env(safe-area-inset-bottom));
         align-items: stretch;
       }
 
-      #gdpr-banner p {
-        font-size: 11.5px;
-      }
+      #gdpr-banner p { font-size: 11.5px; }
 
       .cookie-actions {
         width: 100%;
@@ -1536,9 +1262,7 @@
     @media (hover: hover) {
       .btn:hover,
       .icon-btn:hover,
-      .tab-btn:hover {
-        transform: translateY(-1px);
-      }
+      .tab-btn:hover { transform: translateY(-1px); }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -1632,11 +1356,12 @@
             <input
               type="text"
               id="room-code-input"
-              placeholder="Enter Room Code"
+              placeholder="Enter 6-character Room Code"
               autocomplete="off"
               maxlength="8"
               autocapitalize="characters"
               spellcheck="false"
+              inputmode="text"
               style="text-transform: uppercase;"
             />
           </div>
@@ -1674,7 +1399,7 @@
             <input type="date" id="dob-input" autocomplete="bday" />
           </label>
           <p style="font-size: 11px; color: var(--text-muted); margin: 7px 0 0; line-height: 1.45;">
-            Your age check should be processed locally where possible. Avoid storing full date of birth unless legally required.
+            Your age check is processed locally on this device. Avoid sharing your full date of birth in chat.
           </p>
         </div>
 
@@ -1683,7 +1408,7 @@
             <input type="checkbox" id="mask-ip-checkbox" />
             <span>
               <strong>Hide my IP from other chat members where possible</strong><br />
-              Attempts to use a TURN relay. Relay providers may still process connection metadata.
+              Attempts to use relay routes where supported. Relay providers may still process connection metadata.
             </span>
           </label>
         </div>
@@ -1772,7 +1497,7 @@
         <div class="members-section">
           <div class="section-title">
             <span class="label">Members</span>
-            <span class="count-badge" id="member-count">1</span>
+            <span class="count-badge" id="member-count">0</span>
           </div>
 
           <ul id="members-list" aria-label="Room members"></ul>
@@ -1939,7 +1664,7 @@
       <label class="field-label" for="legal-country-input" style="font-size: 12px; margin-bottom: 8px; display: block;">
         Country code (ISO-2)
       </label>
-      <input id="legal-country-input" type="text" maxlength="2" placeholder="e.g. US, IN, BR" style="margin-bottom: 10px;" />
+      <input id="legal-country-input" type="text" maxlength="2" placeholder="e.g. US, IN, BR" style="margin-bottom: 10px; text-transform: uppercase;" />
 
       <p style="font-size: 12px; margin-bottom: 8px;">
         Detected country: <strong id="legal-country-detected">Unknown</strong>
@@ -2007,11 +1732,6 @@
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase-config.js?v=3.0.0"></script>
-  <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
-  <script src="app.js?v=5.1.0"></script>
-
   <script>
     (function () {
       "use strict";
@@ -2019,11 +1739,6 @@
       const $ = (selector) => document.querySelector(selector);
       const $$ = (selector) => Array.from(document.querySelectorAll(selector));
 
-      const entryScreen = $("#entry-screen");
-      const chatScreen = $("#chat-screen");
-      const sidebar = $("#sidebar");
-
-      // ---- Country legal rules (minimal example) ----
       const LEGAL_RULES = {
         US: [
           "COPPA (Children’s Online Privacy Protection Act)",
@@ -2039,30 +1754,37 @@
         DE: [
           "GDPR (EU General Data Protection Regulation)",
           "BDSG (German Federal Data Protection Act)",
-          "Telemediengesetz (TMG)"
+          "TTDSG / ePrivacy rules"
         ],
         IN: [
           "Digital Personal Data Protection Act 2023",
-          "IT Act 2000"
+          "IT Act 2000",
+          "Intermediary and cyber-safety obligations may apply depending on scale/features"
         ],
         BR: [
           "LGPD (Lei Geral de Proteção de Dados)"
         ],
+        RO: [
+          "GDPR (EU General Data Protection Regulation)",
+          "Romanian data protection authority guidance",
+          "ePrivacy / cookie consent rules"
+        ],
         DEFAULT: [
           "Check local data protection and privacy laws",
-          "Consider age‑verification requirements",
-          "Review e‑privacy / cookie regulations",
+          "Consider age-verification requirements",
+          "Review e-privacy / cookie regulations",
           "Assess content liability and intermediary rules"
         ]
       };
 
+      function setRealViewportHeight() {
+        document.documentElement.style.setProperty("--vh", window.innerHeight * 0.01 + "px");
+      }
+
       function detectCountryCode() {
-        // try to guess from navigator.language
         const lang = navigator.language || "en-US";
-        if (lang && lang.includes("-")) {
-          return lang.split("-")[1].toUpperCase();
-        }
-        return "US"; // fallback
+        if (lang && lang.includes("-")) return lang.split("-")[1].toUpperCase();
+        return "US";
       }
 
       function showLegalRules(countryCode) {
@@ -2070,218 +1792,17 @@
         const detectedSpan = $("#legal-country-detected");
         if (!rulesList || !detectedSpan) return;
 
-        const code = (countryCode || "").toUpperCase().trim();
+        const code = String(countryCode || "").toUpperCase().replace(/[^A-Z]/g, "").slice(0, 2);
         detectedSpan.textContent = code || "Unknown";
 
-        let rules = LEGAL_RULES[code];
-        if (!rules) {
-          rules = LEGAL_RULES.DEFAULT;
-        }
-
+        const rules = LEGAL_RULES[code] || LEGAL_RULES.DEFAULT;
         rulesList.innerHTML = "";
-        rules.forEach(rule => {
+
+        rules.forEach((rule) => {
           const li = document.createElement("li");
           li.textContent = rule;
           rulesList.appendChild(li);
         });
-      }
-
-      // ---- Viewport & helpers ----
-      function setRealViewportHeight() {
-        document.documentElement.style.setProperty("--vh", window.innerHeight * 0.01 + "px");
-      }
-
-      setRealViewportHeight();
-      window.addEventListener("resize", setRealViewportHeight);
-      window.addEventListener("orientationchange", setRealViewportHeight);
-
-      function setEntryStatus(message, type = "error") {
-        const status = $("#entry-status");
-        if (!status) return;
-
-        status.textContent = message || "";
-        status.style.color =
-          type === "success"
-            ? "var(--success-color)"
-            : type === "warning"
-              ? "var(--warning-color)"
-              : "var(--danger-color)";
-      }
-
-      function generateRoomCode(length = 6) {
-        const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-        let code = "";
-
-        if (window.crypto && crypto.getRandomValues) {
-          const values = new Uint32Array(length);
-          crypto.getRandomValues(values);
-
-          for (let i = 0; i < length; i++) {
-            code += chars[values[i] % chars.length];
-          }
-
-          return code;
-        }
-
-        for (let i = 0; i < length; i++) {
-          code += chars[Math.floor(Math.random() * chars.length)];
-        }
-
-        return code;
-      }
-
-      function sanitizeName(value) {
-        return String(value || "")
-          .replace(/[<>]/g, "")
-          .replace(/\s+/g, " ")
-          .trim()
-          .slice(0, 20);
-      }
-
-      function getAgeFromDob(dobValue) {
-        if (!dobValue) return null;
-
-        const birthDate = new Date(dobValue + "T00:00:00");
-        if (Number.isNaN(birthDate.getTime())) return null;
-
-        const today = new Date();
-        let age = today.getFullYear() - birthDate.getFullYear();
-
-        const monthDiff = today.getMonth() - birthDate.getMonth();
-        const dayDiff = today.getDate() - birthDate.getDate();
-
-        if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
-          age--;
-        }
-
-        return age;
-      }
-
-      function validateEntry(options = {}) {
-        const requireRoomCode = Boolean(options.requireRoomCode);
-        const name = sanitizeName($("#guest-name-input")?.value);
-        const dobValue = $("#dob-input")?.value;
-        const age = getAgeFromDob(dobValue);
-        const tosChecked = Boolean($("#tos-checkbox")?.checked);
-        const roomCode = String($("#room-code-input")?.value || "").trim().toUpperCase();
-
-        if (!name) {
-          setEntryStatus("Please enter your display name.");
-          $("#guest-name-input")?.focus();
-          return false;
-        }
-
-        if (age === null) {
-          setEntryStatus("Please enter a valid date of birth.");
-          $("#dob-input")?.focus();
-          return false;
-        }
-
-        if (age < 19) {
-          setEntryStatus("You must be 19 or older to use this service.");
-          $("#dob-input")?.focus();
-          return false;
-        }
-
-        if (!tosChecked) {
-          setEntryStatus("Please agree to the Terms of Service and Privacy Policy.");
-          $("#tos-checkbox")?.focus();
-          return false;
-        }
-
-        if (requireRoomCode && !roomCode) {
-          setEntryStatus("Please enter a room code.");
-          $("#room-code-input")?.focus();
-          return false;
-        }
-
-        setEntryStatus("");
-        return true;
-      }
-
-      function enterRoomUI(roomCode, role) {
-        const name = sanitizeName($("#guest-name-input")?.value) || "User";
-        const initial = name.charAt(0).toUpperCase() || "U";
-
-        if ($("#display-room-code")) $("#display-room-code").textContent = roomCode;
-        if ($("#chat-header-title")) $("#chat-header-title").textContent = "Room " + roomCode;
-        if ($("#my-role-badge")) $("#my-role-badge").textContent = role || "Host";
-        if ($("#my-name")) $("#my-name").textContent = name;
-        if ($("#my-avatar")) $("#my-avatar").textContent = initial;
-        if ($("#member-count")) $("#member-count").textContent = "1";
-
-        const membersList = $("#members-list");
-        if (membersList && !membersList.children.length) {
-          const li = document.createElement("li");
-          li.textContent = name + " — " + (role || "Host");
-          membersList.appendChild(li);
-        }
-
-        entryScreen?.classList.remove("active");
-        chatScreen?.classList.add("active");
-        sidebar?.classList.remove("active");
-
-        try {
-          localStorage.setItem("qpc_last_name", name);
-          localStorage.setItem("qpc_last_room", roomCode);
-        } catch (error) {}
-      }
-
-      function addSystemMessage(message) {
-        const container = $("#messages-container");
-        if (!container) return;
-
-        const wrap = document.createElement("div");
-        wrap.className = "system-msg";
-
-        const content = document.createElement("div");
-        content.className = "sys-content";
-        content.textContent = message;
-
-        wrap.appendChild(content);
-        container.appendChild(wrap);
-        container.scrollTop = container.scrollHeight;
-      }
-
-      function createRoomFallback() {
-        const roomCode = generateRoomCode(6);
-        enterRoomUI(roomCode, "Host");
-        addSystemMessage("Room created. Share the room code with another member. If your app.js signaling is configured, peers can connect through your normal app logic.");
-      }
-
-      function joinRoomFallback() {
-        const input = $("#room-code-input");
-        const roomCode = String(input?.value || "").trim().toUpperCase();
-        enterRoomUI(roomCode, "Member");
-        addSystemMessage("Joined room locally. If your app.js signaling is configured, peers can connect through your normal app logic.");
-      }
-
-      function sendLocalMessageFallback() {
-        const input = $("#message-input");
-        const container = $("#messages-container");
-        const name = sanitizeName($("#guest-name-input")?.value) || "You";
-
-        if (!input || !container) return;
-
-        const text = input.value.trim();
-        if (!text) return;
-
-        const msg = document.createElement("div");
-        msg.style.alignSelf = "flex-end";
-        msg.style.maxWidth = "min(76%, 620px)";
-        msg.style.padding = "12px 14px";
-        msg.style.borderRadius = "18px 18px 6px 18px";
-        msg.style.background = "var(--grad-primary)";
-        msg.style.color = "#fff";
-        msg.style.boxShadow = "0 12px 24px rgba(0,168,255,0.16)";
-        msg.innerHTML = "<strong style='font-size:11px;opacity:.86;display:block;margin-bottom:4px;'></strong><span></span>";
-
-        msg.querySelector("strong").textContent = name;
-        msg.querySelector("span").textContent = text;
-
-        container.appendChild(msg);
-        container.scrollTop = container.scrollHeight;
-        input.value = "";
       }
 
       function initializeTabs() {
@@ -2305,7 +1826,8 @@
             const target = document.getElementById(targetId);
             if (target) target.classList.add("active");
 
-            setEntryStatus("");
+            const status = $("#entry-status");
+            if (status) status.textContent = "";
           });
         });
       }
@@ -2325,12 +1847,10 @@
         if (maxMembers) {
           maxMembers.addEventListener("change", () => {
             const value = Number(maxMembers.value || 10);
-
             if (!Number.isFinite(value)) {
               maxMembers.value = "10";
               return;
             }
-
             if (value > 10) maxMembers.value = "10";
             if (value < 2) maxMembers.value = "2";
           });
@@ -2345,6 +1865,14 @@
 
           nameInput.addEventListener("input", () => {
             nameInput.value = nameInput.value.replace(/[<>]/g, "").slice(0, 20);
+          });
+        }
+
+        const legalCountryInput = $("#legal-country-input");
+        if (legalCountryInput) {
+          legalCountryInput.addEventListener("input", () => {
+            legalCountryInput.value = legalCountryInput.value.replace(/[^a-zA-Z]/g, "").toUpperCase().slice(0, 2);
+            showLegalRules(legalCountryInput.value);
           });
         }
       }
@@ -2368,7 +1896,6 @@
 
           const tosCheckbox = $("#tos-checkbox");
           if (tosCheckbox) tosCheckbox.checked = true;
-
           tosModal?.classList.add("hidden");
         });
 
@@ -2394,98 +1921,36 @@
         $("#gdpr-reject")?.addEventListener("click", () => closeBanner("essential_only"));
       }
 
-      function initializeButtons() {
-        const createBtn = $("#btn-create");
-        const joinBtn = $("#btn-join");
-
-        createBtn?.addEventListener("click", (event) => {
-          if (!validateEntry()) {
-            event.preventDefault();
-            return;
-          }
-
-          setEntryStatus("Creating room...", "success");
-          window.__qpcCreateClickedAt = Date.now();
-
-          setTimeout(() => {
-            const stillOnEntry = entryScreen?.classList.contains("active");
-            // live check, not captured
-            if (stillOnEntry && !window.__qpcCoreReady) {
-              console.warn("[QPC] app.js did not switch screens after create click. Running safe fallback UI.");
-              createRoomFallback();
-            }
-          }, 650);
-        });
-
-        joinBtn?.addEventListener("click", (event) => {
-          if (!validateEntry({ requireRoomCode: true })) {
-            event.preventDefault();
-            return;
-          }
-
-          setEntryStatus("Joining room...", "success");
-
-          setTimeout(() => {
-            const stillOnEntry = entryScreen?.classList.contains("active");
-            if (stillOnEntry && !window.__qpcCoreReady) {
-              console.warn("[QPC] app.js did not switch screens after join click. Running safe fallback UI.");
-              joinRoomFallback();
-            }
-          }, 650);
-        });
-
-        $("#btn-send")?.addEventListener("click", () => {
-          if (window.__qpcCoreReady) return;   // core takes over
-          setTimeout(() => {
-            const input = $("#message-input");
-            if (input && input.value.trim()) sendLocalMessageFallback();
-          }, 50);
-        });
-
-        $("#message-input")?.addEventListener("keydown", (event) => {
-          if (event.key === "Enter" && !event.shiftKey) {
-            event.preventDefault();
-            $("#btn-send")?.click();
-          }
-        });
+      function initializeUtilityButtons() {
+        const sidebar = $("#sidebar");
+        const reportModal = $("#report-modal");
+        const legalGuideModal = $("#legal-guide-modal");
+        const legalCountryInput = $("#legal-country-input");
 
         $("#btn-menu")?.addEventListener("click", () => sidebar?.classList.add("active"));
         $("#btn-close-sidebar")?.addEventListener("click", () => sidebar?.classList.remove("active"));
 
-        document.addEventListener("click", function (event) {
+        document.addEventListener("click", (event) => {
           if (!sidebar || !sidebar.classList.contains("active")) return;
-
           const menuBtn = $("#btn-menu");
           const clickedInsideSidebar = sidebar.contains(event.target);
           const clickedMenuButton = menuBtn && menuBtn.contains(event.target);
+          if (!clickedInsideSidebar && !clickedMenuButton && window.innerWidth <= 840) sidebar.classList.remove("active");
+        });
 
-          if (!clickedInsideSidebar && !clickedMenuButton && window.innerWidth <= 840) {
-            sidebar.classList.remove("active");
+        document.addEventListener("keydown", (event) => {
+          if (event.key === "Escape") {
+            sidebar?.classList.remove("active");
+            reportModal?.classList.add("hidden");
+            legalGuideModal?.classList.add("hidden");
           }
         });
 
-        document.addEventListener("keydown", function (event) {
-          if (event.key === "Escape") sidebar?.classList.remove("active");
-        });
-
-        $("#btn-leave")?.addEventListener("click", () => {
-          chatScreen?.classList.remove("active");
-          entryScreen?.classList.add("active");
-          sidebar?.classList.remove("active");
-          setEntryStatus("");
-        });
-
-        $("#btn-report")?.addEventListener("click", () => {
-          $("#report-modal")?.classList.remove("hidden");
-        });
-
-        $("#btn-cancel-report")?.addEventListener("click", () => {
-          $("#report-modal")?.classList.add("hidden");
-        });
+        $("#btn-report")?.addEventListener("click", () => reportModal?.classList.remove("hidden"));
+        $("#btn-cancel-report")?.addEventListener("click", () => reportModal?.classList.add("hidden"));
 
         $("#btn-submit-report")?.addEventListener("click", () => {
           const reportText = $("#report-text");
-
           if (!reportText?.value.trim()) {
             alert("Please describe the issue before submitting.");
             reportText?.focus();
@@ -2494,22 +1959,8 @@
 
           const subject = encodeURIComponent("QUICK PRIVATE CHAT Grievance Report");
           const body = encodeURIComponent(reportText.value.trim());
-
           window.location.href = "mailto:nxdecore@gmail.com?subject=" + subject + "&body=" + body;
-          $("#report-modal")?.classList.add("hidden");
-        });
-
-        $("#copy-code-btn")?.addEventListener("click", async () => {
-          const code = $("#display-room-code")?.textContent?.trim();
-
-          if (!code || code === "----") return;
-
-          try {
-            await navigator.clipboard.writeText(code);
-            addSystemMessage("Room code copied.");
-          } catch (error) {
-            prompt("Copy room code:", code);
-          }
+          reportModal?.classList.add("hidden");
         });
 
         $("#btn-download-logs")?.addEventListener("click", () => {
@@ -2518,13 +1969,11 @@
             tosAcceptedAt: localStorage.getItem("qpc_tos_accepted_at"),
             storageChoice: localStorage.getItem("qpc_storage_choice"),
             storageChoiceAt: localStorage.getItem("qpc_storage_choice_at"),
-            lastRoom: localStorage.getItem("qpc_last_room")
+            lastRoom: localStorage.getItem("qpc_last_room"),
+            exportedAt: new Date().toISOString()
           };
 
-          const blob = new Blob([JSON.stringify(logs, null, 2)], {
-            type: "application/json"
-          });
-
+          const blob = new Blob([JSON.stringify(logs, null, 2)], { type: "application/json" });
           const url = URL.createObjectURL(blob);
           const a = document.createElement("a");
           a.href = url;
@@ -2548,25 +1997,15 @@
           window.location.reload();
         });
 
-        // Legal Guide modal
-        const legalGuideModal = $("#legal-guide-modal");
-        const legalCountryInput = $("#legal-country-input");
-
         $("#btn-legal-guide")?.addEventListener("click", () => {
-          if (legalGuideModal) {
-            legalGuideModal.classList.remove("hidden");
-            const detected = detectCountryCode();
-            showLegalRules(detected);
-            if (legalCountryInput) legalCountryInput.value = detected;
-          }
+          const detected = detectCountryCode();
+          showLegalRules(detected);
+          if (legalCountryInput) legalCountryInput.value = detected;
+          legalGuideModal?.classList.remove("hidden");
         });
 
         $("#btn-close-legal-guide")?.addEventListener("click", () => {
           legalGuideModal?.classList.add("hidden");
-        });
-
-        legalCountryInput?.addEventListener("input", () => {
-          showLegalRules(legalCountryInput.value);
         });
       }
 
@@ -2582,13 +2021,8 @@
 
         installBtn?.addEventListener("click", async () => {
           if (!deferredPrompt) return;
-
           deferredPrompt.prompt();
-
-          try {
-            await deferredPrompt.userChoice;
-          } catch (error) {}
-
+          try { await deferredPrompt.userChoice; } catch (error) {}
           deferredPrompt = null;
           installBtn.classList.add("hidden");
         });
@@ -2602,27 +2036,23 @@
         window.addEventListener("unhandledrejection", (event) => {
           console.error("[QPC promise rejection]", event.reason);
         });
-
-        if (!$("#btn-create")) {
-          console.error("[QPC] Missing #btn-create. Generate button cannot work.");
-        }
-
-        if (!$("#create-form")) {
-          console.error("[QPC] Missing #create-form.");
-        }
-
-        if (!$("#entry-screen") || !$("#chat-screen")) {
-          console.error("[QPC] Missing required screen elements.");
-        }
       }
+
+      setRealViewportHeight();
+      window.addEventListener("resize", setRealViewportHeight);
+      window.addEventListener("orientationchange", setRealViewportHeight);
 
       initializeTabs();
       initializeInputGuards();
       initializeConsent();
-      initializeButtons();
+      initializeUtilityButtons();
       initializeInstallPrompt();
       initializeDiagnostics();
     })();
   </script>
+
+  <!-- Supabase removed. This version uses PeerJS only. -->
+  <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+  <script src="app.js?v=6.0.0"></script>
 </body>
 </html>
