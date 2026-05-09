@@ -4,11 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
-  <title>QUICK PRIVATE CHAT | Private P2P Messaging & WebRTC Calls</title>
+  <title>QUICK PRIVATE CHAT by SHADER7 | Private P2P Messaging & WebRTC Calls</title>
 
   <meta
     name="description"
-    content="QUICK PRIVATE CHAT is under development. Start a private chat with peer-to-peer messaging and WebRTC voice/video where possible. Signaling or relay services may be used to connect users."
+    content="QUICK PRIVATE CHAT by SHADER7 is an experimental private room-code chat tool with peer-to-peer messaging and WebRTC voice/video where possible. It is under development and users should report bugs or misuse."
   />
   <meta
     name="keywords"
@@ -18,17 +18,17 @@
   <meta name="robots" content="index, follow, max-image-preview:large" />
   <link rel="canonical" href="https://shader7.com/berofchat/" />
 
-  <meta property="og:title" content="QUICK PRIVATE CHAT | Private P2P Messaging" />
+  <meta property="og:title" content="QUICK PRIVATE CHAT by SHADER7 | Private Room-Code Chat" />
   <meta
     property="og:description"
-    content="Private peer-to-peer messaging and WebRTC calls where possible. Signaling or relay services may be used when needed."
+    content="Experimental private room-code chat by SHADER7. No login required. Use with people you know and report issues or misuse."
   />
   <meta property="og:url" content="https://shader7.com/berofchat/" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="SHADER7" />
 
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="QUICK PRIVATE CHAT | Private P2P Messaging" />
+  <meta name="twitter:title" content="QUICK PRIVATE CHAT by SHADER7 | Private Room-Code Chat" />
   <meta
     name="twitter:description"
     content="Private peer-to-peer messaging and WebRTC calls where possible. Signaling or relay services may be used when needed."
@@ -303,6 +303,27 @@
       text-align: center;
       font-size: 11px;
       line-height: 1.45;
+    }
+
+    .notice-card {
+      margin: 0 0 16px;
+      padding: 12px 13px;
+      border-radius: 16px;
+      border: 1px solid rgba(245, 158, 11, 0.28);
+      background: rgba(245, 158, 11, 0.08);
+      color: #92400e;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 12px;
+      line-height: 1.45;
+      font-weight: 650;
+    }
+
+    .notice-card i {
+      margin-top: 2px;
+      color: var(--warning-color);
+      flex: 0 0 auto;
     }
 
     .form-group,
@@ -675,6 +696,48 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
+    }
+
+    .connection-status {
+      margin-top: 6px;
+      width: fit-content;
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.06);
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .connection-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--warning-color);
+      box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.12);
+    }
+
+    .connection-status.connected {
+      color: #047857;
+      background: rgba(16, 185, 129, 0.1);
+    }
+
+    .connection-status.connected .connection-dot {
+      background: var(--success-color);
+      box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.12);
+    }
+
+    .connection-status.offline {
+      color: #b91c1c;
+      background: rgba(255, 71, 87, 0.1);
+    }
+
+    .connection-status.offline .connection-dot {
+      background: var(--danger-color);
+      box-shadow: 0 0 0 4px rgba(255, 71, 87, 0.12);
     }
 
     .header-actions {
@@ -1342,11 +1405,19 @@
             <i class="fa-solid fa-user-secret" aria-hidden="true"></i>
           </div>
           <h1 id="app-title">Quick Private Chat</h1>
+          <p style="margin: 8px 0 0; color: var(--text-muted); font-size: 12px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;">by SHADER7</p>
         </div>
 
         <p class="subtitle">
-          Welcome to try QUICK PRIVATE CHAT. This app is still under development, so you may find some issues. Please report any bugs or problems so we can improve it. Peer-to-peer where possible; signaling or relay services may be used.
+          QUICK PRIVATE CHAT is an experimental private room-code chat by SHADER7. It is still under development, so you may find issues. Please try it responsibly and report bugs or misuse.
         </p>
+
+        <div class="notice-card">
+          <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+          <span>
+            Use this app only with people you know. Do not use it for illegal, abusive, harmful, or unsafe activity. Rooms work only while the host stays online.
+          </span>
+        </div>
 
         <button id="btn-install" class="btn install-btn" type="button">
           <i class="fa-solid fa-download" aria-hidden="true"></i>
@@ -1509,7 +1580,7 @@
         <div class="sidebar-header">
           <div class="brand">
             <i class="fa-brands fa-nfc-symbol" aria-hidden="true"></i>
-            <span>BER</span>
+            <span>SHADER7 CHAT</span>
           </div>
 
           <button id="btn-close-sidebar" class="icon-btn mobile-only" type="button" title="Close Sidebar" aria-label="Close sidebar">
@@ -1523,6 +1594,9 @@
             <span id="display-room-code">----</span>
             <button id="copy-code-btn" class="icon-btn" type="button" title="Copy Room Code" aria-label="Copy room code">
               <i class="fa-solid fa-copy" aria-hidden="true"></i>
+            </button>
+            <button id="copy-invite-btn" class="icon-btn" type="button" title="Copy Invite Link" aria-label="Copy invite link">
+              <i class="fa-solid fa-link" aria-hidden="true"></i>
             </button>
           </div>
           <div class="role-badge" id="my-role-badge">Host</div>
@@ -1567,6 +1641,10 @@
               <i class="fa-solid fa-lock" aria-hidden="true"></i>
               WebRTC transport encrypted where supported
             </span>
+            <span id="connection-status" class="connection-status">
+              <span class="connection-dot" aria-hidden="true"></span>
+              Ready
+            </span>
           </div>
 
           <div class="header-actions">
@@ -1608,7 +1686,7 @@
           <div class="system-msg">
             <div class="sys-content">
               <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
-              Welcome to QUICK PRIVATE CHAT. This app is under development — please try it and report any problems. Messages are exchanged peer-to-peer where possible. Signaling or relay services may be used.
+              Welcome to QUICK PRIVATE CHAT by SHADER7. This app is under development — please try it responsibly and report any problems. Rooms work only while the host stays online. Messages are exchanged peer-to-peer where possible. Signaling or relay services may be used.
             </div>
           </div>
         </div>
@@ -2079,6 +2157,31 @@
           reportModal?.classList.add("hidden");
         });
 
+        $("#copy-invite-btn")?.addEventListener("click", async () => {
+          const code = $("#display-room-code")?.textContent?.trim();
+          if (!code || code === "----") return;
+
+          const inviteUrl = new URL(window.location.href);
+          inviteUrl.searchParams.set("room", code);
+
+          try {
+            await navigator.clipboard.writeText(inviteUrl.toString());
+            const container = $("#messages-container");
+            if (container) {
+              const wrap = document.createElement("div");
+              wrap.className = "system-msg";
+              const content = document.createElement("div");
+              content.className = "sys-content";
+              content.textContent = "Invite link copied. Share it only with people you know.";
+              wrap.appendChild(content);
+              container.appendChild(wrap);
+              container.scrollTop = container.scrollHeight;
+            }
+          } catch (error) {
+            prompt("Copy invite link:", inviteUrl.toString());
+          }
+        });
+
         $("#btn-download-logs")?.addEventListener("click", () => {
           const logs = {
             tosAccepted: localStorage.getItem("qpc_tos_accepted"),
@@ -2125,6 +2228,28 @@
         });
       }
 
+      function initializeInviteFromUrl() {
+        const params = new URLSearchParams(window.location.search);
+        const room = String(params.get("room") || "")
+          .replace(/[^a-zA-Z0-9]/g, "")
+          .toUpperCase()
+          .slice(0, 8);
+
+        if (!room) return;
+
+        const roomInput = $("#room-code-input");
+        if (roomInput) roomInput.value = room;
+
+        const joinTab = $("#tab-join");
+        if (joinTab) joinTab.click();
+
+        const status = $("#entry-status");
+        if (status) {
+          status.textContent = "Invite link detected. Enter your name, date of birth, accept terms, then join.";
+          status.style.color = "var(--success-color)";
+        }
+      }
+
       function initializeInstallPrompt() {
         let deferredPrompt = null;
         const installBtn = $("#btn-install");
@@ -2135,30 +2260,79 @@
           return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
         }
 
+        function isIosDevice() {
+          return /iphone|ipad|ipod/i.test(window.navigator.userAgent || "");
+        }
+
+        function showInstallHelp() {
+          installHelpModal?.classList.remove("hidden");
+        }
+
+        if (isAppInstalled()) {
+          if (installBtn) {
+            installBtn.innerHTML = '<i class="fa-solid fa-check" aria-hidden="true"></i> App Installed';
+          }
+        }
+
         window.addEventListener("beforeinstallprompt", (event) => {
           event.preventDefault();
           deferredPrompt = event;
-          installBtn?.classList.remove("hidden");
+          if (installBtn) {
+            installBtn.classList.remove("hidden");
+            installBtn.innerHTML = '<i class="fa-solid fa-download" aria-hidden="true"></i> Install App';
+          }
+        });
+
+        window.addEventListener("appinstalled", () => {
+          deferredPrompt = null;
+          if (installBtn) {
+            installBtn.innerHTML = '<i class="fa-solid fa-check" aria-hidden="true"></i> App Installed';
+          }
         });
 
         installBtn?.addEventListener("click", async () => {
           if (isAppInstalled()) {
-            installHelpModal?.classList.remove("hidden");
+            showInstallHelp();
             return;
           }
 
           if (deferredPrompt) {
-            deferredPrompt.prompt();
-            try { await deferredPrompt.userChoice; } catch (error) {}
-            deferredPrompt = null;
+            try {
+              deferredPrompt.prompt();
+              const choice = await deferredPrompt.userChoice;
+              deferredPrompt = null;
+
+              if (choice && choice.outcome === "accepted") {
+                installBtn.innerHTML = '<i class="fa-solid fa-check" aria-hidden="true"></i> Installing...';
+              } else {
+                showInstallHelp();
+              }
+            } catch (error) {
+              showInstallHelp();
+            }
             return;
           }
 
-          installHelpModal?.classList.remove("hidden");
+          if (isIosDevice()) {
+            showInstallHelp();
+            return;
+          }
+
+          showInstallHelp();
         });
 
         closeInstallHelpBtn?.addEventListener("click", () => {
           installHelpModal?.classList.add("hidden");
+        });
+      }
+
+      function initializeServiceWorker() {
+        if (!("serviceWorker" in navigator)) return;
+
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("./sw.js").catch((error) => {
+            console.warn("[QPC] Service worker registration failed:", error);
+          });
         });
       }
 
@@ -2178,15 +2352,17 @@
 
       initializeTabs();
       initializeInputGuards();
+      initializeInviteFromUrl();
       initializeConsent();
       initializeUtilityButtons();
       initializeInstallPrompt();
+      initializeServiceWorker();
       initializeDiagnostics();
     })();
   </script>
 
   <!-- Supabase removed. This version uses PeerJS only. -->
   <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
-  <script src="app.js?v=6.0.0"></script>
+  <script src="app.js?v=6.0.1"></script>
 </body>
 </html>
