@@ -78,6 +78,10 @@
   let isMicMuted = false;
   let isCamOff = false;
   let lastMessageTime = 0;
+  let roomClosedByHost = false;
+  let groupCallActive = false;
+  let groupCallMediaType = "voice";
+  const callConnectedPeers = new Set();
 
   window.__qpcCoreReady = true;
 
@@ -388,6 +392,62 @@
     }
   }
 
+  function relayAsHost(senderId, data) {
+    if (!isHost || !data || typeof data !== "object") return;
+    if (data.__relayedByHost) return;
+
+    const relayTypes = new Set([
+      "message",
+      "call-started",
+      "call-declined",
+      "call-ended"
+    ]);
+
+    if (!relayTypes.has(data.type)) return;
+
+    const relayed = {
+      ...data,
+      __relayedByHost: true,
+      __originalSender: data.__originalSender || senderId
+    };
+
+    connections.forEach((conn, peerId) => {
+      if (!conn || !conn.open) return;
+      if (peerId === senderId) return;
+
+      try {
+        conn.send(relayed);
+      } catch (e) {}
+    });
+  }
+
+  function sendRoomClosedToAll() {
+    sendToAll({
+      type: "room-closed",
+      name: myName || "Host"
+    });
+  }
+
+  function forceExitRoom(message) {
+    roomClosedByHost = true;
+    addSystemMessage(message || "The host closed the room.");
+    endCall(false, false);
+    destroyPeer();
+
+    roomCode = "";
+    myName = "";
+    isHost = false;
+
+    setConnectionStatus("Room closed", "offline");
+
+    setTimeout(() => {
+      chatScreen?.classList.remove("active");
+      entryScreen?.classList.add("active");
+      sidebar?.classList.remove("active");
+      setEntryStatus("The host closed the room. Create or join another room.", "warning");
+    }, 900);
+  }
+
   function sendMemberListTo(conn) {
     const list = Array.from(members.entries()).map(([id, info]) => ({
       id,
@@ -456,6 +516,15 @@
   function handleData(senderId, data) {
     if (!data || typeof data !== "object") return;
 
+    relayAsHost(senderId, data);
+
+    if (data.type === "room-closed") {
+      if (!isHost) {
+        forceExitRoom((data.name || "The host") + " closed the room.");
+      }
+      return;
+    }
+
     if (data.type === "hello") {
       const memberName = sanitize(data.name, 20) || "Unknown";
 
@@ -490,6 +559,7 @@
     }
 
     if (data.type === "message") {
+      if (data.__originalSender && data.__originalSender === myPeerId) return;
       addChatMessage(data.name || "Someone", data.text || "", false);
       return;
     }
@@ -500,18 +570,27 @@
     }
 
     if (data.type === "call-started") {
-      addSystemMessage((data.name || "Someone") + " started a call.");
+      if (data.__originalSender && data.__originalSender === myPeerId) return;
+
+      groupCallActive = true;
+      groupCallMediaType = data.mediaType || "voice";
+      addSystemMessage((data.name || "Someone") + " started a group " + groupCallMediaType + " call.");
+      connectToAllKnownMembers();
       return;
     }
 
     if (data.type === "call-declined") {
+      if (data.__originalSender && data.__originalSender === myPeerId) return;
       const name = data.name || "The other user";
       addSystemMessage(name + " rejected the call.");
-      endCallUI(false);
       return;
     }
 
     if (data.type === "call-ended") {
+      if (data.__originalSender && data.__originalSender === myPeerId) return;
+      groupCallActive = false;
+      groupCallMediaType = "voice";
+      callConnectedPeers.clear();
       addSystemMessage((data.name || "Someone") + " ended the call.");
       endCallUI(false);
       return;
@@ -610,7 +689,7 @@
 
       updateMembersUI();
       enterChatScreen("Host");
-      addSystemMessage("Room created. Share this room code or invite link only with people you know: " + roomCode + ". Group calls work best with 2–6 people depending on device/network speed.");
+      addSystemMessage("Room created. Share this room code or invite link only with people you know: " + roomCode + ". If the host leaves, everyone will exit. Group calls work best with 2–6 people depending on device/network speed.");
       setEntryStatus("");
     } catch (err) {
       console.error(err);
@@ -703,10 +782,15 @@
   }
 
   function leaveRoom() {
-    sendToAll({
-      type: "member-left",
-      id: myPeerId
-    });
+    if (isHost) {
+      sendRoomClosedToAll();
+      addSystemMessage("You closed the room for everyone.");
+    } else {
+      sendToAll({
+        type: "member-left",
+        id: myPeerId
+      });
+    }
 
     endCall(false, false);
     destroyPeer();
@@ -724,7 +808,7 @@
 
   async function startCall(type) {
     try {
-      if (!connections.size) {
+      if (!connections.size && members.size <= 1) {
         addSystemMessage("No other member is connected yet.");
         return;
       }
@@ -736,16 +820,20 @@
 
       localStream = await navigator.mediaDevices.getUserMedia(constraints);
 
+      groupCallActive = true;
+      groupCallMediaType = type;
+      callConnectedPeers.clear();
+
       showCallUI(type === "video");
       addLocalVideo();
+
+      connectToAllKnownMembers();
 
       sendToAll({
         type: "call-started",
         name: myName || "Someone",
         mediaType: type
       });
-
-      connectToAllKnownMembers();
 
       setTimeout(() => {
         const callCount = callAllKnownMembers(type);
@@ -755,10 +843,11 @@
         } else {
           addSystemMessage("No reachable members found for the call yet. Ask members to stay online and try again.");
         }
-      }, 700);
+      }, 900);
     } catch (err) {
       console.error("Media error:", err);
       alert("Could not access microphone/camera. Make sure HTTPS is enabled and permission is allowed.");
+      groupCallActive = false;
       endCallUI(false);
     }
   }
@@ -784,6 +873,9 @@
 
         call.answer(localStream);
 
+        groupCallActive = true;
+        groupCallMediaType = call.metadata?.mediaType || "voice";
+
         showCallUI(wantsVideo);
         addLocalVideo();
         setupMediaCall(call);
@@ -791,10 +883,15 @@
         addSystemMessage("Call accepted. Connecting you to the group...");
         pendingCall = null;
 
+        connectToAllKnownMembers();
+
         setTimeout(() => {
-          connectToAllKnownMembers();
-          callAllKnownMembers(call.metadata?.mediaType || "voice");
-        }, 700);
+          callAllKnownMembers(groupCallMediaType);
+        }, 900);
+
+        setTimeout(() => {
+          callAllKnownMembers(groupCallMediaType);
+        }, 2200);
       } catch (err) {
         console.error("Answer call error:", err);
         alert("Could not answer call. Check microphone/camera permission.");
@@ -811,6 +908,11 @@
     };
 
     btnDeclineCall.onclick = () => {
+      sendToAll({
+        type: "call-declined",
+        name: myName || "Someone"
+      });
+
       sendToPeer(call.peer, {
         type: "call-declined",
         name: myName || "Someone"
@@ -829,12 +931,29 @@
   function setupMediaCall(call) {
     if (!call) return;
 
+    if (activeCalls.has(call.peer)) {
+      try {
+        const oldCall = activeCalls.get(call.peer);
+        oldCall?.close();
+      } catch (e) {}
+    }
+
     activeCalls.set(call.peer, call);
 
     call.on("stream", (remoteStream) => {
       addRemoteVideo(call.peer, remoteStream);
       const caller = members.get(call.peer)?.name || "Member";
-      addSystemMessage(caller + " connected to the call.");
+
+      if (!callConnectedPeers.has(call.peer)) {
+        callConnectedPeers.add(call.peer);
+        addSystemMessage(caller + " connected to the call.");
+      }
+
+      if (groupCallActive) {
+        setTimeout(() => {
+          callAllKnownMembers(groupCallMediaType);
+        }, 800);
+      }
     });
 
     call.on("close", () => {
@@ -928,6 +1047,10 @@
   }
 
   function endCall(sendNotice = true, showLocalMessage = true) {
+    groupCallActive = false;
+    groupCallMediaType = "voice";
+    callConnectedPeers.clear();
+
     if (sendNotice) {
       sendToAll({
         type: "call-ended",
@@ -1125,10 +1248,14 @@
 
     window.addEventListener("beforeunload", () => {
       try {
-        sendToAll({
-          type: "member-left",
-          id: myPeerId
-        });
+        if (isHost) {
+          sendRoomClosedToAll();
+        } else {
+          sendToAll({
+            type: "member-left",
+            id: myPeerId
+          });
+        }
 
         sendToAll({
           type: "call-ended",
