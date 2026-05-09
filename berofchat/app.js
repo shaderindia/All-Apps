@@ -1,12 +1,13 @@
 /* ============================================================
    app.js — QUICK PRIVATE CHAT by SHADER7
-   PeerJS-only room-code chat + WebRTC calls
+   PeerJS-only room-code chat + GROUP WebRTC calls
 
    Features:
    - Host creates short 6-character room code
    - Join by room code or invite link ?room=ABC123
    - Text chat over PeerJS DataConnection
-   - Voice/video calls over PeerJS MediaConnection
+   - Group voice/video calls using mesh PeerJS MediaConnections
+   - Every member connects to every other member for group calls
    - Call rejected message shown to caller
    - Call ended message shown
    - No Supabase required
@@ -416,6 +417,11 @@
   function setupConnection(conn) {
     if (!conn) return;
 
+    if (connections.has(conn.peer)) {
+      const oldConn = connections.get(conn.peer);
+      if (oldConn && oldConn.open) return;
+    }
+
     connections.set(conn.peer, conn);
 
     conn.on("open", () => {
@@ -479,6 +485,7 @@
       });
 
       updateMembersUI();
+      connectToAllKnownMembers();
       return;
     }
 
@@ -509,6 +516,50 @@
       endCallUI(false);
       return;
     }
+  }
+
+  function connectToAllKnownMembers() {
+    if (!peer || !myPeerId) return;
+
+    members.forEach((info, peerId) => {
+      if (!peerId || peerId === myPeerId) return;
+      if (connections.has(peerId) && connections.get(peerId)?.open) return;
+
+      try {
+        const conn = peer.connect(peerId, { reliable: true });
+        setupConnection(conn);
+      } catch (error) {
+        console.warn("Could not connect to member:", peerId, error);
+      }
+    });
+  }
+
+  function callAllKnownMembers(mediaType) {
+    if (!peer || !localStream) return 0;
+
+    let count = 0;
+
+    members.forEach((info, peerId) => {
+      if (!peerId || peerId === myPeerId) return;
+      if (activeCalls.has(peerId)) return;
+
+      try {
+        const call = peer.call(peerId, localStream, {
+          metadata: {
+            callerName: myName,
+            mediaType,
+            groupCall: true
+          }
+        });
+
+        setupMediaCall(call);
+        count++;
+      } catch (error) {
+        console.warn("Could not call member:", peerId, error);
+      }
+    });
+
+    return count;
   }
 
   function handleMemberLeft(peerId) {
@@ -559,7 +610,7 @@
 
       updateMembersUI();
       enterChatScreen("Host");
-      addSystemMessage("Room created. Share this room code or invite link only with people you know: " + roomCode);
+      addSystemMessage("Room created. Share this room code or invite link only with people you know: " + roomCode + ". Group calls work best with 2–6 people depending on device/network speed.");
       setEntryStatus("");
     } catch (err) {
       console.error(err);
@@ -606,7 +657,7 @@
       conn.on("open", () => {
         updateMembersUI();
         enterChatScreen("Member");
-        addSystemMessage("Joined room " + roomCode + ". Remember: the room works only while the host is online.");
+        addSystemMessage("Joined room " + roomCode + ". Remember: the room works only while the host is online. For group calls, keep this tab open.");
         setEntryStatus("");
       });
 
@@ -694,25 +745,17 @@
         mediaType: type
       });
 
-      let callCount = 0;
+      connectToAllKnownMembers();
 
-      connections.forEach((conn, peerId) => {
-        if (!peer || peerId === myPeerId) return;
+      setTimeout(() => {
+        const callCount = callAllKnownMembers(type);
 
-        const call = peer.call(peerId, localStream, {
-          metadata: {
-            callerName: myName,
-            mediaType: type
-          }
-        });
-
-        callCount++;
-        setupMediaCall(call);
-      });
-
-      if (callCount > 0) {
-        addSystemMessage(type === "video" ? "Video call started. Waiting for answer..." : "Voice call started. Waiting for answer...");
-      }
+        if (callCount > 0) {
+          addSystemMessage(type === "video" ? "Group video call started. Use the bottom controls to mute or end call." : "Group voice call started. Use the bottom controls to mute or end call.");
+        } else {
+          addSystemMessage("No reachable members found for the call yet. Ask members to stay online and try again.");
+        }
+      }, 700);
     } catch (err) {
       console.error("Media error:", err);
       alert("Could not access microphone/camera. Make sure HTTPS is enabled and permission is allowed.");
@@ -745,8 +788,13 @@
         addLocalVideo();
         setupMediaCall(call);
 
-        addSystemMessage("Call accepted.");
+        addSystemMessage("Call accepted. Connecting you to the group...");
         pendingCall = null;
+
+        setTimeout(() => {
+          connectToAllKnownMembers();
+          callAllKnownMembers(call.metadata?.mediaType || "voice");
+        }, 700);
       } catch (err) {
         console.error("Answer call error:", err);
         alert("Could not answer call. Check microphone/camera permission.");
@@ -785,7 +833,8 @@
 
     call.on("stream", (remoteStream) => {
       addRemoteVideo(call.peer, remoteStream);
-      addSystemMessage("Call connected.");
+      const caller = members.get(call.peer)?.name || "Member";
+      addSystemMessage(caller + " connected to the call.");
     });
 
     call.on("close", () => {
@@ -811,6 +860,10 @@
   }
 
   function showCallUI(hasVideo) {
+    document.body.classList.add("qpc-call-active");
+    document.body.classList.toggle("qpc-video-call", Boolean(hasVideo));
+    document.body.classList.toggle("qpc-voice-call", !hasVideo);
+
     videoGrid?.classList.remove("hidden");
 
     btnVoiceCall?.classList.add("hidden");
@@ -898,6 +951,8 @@
   }
 
   function endCallUI(showMessage = false) {
+    document.body.classList.remove("qpc-call-active", "qpc-video-call", "qpc-voice-call");
+
     if (localStream) {
       localStream.getTracks().forEach((track) => track.stop());
       localStream = null;
