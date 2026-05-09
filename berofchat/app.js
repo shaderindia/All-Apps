@@ -1,10 +1,15 @@
 /* ============================================================
-   app.js — QUICK PRIVATE CHAT
-   Fixed PeerJS-only version
-   - Host creates a short custom room code
-   - Join uses that exact room code
+   app.js — QUICK PRIVATE CHAT by SHADER7
+   PeerJS-only room-code chat + WebRTC calls
+
+   Features:
+   - Host creates short 6-character room code
+   - Join by room code or invite link ?room=ABC123
+   - Text chat over PeerJS DataConnection
+   - Voice/video calls over PeerJS MediaConnection
+   - Call rejected message shown to caller
+   - Call ended message shown
    - No Supabase required
-   - No duplicate button-cloning system
    ============================================================ */
 
 (function () {
@@ -38,10 +43,12 @@
   const myRoleBadge = $("#my-role-badge");
   const myNameLabel = $("#my-name");
   const myAvatar = $("#my-avatar");
+  const connectionStatus = $("#connection-status");
 
   const btnMenu = $("#btn-menu");
   const btnCloseSidebar = $("#btn-close-sidebar");
   const copyCodeBtn = $("#copy-code-btn");
+  const copyInviteBtn = $("#copy-invite-btn");
 
   const videoGrid = $("#video-grid");
   const incomingCallModal = $("#incoming-call-modal");
@@ -60,15 +67,16 @@
   let myName = "";
   let isHost = false;
 
-  let connections = new Map(); 
-  let members = new Map();
+  const connections = new Map();
+  const members = new Map();
 
   let localStream = null;
-  let activeCalls = new Map();
+  const activeCalls = new Map();
 
   let pendingCall = null;
   let isMicMuted = false;
   let isCamOff = false;
+  let lastMessageTime = 0;
 
   window.__qpcCoreReady = true;
 
@@ -91,6 +99,24 @@
       entryStatus.style.color = "var(--warning-color)";
     } else {
       entryStatus.style.color = "var(--danger-color)";
+    }
+  }
+
+  function setConnectionStatus(text, state = "ready") {
+    if (!connectionStatus) return;
+
+    connectionStatus.classList.remove("connected", "offline");
+    connectionStatus.childNodes.forEach((node) => {
+      if (node.nodeType === Node.TEXT_NODE) node.remove();
+    });
+    connectionStatus.appendChild(document.createTextNode(" " + text));
+
+    if (state === "connected") {
+      connectionStatus.classList.add("connected");
+    }
+
+    if (state === "offline") {
+      connectionStatus.classList.add("offline");
     }
   }
 
@@ -199,6 +225,7 @@
     msg.style.maxWidth = "min(76%, 620px)";
     msg.style.padding = "12px 14px";
     msg.style.marginBottom = "10px";
+    msg.style.wordBreak = "break-word";
 
     if (isOwn) {
       msg.style.borderRadius = "18px 18px 6px 18px";
@@ -256,6 +283,8 @@
     chatScreen?.classList.add("active");
     sidebar?.classList.remove("active");
 
+    setConnectionStatus(role === "Host" ? "Hosting" : "Connected", "connected");
+
     try {
       localStorage.setItem("qpc_last_name", myName);
       localStorage.setItem("qpc_last_room", roomCode);
@@ -312,6 +341,17 @@
         resolve({ peerInstance: p, id: openedId });
       });
 
+      p.on("disconnected", () => {
+        setConnectionStatus("Reconnecting...", "ready");
+        try {
+          p.reconnect();
+        } catch (e) {}
+      });
+
+      p.on("close", () => {
+        setConnectionStatus("Offline", "offline");
+      });
+
       p.on("error", (err) => {
         console.error("[PeerJS error]", err);
 
@@ -321,6 +361,7 @@
           reject(err);
         } else {
           addSystemMessage("Connection warning: " + (err?.message || "PeerJS error"));
+          setConnectionStatus("Connection warning", "offline");
         }
       });
     });
@@ -334,6 +375,16 @@
         } catch (e) {}
       }
     });
+  }
+
+  function sendToPeer(peerId, data) {
+    const conn = connections.get(peerId);
+
+    if (conn && conn.open) {
+      try {
+        conn.send(data);
+      } catch (e) {}
+    }
   }
 
   function sendMemberListTo(conn) {
@@ -378,6 +429,8 @@
       if (isHost) {
         sendMemberListTo(conn);
       }
+
+      setConnectionStatus(isHost ? "Hosting" : "Connected", "connected");
     });
 
     conn.on("data", (data) => {
@@ -398,15 +451,17 @@
     if (!data || typeof data !== "object") return;
 
     if (data.type === "hello") {
+      const memberName = sanitize(data.name, 20) || "Unknown";
+
       members.set(senderId, {
-        name: sanitize(data.name, 20) || "Unknown",
+        name: memberName,
         role: sanitize(data.role, 20) || "Member"
       });
 
       updateMembersUI();
 
       if (isHost) {
-        addSystemMessage(`${data.name || "Someone"} joined the room.`);
+        addSystemMessage(`${memberName} joined the room.`);
         broadcastMemberList();
       }
 
@@ -437,8 +492,21 @@
       return;
     }
 
+    if (data.type === "call-started") {
+      addSystemMessage((data.name || "Someone") + " started a call.");
+      return;
+    }
+
+    if (data.type === "call-declined") {
+      const name = data.name || "The other user";
+      addSystemMessage(name + " rejected the call.");
+      endCallUI(false);
+      return;
+    }
+
     if (data.type === "call-ended") {
-      endCallUI();
+      addSystemMessage((data.name || "Someone") + " ended the call.");
+      endCallUI(false);
       return;
     }
   }
@@ -491,7 +559,7 @@
 
       updateMembersUI();
       enterChatScreen("Host");
-      addSystemMessage("Room created. Share this room code: " + roomCode);
+      addSystemMessage("Room created. Share this room code or invite link only with people you know: " + roomCode);
       setEntryStatus("");
     } catch (err) {
       console.error(err);
@@ -538,7 +606,7 @@
       conn.on("open", () => {
         updateMembersUI();
         enterChatScreen("Member");
-        addSystemMessage("Joined room " + roomCode + ".");
+        addSystemMessage("Joined room " + roomCode + ". Remember: the room works only while the host is online.");
         setEntryStatus("");
       });
 
@@ -549,7 +617,7 @@
 
       setTimeout(() => {
         if (!conn.open && entryScreen?.classList.contains("active")) {
-          setEntryStatus("Room not found or host is offline.");
+          setEntryStatus("Room not found or host is offline.", "warning");
         }
       }, 8000);
     } catch (err) {
@@ -559,6 +627,15 @@
   }
 
   function sendMessage() {
+    const now = Date.now();
+
+    if (now - lastMessageTime < 450) {
+      addSystemMessage("Please wait a moment before sending another message.");
+      return;
+    }
+
+    lastMessageTime = now;
+
     const text = sanitize(messageInput?.value, 1000);
 
     if (!text) return;
@@ -580,7 +657,7 @@
       id: myPeerId
     });
 
-    endCall(true);
+    endCall(false, false);
     destroyPeer();
 
     roomCode = "";
@@ -596,6 +673,11 @@
 
   async function startCall(type) {
     try {
+      if (!connections.size) {
+        addSystemMessage("No other member is connected yet.");
+        return;
+      }
+
       const constraints = {
         audio: true,
         video: type === "video"
@@ -605,6 +687,14 @@
 
       showCallUI(type === "video");
       addLocalVideo();
+
+      sendToAll({
+        type: "call-started",
+        name: myName || "Someone",
+        mediaType: type
+      });
+
+      let callCount = 0;
 
       connections.forEach((conn, peerId) => {
         if (!peer || peerId === myPeerId) return;
@@ -616,11 +706,17 @@
           }
         });
 
+        callCount++;
         setupMediaCall(call);
       });
+
+      if (callCount > 0) {
+        addSystemMessage(type === "video" ? "Video call started. Waiting for answer..." : "Voice call started. Waiting for answer...");
+      }
     } catch (err) {
       console.error("Media error:", err);
       alert("Could not access microphone/camera. Make sure HTTPS is enabled and permission is allowed.");
+      endCallUI(false);
     }
   }
 
@@ -649,10 +745,17 @@
         addLocalVideo();
         setupMediaCall(call);
 
+        addSystemMessage("Call accepted.");
         pendingCall = null;
       } catch (err) {
         console.error("Answer call error:", err);
         alert("Could not answer call. Check microphone/camera permission.");
+
+        sendToPeer(call.peer, {
+          type: "call-declined",
+          name: myName || "Someone"
+        });
+
         try {
           call.close();
         } catch (e) {}
@@ -660,12 +763,18 @@
     };
 
     btnDeclineCall.onclick = () => {
+      sendToPeer(call.peer, {
+        type: "call-declined",
+        name: myName || "Someone"
+      });
+
       try {
         call.close();
       } catch (e) {}
 
       pendingCall = null;
       incomingCallModal?.classList.add("hidden");
+      addSystemMessage("Call declined.");
     };
   }
 
@@ -676,6 +785,7 @@
 
     call.on("stream", (remoteStream) => {
       addRemoteVideo(call.peer, remoteStream);
+      addSystemMessage("Call connected.");
     });
 
     call.on("close", () => {
@@ -683,7 +793,8 @@
       removeRemoteVideo(call.peer);
 
       if (activeCalls.size === 0) {
-        endCallUI();
+        addSystemMessage("Call ended.");
+        endCallUI(false);
       }
     });
 
@@ -691,6 +802,11 @@
       console.warn("Call error:", err);
       activeCalls.delete(call.peer);
       removeRemoteVideo(call.peer);
+
+      if (activeCalls.size === 0) {
+        addSystemMessage("Call could not connect or was ended.");
+        endCallUI(false);
+      }
     });
   }
 
@@ -758,10 +874,11 @@
     if (video) video.remove();
   }
 
-  function endCall(sendNotice) {
+  function endCall(sendNotice = true, showLocalMessage = true) {
     if (sendNotice) {
       sendToAll({
-        type: "call-ended"
+        type: "call-ended",
+        name: myName || "Someone"
       });
     }
 
@@ -772,10 +889,15 @@
     });
 
     activeCalls.clear();
-    endCallUI();
+
+    if (showLocalMessage) {
+      addSystemMessage("Call ended.");
+    }
+
+    endCallUI(false);
   }
 
-  function endCallUI() {
+  function endCallUI(showMessage = false) {
     if (localStream) {
       localStream.getTracks().forEach((track) => track.stop());
       localStream = null;
@@ -798,6 +920,10 @@
 
     if (btnMuteMic) btnMuteMic.innerHTML = '<i class="fa-solid fa-microphone" aria-hidden="true"></i>';
     if (btnMuteCam) btnMuteCam.innerHTML = '<i class="fa-solid fa-video" aria-hidden="true"></i>';
+
+    if (showMessage) {
+      addSystemMessage("Call ended.");
+    }
   }
 
   function toggleMic() {
@@ -852,6 +978,54 @@
     } catch (e) {}
   }
 
+  function initInviteFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    const inviteRoom = String(params.get("room") || "")
+      .replace(/[^a-zA-Z0-9]/g, "")
+      .toUpperCase()
+      .slice(0, 8);
+
+    if (!inviteRoom) return;
+
+    if (roomCodeInput) {
+      roomCodeInput.value = inviteRoom;
+    }
+
+    const joinTab = $("#tab-join");
+    if (joinTab) joinTab.click();
+
+    setEntryStatus("Invite link detected. Enter your name, date of birth, accept terms, then join.", "success");
+  }
+
+  async function copyRoomCode() {
+    const code = displayRoomCode?.textContent?.trim();
+
+    if (!code || code === "----") return;
+
+    try {
+      await navigator.clipboard.writeText(code);
+      addSystemMessage("Room code copied.");
+    } catch (e) {
+      prompt("Copy room code:", code);
+    }
+  }
+
+  async function copyInviteLink() {
+    const code = displayRoomCode?.textContent?.trim();
+
+    if (!code || code === "----") return;
+
+    const inviteUrl = new URL(window.location.href);
+    inviteUrl.searchParams.set("room", code);
+
+    try {
+      await navigator.clipboard.writeText(inviteUrl.toString());
+      addSystemMessage("Invite link copied. Share it only with people you know.");
+    } catch (e) {
+      prompt("Copy invite link:", inviteUrl.toString());
+    }
+  }
+
   function bindEvents() {
     btnCreate?.addEventListener("click", hostRoom);
     btnJoin?.addEventListener("click", joinRoom);
@@ -885,30 +1059,25 @@
       }
     });
 
-    copyCodeBtn?.addEventListener("click", async () => {
-      const code = displayRoomCode?.textContent?.trim();
-
-      if (!code || code === "----") return;
-
-      try {
-        await navigator.clipboard.writeText(code);
-        addSystemMessage("Room code copied.");
-      } catch (e) {
-        prompt("Copy room code:", code);
-      }
-    });
+    copyCodeBtn?.addEventListener("click", copyRoomCode);
+    copyInviteBtn?.addEventListener("click", copyInviteLink);
 
     btnVoiceCall?.addEventListener("click", () => startCall("voice"));
     btnVideoCall?.addEventListener("click", () => startCall("video"));
     btnMuteMic?.addEventListener("click", toggleMic);
     btnMuteCam?.addEventListener("click", toggleCam);
-    btnEndCall?.addEventListener("click", () => endCall(true));
+    btnEndCall?.addEventListener("click", () => endCall(true, true));
 
     window.addEventListener("beforeunload", () => {
       try {
         sendToAll({
           type: "member-left",
           id: myPeerId
+        });
+
+        sendToAll({
+          type: "call-ended",
+          name: myName || "Someone"
         });
       } catch (e) {}
     });
@@ -917,7 +1086,9 @@
   function init() {
     initRoomCodeInput();
     loadSavedName();
+    initInviteFromUrl();
     bindEvents();
+    setConnectionStatus("Ready", "ready");
 
     console.log("[QPC] app.js loaded. PeerJS-only mode ready.");
   }
