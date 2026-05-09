@@ -5,51 +5,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
   <title>QUICK PRIVATE CHAT by SHADER7 | Private P2P Messaging & WebRTC Calls</title>
-
-  <meta
-    name="description"
-    content="QUICK PRIVATE CHAT by SHADER7 is an experimental private room-code chat tool with peer-to-peer messaging and WebRTC voice/video where possible. It is under development and users should report bugs or misuse."
-  />
-  <meta
-    name="keywords"
-    content="p2p chat, peer to peer messaging, webrtc video call, private chat room, private chat, quick private chat, shader7"
-  />
+  <meta name="description" content="QUICK PRIVATE CHAT by SHADER7 is an experimental private room-code chat tool with peer-to-peer messaging and WebRTC voice/video where possible. Maximum 4 users per room." />
+  <meta name="keywords" content="p2p chat, peer to peer messaging, webrtc video call, private room chat, Shader7" />
   <meta name="author" content="SHADER7" />
   <meta name="robots" content="index, follow, max-image-preview:large" />
   <link rel="canonical" href="https://shader7.com/berofchat/" />
+  <link rel="manifest" href="manifest.json" />
 
   <meta property="og:title" content="QUICK PRIVATE CHAT by SHADER7 | Private Room-Code Chat" />
-  <meta
-    property="og:description"
-    content="Experimental private room-code chat by SHADER7. No login required. Use with people you know and report issues or misuse."
-  />
+  <meta property="og:description" content="Experimental private room-code chat by SHADER7. Maximum 4 users per room. No login required." />
   <meta property="og:url" content="https://shader7.com/berofchat/" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="SHADER7" />
 
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="QUICK PRIVATE CHAT by SHADER7 | Private Room-Code Chat" />
-  <meta
-    name="twitter:description"
-    content="Private peer-to-peer messaging and WebRTC calls where possible. Signaling or relay services may be used when needed."
-  />
+  <meta name="twitter:title" content="QUICK PRIVATE CHAT by SHADER7" />
+  <meta name="twitter:description" content="Experimental private room-code chat by SHADER7. Maximum 4 users per room." />
 
   <meta http-equiv="Permissions-Policy" content="camera=(self), microphone=(self), geolocation=(), payment=(), usb=(), interest-cohort=()" />
   <meta name="referrer" content="strict-origin-when-cross-origin" />
   <meta name="theme-color" content="#ffffff" />
 
-  <link rel="manifest" href="manifest.json" />
-
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
-    rel="stylesheet"
-  />
-  <link
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    rel="stylesheet"
-  />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
 
   <style>
     :root {
@@ -60,18 +40,16 @@
       --warning-color: #f59e0b;
       --text-main: #0f172a;
       --text-muted: #64748b;
-      --surface: rgba(255, 255, 255, 0.84);
+      --surface: rgba(255, 255, 255, 0.86);
       --border: rgba(15, 23, 42, 0.1);
       --shadow: 0 28px 90px rgba(15, 23, 42, 0.14);
       --grad-primary: linear-gradient(135deg, #00a8ff, #7c3aed);
       --grad-insta: linear-gradient(45deg, #f58529, #dd2a7b, #8134af, #515bd4);
-      --vh: 1vh;
     }
 
     * { box-sizing: border-box; }
 
-    html,
-    body {
+    html, body {
       width: 100%;
       min-height: 100%;
       margin: 0;
@@ -88,25 +66,9 @@
 
     body { min-height: 100svh; }
 
-    button,
-    input,
-    textarea { font: inherit; }
-
-    button {
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    button,
-    a,
-    input,
-    textarea { touch-action: manipulation; }
-
-    button,
-    .btn,
-    .icon-btn,
-    .tab-btn { user-select: none; }
-
+    button, input, textarea { font: inherit; }
+    button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    button, a, input, textarea { touch-action: manipulation; }
     a { color: var(--accent-color); }
 
     .hidden { display: none !important; visibility: hidden !important; }
@@ -148,31 +110,9 @@
       animation: qpcFloat 13s ease-in-out infinite;
     }
 
-    .shape-1 {
-      width: 230px;
-      height: 230px;
-      top: 8%;
-      left: 7%;
-      background: rgba(0, 168, 255, 0.2);
-    }
-
-    .shape-2 {
-      width: 320px;
-      height: 320px;
-      right: 6%;
-      bottom: 10%;
-      background: rgba(124, 58, 237, 0.17);
-      animation-delay: -4s;
-    }
-
-    .shape-3 {
-      width: 170px;
-      height: 170px;
-      right: 24%;
-      top: 18%;
-      background: rgba(16, 185, 129, 0.14);
-      animation-delay: -8s;
-    }
+    .shape-1 { width: 230px; height: 230px; top: 8%; left: 7%; background: rgba(0, 168, 255, 0.2); }
+    .shape-2 { width: 320px; height: 320px; right: 6%; bottom: 10%; background: rgba(124, 58, 237, 0.17); animation-delay: -4s; }
+    .shape-3 { width: 170px; height: 170px; right: 24%; top: 18%; background: rgba(16, 185, 129, 0.14); animation-delay: -8s; }
 
     @keyframes qpcFloat {
       0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
@@ -189,27 +129,24 @@
     }
 
     .glass-panel {
-      width: min(100%, 500px);
+      width: min(100%, 520px);
       background: var(--surface);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border: 1px solid rgba(255, 255, 255, 0.72);
       border-radius: 30px;
       box-shadow: var(--shadow);
-      padding: 26px;
+      padding: 28px;
     }
 
-    .top-bar,
-    .profile-row {
+    .top-bar, .profile-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 12px;
     }
 
-    .home-link,
-    .mini-link,
-    .text-btn {
+    .home-link, .mini-link, .text-btn {
       color: var(--text-muted);
       font-size: 12px;
       text-decoration: none;
@@ -221,14 +158,9 @@
       gap: 6px;
     }
 
-    .home-link:hover,
-    .mini-link:hover,
-    .text-btn:hover { color: var(--accent-color); }
+    .home-link:hover, .mini-link:hover, .text-btn:hover { color: var(--accent-color); }
 
-    .logo {
-      text-align: center;
-      margin: 20px 0 8px;
-    }
+    .logo { text-align: center; margin: 20px 0 8px; }
 
     .logo-icon {
       width: 78px;
@@ -250,59 +182,22 @@
       line-height: 0.95;
     }
 
+    .brand-sub {
+      margin: 8px 0 0;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
     .subtitle {
-      max-width: 400px;
-      margin: 12px auto 18px;
+      max-width: 420px;
+      margin: 12px auto 16px;
       text-align: center;
       color: var(--text-muted);
       font-size: 14px;
       line-height: 1.55;
-    }
-
-    .btn {
-      min-height: 48px;
-      border: none;
-      border-radius: 15px;
-      padding: 12px 16px;
-      font-weight: 800;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 9px;
-      transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
-    }
-
-    .btn:hover { transform: translateY(-1px); }
-    .btn:active { transform: translateY(0); }
-
-    .primary-btn {
-      width: 100%;
-      background: #111827;
-      color: #fff;
-      box-shadow: 0 16px 32px rgba(15, 23, 42, 0.16);
-    }
-
-    .gradient-btn {
-      background: var(--grad-primary);
-      color: #fff;
-      box-shadow: 0 16px 34px rgba(0, 168, 255, 0.24);
-    }
-
-    .install-btn {
-      width: 100%;
-      margin-bottom: 14px;
-      color: var(--accent-color);
-      background: rgba(0, 168, 255, 0.09);
-      border: 1px solid rgba(0, 168, 255, 0.24);
-      box-shadow: none;
-    }
-
-    .ios-install-tip {
-      margin: 0 0 16px;
-      color: var(--text-muted);
-      text-align: center;
-      font-size: 11px;
-      line-height: 1.45;
     }
 
     .notice-card {
@@ -326,11 +221,48 @@
       flex: 0 0 auto;
     }
 
-    .form-group,
-    .age-verification,
-    .privacy-toggle,
-    .tos-verification,
-    .legal-card { margin-top: 14px; }
+    .btn {
+      min-height: 48px;
+      border: none;
+      border-radius: 15px;
+      padding: 12px 16px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+    .primary-btn {
+      width: 100%;
+      background: #111827;
+      color: #fff;
+      box-shadow: 0 16px 32px rgba(15, 23, 42, 0.16);
+    }
+    .gradient-btn {
+      background: var(--grad-primary);
+      color: #fff;
+      box-shadow: 0 16px 34px rgba(0, 168, 255, 0.24);
+    }
+    .install-btn {
+      width: 100%;
+      margin-bottom: 14px;
+      color: var(--accent-color);
+      background: rgba(0, 168, 255, 0.09);
+      border: 1px solid rgba(0, 168, 255, 0.24);
+      box-shadow: none;
+    }
+    .ios-install-tip {
+      margin: 0 0 16px;
+      color: var(--text-muted);
+      text-align: center;
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    .form-group, .age-verification, .privacy-toggle, .tos-verification, .legal-card { margin-top: 14px; }
 
     .field-label {
       width: 100%;
@@ -355,10 +287,7 @@
       transition: border-color 0.18s ease, box-shadow 0.18s ease;
     }
 
-    .input-group:focus-within,
-    input[type="date"]:focus,
-    textarea:focus,
-    #legal-country-input:focus {
+    .input-group:focus-within, input[type="date"]:focus, textarea:focus, #legal-country-input:focus {
       border-color: rgba(0, 168, 255, 0.6);
       box-shadow: 0 0 0 4px rgba(0, 168, 255, 0.12);
     }
@@ -378,8 +307,7 @@
       color: var(--text-main);
     }
 
-    input[type="date"],
-    #legal-country-input {
+    input[type="date"], #legal-country-input {
       width: 100%;
       min-height: 48px;
       border: 1px solid var(--border);
@@ -416,11 +344,7 @@
     }
 
     .form-container { display: none; }
-    .form-container.active {
-      display: block;
-      animation: qpcFadeUp 0.2s ease;
-    }
-
+    .form-container.active { display: block; animation: qpcFadeUp 0.2s ease; }
     .form-container .input-group { margin-bottom: 12px; }
 
     @keyframes qpcFadeUp {
@@ -507,18 +431,12 @@
       box-shadow: 18px 0 52px rgba(15, 23, 42, 0.15);
     }
 
-    .sidebar-header,
-    .sidebar-footer,
-    .section-title,
-    .code-box,
-    .user-profile {
+    .sidebar-header, .sidebar-footer, .section-title, .code-box, .user-profile {
       display: flex;
       align-items: center;
     }
 
-    .sidebar-header,
-    .sidebar-footer,
-    .section-title {
+    .sidebar-header, .sidebar-footer, .section-title {
       justify-content: space-between;
       gap: 12px;
     }
@@ -527,7 +445,7 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 900;
       letter-spacing: 0.02em;
     }
@@ -552,18 +470,17 @@
 
     .code-box {
       justify-content: space-between;
-      gap: 10px;
+      gap: 8px;
       margin-top: 9px;
       padding: 12px;
       border-radius: 15px;
       background: rgba(255, 255, 255, 0.08);
-      font-size: 24px;
+      font-size: 22px;
       font-weight: 900;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.1em;
     }
 
-    .role-badge,
-    .count-badge {
+    .role-badge, .count-badge {
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -620,9 +537,8 @@
       place-items: center;
       color: #fff;
       font-weight: 900;
+      background: var(--grad-primary);
     }
-
-    .gradient-avatar { background: var(--grad-primary); }
 
     .user-details {
       min-width: 0;
@@ -772,18 +688,9 @@
     }
 
     .header-btn { color: #334155; }
-    .danger-btn,
-    .danger-text { color: var(--danger-color); }
-
-    .hangup-btn {
-      color: #fff;
-      background: var(--danger-color);
-    }
-
-    .success-btn {
-      color: #fff;
-      background: var(--success-color);
-    }
+    .danger-btn, .danger-text { color: var(--danger-color); }
+    .hangup-btn { color: #fff; background: var(--danger-color); }
+    .success-btn { color: #fff; background: var(--success-color); }
 
     .video-grid {
       padding: 16px 20px 0;
@@ -810,10 +717,7 @@
       gap: 12px;
     }
 
-    .system-msg {
-      display: flex;
-      justify-content: center;
-    }
+    .system-msg { display: flex; justify-content: center; }
 
     .sys-content {
       max-width: 720px;
@@ -825,6 +729,37 @@
       font-size: 12px;
       line-height: 1.45;
       text-align: center;
+    }
+
+    .message-bubble {
+      max-width: min(76%, 620px);
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      word-break: break-word;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .message-bubble strong {
+      font-size: 11px;
+      opacity: 0.86;
+    }
+
+    .message-bubble.own {
+      align-self: flex-end;
+      border-radius: 18px 18px 6px 18px;
+      background: var(--grad-primary);
+      color: #fff;
+      box-shadow: 0 12px 24px rgba(0,168,255,0.16);
+    }
+
+    .message-bubble.other {
+      align-self: flex-start;
+      border-radius: 18px 18px 18px 6px;
+      background: rgba(255,255,255,0.92);
+      color: var(--text-main);
+      box-shadow: 0 8px 18px rgba(15,23,42,0.08);
     }
 
     .chat-input-area {
@@ -852,6 +787,15 @@
       position: relative;
     }
 
+    .input-wrapper input {
+      flex: 1;
+      min-width: 0;
+      min-height: 50px;
+      border: none;
+      outline: none;
+      background: transparent;
+    }
+
     .emoji-picker {
       position: absolute;
       right: 6px;
@@ -877,21 +821,6 @@
       font-size: 20px;
       display: grid;
       place-items: center;
-      transition: transform 0.15s ease, background 0.15s ease;
-    }
-
-    .emoji-picker button:hover {
-      transform: translateY(-1px);
-      background: rgba(0, 168, 255, 0.12);
-    }
-
-    .input-wrapper input {
-      flex: 1;
-      min-width: 0;
-      min-height: 50px;
-      border: none;
-      outline: none;
-      background: transparent;
     }
 
     .send-btn {
@@ -927,15 +856,8 @@
       text-align: center;
     }
 
-    .modal-content h2 {
-      margin: 8px 0;
-      letter-spacing: -0.03em;
-    }
-
-    .modal-content p {
-      color: var(--text-muted);
-      line-height: 1.5;
-    }
+    .modal-content h2 { margin: 8px 0; letter-spacing: -0.03em; }
+    .modal-content p { color: var(--text-muted); line-height: 1.5; }
 
     .pulsing-icon {
       font-size: 34px;
@@ -1025,32 +947,10 @@
 
     @media (min-width: 1025px) {
       #entry-screen { padding: 48px 24px; }
-      .glass-panel { width: min(100%, 520px); padding: 32px; }
-      .logo-icon { width: 84px; height: 84px; font-size: 34px; }
-      .logo h1 { font-size: 40px; }
-      .subtitle { font-size: 15px; }
-      .chat-header { padding-inline: 26px; }
-      .messages-container { padding: 28px; }
-      .chat-input-area { padding: 18px 28px 22px; }
-    }
-
-    @media (min-width: 1280px) {
-      .sidebar { width: 340px; flex-basis: 340px; padding: 22px; }
-      .messages-container,
-      .video-grid {
-        max-width: 1100px;
-        width: 100%;
-        margin-inline: auto;
-      }
+      .glass-panel { width: min(100%, 540px); padding: 32px; }
+      .messages-container, .video-grid { max-width: 1100px; width: 100%; margin-inline: auto; }
       .chat-input-area { justify-content: center; }
       .chat-input-area > .input-wrapper { max-width: 900px; }
-    }
-
-    @media (max-width: 1024px) {
-      .glass-panel { width: min(100%, 500px); }
-      .sidebar { width: 288px; flex-basis: 288px; }
-      .header-actions { gap: 5px; }
-      .icon-btn { width: 40px; height: 40px; }
     }
 
     @media (max-width: 840px) {
@@ -1085,8 +985,7 @@
       .header-actions { gap: 4px; }
       .header-actions .divider { display: none; }
 
-      .header-btn,
-      .icon-btn {
+      .header-btn, .icon-btn {
         width: 39px;
         height: 39px;
         border-radius: 13px;
@@ -1132,8 +1031,7 @@
         flex: 0 0 auto;
       }
 
-      .attach-btn,
-      .emoji-btn {
+      .attach-btn, .emoji-btn {
         width: 42px;
         height: 42px;
         flex: 0 0 auto;
@@ -1141,12 +1039,6 @@
     }
 
     @media (max-width: 600px) {
-      body {
-        background:
-          radial-gradient(circle at top left, rgba(0, 168, 255, 0.16), transparent 36%),
-          linear-gradient(180deg, #f8fafc, #eef2ff);
-      }
-
       #entry-screen {
         align-items: flex-start;
         justify-content: center;
@@ -1163,14 +1055,7 @@
         border-radius: 24px;
       }
 
-      .top-bar { margin-bottom: 8px; }
-
-      .home-link,
-      .text-btn,
-      .mini-link { font-size: 11.5px; }
-
       .logo { margin-top: 12px; }
-
       .logo-icon {
         width: 66px;
         height: 66px;
@@ -1182,190 +1067,245 @@
       .logo h1 { font-size: 30px; line-height: 1; }
       .subtitle { font-size: 13px; margin: 10px auto 14px; }
       .ios-install-tip { font-size: 10.5px; margin-bottom: 12px; }
-
-      .form-group,
-      .age-verification,
-      .privacy-toggle,
-      .tos-verification,
-      .legal-card { margin-top: 11px; }
-
       .field-label { font-size: 12px; gap: 7px; }
-
-      .input-group,
-      input[type="date"] {
-        min-height: 46px;
-        border-radius: 14px;
-      }
-
-      .input-group { padding-inline: 12px; }
-
-      .input-group input {
-        min-height: 44px;
-        font-size: 16px;
-      }
-
-      input,
-      textarea,
-      select { font-size: 16px !important; }
-
-      .tabs {
-        margin: 14px 0 12px;
-        padding: 5px;
-        border-radius: 15px;
-      }
-
-      .tab-btn {
-        padding: 10px 8px;
-        border-radius: 12px;
-        font-size: 13px;
-      }
-
-      .btn {
-        min-height: 46px;
-        border-radius: 14px;
-        font-size: 14px;
-      }
-
-      .check-card { padding: 10px; border-radius: 14px; }
-      .check-card span { font-size: 11.5px; }
-      .status-msg { font-size: 12px; margin-top: 9px; }
-      .legal-card { padding-top: 12px; }
-      .legal-card p { font-size: 9.8px; }
-
-      .bg-shapes .shape-1 {
-        width: 160px;
-        height: 160px;
-        top: 4%;
-        left: -50px;
-      }
-
-      .bg-shapes .shape-2 {
-        width: 190px;
-        height: 190px;
-        right: -70px;
-        bottom: 8%;
-      }
-
-      .bg-shapes .shape-3 { display: none; }
-
-      .modal-overlay {
-        padding: 12px;
-        align-items: flex-end;
-      }
-
-      .modal-content {
-        width: 100%;
-        max-width: none;
-        border-radius: 24px 24px 18px 18px;
-        padding: 20px;
-      }
-
+      .input-group, input[type="date"] { min-height: 46px; border-radius: 14px; }
+      input, textarea, select { font-size: 16px !important; }
+      .tabs { margin: 14px 0 12px; padding: 5px; border-radius: 15px; }
+      .tab-btn { padding: 10px 8px; border-radius: 12px; font-size: 13px; }
+      .btn { min-height: 46px; border-radius: 14px; font-size: 14px; }
+      .modal-overlay { padding: 12px; align-items: flex-end; }
+      .modal-content { width: 100%; max-width: none; border-radius: 24px 24px 18px 18px; padding: 20px; }
       .modal-actions { flex-direction: column; }
       .modal-actions .btn { width: 100%; }
     }
 
     @media (max-width: 420px) {
-      #entry-screen { padding-inline: 10px; }
-      .glass-panel { padding: 16px; border-radius: 22px; }
-      .logo h1 { font-size: 27px; }
-      .subtitle { font-size: 12.5px; }
       .tabs { grid-template-columns: 1fr; }
       .tab-btn { width: 100%; }
       .header-actions { gap: 3px; }
-
-      .header-btn,
-      .icon-btn {
-        width: 37px;
-        height: 37px;
-        border-radius: 12px;
-      }
-
+      .header-btn, .icon-btn { width: 37px; height: 37px; border-radius: 12px; }
       .chat-header { gap: 8px; }
       .header-info h3 { font-size: 15px; }
-
       .status-text {
         max-width: 170px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
       }
-
       .attach-btn { display: none; }
       .chat-input-area { gap: 7px; }
       .send-btn { width: 46px; height: 46px; }
     }
 
     @media (max-width: 360px) {
-      .glass-panel { padding: 14px; }
-      .logo-icon { width: 58px; height: 58px; font-size: 24px; }
-      .logo h1 { font-size: 24px; }
-      .subtitle { font-size: 12px; }
-
-      .header-actions #btn-search,
-      .header-actions #btn-report { display: none; }
-
+      .emoji-btn { display: none; }
+      .header-actions #btn-search, .header-actions #btn-report { display: none; }
       .status-text { max-width: 145px; }
       .input-wrapper { padding-left: 11px; }
-      .emoji-btn { display: none; }
     }
 
-    @media (max-height: 560px) and (orientation: landscape) {
-      #entry-screen {
-        align-items: flex-start;
-        padding-top: 10px;
-        padding-bottom: 10px;
+    /* Mobile call fit mode */
+    @media (max-width: 840px) {
+      body.qpc-call-active {
+        overflow: hidden !important;
+        height: 100svh !important;
       }
 
-      .glass-panel { max-width: 760px; }
-      .logo { margin-top: 6px; }
-
-      .logo-icon {
-        width: 52px;
-        height: 52px;
-        font-size: 22px;
-        border-radius: 18px;
-        margin-bottom: 8px;
+      body.qpc-call-active #app,
+      body.qpc-call-active #chat-screen,
+      body.qpc-call-active .chat-area {
+        height: 100svh !important;
+        min-height: 100svh !important;
+        max-height: 100svh !important;
+        overflow: hidden !important;
       }
 
-      .logo h1 { font-size: 26px; }
-      .subtitle { margin-bottom: 10px; }
+      body.qpc-call-active .chat-area {
+        display: grid !important;
+        grid-template-rows: 56px minmax(0, 1fr) 54px 58px !important;
+      }
 
-      .form-group,
-      .age-verification,
-      .privacy-toggle,
-      .tos-verification { margin-top: 8px; }
+      body.qpc-call-active .chat-header {
+        min-height: 56px !important;
+        height: 56px !important;
+        padding: 7px 10px !important;
+        overflow: hidden !important;
+      }
+
+      body.qpc-call-active .header-info h3 {
+        font-size: 14px !important;
+        line-height: 1.1 !important;
+      }
+
+      body.qpc-call-active .status-text { display: none !important; }
+
+      body.qpc-call-active .connection-status {
+        margin-top: 3px !important;
+        padding: 3px 8px !important;
+        font-size: 10px !important;
+      }
+
+      body.qpc-call-active .video-grid {
+        height: 100% !important;
+        min-height: 0 !important;
+        max-height: 100% !important;
+        overflow: hidden !important;
+        padding: 6px !important;
+        display: grid !important;
+        gap: 6px !important;
+        align-content: stretch !important;
+        justify-content: stretch !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        grid-auto-rows: minmax(0, 1fr) !important;
+      }
+
+      body.qpc-call-active .video-grid video {
+        width: 100% !important;
+        height: 100% !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        border-radius: 12px !important;
+        object-fit: cover !important;
+        background: #020617 !important;
+      }
+
+      body.qpc-call-active .video-grid video[data-peer-id="me"] {
+        border: 2px solid rgba(0, 168, 255, 0.85) !important;
+      }
+
+      body.qpc-call-active .messages-container {
+        height: 54px !important;
+        min-height: 54px !important;
+        max-height: 54px !important;
+        overflow: hidden !important;
+        padding: 5px 7px !important;
+        gap: 0 !important;
+        background: rgba(248, 250, 252, 0.96) !important;
+        border-top: 1px solid var(--border) !important;
+      }
+
+      body.qpc-call-active .messages-container > div:not(:last-child) {
+        display: none !important;
+      }
+
+      body.qpc-call-active .sys-content {
+        max-width: 100% !important;
+        padding: 6px 9px !important;
+        font-size: 10.5px !important;
+        line-height: 1.25 !important;
+        border-radius: 12px !important;
+      }
+
+      body.qpc-call-active .chat-input-area {
+        height: 58px !important;
+        min-height: 58px !important;
+        max-height: 58px !important;
+        padding: 6px 8px !important;
+        padding-bottom: calc(6px + env(safe-area-inset-bottom)) !important;
+        overflow: visible !important;
+      }
+
+      body.qpc-call-active .attach-btn { display: none !important; }
+
+      body.qpc-call-active .input-wrapper {
+        min-height: 44px !important;
+        height: 44px !important;
+        border-radius: 14px !important;
+      }
+
+      body.qpc-call-active .input-wrapper input {
+        min-height: 42px !important;
+        height: 42px !important;
+        font-size: 14px !important;
+      }
+
+      body.qpc-call-active .send-btn {
+        width: 44px !important;
+        height: 44px !important;
+        border-radius: 14px !important;
+      }
+
+      body.qpc-call-active .header-actions {
+        position: fixed !important;
+        left: 50% !important;
+        bottom: calc(64px + env(safe-area-inset-bottom)) !important;
+        transform: translateX(-50%) !important;
+        z-index: 7000 !important;
+        padding: 7px !important;
+        border-radius: 999px !important;
+        background: rgba(15, 23, 42, 0.94) !important;
+        box-shadow: 0 16px 40px rgba(15, 23, 42, 0.35) !important;
+        backdrop-filter: blur(14px) !important;
+        -webkit-backdrop-filter: blur(14px) !important;
+        display: flex !important;
+        justify-content: center !important;
+        gap: 8px !important;
+      }
+
+      body.qpc-call-active .header-actions #btn-report,
+      body.qpc-call-active .header-actions #btn-search,
+      body.qpc-call-active .header-actions .divider,
+      body.qpc-call-active .header-actions #btn-voice-call,
+      body.qpc-call-active .header-actions #btn-video-call {
+        display: none !important;
+      }
+
+      body.qpc-call-active .header-actions #btn-mute-mic,
+      body.qpc-call-active .header-actions #btn-mute-cam,
+      body.qpc-call-active .header-actions #btn-end-call {
+        width: 44px !important;
+        height: 44px !important;
+        border-radius: 999px !important;
+        display: inline-grid !important;
+      }
+
+      body.qpc-call-active .header-actions #btn-mute-mic,
+      body.qpc-call-active .header-actions #btn-mute-cam {
+        color: #fff !important;
+        background: rgba(255, 255, 255, 0.14) !important;
+      }
+
+      body.qpc-call-active .header-actions #btn-end-call {
+        color: #fff !important;
+        background: var(--danger-color) !important;
+      }
     }
 
-    @media (max-width: 700px) {
-      #gdpr-banner {
-        padding: 13px 14px calc(13px + env(safe-area-inset-bottom));
-        align-items: stretch;
+    @media (max-width: 840px) and (max-height: 720px) {
+      body.qpc-call-active .chat-area {
+        grid-template-rows: 50px minmax(0, 1fr) 42px 52px !important;
       }
 
-      #gdpr-banner p { font-size: 11.5px; }
-
-      .cookie-actions {
-        width: 100%;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
+      body.qpc-call-active .chat-header {
+        min-height: 50px !important;
+        height: 50px !important;
       }
 
-      .cookie-btn {
-        width: 100%;
-        padding: 10px 8px;
+      body.qpc-call-active .messages-container {
+        height: 42px !important;
+        min-height: 42px !important;
+        max-height: 42px !important;
+      }
+
+      body.qpc-call-active .chat-input-area {
+        height: 52px !important;
+        min-height: 52px !important;
+        max-height: 52px !important;
+      }
+
+      body.qpc-call-active .header-actions {
+        bottom: calc(56px + env(safe-area-inset-bottom)) !important;
       }
     }
 
-    @media (hover: hover) {
-      .btn:hover,
-      .icon-btn:hover,
-      .tab-btn:hover { transform: translateY(-1px); }
+    @media (max-width: 360px) {
+      body.qpc-call-active .video-grid {
+        grid-template-columns: 1fr !important;
+      }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      *,
-      *::before,
-      *::after {
+      *, *::before, *::after {
         animation-duration: 0.001ms !important;
         animation-iteration-count: 1 !important;
         scroll-behavior: auto !important;
@@ -1377,7 +1317,7 @@
 
 <body>
   <div id="app">
-    <div class="bg-shapes" id="bg-shapes" aria-hidden="true">
+    <div class="bg-shapes" aria-hidden="true">
       <div class="shape shape-1"></div>
       <div class="shape shape-2"></div>
       <div class="shape shape-3"></div>
@@ -1390,14 +1330,6 @@
             <i class="fa-solid fa-house" aria-hidden="true"></i>
             Home
           </a>
-
-          <div id="user-profile" class="profile-row hidden">
-            <span id="user-name-display" style="font-size: 13px; font-weight: 800; color: var(--accent-color);"></span>
-            <button id="btn-logout" class="text-btn" type="button" style="color: var(--danger-color);">
-              <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i>
-              Logout
-            </button>
-          </div>
         </div>
 
         <div class="logo">
@@ -1405,11 +1337,11 @@
             <i class="fa-solid fa-user-secret" aria-hidden="true"></i>
           </div>
           <h1 id="app-title">Quick Private Chat</h1>
-          <p style="margin: 8px 0 0; color: var(--text-muted); font-size: 12px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;">by SHADER7</p>
+          <p class="brand-sub">by SHADER7</p>
         </div>
 
         <p class="subtitle">
-          QUICK PRIVATE CHAT is an experimental private room-code chat by SHADER7. It is still under development, so you may find issues. Please try it responsibly and report bugs or misuse.
+          Experimental private room-code chat by SHADER7. Maximum 4 users per room. Please try it responsibly and report bugs or misuse.
         </p>
 
         <div class="notice-card">
@@ -1425,7 +1357,7 @@
         </button>
 
         <p class="ios-install-tip">
-          Install QUICK PRIVATE CHAT on your phone or PC for faster access. iPhone users can use <strong>Share</strong> → <strong>Add to Home Screen</strong>.
+          Install on your phone or PC for faster access. iPhone users can use <strong>Share</strong> → <strong>Add to Home Screen</strong>.
         </p>
 
         <div class="form-group">
@@ -1433,14 +1365,7 @@
             Your Display Name
             <div class="input-group">
               <i class="fa-solid fa-user" aria-hidden="true"></i>
-              <input
-                type="text"
-                id="guest-name-input"
-                placeholder="e.g. Alex"
-                autocomplete="nickname"
-                maxlength="20"
-                required
-              />
+              <input type="text" id="guest-name-input" placeholder="e.g. Alex" autocomplete="nickname" maxlength="20" required />
             </div>
           </label>
         </div>
@@ -1458,17 +1383,7 @@
           <label class="sr-only" for="room-code-input">Room Code</label>
           <div class="input-group">
             <i class="fa-solid fa-hashtag" aria-hidden="true"></i>
-            <input
-              type="text"
-              id="room-code-input"
-              placeholder="Enter 6-character Room Code"
-              autocomplete="off"
-              maxlength="8"
-              autocapitalize="characters"
-              spellcheck="false"
-              inputmode="text"
-              style="text-transform: uppercase;"
-            />
+            <input type="text" id="room-code-input" placeholder="Enter 6-character Room Code" autocomplete="off" maxlength="8" autocapitalize="characters" spellcheck="false" inputmode="text" style="text-transform: uppercase;" />
           </div>
 
           <button id="btn-join" class="btn primary-btn" type="button">
@@ -1481,15 +1396,7 @@
           <label class="sr-only" for="max-members-create">Maximum Members</label>
           <div class="input-group">
             <i class="fa-solid fa-users" aria-hidden="true"></i>
-            <input
-              type="number"
-              id="max-members-create"
-              placeholder="Max Members, up to 10"
-              autocomplete="off"
-              min="2"
-              max="10"
-              value="10"
-            />
+            <input type="number" id="max-members-create" placeholder="Max Members, up to 4" autocomplete="off" min="2" max="4" value="4" />
           </div>
 
           <button id="btn-create" class="btn primary-btn gradient-btn" type="button">
@@ -1504,7 +1411,7 @@
             <input type="date" id="dob-input" autocomplete="bday" />
           </label>
           <p style="font-size: 11px; color: var(--text-muted); margin: 7px 0 0; line-height: 1.45;">
-            Your age check is processed locally on this device. Avoid sharing your full date of birth in chat.
+            Your age check is processed locally on this device.
           </p>
         </div>
 
@@ -1555,19 +1462,11 @@
             <a href="mailto:nxdecore@gmail.com">nxdecore@gmail.com</a>.
             Grievance contact:
             <a href="mailto:nxdecore@gmail.com">nxdecore@gmail.com</a>.
-            We do not sell or share personal information for cross-context behavioral advertising.
           </p>
 
-          <p>
-            QUICK PRIVATE CHAT is not directed to children. Users must be 19+ to use this service.
-          </p>
+          <p>QUICK PRIVATE CHAT is not directed to children. Users must be 19+ to use this service.</p>
 
-          <a
-            href="https://instagram.com/nishix_vamp"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="mini-link"
-          >
+          <a href="https://instagram.com/nishix_vamp" target="_blank" rel="noopener noreferrer" class="mini-link">
             <i class="fa-brands fa-instagram" style="background: var(--grad-insta); -webkit-background-clip: text; -webkit-text-fill-color: transparent;" aria-hidden="true"></i>
             @nishix_vamp
           </a>
@@ -1607,13 +1506,12 @@
             <span class="label">Members</span>
             <span class="count-badge" id="member-count">0</span>
           </div>
-
           <ul id="members-list" aria-label="Room members"></ul>
         </div>
 
         <div class="sidebar-footer">
           <div class="user-profile">
-            <div class="avatar gradient-avatar" id="my-avatar" aria-hidden="true">U</div>
+            <div class="avatar" id="my-avatar" aria-hidden="true">U</div>
             <div class="user-details">
               <span id="my-name" class="name">User</span>
               <span class="status">
@@ -1648,11 +1546,11 @@
           </div>
 
           <div class="header-actions">
-            <button id="btn-voice-call" class="icon-btn header-btn" type="button" title="Join Voice Call" aria-label="Join voice call">
+            <button id="btn-voice-call" class="icon-btn header-btn" type="button" title="Start Voice Call" aria-label="Start voice call">
               <i class="fa-solid fa-phone" aria-hidden="true"></i>
             </button>
 
-            <button id="btn-video-call" class="icon-btn header-btn" type="button" title="Join Video Call" aria-label="Join video call">
+            <button id="btn-video-call" class="icon-btn header-btn" type="button" title="Start Video Call" aria-label="Start video call">
               <i class="fa-solid fa-video" aria-hidden="true"></i>
             </button>
 
@@ -1686,13 +1584,13 @@
           <div class="system-msg">
             <div class="sys-content">
               <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
-              Welcome to QUICK PRIVATE CHAT by SHADER7. This app is under development — please try it responsibly and report any problems. Rooms work only while the host stays online. Messages are exchanged peer-to-peer where possible. Signaling or relay services may be used.
+              Welcome to QUICK PRIVATE CHAT by SHADER7. Maximum 4 users per room. Rooms work only while the host stays online.
             </div>
           </div>
         </div>
 
         <footer class="chat-input-area">
-          <button class="icon-btn attach-btn" type="button" title="Attach file" aria-label="Attach file">
+          <button class="icon-btn attach-btn" type="button" title="Attach file disabled" aria-label="Attach file disabled">
             <i class="fa-solid fa-plus" aria-hidden="true"></i>
           </button>
 
@@ -1793,7 +1691,6 @@
       <h2 id="legal-guide-title" style="margin-bottom: 8px;">Country Legal Checklist</h2>
       <p style="font-size: 13px; color: var(--text-muted); line-height: 1.55; margin-bottom: 12px;">
         This is a product-readiness checklist, not legal advice. Laws vary by country and can change frequently.
-        Review with qualified legal counsel before launch.
       </p>
 
       <label class="field-label" for="legal-country-input" style="font-size: 12px; margin-bottom: 8px; display: block;">
@@ -1828,9 +1725,9 @@
       </p>
 
       <ul style="font-size: 13px; color: var(--text-main); line-height: 1.65; padding-left: 18px; margin-bottom: 18px;">
-        <li><strong>Android Chrome:</strong> tap the browser menu ⋮, then tap <strong>Add to Home screen</strong> or <strong>Install app</strong>.</li>
-        <li><strong>iPhone Safari:</strong> tap <strong>Share</strong>, then <strong>Add to Home Screen</strong>.</li>
-        <li><strong>Desktop Chrome/Edge:</strong> click the install icon in the address bar, or open the browser menu and choose <strong>Install</strong>.</li>
+        <li><strong>Android Chrome:</strong> browser menu ⋮ → <strong>Add to Home screen</strong> or <strong>Install app</strong>.</li>
+        <li><strong>iPhone Safari:</strong> <strong>Share</strong> → <strong>Add to Home Screen</strong>.</li>
+        <li><strong>Desktop Chrome/Edge:</strong> install icon in the address bar, or browser menu → <strong>Install</strong>.</li>
       </ul>
 
       <div class="modal-actions">
@@ -1858,6 +1755,7 @@
       </p>
 
       <ul style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px; padding-left: 18px; line-height: 1.55;">
+        <li>Maximum 4 users per room.</li>
         <li>Messages are exchanged peer-to-peer where possible.</li>
         <li>Signaling or relay services may be used to establish connections.</li>
         <li>WebRTC uses transport encryption where supported.</li>
@@ -1883,7 +1781,7 @@
         <i class="fa-solid fa-cookie-bite" style="color: var(--accent-color);" aria-hidden="true"></i>
         <strong style="color: #000;">Your Privacy Matters.</strong>
         QUICK PRIVATE CHAT uses essential localStorage to remember consent and app preferences.
-        We do not use advertising cookies. If analytics or nonessential storage is added later, consent should be requested first.
+        We do not use advertising cookies.
         <a href="../privacy-policy.html" target="_blank" rel="noopener noreferrer">Read our Privacy Policy</a>.
       </p>
     </div>
@@ -1902,41 +1800,13 @@
       const $$ = (selector) => Array.from(document.querySelectorAll(selector));
 
       const LEGAL_RULES = {
-        US: [
-          "COPPA (Children’s Online Privacy Protection Act)",
-          "CCPA / CPRA (California privacy laws)",
-          "CALOPPA (California Online Privacy Protection Act)",
-          "State-level data breach notification laws"
-        ],
-        GB: [
-          "UK GDPR (retained EU GDPR)",
-          "Data Protection Act 2018",
-          "PECR (Privacy and Electronic Communications Regulations)"
-        ],
-        DE: [
-          "GDPR (EU General Data Protection Regulation)",
-          "BDSG (German Federal Data Protection Act)",
-          "TTDSG / ePrivacy rules"
-        ],
-        IN: [
-          "Digital Personal Data Protection Act 2023",
-          "IT Act 2000",
-          "Intermediary and cyber-safety obligations may apply depending on scale/features"
-        ],
-        BR: [
-          "LGPD (Lei Geral de Proteção de Dados)"
-        ],
-        RO: [
-          "GDPR (EU General Data Protection Regulation)",
-          "Romanian data protection authority guidance",
-          "ePrivacy / cookie consent rules"
-        ],
-        DEFAULT: [
-          "Check local data protection and privacy laws",
-          "Consider age-verification requirements",
-          "Review e-privacy / cookie regulations",
-          "Assess content liability and intermediary rules"
-        ]
+        US: ["COPPA", "CCPA / CPRA", "State-level data breach notification laws"],
+        GB: ["UK GDPR", "Data Protection Act 2018", "PECR"],
+        DE: ["GDPR", "BDSG", "TTDSG / ePrivacy rules"],
+        IN: ["Digital Personal Data Protection Act 2023", "IT Act 2000", "Intermediary and cyber-safety obligations may apply depending on scale/features"],
+        BR: ["LGPD"],
+        RO: ["GDPR", "Romanian data protection authority guidance", "ePrivacy / cookie consent rules"],
+        DEFAULT: ["Check local data protection and privacy laws", "Consider age-verification requirements", "Review e-privacy / cookie regulations", "Assess content liability and intermediary rules"]
       };
 
       function setRealViewportHeight() {
@@ -1956,10 +1826,9 @@
 
         const code = String(countryCode || "").toUpperCase().replace(/[^A-Z]/g, "").slice(0, 2);
         detectedSpan.textContent = code || "Unknown";
-
         const rules = LEGAL_RULES[code] || LEGAL_RULES.DEFAULT;
-        rulesList.innerHTML = "";
 
+        rulesList.innerHTML = "";
         rules.forEach((rule) => {
           const li = document.createElement("li");
           li.textContent = rule;
@@ -1978,9 +1847,7 @@
               btn.setAttribute("aria-selected", "false");
             });
 
-            $$(".form-container").forEach((panel) => {
-              panel.classList.remove("active");
-            });
+            $$(".form-container").forEach((panel) => panel.classList.remove("active"));
 
             button.classList.add("active");
             button.setAttribute("aria-selected", "true");
@@ -1995,41 +1862,6 @@
       }
 
       function initializeInputGuards() {
-        const roomInput = $("#room-code-input");
-        if (roomInput) {
-          roomInput.addEventListener("input", () => {
-            roomInput.value = roomInput.value
-              .replace(/[^a-zA-Z0-9]/g, "")
-              .toUpperCase()
-              .slice(0, 8);
-          });
-        }
-
-        const maxMembers = $("#max-members-create");
-        if (maxMembers) {
-          maxMembers.addEventListener("change", () => {
-            const value = Number(maxMembers.value || 10);
-            if (!Number.isFinite(value)) {
-              maxMembers.value = "10";
-              return;
-            }
-            if (value > 10) maxMembers.value = "10";
-            if (value < 2) maxMembers.value = "2";
-          });
-        }
-
-        const nameInput = $("#guest-name-input");
-        if (nameInput) {
-          try {
-            const savedName = localStorage.getItem("qpc_last_name");
-            if (savedName && !nameInput.value) nameInput.value = savedName;
-          } catch (error) {}
-
-          nameInput.addEventListener("input", () => {
-            nameInput.value = nameInput.value.replace(/[<>]/g, "").slice(0, 20);
-          });
-        }
-
         const legalCountryInput = $("#legal-country-input");
         if (legalCountryInput) {
           legalCountryInput.addEventListener("input", () => {
@@ -2075,7 +1907,6 @@
             localStorage.setItem("qpc_storage_choice", choice);
             localStorage.setItem("qpc_storage_choice_at", new Date().toISOString());
           } catch (error) {}
-
           gdprBanner?.classList.add("hidden");
         }
 
@@ -2091,14 +1922,6 @@
 
         $("#btn-menu")?.addEventListener("click", () => sidebar?.classList.add("active"));
         $("#btn-close-sidebar")?.addEventListener("click", () => sidebar?.classList.remove("active"));
-
-        document.addEventListener("click", (event) => {
-          if (!sidebar || !sidebar.classList.contains("active")) return;
-          const menuBtn = $("#btn-menu");
-          const clickedInsideSidebar = sidebar.contains(event.target);
-          const clickedMenuButton = menuBtn && menuBtn.contains(event.target);
-          if (!clickedInsideSidebar && !clickedMenuButton && window.innerWidth <= 840) sidebar.classList.remove("active");
-        });
 
         document.addEventListener("keydown", (event) => {
           if (event.key === "Escape") {
@@ -2122,11 +1945,9 @@
         emojiPicker?.addEventListener("click", (event) => {
           const button = event.target.closest("button");
           if (!button || !messageInput) return;
-
           const emoji = button.textContent || "";
           const start = messageInput.selectionStart ?? messageInput.value.length;
           const end = messageInput.selectionEnd ?? messageInput.value.length;
-
           messageInput.value = messageInput.value.slice(0, start) + emoji + messageInput.value.slice(end);
           messageInput.focus();
           messageInput.selectionStart = messageInput.selectionEnd = start + emoji.length;
@@ -2150,36 +1971,10 @@
             reportText?.focus();
             return;
           }
-
           const subject = encodeURIComponent("QUICK PRIVATE CHAT Grievance Report");
           const body = encodeURIComponent(reportText.value.trim());
           window.location.href = "mailto:nxdecore@gmail.com?subject=" + subject + "&body=" + body;
           reportModal?.classList.add("hidden");
-        });
-
-        $("#copy-invite-btn")?.addEventListener("click", async () => {
-          const code = $("#display-room-code")?.textContent?.trim();
-          if (!code || code === "----") return;
-
-          const inviteUrl = new URL(window.location.href);
-          inviteUrl.searchParams.set("room", code);
-
-          try {
-            await navigator.clipboard.writeText(inviteUrl.toString());
-            const container = $("#messages-container");
-            if (container) {
-              const wrap = document.createElement("div");
-              wrap.className = "system-msg";
-              const content = document.createElement("div");
-              content.className = "sys-content";
-              content.textContent = "Invite link copied. Share it only with people you know.";
-              wrap.appendChild(content);
-              container.appendChild(wrap);
-              container.scrollTop = container.scrollHeight;
-            }
-          } catch (error) {
-            prompt("Copy invite link:", inviteUrl.toString());
-          }
         });
 
         $("#btn-download-logs")?.addEventListener("click", () => {
@@ -2223,31 +2018,7 @@
           legalGuideModal?.classList.remove("hidden");
         });
 
-        $("#btn-close-legal-guide")?.addEventListener("click", () => {
-          legalGuideModal?.classList.add("hidden");
-        });
-      }
-
-      function initializeInviteFromUrl() {
-        const params = new URLSearchParams(window.location.search);
-        const room = String(params.get("room") || "")
-          .replace(/[^a-zA-Z0-9]/g, "")
-          .toUpperCase()
-          .slice(0, 8);
-
-        if (!room) return;
-
-        const roomInput = $("#room-code-input");
-        if (roomInput) roomInput.value = room;
-
-        const joinTab = $("#tab-join");
-        if (joinTab) joinTab.click();
-
-        const status = $("#entry-status");
-        if (status) {
-          status.textContent = "Invite link detected. Enter your name, date of birth, accept terms, then join.";
-          status.style.color = "var(--success-color)";
-        }
+        $("#btn-close-legal-guide")?.addEventListener("click", () => legalGuideModal?.classList.add("hidden"));
       }
 
       function initializeInstallPrompt() {
@@ -2268,10 +2039,8 @@
           installHelpModal?.classList.remove("hidden");
         }
 
-        if (isAppInstalled()) {
-          if (installBtn) {
-            installBtn.innerHTML = '<i class="fa-solid fa-check" aria-hidden="true"></i> App Installed';
-          }
+        if (isAppInstalled() && installBtn) {
+          installBtn.innerHTML = '<i class="fa-solid fa-check" aria-hidden="true"></i> App Installed';
         }
 
         window.addEventListener("beforeinstallprompt", (event) => {
@@ -2285,9 +2054,7 @@
 
         window.addEventListener("appinstalled", () => {
           deferredPrompt = null;
-          if (installBtn) {
-            installBtn.innerHTML = '<i class="fa-solid fa-check" aria-hidden="true"></i> App Installed';
-          }
+          if (installBtn) installBtn.innerHTML = '<i class="fa-solid fa-check" aria-hidden="true"></i> App Installed';
         });
 
         installBtn?.addEventListener("click", async () => {
@@ -2301,7 +2068,6 @@
               deferredPrompt.prompt();
               const choice = await deferredPrompt.userChoice;
               deferredPrompt = null;
-
               if (choice && choice.outcome === "accepted") {
                 installBtn.innerHTML = '<i class="fa-solid fa-check" aria-hidden="true"></i> Installing...';
               } else {
@@ -2321,14 +2087,11 @@
           showInstallHelp();
         });
 
-        closeInstallHelpBtn?.addEventListener("click", () => {
-          installHelpModal?.classList.add("hidden");
-        });
+        closeInstallHelpBtn?.addEventListener("click", () => installHelpModal?.classList.add("hidden"));
       }
 
       function initializeServiceWorker() {
         if (!("serviceWorker" in navigator)) return;
-
         window.addEventListener("load", () => {
           navigator.serviceWorker.register("./sw.js").catch((error) => {
             console.warn("[QPC] Service worker registration failed:", error);
@@ -2337,13 +2100,8 @@
       }
 
       function initializeDiagnostics() {
-        window.addEventListener("error", (event) => {
-          console.error("[QPC runtime error]", event.error || event.message);
-        });
-
-        window.addEventListener("unhandledrejection", (event) => {
-          console.error("[QPC promise rejection]", event.reason);
-        });
+        window.addEventListener("error", (event) => console.error("[QPC runtime error]", event.error || event.message));
+        window.addEventListener("unhandledrejection", (event) => console.error("[QPC promise rejection]", event.reason));
       }
 
       setRealViewportHeight();
@@ -2352,7 +2110,6 @@
 
       initializeTabs();
       initializeInputGuards();
-      initializeInviteFromUrl();
       initializeConsent();
       initializeUtilityButtons();
       initializeInstallPrompt();
@@ -2363,6 +2120,6 @@
 
   <!-- Supabase removed. This version uses PeerJS only. -->
   <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
-  <script src="app.js?v=6.0.1"></script>
+  <script src="app.js?v=7.0.0"></script>
 </body>
 </html>
