@@ -3,14 +3,29 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SHADER7 CNC Machinist Toolkit</title>
-<meta name="description" content="Professional online calculators for Speeds & Feeds, PCD Coordinates, G-Code generation, and precision machining workflows.">
+
+<title>SHADER7 CNC Machinist Toolkit | Free CNC Calculators</title>
+<meta name="description" content="Professional online CNC calculators for Speeds & Feeds, PCD Coordinates, angle length calculation, G-Code generation, chamfer programming, 3D CAD, and precision machining workflows.">
+<meta name="keywords" content="CNC calculator, CNC machinist tools, speeds and feeds calculator, PCD coordinates calculator, angle length calculator, CNC angle calculator, G-code generator, chamfer calculator, circular interpolation, Shader7 CNC tools">
+<meta name="author" content="Nishikant Xalxo">
+<meta name="robots" content="index, follow, max-image-preview:large">
 <meta name="theme-color" content="#ffffff">
-  <!-- Google AdSense -->
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7727546410030506"
-       crossorigin="anonymous"></script>
+<link rel="canonical" href="https://shader7.com/cnc-machinist/">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="SHADER7 CNC Machinist Toolkit">
+<meta property="og:description" content="Free CNC machinist calculators for drilling, PCD, angle length, interpolation, chamfer, macro programs, and 3D CAD.">
+<meta property="og:url" content="https://shader7.com/cnc-machinist/">
+<meta property="og:site_name" content="SHADER7">
+
+<!-- Google AdSense -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7727546410030506"
+     crossorigin="anonymous"></script>
+
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
 body{font-family:'Segoe UI',sans-serif;background:#04090f;color:#e2e8f0;overflow-x:hidden;}
 
 /* BACKGROUND IMAGE & OVERLAY */
@@ -35,12 +50,13 @@ body{font-family:'Segoe UI',sans-serif;background:#04090f;color:#e2e8f0;overflow
   z-index: -1;
 }
 
-canvas#bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;opacity:0.8;}
+canvas#bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;opacity:0.8;pointer-events:none;}
 
 /* WHITE NAV & HEADERS */
 header.top-bar{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid #e2e8f0;padding:0 2rem;height:56px;display:flex;align-items:center;box-shadow:0 2px 10px rgba(0,0,0,0.1);}
 header.top-bar a{color:#2563eb;font-weight:800;font-size:1.1rem;text-decoration:none;letter-spacing:2px;display:flex;align-items:center;gap:8px;}
 header.top-bar a:hover{color:#1d4ed8;}
+
 nav.sticky-nav{position:sticky;top:56px;z-index:190;background:rgba(255,255,255,0.95);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid #e2e8f0;padding:0 2rem;height:52px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 4px 12px rgba(0,0,0,0.05);}
 .nav-brand{display:flex;align-items:center;gap:10px;text-decoration:none;}
 .nav-brand span{font-size:1.3rem;font-weight:900;color:#0f172a;letter-spacing:1px;}
@@ -55,7 +71,7 @@ nav.sticky-nav{position:sticky;top:56px;z-index:190;background:rgba(255,255,255,
 .hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(15,23,42,0.8);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(59,130,246,0.4);border-radius:999px;padding:6px 18px;font-size:0.75rem;font-weight:700;letter-spacing:2px;color:#93c5fd;margin-bottom:1.8rem;}
 .hero h1{font-size:clamp(2.8rem,7vw,5.5rem);font-weight:900;line-height:1.05;margin-bottom:1.2rem;background:linear-gradient(135deg,#ffffff 0%,#bfdbfe 45%,#60a5fa 70%,#a5b4fc 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0px 4px 12px rgba(0,0,0,0.5));}
 .hero h1 span{background:linear-gradient(135deg,#3b82f6,#93c5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-.hero p{font-size:1.1rem;font-weight:500;color:rgba(241,245,249,0.9);max-width:520px;line-height:1.8;margin-bottom:2.5rem;text-shadow:0 2px 10px rgba(0,0,0,1);}
+.hero p{font-size:1.1rem;font-weight:500;color:rgba(241,245,249,0.9);max-width:620px;line-height:1.8;margin-bottom:2.5rem;text-shadow:0 2px 10px rgba(0,0,0,1);}
 .hero-btn{display:inline-block;padding:0.85rem 2.2rem;background:linear-gradient(135deg,#1d4ed8,#3b82f6);color:#fff;font-weight:700;border-radius:10px;text-decoration:none;font-size:0.9rem;letter-spacing:0.5px;transition:transform 0.2s,box-shadow 0.2s;box-shadow:0 4px 15px rgba(0,0,0,0.5), 0 0 30px rgba(59,130,246,0.35);}
 .hero-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,0.6), 0 0 50px rgba(59,130,246,0.55);}
 
@@ -68,14 +84,17 @@ nav.sticky-nav{position:sticky;top:56px;z-index:190;background:rgba(255,255,255,
 /* TOOLS GRID */
 .tools-section{position:relative;z-index:10;padding:5rem 2rem 6rem;}
 .section-label{text-align:center;font-size:0.75rem;font-weight:700;letter-spacing:4px;color:#93c5fd;margin-bottom:0.4rem;text-shadow:0 2px 8px rgba(0,0,0,0.8);}
-.section-title{text-align:center;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;margin-bottom:3.5rem;background:linear-gradient(90deg,#ffffff,#bfdbfe);-webkit-background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 2px 8px rgba(0,0,0,0.8));}
-.tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem;max-width:1100px;margin:0 auto;}
+.section-title{text-align:center;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;margin-bottom:1rem;background:linear-gradient(90deg,#ffffff,#bfdbfe);-webkit-background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 2px 8px rgba(0,0,0,0.8));}
+.section-subtitle{text-align:center;color:rgba(226,232,240,0.85);font-size:0.95rem;line-height:1.7;max-width:760px;margin:0 auto 3.2rem;text-shadow:0 2px 8px rgba(0,0,0,0.8);}
+.tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem;max-width:1120px;margin:0 auto;}
 
 /* WHITE TOOL CARDS */
 .tool-card{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid #e2e8f0;border-radius:18px;padding:2rem;text-decoration:none;display:block;transition:transform 0.3s,box-shadow 0.3s,border-color 0.3s;position:relative;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.3);}
 .tool-card::before{content:'';position:absolute;inset:0;border-radius:18px;background:linear-gradient(135deg,rgba(59,130,246,0.03),rgba(99,102,241,0.03));opacity:0;transition:opacity 0.3s;}
 .tool-card:hover::before{opacity:1;}
 .tool-card:hover{transform:translateY(-6px);border-color:#93c5fd;box-shadow:0 20px 50px rgba(0,0,0,0.4), 0 0 20px rgba(59,130,246,0.2);}
+.tool-card.featured{border:2px solid #3b82f6;box-shadow:0 14px 40px rgba(59,130,246,0.22), 0 10px 30px rgba(0,0,0,0.3);}
+.tool-card.featured::after{content:'NEW';position:absolute;top:16px;right:16px;background:linear-gradient(135deg,#1d4ed8,#60a5fa);color:white;font-size:0.65rem;font-weight:900;letter-spacing:2px;padding:5px 10px;border-radius:999px;box-shadow:0 8px 18px rgba(37,99,235,0.35);}
 .tool-card.coming-soon{background:rgba(241,245,249,0.9);opacity:0.8;cursor:default;}
 .tool-card.coming-soon:hover{transform:none;border-color:#e2e8f0;box-shadow:0 10px 30px rgba(0,0,0,0.3);}
 
@@ -106,32 +125,61 @@ footer a:hover{color:#93c5fd;}
 .reveal{opacity:0;transform:translateY(24px);transition:opacity 0.65s ease,transform 0.65s ease;}
 .reveal.visible{opacity:1;transform:none;}
 
-/* --- MOBILE RESPONSIVE FIXES --- */
+/* MOBILE RESPONSIVE FIXES */
 @media (max-width: 768px) {
   header.top-bar { padding: 0 1.2rem; }
   nav.sticky-nav { padding: 0 1.2rem; }
-  
+
   .nav-brand { gap: 6px; }
   .nav-brand span { font-size: 1.1rem; }
   .nav-badge { font-size: 0.6rem; padding: 2px 6px; }
-  
+
   .nav-links { gap: 0.8rem; }
   .nav-links a { font-size: 0.75rem; letter-spacing: 0px; }
+
+  .hero{padding:120px 1rem 5rem;}
+  .hero-badge{font-size:0.65rem;letter-spacing:1.4px;padding:6px 12px;}
+  .tools-section{padding:4rem 1rem 5rem;}
+  .tools-grid{grid-template-columns:1fr;max-width:430px;}
 }
 
 @media (max-width: 480px) {
-  /* For very small phones */
   header.top-bar { padding: 0 1rem; }
   nav.sticky-nav { padding: 0 1rem; }
-  
+
   .nav-brand span { font-size: 1rem; }
   .nav-badge { font-size: 0.55rem; padding: 2px 5px; }
-  
+
   .nav-links { gap: 0.6rem; }
   .nav-links a { font-size: 0.7rem; }
+
+  .hero p{font-size:1rem;}
+  .tool-card{padding:1.5rem;}
 }
 </style>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "SHADER7 CNC Machinist Toolkit",
+  "url": "https://shader7.com/cnc-machinist/",
+  "applicationCategory": "EngineeringApplication",
+  "operatingSystem": "Any",
+  "description": "Free CNC machinist toolkit with drilling, PCD, angle length, interpolation, chamfer, macro, and 3D CAD tools.",
+  "creator": {
+    "@type": "Person",
+    "name": "Nishikant Xalxo"
+  },
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+}
+</script>
 </head>
+
 <body>
 
 <div class="bg-image" aria-hidden="true"></div>
@@ -141,7 +189,10 @@ footer a:hover{color:#93c5fd;}
 
 <header class="top-bar">
   <a href="https://shader7.com" aria-label="Shader7 Home">
-    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"/><path d="m8 3.293 6 6V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V9.293l6-6Z"/></svg>
+    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+      <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"/>
+      <path d="m8 3.293 6 6V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V9.293l6-6Z"/>
+    </svg>
     SHADER7
   </a>
 </header>
@@ -161,7 +212,7 @@ footer a:hover{color:#93c5fd;}
 <section class="hero">
   <div class="hero-badge">⚙ PROFESSIONAL GRADE · FREE · BROWSER-BASED</div>
   <h1>CNC Machinist<br><span>Toolkit</span></h1>
-  <p>Professional online calculators for Speeds & Feeds, PCD Coordinates, G-Code generation, and precision machining workflows.</p>
+  <p>Professional online calculators for Speeds & Feeds, PCD Coordinates, angle length calculation, G-Code generation, and precision machining workflows.</p>
   <a href="#cnc-tools" class="hero-btn">Explore All Tools ↓</a>
 </section>
 
@@ -172,40 +223,51 @@ footer a:hover{color:#93c5fd;}
 <section class="tools-section reveal" id="cnc-tools">
   <div class="section-label">PRECISION TOOLS</div>
   <h2 class="section-title">Machinist Calculators</h2>
+  <p class="section-subtitle">
+    Free shop-floor ready CNC tools for calculating coordinates, feeds, angles, chamfers, circular interpolation, and quick machining programs.
+  </p>
+
   <div class="tools-grid">
 
     <a href="https://shader7.com/cnc-machinist/drill/" class="tool-card">
       <div class="card-icon">⚙️</div>
       <div class="card-title">Drill RPM & Feed</div>
-      <div class="card-desc">Calculate optimal Spindle Speed (RPM) and Feed Rate based on your cutter diameter and material.</div>
+      <div class="card-desc">Calculate optimal Spindle Speed RPM and Feed Rate based on your cutter diameter and material.</div>
       <div class="card-link">Open Calculator →</div>
     </a>
 
     <a href="https://shader7.com/cnc-machinist/pcd/" class="tool-card">
       <div class="card-icon">⊕</div>
       <div class="card-title">PCD Coordinates</div>
-      <div class="card-desc">Get X and Y coordinates for drilling holes on a Pitch Circle Diameter (bolt circle).</div>
+      <div class="card-desc">Get X and Y coordinates for drilling holes on a Pitch Circle Diameter bolt circle.</div>
+      <div class="card-link">Open Calculator →</div>
+    </a>
+
+    <a href="https://shader7.com/cnc-machinist/angleslengthcalculator/" class="tool-card featured">
+      <div class="card-icon">📐</div>
+      <div class="card-title">Angle Length Calculator</div>
+      <div class="card-desc">Enter diameter and angles to calculate radius, horizontal length, vertical height, and generated circle angle diagram.</div>
       <div class="card-link">Open Calculator →</div>
     </a>
 
     <a href="https://shader7.com/cnc-machinist/idodinterpolation/" class="tool-card">
-      <div class="card-icon">📐</div>
+      <div class="card-icon">⭕</div>
       <div class="card-title">Circular Interpolation</div>
-      <div class="card-desc">Generate G02/G03 code for milling internal/external circles and dovetails.</div>
+      <div class="card-desc">Generate G02/G03 code for milling internal and external circles, pockets, and circular profiles.</div>
       <div class="card-link">Generate G-Code →</div>
     </a>
 
     <a href="https://shader7.com/cnc-machinist/milldrillcontour/" class="tool-card">
       <div class="card-icon">✍️</div>
       <div class="card-title">Macro Program Generator</div>
-      <div class="card-desc">Quick programs for Face Milling, Simple Contours, and Drill cycles. Fanuc & Haas compatible.</div>
+      <div class="card-desc">Quick programs for face milling, simple contours, and drilling cycles. Fanuc and Haas compatible.</div>
       <div class="card-link">Generate G-Code →</div>
     </a>
 
     <a href="https://shader7.com/cnc-machinist/XYchamfer/" class="tool-card">
       <div class="card-icon">📏</div>
       <div class="card-title">Chamfer in G17</div>
-      <div class="card-desc">Use CHAMFER in the G17 X,Y plane. Easy to use and quick to generate clean chamfer code.</div>
+      <div class="card-desc">Use chamfer in the G17 X,Y plane. Easy to use and quick to generate clean chamfer code.</div>
       <div class="card-link">Generate G-Code →</div>
     </a>
 
@@ -235,10 +297,26 @@ footer a:hover{color:#93c5fd;}
 
 <div class="features-strip reveal">
   <div class="features-inner">
-    <div class="feat"><div class="feat-icon" aria-hidden="true">🔒</div><div class="feat-title">Privacy First</div><div class="feat-sub">Client-side only</div></div>
-    <div class="feat"><div class="feat-icon" aria-hidden="true">⚡</div><div class="feat-title">100% Free</div><div class="feat-sub">No paywalls ever</div></div>
-    <div class="feat"><div class="feat-icon" aria-hidden="true">🏭</div><div class="feat-title">Fanuc · Haas · Mazak</div><div class="feat-sub">Industry compatible</div></div>
-    <div class="feat"><div class="feat-icon" aria-hidden="true">📱</div><div class="feat-title">Works on Mobile</div><div class="feat-sub">Shop floor ready</div></div>
+    <div class="feat">
+      <div class="feat-icon" aria-hidden="true">🔒</div>
+      <div class="feat-title">Privacy First</div>
+      <div class="feat-sub">Client-side tools</div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon" aria-hidden="true">⚡</div>
+      <div class="feat-title">100% Free</div>
+      <div class="feat-sub">No signup required</div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon" aria-hidden="true">🏭</div>
+      <div class="feat-title">Fanuc · Haas · Mazak</div>
+      <div class="feat-sub">Industry workflow friendly</div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon" aria-hidden="true">📱</div>
+      <div class="feat-title">Works on Mobile</div>
+      <div class="feat-sub">Shop floor ready</div>
+    </div>
   </div>
 </div>
 
@@ -252,24 +330,73 @@ footer a:hover{color:#93c5fd;}
 </footer>
 
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
 <script>
 window.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('yr').textContent = new Date().getFullYear();
+  const yearEl = document.getElementById('yr');
+  if (yearEl) yearEl.textContent = new Date().getFullYear();
 
   // G-code ticker
-  const codes = ['G00 X0 Y0 Z50.','G01 Z-5. F120','G02 X50. Y0 I25. J0','M03 S2500','G41 D01','G83 Z-30. R2. Q5. F80','M05 M09','G28 G91 Z0','T02 M06','G54 G17 G40','G03 X-50. Y0 I-25. J0','M08','G80 G49','F200 S3000','G91 G28 Z0 M19'];
-  const t = document.getElementById('ticker');
-  [...codes,...codes].forEach(c=>{const s=document.createElement('span');s.textContent=c;t.appendChild(s);});
+  const codes = [
+    'G00 X0 Y0 Z50.',
+    'G01 Z-5. F120',
+    'G02 X50. Y0 I25. J0',
+    'M03 S2500',
+    'G41 D01',
+    'G83 Z-30. R2. Q5. F80',
+    'M05 M09',
+    'G28 G91 Z0',
+    'T02 M06',
+    'G54 G17 G40',
+    'G03 X-50. Y0 I-25. J0',
+    'M08',
+    'G80 G49',
+    'F200 S3000',
+    'G91 G28 Z0 M19'
+  ];
 
-  // THREE.JS CNC SCENE
+  const ticker = document.getElementById('ticker');
+  if (ticker) {
+    [...codes, ...codes].forEach(code => {
+      const span = document.createElement('span');
+      span.textContent = code;
+      ticker.appendChild(span);
+    });
+  }
+
+  // Reveal animation
+  const reveals = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+      });
+    }, { threshold: 0.08 });
+
+    reveals.forEach(item => obs.observe(item));
+  } else {
+    reveals.forEach(item => item.classList.add('visible'));
+  }
+
+  // THREE.JS CNC SCENE SAFE CHECK
+  if (typeof THREE === 'undefined') {
+    return;
+  }
+
   const canvas = document.getElementById('bg');
-  const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
-  
+  if (!canvas) return;
+
+  const renderer = new THREE.WebGLRenderer({
+    canvas,
+    antialias: true,
+    alpha: true
+  });
+
   renderer.setPixelRatio(window.innerWidth < 768 ? 1 : Math.min(window.devicePixelRatio, 2));
   renderer.setSize(window.innerWidth, window.innerHeight);
 
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(55, window.innerWidth/window.innerHeight, 0.1, 500);
+  const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 500);
   camera.position.set(0, 8, 55);
 
   const gridHelper = new THREE.GridHelper(200, 60, 0x1e3a8a, 0x0f172a);
@@ -279,106 +406,184 @@ window.addEventListener('DOMContentLoaded', () => {
   scene.add(gridHelper);
 
   scene.add(new THREE.AmbientLight(0x0a1628, 2));
+
   const bl = new THREE.PointLight(0x3b82f6, 6, 120);
   bl.position.set(-30, 20, 10);
   scene.add(bl);
+
   const bl2 = new THREE.PointLight(0x818cf8, 4, 100);
   bl2.position.set(30, 15, 5);
   scene.add(bl2);
+
   const bl3 = new THREE.PointLight(0x60a5fa, 3, 80);
   bl3.position.set(0, -5, 30);
   scene.add(bl3);
 
   const meshes = [];
 
-  const spindleMat = new THREE.MeshPhongMaterial({color:0x3b82f6,emissive:0x1d4ed8,emissiveIntensity:0.3,wireframe:false,transparent:true,opacity:0.7,shininess:80});
-  const spindle = new THREE.Mesh(new THREE.TorusKnotGeometry(6,1.2,180,12,3,5), spindleMat);
+  const spindleMat = new THREE.MeshPhongMaterial({
+    color: 0x3b82f6,
+    emissive: 0x1d4ed8,
+    emissiveIntensity: 0.3,
+    wireframe: false,
+    transparent: true,
+    opacity: 0.7,
+    shininess: 80
+  });
+
+  const spindle = new THREE.Mesh(new THREE.TorusKnotGeometry(6, 1.2, 180, 12, 3, 5), spindleMat);
   spindle.position.set(-22, 0, -15);
   scene.add(spindle);
-  meshes.push({m:spindle, rx:0.003, ry:0.007});
+  meshes.push({ m: spindle, rx: 0.003, ry: 0.007 });
 
-  const gearMat = new THREE.MeshPhongMaterial({color:0x1e40af,wireframe:true,transparent:true,opacity:0.35});
-  const gear = new THREE.Mesh(new THREE.CylinderGeometry(10,10,2,32,1), gearMat);
-  gear.position.set(22,-5,-20);
+  const gearMat = new THREE.MeshPhongMaterial({
+    color: 0x1e40af,
+    wireframe: true,
+    transparent: true,
+    opacity: 0.35
+  });
+
+  const gear = new THREE.Mesh(new THREE.CylinderGeometry(10, 10, 2, 32, 1), gearMat);
+  gear.position.set(22, -5, -20);
   scene.add(gear);
-  meshes.push({m:gear, rx:0.001, ry:0.008});
+  meshes.push({ m: gear, rx: 0.001, ry: 0.008 });
 
-  const drillMat = new THREE.MeshPhongMaterial({color:0x475569,emissive:0x1e3a8a,emissiveIntensity:0.2,shininess:120});
+  const drillMat = new THREE.MeshPhongMaterial({
+    color: 0x475569,
+    emissive: 0x1e3a8a,
+    emissiveIntensity: 0.2,
+    shininess: 120
+  });
+
   const drillGroup = new THREE.Group();
-  const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.5,0.5,12,16), drillMat);
-  const tip = new THREE.Mesh(new THREE.ConeGeometry(0.5,2.5,16), drillMat);
+  const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 12, 16), drillMat);
+  const tip = new THREE.Mesh(new THREE.ConeGeometry(0.5, 2.5, 16), drillMat);
   tip.position.y = -7.25;
-  drillGroup.add(shaft); drillGroup.add(tip);
+  drillGroup.add(shaft);
+  drillGroup.add(tip);
   drillGroup.position.set(15, 8, -10);
   drillGroup.rotation.z = 0.4;
   scene.add(drillGroup);
-  meshes.push({m:drillGroup, rx:0, ry:0.012});
+  meshes.push({ m: drillGroup, rx: 0, ry: 0.012 });
 
-  const wpMat = new THREE.MeshPhongMaterial({color:0x64748b,emissive:0x0f172a,wireframe:false,transparent:true,opacity:0.5,shininess:60});
-  const wp = new THREE.Mesh(new THREE.OctahedronGeometry(5,0), wpMat);
-  wp.position.set(-15,-8,-25);
+  const wpMat = new THREE.MeshPhongMaterial({
+    color: 0x64748b,
+    emissive: 0x0f172a,
+    wireframe: false,
+    transparent: true,
+    opacity: 0.5,
+    shininess: 60
+  });
+
+  const wp = new THREE.Mesh(new THREE.OctahedronGeometry(5, 0), wpMat);
+  wp.position.set(-15, -8, -25);
   scene.add(wp);
-  meshes.push({m:wp, rx:0.005, ry:0.006});
+  meshes.push({ m: wp, rx: 0.005, ry: 0.006 });
 
-  const chipMat = new THREE.MeshPhongMaterial({color:0x3b82f6,wireframe:true,transparent:true,opacity:0.2});
-  const chip = new THREE.Mesh(new THREE.IcosahedronGeometry(8,1), chipMat);
-  chip.position.set(5,5,-35);
+  const chipMat = new THREE.MeshPhongMaterial({
+    color: 0x3b82f6,
+    wireframe: true,
+    transparent: true,
+    opacity: 0.2
+  });
+
+  const chip = new THREE.Mesh(new THREE.IcosahedronGeometry(8, 1), chipMat);
+  chip.position.set(5, 5, -35);
   scene.add(chip);
-  meshes.push({m:chip, rx:0.002, ry:0.003});
+  meshes.push({ m: chip, rx: 0.002, ry: 0.003 });
 
   const pGeo = new THREE.BufferGeometry();
-  const pN = 600, pPos = new Float32Array(pN*3);
-  for(let i=0;i<pN;i++){pPos[i*3]=(Math.random()-.5)*160;pPos[i*3+1]=(Math.random()-.5)*80;pPos[i*3+2]=(Math.random()-.5)*80;}
-  pGeo.setAttribute('position',new THREE.BufferAttribute(pPos,3));
-  const pMat = new THREE.PointsMaterial({color:0x3b82f6,size:0.3,transparent:true,opacity:0.35});
-  const particles = new THREE.Points(pGeo,pMat);
+  const pN = 600;
+  const pPos = new Float32Array(pN * 3);
+
+  for (let i = 0; i < pN; i++) {
+    pPos[i * 3] = (Math.random() - 0.5) * 160;
+    pPos[i * 3 + 1] = (Math.random() - 0.5) * 80;
+    pPos[i * 3 + 2] = (Math.random() - 0.5) * 80;
+  }
+
+  pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+
+  const pMat = new THREE.PointsMaterial({
+    color: 0x3b82f6,
+    size: 0.3,
+    transparent: true,
+    opacity: 0.35
+  });
+
+  const particles = new THREE.Points(pGeo, pMat);
   scene.add(particles);
 
   const pathPoints = [];
-  for(let i=0;i<=120;i++){const a=(i/120)*Math.PI*2;pathPoints.push(new THREE.Vector3(Math.cos(a)*18,Math.sin(a)*18,-40));}
+  for (let i = 0; i <= 120; i++) {
+    const a = (i / 120) * Math.PI * 2;
+    pathPoints.push(new THREE.Vector3(Math.cos(a) * 18, Math.sin(a) * 18, -40));
+  }
+
   const pathGeo = new THREE.BufferGeometry().setFromPoints(pathPoints);
-  const pathMat = new THREE.LineBasicMaterial({color:0x60a5fa,transparent:true,opacity:0.15});
-  scene.add(new THREE.Line(pathGeo,pathMat));
+  const pathMat = new THREE.LineBasicMaterial({
+    color: 0x60a5fa,
+    transparent: true,
+    opacity: 0.15
+  });
+  scene.add(new THREE.Line(pathGeo, pathMat));
 
   const pathPoints2 = [];
-  for(let i=0;i<=80;i++){const a=(i/80)*Math.PI*2;pathPoints2.push(new THREE.Vector3(Math.cos(a)*10,-18+(Math.sin(a*3)*3),-30));}
+  for (let i = 0; i <= 80; i++) {
+    const a = (i / 80) * Math.PI * 2;
+    pathPoints2.push(new THREE.Vector3(Math.cos(a) * 10, -18 + (Math.sin(a * 3) * 3), -30));
+  }
+
   const pathGeo2 = new THREE.BufferGeometry().setFromPoints(pathPoints2);
-  const pathMat2 = new THREE.LineBasicMaterial({color:0x818cf8,transparent:true,opacity:0.12});
-  scene.add(new THREE.Line(pathGeo2,pathMat2));
+  const pathMat2 = new THREE.LineBasicMaterial({
+    color: 0x818cf8,
+    transparent: true,
+    opacity: 0.12
+  });
+  scene.add(new THREE.Line(pathGeo2, pathMat2));
 
-  let mx=0,my=0;
-  document.addEventListener('mousemove',e=>{mx=(e.clientX/window.innerWidth-.5)*2;my=-(e.clientY/window.innerHeight-.5)*2;});
+  let mx = 0;
+  let my = 0;
 
-  window.addEventListener('resize',()=>{
-    camera.aspect=window.innerWidth/window.innerHeight;
+  document.addEventListener('mousemove', e => {
+    mx = (e.clientX / window.innerWidth - 0.5) * 2;
+    my = -(e.clientY / window.innerHeight - 0.5) * 2;
+  });
+
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth,window.innerHeight);
+    renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(window.innerWidth < 768 ? 1 : Math.min(window.devicePixelRatio, 2));
   });
 
-  let tick=0;
-  function animate(){
-    requestAnimationFrame(animate); tick+=0.008;
-    meshes.forEach(o=>{o.m.rotation.x+=o.rx;o.m.rotation.y+=o.ry;});
-    particles.rotation.y+=0.0005;
-    gear.position.y=Math.sin(tick*0.7)*2-5;
-    spindle.position.y=Math.sin(tick*0.5)*1.5;
-    drillGroup.position.y=8+Math.sin(tick*3)*3;
-    bl.position.x=Math.sin(tick*0.6)*35;
-    bl2.position.x=Math.cos(tick*0.4)*30;
-    camera.position.x+=(mx*6-camera.position.x)*0.035;
-    camera.position.y+=(my*3+8-camera.position.y)*0.035;
-    camera.lookAt(0,0,0);
-    renderer.render(scene,camera);
-  }
-  
-  setTimeout(() => {
-    animate();
-  }, 100);
+  let tick = 0;
 
-  const reveals=document.querySelectorAll('.reveal');
-  const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{threshold:0.08});
-  reveals.forEach(r=>obs.observe(r));
+  function animate() {
+    requestAnimationFrame(animate);
+    tick += 0.008;
+
+    meshes.forEach(obj => {
+      obj.m.rotation.x += obj.rx;
+      obj.m.rotation.y += obj.ry;
+    });
+
+    particles.rotation.y += 0.0005;
+    gear.position.y = Math.sin(tick * 0.7) * 2 - 5;
+    spindle.position.y = Math.sin(tick * 0.5) * 1.5;
+    drillGroup.position.y = 8 + Math.sin(tick * 3) * 3;
+
+    bl.position.x = Math.sin(tick * 0.6) * 35;
+    bl2.position.x = Math.cos(tick * 0.4) * 30;
+
+    camera.position.x += (mx * 6 - camera.position.x) * 0.035;
+    camera.position.y += (my * 3 + 8 - camera.position.y) * 0.035;
+    camera.lookAt(0, 0, 0);
+
+    renderer.render(scene, camera);
+  }
+
+  animate();
 });
 </script>
 </body>
