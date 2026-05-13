@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Circle Angle Length Calculator | SHADER7</title>
+  <meta name="description" content="Calculate radius, horizontal length and vertical height from circle diameter and angle. Single HTML web app by SHADER7." />
+  <meta name="author" content="Nishikant Xalxo" />
+  <meta name="theme-color" content="#0b1220" />
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #07111f;
+      --card: #0f1b2e;
+      --card2: #13243d;
+      --text: #eef6ff;
+      --muted: #9fb1c7;
+      --line: rgba(255,255,255,0.12);
+      --accent: #38bdf8;
+      --accent2: #22c55e;
+      --danger: #fb7185;
+      --warning: #facc15;
+      --radius: 22px;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(56,189,248,0.22), transparent 32%),
+        radial-gradient(circle at bottom right, rgba(34,197,94,0.14), transparent 32%),
+        var(--bg);
+      color: var(--text);
+      padding: 18px;
+    }
+
+    .app {
+      width: min(1180px, 100%);
+      margin: 0 auto;
+    }
+
+    header {
+      padding: 20px 4px 18px;
+      text-align: center;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--accent);
+      background: rgba(56,189,248,0.08);
+      font-size: 13px;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      font-size: clamp(26px, 5vw, 46px);
+      line-height: 1.1;
+      letter-spacing: -1px;
+      margin-bottom: 10px;
+    }
+
+    .sub {
+      color: var(--muted);
+      max-width: 720px;
+      margin: 0 auto;
+      line-height: 1.55;
+      font-size: 15px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 18px;
+      align-items: start;
+      margin-top: 18px;
+    }
+
+    .panel {
+      background: linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.025));
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: 0 20px 70px rgba(0,0,0,0.28);
+      overflow: hidden;
+    }
+
+    .panel-head {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,0.025);
+    }
+
+    .panel-head h2 {
+      font-size: 18px;
+      margin-bottom: 5px;
+    }
+
+    .panel-head p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .panel-body {
+      padding: 18px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    input,
+    select {
+      width: 100%;
+      background: rgba(4, 12, 24, 0.75);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      color: var(--text);
+      padding: 13px 14px;
+      font-size: 16px;
+      outline: none;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: rgba(56,189,248,0.75);
+      box-shadow: 0 0 0 4px rgba(56,189,248,0.12);
+    }
+
+    .field {
+      margin-bottom: 15px;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 7px;
+      line-height: 1.45;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .btns {
+      display: grid;
+      grid-template-columns: 1fr 0.6fr;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 15px;
+      padding: 14px 14px;
+      color: #00111f;
+      font-weight: 800;
+      font-size: 15px;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--accent), #7dd3fc);
+      box-shadow: 0 10px 24px rgba(56,189,248,0.24);
+    }
+
+    button.secondary {
+      color: var(--text);
+      background: rgba(255,255,255,0.08);
+      border: 1px solid var(--line);
+      box-shadow: none;
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    .formula {
+      background: rgba(4, 12, 24, 0.55);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 14px;
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .formula b {
+      color: var(--text);
+    }
+
+    .result-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .mini {
+      background: rgba(4, 12, 24, 0.55);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 14px;
+    }
+
+    .mini span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    .mini strong {
+      font-size: 22px;
+      letter-spacing: -0.5px;
+    }
+
+    .drawing-wrap {
+      background: rgba(4, 12, 24, 0.48);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 10px;
+      overflow: hidden;
+    }
+
+    svg {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 16px;
+      background:
+        linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+
+    .table-wrap {
+      margin-top: 16px;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 680px;
+      background: rgba(4, 12, 24, 0.42);
+    }
+
+    th,
+    td {
+      padding: 13px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    th {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      background: rgba(255,255,255,0.04);
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: rgba(56,189,248,0.12);
+      color: #7dd3fc;
+      font-weight: 700;
+      font-size: 12px;
+    }
+
+    .error {
+      display: none;
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(251,113,133,0.35);
+      background: rgba(251,113,133,0.08);
+      color: #fecdd3;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    footer {
+      text-align: center;
+      padding: 24px 10px 8px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    @media (max-width: 900px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .result-cards {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 520px) {
+      body {
+        padding: 12px;
+      }
+
+      .row,
+      .btns {
+        grid-template-columns: 1fr;
+      }
+
+      .panel-body {
+        padding: 14px;
+      }
+
+      th,
+      td {
+        padding: 11px 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="app">
+    <header>
+      <div class="badge">SHADER7 Circle Geometry Tool</div>
+      <h1>Circle Angle Length Calculator</h1>
+      <p class="sub">
+        Enter circle diameter and angles. The app calculates radius, horizontal length and vertical height, then generates a live drawing.
+      </p>
+    </header>
+
+    <section class="grid">
+      <aside class="panel">
+        <div class="panel-head">
+          <h2>Input</h2>
+          <p>Use comma separated angles like 22.5, 45, 67.5.</p>
+        </div>
+
+        <div class="panel-body">
+          <div class="field">
+            <label for="diameter">Circle Diameter</label>
+            <input id="diameter" type="number" inputmode="decimal" value="357" min="0.001" step="0.001" />
+            <div class="hint">Radius will be diameter ÷ 2.</div>
+          </div>
+
+          <div class="field">
+            <label for="angles">Angles</label>
+            <input id="angles" type="text" value="22.5, 45, 67.5" />
+            <div class="hint">Allowed angle range: 0° to 90°.</div>
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label for="angleFrom">Angle Measured From</label>
+              <select id="angleFrom">
+                <option value="horizontal" selected>Horizontal Line</option>
+                <option value="vertical">Vertical Line</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="precision">Decimal Places</label>
+              <select id="precision">
+                <option value="1">1</option>
+                <option value="2" selected>2</option>
+                <option value="3">3</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="btns">
+            <button id="calculateBtn" type="button">Calculate</button>
+            <button id="resetBtn" type="button" class="secondary">Reset</button>
+          </div>
+
+          <div id="errorBox" class="error"></div>
+
+          <div class="formula">
+            <b>Formula</b><br>
+            Radius = Diameter ÷ 2<br>
+            Horizontal length = Radius × cos(angle)<br>
+            Vertical height = Radius × sin(angle)
+          </div>
+        </div>
+      </aside>
+
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Output</h2>
+          <p>The two straight line values are horizontal length and vertical height.</p>
+        </div>
+
+        <div class="panel-body">
+          <div class="result-cards">
+            <div class="mini">
+              <span>Diameter</span>
+              <strong id="diameterOut">357.00</strong>
+            </div>
+            <div class="mini">
+              <span>Radius</span>
+              <strong id="radiusOut">178.50</strong>
+            </div>
+            <div class="mini">
+              <span>Total Angles</span>
+              <strong id="countOut">3</strong>
+            </div>
+          </div>
+
+          <div class="drawing-wrap">
+            <svg id="diagram" viewBox="0 0 760 520" role="img" aria-label="Circle angle diagram"></svg>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Angle</th>
+                  <th>Radius / Hypotenuse</th>
+                  <th>Horizontal Length</th>
+                  <th>Vertical Height</th>
+                  <th>Point Coordinate</th>
+                </tr>
+              </thead>
+              <tbody id="resultBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <footer>
+      Made for <a href="https://shader7.com/" target="_blank" rel="noopener">Shader7.Com</a> · Credit: @nishix_vamp
+    </footer>
+  </main>
+
+  <script>
+    const diameterInput = document.getElementById("diameter");
+    const anglesInput = document.getElementById("angles");
+    const angleFromInput = document.getElementById("angleFrom");
+    const precisionInput = document.getElementById("precision");
+    const calculateBtn = document.getElementById("calculateBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const errorBox = document.getElementById("errorBox");
+
+    const diameterOut = document.getElementById("diameterOut");
+    const radiusOut = document.getElementById("radiusOut");
+    const countOut = document.getElementById("countOut");
+    const resultBody = document.getElementById("resultBody");
+    const diagram = document.getElementById("diagram");
+
+    function toRadians(deg) {
+      return deg * Math.PI / 180;
+    }
+
+    function cleanNumber(value, decimals) {
+      const num = Number(value);
+      if (!Number.isFinite(num)) return "0";
+      return num.toFixed(decimals);
+    }
+
+    function showError(message) {
+      errorBox.style.display = "block";
+      errorBox.textContent = message;
+    }
+
+    function hideError() {
+      errorBox.style.display = "none";
+      errorBox.textContent = "";
+    }
+
+    function parseAngles(raw) {
+      return raw
+        .split(/[, ]+/)
+        .map(v => v.trim())
+        .filter(Boolean)
+        .map(Number);
+    }
+
+    function calculate() {
+      hideError();
+
+      const diameter = Number(diameterInput.value);
+      const decimals = Number(precisionInput.value);
+      const angleFrom = angleFromInput.value;
+      const angles = parseAngles(anglesInput.value);
+
+      if (!Number.isFinite(diameter) || diameter <= 0) {
+        showError("Please enter a valid diameter greater than 0.");
+        return;
+      }
+
+      if (!angles.length) {
+        showError("Please enter at least one angle.");
+        return;
+      }
+
+      const badAngle = angles.find(a => !Number.isFinite(a) || a < 0 || a > 90);
+      if (badAngle !== undefined) {
+        showError("Angles must be valid numbers between 0° and 90°.");
+        return;
+      }
+
+      const radius = diameter / 2;
+
+      const results = angles.map((inputAngle, index) => {
+        const workingAngle = angleFrom === "horizontal" ? inputAngle : 90 - inputAngle;
+        const rad = toRadians(workingAngle);
+
+        const horizontal = radius * Math.cos(rad);
+        const vertical = radius * Math.sin(rad);
+
+        return {
+          index,
+          inputAngle,
+          workingAngle,
+          radius,
+          horizontal,
+          vertical
+        };
+      });
+
+      diameterOut.textContent = cleanNumber(diameter, decimals);
+      radiusOut.textContent = cleanNumber(radius, decimals);
+      countOut.textContent = results.length;
+
+      renderTable(results, decimals);
+      renderDiagram(results, diameter, radius, decimals);
+    }
+
+    function renderTable(results, decimals) {
+      resultBody.innerHTML = "";
+
+      results.forEach(item => {
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+          <td><span class="pill">${cleanNumber(item.inputAngle, decimals)}°</span></td>
+          <td>${cleanNumber(item.radius, decimals)}</td>
+          <td>${cleanNumber(item.horizontal, decimals)}</td>
+          <td>${cleanNumber(item.vertical, decimals)}</td>
+          <td>X = ${cleanNumber(item.horizontal, decimals)}, Y = ${cleanNumber(item.vertical, decimals)}</td>
+        `;
+
+        resultBody.appendChild(tr);
+      });
+    }
+
+    function svgEl(name, attrs = {}) {
+      const el = document.createElementNS("http://www.w3.org/2000/svg", name);
+      Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, v));
+      return el;
+    }
+
+    function renderDiagram(results, diameter, radius, decimals) {
+      diagram.innerHTML = "";
+
+      const W = 760;
+      const H = 520;
+      const cx = 380;
+      const cy = 390;
+      const drawR = 260;
+
+      const defs = svgEl("defs");
+      defs.innerHTML = `
+        <marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth">
+          <path d="M0,0 L9,4.5 L0,9 Z" fill="#38bdf8"></path>
+        </marker>
+        <filter id="softGlow">
+          <feGaussianBlur stdDeviation="3.5" result="coloredBlur"/>
+          <feMerge>
+            <feMergeNode in="coloredBlur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      `;
+      diagram.appendChild(defs);
+
+      const title = svgEl("text", {
+        x: 24,
+        y: 34,
+        fill: "#eef6ff",
+        "font-size": "18",
+        "font-weight": "800"
+      });
+      title.textContent = `Diameter = ${cleanNumber(diameter, decimals)} | Radius = ${cleanNumber(radius, decimals)}`;
+      diagram.appendChild(title);
+
+      const subtitle = svgEl("text", {
+        x: 24,
+        y: 58,
+        fill: "#9fb1c7",
+        "font-size": "13"
+      });
+      subtitle.textContent = "Horizontal length = base, Vertical height = height, Slanted line = radius";
+      diagram.appendChild(subtitle);
+
+      const circle = svgEl("circle", {
+        cx, cy,
+        r: drawR,
+        fill: "rgba(56,189,248,0.035)",
+        stroke: "rgba(125,211,252,0.95)",
+        "stroke-width": "3",
+        filter: "url(#softGlow)"
+      });
+      diagram.appendChild(circle);
+
+      const xAxis = svgEl("line", {
+        x1: cx - drawR - 28,
+        y1: cy,
+        x2: cx + drawR + 28,
+        y2: cy,
+        stroke: "rgba(255,255,255,0.72)",
+        "stroke-width": "2"
+      });
+      diagram.appendChild(xAxis);
+
+      const yAxis = svgEl("line", {
+        x1: cx,
+        y1: cy + drawR + 28,
+        x2: cx,
+        y2: cy - drawR - 28,
+        stroke: "rgba(255,255,255,0.72)",
+        "stroke-width": "2"
+      });
+      diagram.appendChild(yAxis);
+
+      const centerDot = svgEl("circle", {
+        cx, cy,
+        r: 5,
+        fill: "#facc15"
+      });
+      diagram.appendChild(centerDot);
+
+      const zeroText = svgEl("text", {
+        x: cx + 8,
+        y: cy + 20,
+        fill: "#facc15",
+        "font-size": "13",
+        "font-weight": "700"
+      });
+      zeroText.textContent = "CENTER";
+      diagram.appendChild(zeroText);
+
+      const colors = [
+        "#38bdf8", "#22c55e", "#facc15", "#fb7185", "#a78bfa",
+        "#2dd4bf", "#f97316", "#e879f9", "#84cc16", "#60a5fa"
+      ];
+
+      results.forEach((item, i) => {
+        const scale = drawR / radius;
+        const px = cx + item.horizontal * scale;
+        const py = cy - item.vertical * scale;
+        const color = colors[i % colors.length];
+
+        const radiusLine = svgEl("line", {
+          x1: cx,
+          y1: cy,
+          x2: px,
+          y2: py,
+          stroke: color,
+          "stroke-width": "3.2",
+          "stroke-linecap": "round",
+          "marker-end": "url(#arrow)"
+        });
+        diagram.appendChild(radiusLine);
+
+        const verticalLine = svgEl("line", {
+          x1: px,
+          y1: cy,
+          x2: px,
+          y2: py,
+          stroke: color,
+          "stroke-width": "3",
+          "stroke-dasharray": "7 6"
+        });
+        diagram.appendChild(verticalLine);
+
+        const baseLine = svgEl("line", {
+          x1: cx,
+          y1: cy,
+          x2: px,
+          y2: cy,
+          stroke: color,
+          "stroke-width": "3",
+          "stroke-dasharray": "7 6"
+        });
+        diagram.appendChild(baseLine);
+
+        const point = svgEl("circle", {
+          cx: px,
+          cy: py,
+          r: 5,
+          fill: color,
+          stroke: "#07111f",
+          "stroke-width": "2"
+        });
+        diagram.appendChild(point);
+
+        const angleArcR = 42 + (i * 9);
+        const arcAngle = toRadians(item.workingAngle);
+        const ax = cx + angleArcR * Math.cos(arcAngle);
+        const ay = cy - angleArcR * Math.sin(arcAngle);
+
+        const arc = svgEl("path", {
+          d: `M ${cx + angleArcR} ${cy} A ${angleArcR} ${angleArcR} 0 0 0 ${ax} ${ay}`,
+          fill: "none",
+          stroke: color,
+          "stroke-width": "2"
+        });
+        diagram.appendChild(arc);
+
+        const labelX = px + 8;
+        const labelY = py - 8;
+
+        const labelBg = svgEl("rect", {
+          x: labelX - 4,
+          y: labelY - 18,
+          width: 142,
+          height: 42,
+          rx: 10,
+          fill: "rgba(7,17,31,0.78)",
+          stroke: "rgba(255,255,255,0.12)"
+        });
+        diagram.appendChild(labelBg);
+
+        const label1 = svgEl("text", {
+          x: labelX + 4,
+          y: labelY,
+          fill: color,
+          "font-size": "13",
+          "font-weight": "800"
+        });
+        label1.textContent = `${cleanNumber(item.inputAngle, decimals)}°`;
+        diagram.appendChild(label1);
+
+        const label2 = svgEl("text", {
+          x: labelX + 4,
+          y: labelY + 17,
+          fill: "#eef6ff",
+          "font-size": "11"
+        });
+        label2.textContent = `H ${cleanNumber(item.horizontal, decimals)} | V ${cleanNumber(item.vertical, decimals)}`;
+        diagram.appendChild(label2);
+
+        const rightAngleSize = 16;
+        const rightAngle = svgEl("path", {
+          d: `M ${px - rightAngleSize} ${cy} L ${px - rightAngleSize} ${cy - rightAngleSize} L ${px} ${cy - rightAngleSize}`,
+          fill: "none",
+          stroke: "rgba(255,255,255,0.78)",
+          "stroke-width": "2"
+        });
+        diagram.appendChild(rightAngle);
+      });
+    }
+
+    calculateBtn.addEventListener("click", calculate);
+
+    resetBtn.addEventListener("click", () => {
+      diameterInput.value = "357";
+      anglesInput.value = "22.5, 45, 67.5";
+      angleFromInput.value = "horizontal";
+      precisionInput.value = "2";
+      calculate();
+    });
+
+    [diameterInput, anglesInput, angleFromInput, precisionInput].forEach(el => {
+      el.addEventListener("input", calculate);
+      el.addEventListener("change", calculate);
+    });
+
+    calculate();
+  </script>
+</body>
+</html>
