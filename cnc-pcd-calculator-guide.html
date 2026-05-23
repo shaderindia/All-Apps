@@ -3,10 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CNC PCD Calculator Guide - SHADER7 Blog</title>
-    <meta name="description" content="Using the Pitch Circle Diameter calculator effectively for bolt hole patterns.">
+    <title>Mastering PCD Calculations: Bolt Hole Coordinates Guide | SHADER7 Blog</title>
+    <meta name="description" content="Ultimate CNC PCD guide. Learn the trigonometry equations (sine &amp; cosine) to calculate bolt circle coordinates, starting angles, and WCS placements.">
+    <link rel="canonical" href="https://shader7.com/cnc-pcd-calculator-guide.html">
+    <meta property="og:title" content="Mastering PCD Calculations: Bolt Hole Coordinates Guide">
+    <meta property="og:description" content="Calculate circular bolt hole coordinates manually. Trigonometry equations for CNC programmers and machinists.">
+    <meta property="og:url" content="https://shader7.com/cnc-pcd-calculator-guide.html">
+    <meta property="og:type" content="article">
+    <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"Article","headline":"Mastering PCD Calculations: Bolt Hole Coordinates Guide","author":{"@type":"Person","name":"Nishikant Xalxo"},"publisher":{"@type":"Organization","name":"SHADER7"},"datePublished":"2026-03-28","dateModified":"2026-05-23","description":"Ultimate CNC PCD guide. Learn the trigonometry equations (sine &amp; cosine) to calculate bolt circle coordinates."}
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>body { font-family: 'Inter', sans-serif; }</style>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -16,31 +24,81 @@
             <a href="blog.html" class="text-sm font-semibold text-gray-500 hover:text-indigo-600 transition flex items-center gap-1">← Back to Blog</a>
         </div>
     </nav>
-    <header class="bg-indigo-900 text-white py-16 px-4">
+    <header class="bg-indigo-950 text-white py-16 px-4">
         <div class="max-w-3xl mx-auto text-center">
-            <span class="text-indigo-300 font-bold tracking-widest uppercase text-sm">CNC Machining • March 2026</span>
-            <h1 class="text-3xl md:text-5xl font-extrabold mt-4 mb-6 leading-tight">CNC PCD Calculator Guide</h1>
+            <span class="text-orange-400 font-bold tracking-widest uppercase text-sm">CNC Machining • Engineering • 2026</span>
+            <h1 class="text-3xl md:text-5xl font-extrabold mt-4 mb-6 leading-tight text-orange-50">PCD Bolt Hole Coordinates Guide</h1>
+            <p class="text-indigo-200 text-lg">Master the trigonometry formulas behind Pitch Circle Diameter (PCD) patterns. Learn to program coordinate grids manually.</p>
         </div>
     </header>
     <main class="max-w-3xl mx-auto px-4 py-12 bg-white shadow-sm rounded-b-xl -mt-4 relative z-10">
-        <div class="prose prose-indigo max-w-none text-gray-700 leading-relaxed space-y-6" id="article-content">
-            <p>Machining a bolt hole circle (Pitch Circle Diameter or PCD) manually used to require extensive trigonometry and referencing sine/cosine tables. Today, a good calculator does the heavy lifting.</p>
-            <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">What You Need to Know</h2>
-            <p>To calculate the exact X and Y coordinates for a bolt hole pattern, you only need three variables:</p>
-            <ul class="list-disc pl-6 space-y-2">
-                <li>The center point (X0, Y0 is usually easiest).</li>
-                <li>The diameter of the bolt circle (PCD).</li>
-                <li>The total number of holes required.</li>
-            </ul>
-            <div class="bg-gray-100 p-6 rounded-lg my-8 border-l-4 border-gray-600">
-                <h3 class="font-bold text-gray-900 mb-2">Get X/Y Coordinates Instantly</h3>
-                <p class="mb-4">Use our dedicated PCD calculator to instantly generate precise coordinates for your CNC mill.</p>
-                <a href="cnc-machinist/pcd/" class="inline-block bg-gray-800 text-white px-4 py-2 rounded font-semibold hover:bg-black transition">Open PCD Calculator</a>
+        <div class="prose prose-indigo max-w-none text-gray-700 leading-relaxed space-y-6">
+            <p>In CNC programming and structural engineering, a <strong>PCD</strong> (Pitch Circle Diameter) or **bolt circle** represents a circular pattern of evenly spaced holes. Machining flange interfaces, engine blocks, brake rotors, and couplings requires precise positioning of each hole center relative to a centralized Work Coordinate System (WCS).</p>
+
+            <p>While computer CAM programs generate circular drilling cycles automatically, a professional machinist should know the trigonometry behind **PCD coordinates**. If you're on the shop floor adjusting a blueprint with a custom offset, calculating these positions manually prevents tool offsets from wandering.</p>
+
+            <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">The Trigonometry Behind PCD Calculations</h2>
+            <p>Every hole coordinate on a bolt circle represents a point on a circle that can be solved using standard right-triangle trigonometry (sine and cosine). For any given hole index, the formulas are:</p>
+
+            <div class="bg-gray-50 p-6 rounded-lg my-6 border border-gray-200 font-mono text-sm leading-relaxed space-y-3">
+                <span class="text-orange-700 font-bold block mb-1">// Mathematical Equations:</span>
+                X = CenterX + (Radius × cos(Angle))
+                <br>Y = CenterY + (Radius × sin(Angle))
+                <br><span class="text-xs text-gray-500 font-sans italic">Where Radius = Pitch Circle Diameter (PCD) ÷ 2.</span>
+            </div>
+
+            <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Step-by-Step Manual Calculation</h2>
+            <p>To calculate a complete bolt circle manually, follow this sequential structure:</p>
+            <ol class="list-decimal pl-6 space-y-3">
+                <li><strong>Determine the Radius (R):</strong> Divide the PCD by 2. If the PCD is 100mm, the Radius is 50mm.</li>
+                <li><strong>Calculate the Incremental Angle (&theta;_step):</strong> Divide 360 degrees by the total number of holes. For a 6-hole circle: <code class="bg-gray-100 px-1 font-mono rounded">360 ÷ 6 = 60°</code> increment per hole.</li>
+                <li><strong>Determine Starting Angle:</strong> Identify where the first hole sits (typically 0° on the positive X-axis, or 90° on the positive Y-axis).</li>
+                <li><strong>Iterate Hole Angles:</strong> Calculate the cumulative angle for each hole:
+                  <ul class="list-disc pl-6 mt-1 space-y-1">
+                    <li>Hole 1: Starting Angle (e.g., 0°)</li>
+                    <li>Hole 2: Starting Angle + 60° = 60°</li>
+                    <li>Hole 3: Starting Angle + 120° = 120°</li>
+                    <li>Hole 4: 180°, Hole 5: 240°, Hole 6: 300°</li>
+                  </ul>
+                </li>
+                <li><strong>Apply Sin/Cos Formulas:</strong> Compute X and Y offsets for each angle, adding them to the Center coordinates.</li>
+            </ol>
+
+            <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Manual Calculation Example</h2>
+            <p>Let's calculate the coordinates for a 4-hole pattern, PCD 100mm, centered at X0 Y0, with the first hole at 45°:</p>
+            <table class="w-full border-collapse my-6 text-sm">
+                <thead><tr class="bg-orange-50"><th class="p-3 text-left border">Hole Index</th><th class="p-3 text-left border">Hole Angle (&theta;)</th><th class="p-3 text-left border">X Coordinate Formula (50 × cos(&theta;))</th><th class="p-3 text-left border">Y Coordinate Formula (50 × sin(&theta;))</th><th class="p-3 text-left border">Final Coordinates (X, Y)</th></tr></thead>
+                <tbody>
+                    <tr><td class="p-3 border font-bold">Hole 1</td><td class="p-3 border">45°</td><td class="p-3 border">50 × 0.7071 = 35.355 mm</td><td class="p-3 border">50 × 0.7071 = 35.355 mm</td><td class="p-3 border font-bold">X35.355, Y35.355</td></tr>
+                    <tr><td class="p-3 border font-bold">Hole 2</td><td class="p-3 border">135°</td><td class="p-3 border">50 × -0.7071 = -35.355 mm</td><td class="p-3 border">50 × 0.7071 = 35.355 mm</td><td class="p-3 border font-bold">X-35.355, Y35.355</td></tr>
+                    <tr><td class="p-3 border font-bold">Hole 3</td><td class="p-3 border">225°</td><td class="p-3 border">50 × -0.7071 = -35.355 mm</td><td class="p-3 border">50 × -0.7071 = -35.355 mm</td><td class="p-3 border font-bold">X-35.355, Y-35.355</td></tr>
+                    <tr><td class="p-3 border font-bold">Hole 4</td><td class="p-3 border">315°</td><td class="p-3 border">50 × 0.7071 = 35.355 mm</td><td class="p-3 border">50 × -0.7071 = -35.355 mm</td><td class="p-3 border font-bold">X35.355, Y-35.355</td></tr>
+                </tbody>
+            </table>
+
+            <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">G-Code Implementation (Canned Drilling Cycles)</h2>
+            <p>Once you have computed each coordinate point, you can code them directly as absolute coordinates under a drilling canned cycle (like <strong>G81</strong> for drilling or <strong>G83</strong> for peck drilling):</p>
+            <pre class="bg-gray-100 p-4 rounded-lg font-mono text-sm leading-relaxed text-indigo-900 border">
+G90 G54 (Absolute coordinates, WCS G54)
+G00 X35.355 Y35.355 Z25. S1500 M03 (Spindle ON, rapid to Hole 1)
+G43 H01 Z5. M08 (Apply tool offset, rapid to clearance plane, coolant ON)
+G81 G98 Z-10. R2. F150. (Initiate G81 cycle at Hole 1, depth Z-10, retract to Z2 clearance)
+X-35.355 Y35.355 (Executes drilling cycle automatically at Hole 2)
+X-35.355 Y-35.355 (Executes drilling cycle automatically at Hole 3)
+X35.355 Y-35.355 (Executes drilling cycle automatically at Hole 4)
+G80 G00 Z25. M09 (Cancel canned drilling cycle, rapid retract, coolant OFF)
+M05 (Spindle Stop)
+M30 (End Program)</pre>
+
+            <div class="bg-orange-50 p-6 rounded-lg my-8 border-l-4 border-orange-600">
+                <h3 class="font-bold text-orange-900 mb-2">Get Bolt Hole Coordinates Instantly</h3>
+                <p class="mb-4">Avoid manual trigonometry errors. Use the Shader7 PCD calculator to input center coordinates, PCD, number of holes, and starting angle, and instantly copy absolute or incremental G-code outputs.</p>
+                <a href="cnc-machinist/" class="inline-block bg-orange-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-700 transition">Enter CNC Machinist Hub →</a>
             </div>
         </div>
     </main>
     <footer class="bg-gray-50 py-12 text-center text-gray-500 text-sm mt-12 border-t border-gray-200">
-        &copy; <script>document.write(new Date().getFullYear())</script> SHADER7. All rights reserved.
+        &copy; <script>document.write(new Date().getFullYear())</script> SHADER7. All rights reserved. | <a href="blog.html" class="text-indigo-600">More Articles</a>
     </footer>
 </body>
 </html>
