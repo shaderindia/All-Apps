@@ -221,6 +221,79 @@
             color: white;
         }
     </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "SoftwareApplication",
+        "name": "Shader7 FairShare Expense Splitter",
+        "url": "https://shader7.com/fairshare/",
+        "applicationCategory": "FinanceApplication",
+        "operatingSystem": "All",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "description": "Free roommate bill splitter and shared expense calculator. Split travel costs, rent, and household spending. Settle debts with PDF report exports."
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "How does the FairShare splitter calculate group balances?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "The splitter sums all group spending and divides it by the total number of roommates to determine the exact average share per person. Each roommate's balance is calculated as: Individual Spending - Average Share. A positive balance indicates the person is owed money, while a negative balance indicates they owe the group."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How does the payment instruction settling algorithm work?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Our advanced settling engine runs a debt-minimization algorithm that pairs the largest debtor with the largest creditor, resolving as much offset as possible in a single transaction. This recursively loops through all balances, reducing the total number of peer-to-peer transfers required."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I split expenses with roommates unequally?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Currently, FairShare uses a standard equal-weight split which is the most common standard for shared roommate household rent, utilities, and grocery tabs. Unequal weights can be calculated by scaling spending inputs proportionally prior to entry."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Does this tool store roommate name or billing data?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. In alignment with our strict privacy-first principles, all calculations are executed locally in your browser memory. Roommate listings and billing logs are saved securely to your local device's localStorage so they persist across refreshes, but are never uploaded to any database."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I export a PDF report of our group settlements?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. Once you calculate the bill, click the 'Generate Report Preview' button. You can then download a complete, printable A4-formatted PDF receipt detailing individual balances and payment instructions."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I settle payments using mobile peer-to-peer apps like UPI?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. The settlement instructions detail exactly who owes whom and the precise amounts. You can easily copy these values and paste them into any peer payment application (such as UPI, Venmo, or mobile banking apps) to transfer funds."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
 </head>
 <body class="flex flex-col min-h-screen">
     <div id="loadingOverlay" class="loading-overlay">
@@ -301,6 +374,107 @@
         <div class="flex justify-center mt-6">
             <button id="resetAllBtn" class="btn-secondary text-red-600 bg-red-100 hover:bg-red-200" type="button">Reset All Data</button>
         </div>
+
+        <!-- Rich Educational Guide & FAQ sections -->
+        <section class="card mt-8">
+            <h2 class="text-3xl font-bold mb-3 text-indigo-700 text-center"><i class="fa fa-calculator"></i> The Math of Shared Expense Splitting</h2>
+            <p class="text-center text-gray-500 mb-6 text-sm">Understand standard balance calculations, transaction-minimization algorithms, and peer payment architectures.</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+                <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-5">
+                    <h3 class="text-lg font-bold text-indigo-900 mb-2">1. Group Balance Formula</h3>
+                    <p class="text-xs text-indigo-950 leading-relaxed">
+                        To calculate who owes what, we first aggregate the total spending of the entire group ($S_{total}$). We then calculate the average share per person ($A_{share}$) by dividing the total spent by the number of participants ($n$):
+                    </p>
+                    <div class="bg-white border border-indigo-200 rounded p-2 text-xs font-mono my-2 text-indigo-900">
+                        A_{share} = \frac{S_{total}}{n}
+                    </div>
+                    <p class="text-xs text-indigo-950 leading-relaxed">
+                        Each individual's net balance ($B_{net}$) is their total spending ($S_{indiv}$) minus the average share. A negative net balance means they owe money, while a positive net balance means they are owed.
+                    </p>
+                </div>
+
+                <div class="bg-violet-50 border border-violet-100 rounded-xl p-5">
+                    <h3 class="text-lg font-bold text-violet-900 mb-2">2. Debt Minimization Engine</h3>
+                    <p class="text-xs text-violet-950 leading-relaxed">
+                        To settle debts without dozens of tiny peer transfers, our engine utilizes a greedy transaction minimization algorithm:
+                    </p>
+                    <ul class="list-disc pl-4 text-xs text-violet-950 space-y-1 my-2">
+                        <li>The roommate with the largest negative balance (greatest debtor) is paired with the roommate with the largest positive balance (greatest creditor).</li>
+                        <li>We execute a transfer that settles the smaller of the two balances.</li>
+                        <li>We update the balances and repeat the process recursively until all debts are resolved.</li>
+                    </ul>
+                </div>
+
+                <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-5">
+                    <h3 class="text-lg font-bold text-indigo-900 mb-2">3. Peer Transfer Protocol</h3>
+                    <p class="text-xs text-indigo-950 leading-relaxed">
+                        Once settlements are calculated, actually moving the funds is smooth and instant using modern peer-to-peer (P2P) systems:
+                    </p>
+                    <ul class="list-disc pl-4 text-xs text-indigo-950 space-y-1 my-2">
+                        <li><strong>UPI (India):</strong> Instantly transfer precise sums directly from bank to bank using simple phone numbers or VPA identifiers.</li>
+                        <li><strong>Mobile Wallets:</strong> Apps like Venmo, Cash App, or local bank transfers allow you to copy the exact FairShare calculations to settle instantly.</li>
+                        <li><strong>No Server Logs:</strong> Your group financial figures remain private.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="mt-8">
+                <h3 class="text-xl font-bold mb-4 text-indigo-900">Frequently Asked Questions</h3>
+                <div class="space-y-3">
+                    <details class="bg-gray-50 border border-gray-200 rounded-xl p-4">
+                        <summary class="cursor-pointer font-bold text-sm text-gray-800">How does the FairShare splitter calculate group balances?</summary>
+                        <p class="text-xs text-gray-600 mt-2 leading-relaxed">The splitter sums all group spending and divides it by the total number of roommates to determine the exact average share per person. Each roommate's balance is calculated as: Individual Spending - Average Share. A positive balance indicates the person is owed money, while a negative balance indicates they owe the group.</p>
+                    </details>
+                    
+                    <details class="bg-gray-50 border border-gray-200 rounded-xl p-4">
+                        <summary class="cursor-pointer font-bold text-sm text-gray-800">How does the payment instruction settling algorithm work?</summary>
+                        <p class="text-xs text-gray-600 mt-2 leading-relaxed">Our advanced settling engine runs a debt-minimization algorithm that pairs the largest debtor with the largest creditor, resolving as much offset as possible in a single transaction. This recursively loops through all balances, reducing the total number of peer-to-peer transfers required.</p>
+                    </details>
+
+                    <details class="bg-gray-50 border border-gray-200 rounded-xl p-4">
+                        <summary class="cursor-pointer font-bold text-sm text-gray-800">Can I split expenses with roommates unequally?</summary>
+                        <p class="text-xs text-gray-600 mt-2 leading-relaxed">Currently, FairShare uses a standard equal-weight split which is the most common standard for shared roommate household rent, utilities, and grocery tabs. Unequal weights can be calculated by scaling spending inputs proportionally prior to entry.</p>
+                    </details>
+
+                    <details class="bg-gray-50 border border-gray-200 rounded-xl p-4">
+                        <summary class="cursor-pointer font-bold text-sm text-gray-800">Does this tool store roommate name or billing data?</summary>
+                        <p class="text-xs text-gray-600 mt-2 leading-relaxed">No. In alignment with our strict privacy-first principles, all calculations are executed locally in your browser memory. Roommate listings and billing logs are saved securely to your local device's localStorage so they persist across refreshes, but are never uploaded to any database.</p>
+                    </details>
+
+                    <details class="bg-gray-50 border border-gray-200 rounded-xl p-4">
+                        <summary class="cursor-pointer font-bold text-sm text-gray-800">Can I export a PDF report of our group settlements?</summary>
+                        <p class="text-xs text-gray-600 mt-2 leading-relaxed">Yes. Once you calculate the bill, click the 'Generate Report Preview' button. You can then download a complete, printable A4-formatted PDF receipt detailing individual balances and payment instructions.</p>
+                    </details>
+
+                    <details class="bg-gray-50 border border-gray-200 rounded-xl p-4">
+                        <summary class="cursor-pointer font-bold text-sm text-gray-800">Can I settle payments using mobile peer-to-peer apps like UPI?</summary>
+                        <p class="text-xs text-gray-600 mt-2 leading-relaxed">Yes. The settlement instructions detail exactly who owes whom and the precise amounts. You can easily copy these values and paste them into any peer payment application (such as UPI, Venmo, or mobile banking apps) to transfer funds.</p>
+                    </details>
+                </div>
+            </div>
+
+            <div class="mt-8 border-t border-gray-200 pt-6">
+                <h3 class="text-lg font-bold text-indigo-900 mb-3">Related Expert Guides & Resources</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 transition-all duration-200 hover:shadow-md hover:border-indigo-300">
+                        <h4 class="text-sm font-bold text-gray-900 mb-1">Expense Splitting with Friends</h4>
+                        <p class="text-xs text-gray-500 mb-3">Master the etiquette and mathematical balance points of splitting vacation tabs and monthly household utility bills.</p>
+                        <a href="../split-expenses-with-friends.html" class="text-xs font-bold text-indigo-600 hover:underline">Read Expert Guide &rarr;</a>
+                    </div>
+                    <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 transition-all duration-200 hover:shadow-md hover:border-indigo-300">
+                        <h4 class="text-sm font-bold text-gray-900 mb-1">Simple Monthly Budgeting Guide</h4>
+                        <p class="text-xs text-gray-500 mb-3">Learn how the 50/30/20 financial rule helps you track and budget shared roommate utility costs seamlessly.</p>
+                        <a href="../simple-monthly-budgeting-guide.html" class="text-xs font-bold text-indigo-600 hover:underline">Read Expert Guide &rarr;</a>
+                    </div>
+                    <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 transition-all duration-200 hover:shadow-md hover:border-indigo-300">
+                        <h4 class="text-sm font-bold text-gray-900 mb-1">Online Tool Security & Privacy</h4>
+                        <p class="text-xs text-gray-500 mb-3">Learn how client-side javascript processes numbers local in your browser to secure your private financial information.</p>
+                        <a href="../online-web-tools-data-security.html" class="text-xs font-bold text-indigo-600 hover:underline">Read Expert Guide &rarr;</a>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
 
     <footer class="bg-gray-800 text-gray-300 py-4 text-center text-sm rounded-t-xl shadow-inner mt-auto">

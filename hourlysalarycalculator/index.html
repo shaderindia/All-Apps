@@ -59,18 +59,51 @@
         "mainEntity": [
           {
             "@type": "Question",
-            "name": "How is hourly salary calculated?",
-            "acceptedAnswer": { "@type": "Answer", "text": "Hourly rate is calculated by dividing the base monthly salary by fixed base hours per month." }
+            "name": "How is my hourly rate calculated?",
+            "acceptedAnswer": { 
+              "@type": "Answer", 
+              "text": "Your hourly rate is calculated using the base salary and the fixed base hours you specify. The mathematical equation is: Hourly Rate = Base Salary / Fixed Base Hours." 
+            }
           },
           {
             "@type": "Question",
-            "name": "Can I include weekend pay?",
-            "acceptedAnswer": { "@type": "Answer", "text": "Yes. Weekend hours can be multiplied by a selected weekend rate such as 1x, 1.25x, 1.5x, or 2x." }
+            "name": "How do the weekend, night shift, and C shift multipliers work?",
+            "acceptedAnswer": { 
+              "@type": "Answer", 
+              "text": "Multipliers scale your base hourly rate for specific hours worked. Compounded rates apply when working specialized shifts on weekends (e.g., Weekend Rate * Night Shift Multiplier)." 
+            }
           },
           {
             "@type": "Question",
-            "name": "Can I generate a salary report?",
-            "acceptedAnswer": { "@type": "Answer", "text": "Yes. The calculator can preview and export a monthly salary report as PDF or JPG." }
+            "name": "What are the standard hours and shift assumptions?",
+            "acceptedAnswer": { 
+              "@type": "Answer", 
+              "text": "A standard full-time work month assumes 160 to 168 hours of labor, translating to a standard 40-hour work week (8 hours per day, 5 days per week)." 
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Is my financial information safe with Shader7?",
+            "acceptedAnswer": { 
+              "@type": "Answer", 
+              "text": "Yes, absolutely. The salary calculator operates entirely on client-side technology. All data is processed in your local browser memory and saved in local storage." 
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How does the live currency converter auto-calculate?",
+            "acceptedAnswer": { 
+              "@type": "Answer", 
+              "text": "The application integrates with the Frankfurter Exchange Rate API to pull live daily currency conversions. When enabled, your total monthly salary is automatically converted to Indian Rupees (INR) or other target currencies." 
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How can I export and print my monthly salary report?",
+            "acceptedAnswer": { 
+              "@type": "Answer", 
+              "text": "Once you have completed your monthly log, click the 'Generate Report' button to preview and download a detailed billing statement as a PDF or high-resolution JPG image." 
+            }
           }
         ]
       }
@@ -280,6 +313,65 @@
       .report-controls { justify-content: center; }
       #report-preview-content { transform-origin: top center; }
     }
+
+    /* Related resources cards for salary calculator */
+    .edu-resource-container {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+    .edu-resource-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-top: 14px;
+    }
+    .edu-resource-card {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      transition: all 0.2s ease;
+    }
+    .edu-resource-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      border-color: var(--primary);
+    }
+    .edu-resource-card h4 {
+      margin: 0 0 6px;
+      font-size: 1rem;
+      color: #1e293b;
+      font-weight: 700;
+    }
+    .edu-resource-card p {
+      margin: 0 0 12px;
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .edu-resource-card .link-btn {
+      color: var(--primary);
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .edu-resource-card .link-btn:hover {
+      text-decoration: underline;
+    }
+    .salary-math-box {
+      background: #f1f5f9;
+      border-left: 4px solid var(--primary);
+      border-radius: 6px;
+      padding: 12px;
+      font-family: monospace;
+      font-size: 0.85rem;
+      margin: 8px 0;
+      color: #334155;
+    }
   </style>
 </head>
 <body>
@@ -357,11 +449,85 @@
       </div>
     </section>
 
+    <section class="card" aria-labelledby="guide-title">
+      <h2 id="guide-title">Professional Income & Shift Calculations</h2>
+      <p class="subtle">Understand standard pay intervals, shift differential mechanics, and full-time hours equations.</p>
+      
+      <div style="margin-top: 16px; line-height: 1.6;">
+        <h3 style="font-size: 1.1rem; color: #1e293b; margin-bottom: 6px;">1. Pay Interval Conversions</h3>
+        <p style="font-size: 0.9rem; color: #475569; margin-bottom: 12px;">
+          Converting hourly wages to longer periods is essential for budgeting and evaluating job offers. Here are the standardized financial equations used:
+        </p>
+        <div class="salary-math-box">
+          Weekly Salary = Hourly Rate &times; Hours Worked per Week<br>
+          Yearly Salary = Weekly Salary &times; 52 weeks<br>
+          Monthly Salary = Yearly Salary &divide; 12 months
+        </div>
+        <p style="font-size: 0.9rem; color: #475569; margin-bottom: 14px;">
+          For a standard 40-hour work week, a $25/hour rate calculates to a weekly salary of $1,000, an annual salary of $52,000, and a monthly salary of exactly $4,333.33.
+        </p>
+
+        <h3 style="font-size: 1.1rem; color: #1e293b; margin-bottom: 6px;">2. Shift Differentials & Multipliers</h3>
+        <p style="font-size: 0.9rem; color: #475569; margin-bottom: 12px;">
+          Many industries (healthcare, manufacturing, IT operations) utilize shift multipliers to compensate employees for working less desirable hours, such as nights or weekends.
+        </p>
+        <p style="font-size: 0.9rem; color: #475569; margin-bottom: 12px;">
+          <b>Weekend Multiplier:</b> Multiplies weekend hours by a set rate (e.g., 1.5x or 2x) as standard premium pay.<br>
+          <b>Night Shift Multiplier:</b> Applies an additional differential (e.g., 1.25x or 25% extra) for overnight schedules. When shifts overlap (e.g., a weekend night shift), our advanced engine compounds these multipliers:
+        </p>
+        <div class="salary-math-box">
+          Effective Hourly Rate = Base Rate &times; Weekend Multiplier &times; Night Multiplier
+        </div>
+      </div>
+    </section>
+
     <section class="card" aria-labelledby="faq-title">
       <h2 id="faq-title">Salary Calculator FAQ</h2>
-      <details><summary><strong>How is my hourly rate calculated?</strong></summary><p>Your base salary is divided by fixed base hours. Example: 4000 RON / 160 hours = 25 RON/hour.</p></details>
-      <details><summary><strong>Does weekend work pay extra?</strong></summary><p>Weekend hours are multiplied by the weekend rate you choose. Weekday hours stay at the regular hourly rate.</p></details>
-      <details><summary><strong>Where is my data stored?</strong></summary><p>Your saved monthly data is stored in your browser localStorage. It is not uploaded to a server by this page.</p></details>
+      <details>
+        <summary><strong>How is my hourly rate calculated?</strong></summary>
+        <p>Your hourly rate is calculated using the base salary and the fixed base hours you specify. The mathematical equation is: Hourly Rate = Base Salary / Fixed Base Hours. For example, if your base salary is 4,000 RON and your fixed base hours are 160, your regular hourly rate is exactly 25.00 RON/hour.</p>
+      </details>
+      <details>
+        <summary><strong>How do the weekend, night shift, and C shift multipliers work?</strong></summary>
+        <p>Multipliers scale your base hourly rate for specific hours worked. The weekend multiplier (e.g., 1.5x or 2.0x) scales weekend hours. The night shift and C shift multipliers scale hours logged under those shift designations. Under our advanced billing engine, if you log night hours on a weekend, both multipliers are compounded together (e.g., Hourly Rate * Weekend Multiplier * Night Multiplier) to ensure accurate shift differential tracking.</p>
+      </details>
+      <details>
+        <summary><strong>What are the standard hours and shift assumptions?</strong></summary>
+        <p>By default, a standard full-time work month assumes 160 to 168 hours of labor, which translates to a standard 40-hour work week (8 hours per day, 5 days per week). If your company operates on custom monthly fixed hours, you can adjust the 'Fixed Base Hours' field, and all calculations will dynamically scale.</p>
+      </details>
+      <details>
+        <summary><strong>Where is my data stored and is it safe?</strong></summary>
+        <p>Absolutely. The salary calculator operates entirely on client-side technology. All data entered into the calendar, base salaries, shift schedules, and generated pdf templates are processed in your local browser memory and saved in your browser's private localStorage. None of your data is ever transmitted to external servers.</p>
+      </details>
+      <details>
+        <summary><strong>How does the live currency converter auto-calculate?</strong></summary>
+        <p>The application integrates with the Frankfurter Exchange Rate API to pull live daily currency conversions. When enabled, your total monthly salary is automatically converted to Indian Rupees (INR) or other target currencies. You can also manually adjust the currency conversion rate if you have a locked exchange agreement.</p>
+      </details>
+      <details>
+        <summary><strong>How can I export and print my monthly salary report?</strong></summary>
+        <p>Once you have completed your monthly log, click the 'Generate Report' button. The app compiles your logs, daily shifts, base rate, and exchange values into a clean statement sheet. You can then download this statement directly as a PDF or high-resolution JPG image for your personal tax ledgers.</p>
+      </details>
+
+      <div class="edu-resource-container">
+        <h3 style="font-size: 1.15rem; color: #1e293b; margin-bottom: 10px;">Related Expert Guides & Resources</h3>
+        <div class="edu-resource-grid">
+          <div class="edu-resource-card">
+            <h4>Hourly to Annual Salary Guide</h4>
+            <p>Learn the standard mathematical equations and step-by-step methods to convert hourly pay rates into weekly and annual values.</p>
+            <a href="../salary-calculator-hourly-to-yearly.html" class="link-btn">Read Expert Guide &rarr;</a>
+          </div>
+          <div class="edu-resource-card">
+            <h4>Simple Monthly Budgeting Guide</h4>
+            <p>Master the 50/30/20 budget framework, build a robust emergency fund, and learn how to manage dynamic shifting wages.</p>
+            <a href="../simple-monthly-budgeting-guide.html" class="link-btn">Read Expert Guide &rarr;</a>
+          </div>
+          <div class="edu-resource-card">
+            <h4>Online Tool Security & Privacy</h4>
+            <p>Understand how client-side javascript keeps your financial data 100% secure by processing numbers locally in your browser memory.</p>
+            <a href="../online-web-tools-data-security.html" class="link-btn">Read Expert Guide &rarr;</a>
+          </div>
+        </div>
+      </div>
     </section>
 
     <footer class="credits"><p>&copy; <span id="copyright-year"></span> SHADER7 - Free Apps for You. All rights reserved.</p><p>Built with <span style="color:#ef4444;">&hearts;</span> by <a href="https://www.instagram.com/nishix_vamp" target="_blank" rel="noopener noreferrer">Nishikant Xalxo</a></p></footer>

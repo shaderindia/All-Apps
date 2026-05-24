@@ -48,6 +48,63 @@
   }
   </script>
 
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How does the browser-based photo compression work?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "The photo compressor runs entirely inside your web browser using HTML5 Canvas APIs. When you select an image, the browser loads it locally into memory, applies the requested width/height adjustments, and renders it onto a canvas. It then compresses the canvas to your target size or quality without ever uploading the file to a remote server."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is the difference between lossy and lossless compression?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Lossy compression (used in JPG and WEBP) decreases file size by permanently discarding less noticeable visual data, which is highly efficient for general photos. Lossless compression (used in PNG) retains all pixel-by-pixel information exactly, resulting in larger file sizes but keeping crisp transparency and sharp edges for graphic logos."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I calculate pixel dimensions from physical sizes like CM or Inches?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "To convert physical units to pixels, you must specify a target resolution measured in DPI (Dots Per Inch). The mathematical equations are: Pixels = (Physical Size in Inches) * DPI, or Pixels = (Physical Size in Millimeters) * DPI / 25.4. For example, a 5cm x 5cm photo at 300 DPI converts to 591px x 591px."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I lock or unlock the aspect ratio during crop or resize?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. By default, the tool maintains your photo's original proportions to prevent stretching. If you toggle cropping, you can define custom dimensions (like a square 1:1 or standard document ratios) and resize the bounding box freely before compression."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is there a limit to the image file size I can upload?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Because all operations are performed on your local device, there are no strict upload limits. However, extremely large files (e.g., above 30MB or 8000px dimensions) can consume substantial system RAM on mobile devices during rendering."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is my uploaded photo stored or shared?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No. Privacy is a core feature of Shader7. Since the tool operates 100% client-side, your photos remain secure on your own device. No data is sent to external servers, protecting your privacy completely."
+        }
+      }
+    ]
+  }
+  </script>
+
   <style>
     * {
       box-sizing: border-box;
@@ -592,6 +649,65 @@
         letter-spacing: -0.04em;
       }
     }
+
+    /* details and summary styling */
+    details {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      margin-bottom: 8px;
+      padding: 12px 16px;
+    }
+    summary {
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 15px;
+      color: var(--text);
+    }
+    details p {
+      margin: 10px 0 0;
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    /* related blog cards styling */
+    .blog-resource-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 14px;
+      margin-top: 14px;
+    }
+    .blog-card {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+    .blog-card:hover {
+      transform: translateY(-2px);
+      background: rgba(255, 255, 255, 0.12);
+    }
+    .blog-card h4 {
+      margin: 0 0 6px;
+      font-size: 15px;
+      color: #22c55e;
+    }
+    .blog-card p {
+      margin: 0 0 12px;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .blog-card .read-more {
+      font-size: 13px;
+      color: var(--text);
+      font-weight: bold;
+      text-decoration: none;
+    }
+    .blog-card .read-more:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 
@@ -772,6 +888,103 @@
           email attachments, and social media uploads. You can compress JPG, PNG, JPEG, and WEBP files,
           resize dimensions, crop to a selected ratio, and download the final photo instantly.
         </p>
+      </article>
+
+      <article class="card full-width">
+        <h3>The Science of Digital Image Compression</h3>
+        <p>
+          Reducing an image's file size requires balancing the file's storage size with its visual fidelity. There are two primary categories of compression:
+        </p>
+        <p>
+          <b>Lossy Compression:</b> Used predominantly by JPEG and WEBP, this method analyzes pixel grids and discards visual details that the human eye is less sensitive to, such as minute color gradients. This allows for extremely large reductions in file size (often up to 90%) with minimal visible loss in quality. It is the ideal format for standard digital photos, social sharing, and fast-loading web images.
+        </p>
+        <p>
+          <b>Lossless Compression:</b> Employed by PNG, this format preserves every single pixel's color information exactly. Because no data is discarded, file sizes remain relatively large. It is highly optimized for vector layouts, crisp line art, digital text, and graphics requiring transparent backgrounds (alpha channels).
+        </p>
+      </article>
+
+      <article class="card full-width">
+        <h3>Physical-to-Pixel Conversion & DPI Calculator Math</h3>
+        <p>
+          When submitting photos for official documents, applications, or print media, dimensions are often specified in physical lengths (like millimeters, centimeters, or inches) rather than digital pixels. To translate these physical dimensions into digital pixels, you must use a density factor known as <b>DPI (Dots Per Inch)</b> or PPI (Pixels Per Inch).
+        </p>
+        <p>
+          To calculate the exact pixel width or height, use the following mathematical equations:
+        </p>
+        <p style="font-family: monospace; background: rgba(0, 0, 0, 0.2); padding: 12px; border-radius: 8px; font-size: 13px;">
+          Pixels = Width (in inches) &times; DPI
+        </p>
+        <p>
+          If your measurements are in centimeters or millimeters, you must first convert the length to inches (1 inch is exactly 2.54 centimeters, or 25.4 millimeters):
+        </p>
+        <p style="font-family: monospace; background: rgba(0, 0, 0, 0.2); padding: 12px; border-radius: 8px; font-size: 13px;">
+          Pixels = (Width in millimeters &divide; 25.4) &times; DPI<br>
+          Pixels = (Width in centimeters &divide; 2.54) &times; DPI
+        </p>
+        <p>
+          For example, if you require a 5 cm &times; 5 cm photo at 300 DPI:
+          <br>
+          Width: (5 &divide; 2.54) &times; 300 &approx; 591 pixels.
+          <br>
+          This built-in converter performs this math automatically when you switch units from PX to CM, MM, or Inch!
+        </p>
+      </article>
+
+      <article class="card full-width">
+        <h3>Related Expert Guides & Resources</h3>
+        <p>Enhance your image editing knowledge and digital security with our comprehensive expert articles:</p>
+        <div class="blog-resource-grid">
+          <div class="blog-card">
+            <h4>Online Image Compression Guide</h4>
+            <p>A deep-dive article into lossless vs lossy formats, DPI calculations, and how to compress photos for school or job portals.</p>
+            <a href="../photo-compression-guide-online.html" class="read-more">Read Expert Guide &rarr;</a>
+          </div>
+          <div class="blog-card">
+            <h4>Online Web Tool Security & Privacy</h4>
+            <p>Learn how client-side JavaScript execution keeps your data 100% secure by processing images local in your system browser.</p>
+            <a href="../online-web-tools-data-security.html" class="read-more">Read Expert Guide &rarr;</a>
+          </div>
+          <div class="blog-card">
+            <h4>DIY Passport Photography Setup</h4>
+            <p>Setup a perfect DIY passport photo environment using natural window light to avoid shadow and comply with guidelines.</p>
+            <a href="../passport-photo-lighting-setup.html" class="read-more">Read Expert Guide &rarr;</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="card full-width">
+        <h3>Frequently Asked Questions</h3>
+        <div style="margin-top: 14px;">
+          <details>
+            <summary>How does the browser-based photo compression work?</summary>
+            <p>The photo compressor runs entirely inside your web browser using HTML5 Canvas APIs. When you select an image, the browser loads it locally into memory, applies the requested width/height adjustments, and renders it onto a canvas. It then compresses the canvas to your target size or quality without ever uploading the file to a remote server.</p>
+          </details>
+
+          <details>
+            <summary>What is the difference between lossy and lossless compression?</summary>
+            <p>Lossy compression (used in JPG and WEBP) decreases file size by permanently discarding less noticeable visual data, which is highly efficient for general photos. Lossless compression (used in PNG) retains all pixel-by-pixel information exactly, resulting in larger file sizes but keeping crisp transparency and sharp edges for graphic logos.</p>
+          </details>
+
+          <details>
+            <summary>How do I calculate pixel dimensions from physical sizes like CM or Inches?</summary>
+            <p>To convert physical units to pixels, you must specify a target resolution measured in DPI (Dots Per Inch). The mathematical equations are: Pixels = (Physical Size in Inches) * DPI, or Pixels = (Physical Size in Millimeters) * DPI / 25.4. For example, a 5cm x 5cm photo at 300 DPI converts to 591px x 591px.</p>
+          </details>
+
+          <details>
+            <summary>Can I lock or unlock the aspect ratio during crop or resize?</summary>
+            <p>Yes. By default, the tool maintains your photo's original proportions to prevent stretching. If you toggle cropping, you can define custom dimensions (like a square 1:1 or standard document ratios) and resize the bounding box freely before compression.</p>
+          </details>
+
+          <details>
+            <summary>Is there a limit to the image file size I can upload?</summary>
+            <p>Because all operations are performed on your local device, there are no strict upload limits. However, extremely large files (e.g., above 30MB or 8000px dimensions) can consume substantial system RAM on mobile devices during rendering.</p>
+          </details>
+
+          <details>
+            <summary>Is my uploaded photo stored or shared?</summary>
+            <p>No. Privacy is a core feature of Shader7. Since the tool operates 100% client-side, your photos remain secure on your own device. No data is sent to external servers, protecting your privacy completely.</p>
+          </details>
+        </div>
       </article>
     </section>
 
