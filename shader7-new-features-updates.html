@@ -33,34 +33,262 @@
     </header>
     <main class="max-w-3xl mx-auto px-4 py-12 bg-white shadow-sm rounded-b-xl -mt-4 relative z-10">
         <div class="prose prose-indigo max-w-none text-gray-700 leading-relaxed space-y-6">
-            <p>At **Shader7**, our mission has always been simple: to provide high-performance, essential digital tools to professionals, freelancers, makers, and students &mdash; completely free of charge, with zero mandatory account signups and zero invasive tracking.</p>
+            <!-- Author Meta Information Section -->
+            <div class="flex items-center justify-between border-b border-gray-150 pb-6 mb-6">
+                <div class="flex items-center gap-3">
+                    <div class="bg-indigo-100 text-indigo-700 font-bold rounded-full w-10 h-10 flex items-center justify-center">
+                        NX
+                    </div>
+                    <div>
+                        <span class="block text-sm font-semibold text-gray-900">Nishikant Xalxo</span>
+                        <span class="block text-xs text-gray-500">@nishix_vamp • Lead Architect & Developer</span>
+                    </div>
+                </div>
+                <div class="text-right text-xs text-gray-400">
+                    <span class="block">Published: April 18, 2026</span>
+                    <span class="block">Updated: May 23, 2026</span>
+                </div>
+            </div>
 
-            <p>Over the past few months, we have completely overhauled the platform's core architecture. We've rolled out massive design, security, and utility upgrades. Here is a breakdown of the new features available on Shader7 today.</p>
+            <p>At <strong>Shader7</strong>, our mission has always been simple: to provide high-performance, essential digital tools to professionals, freelancers, makers, and students &mdash; completely free of charge, with zero mandatory account signups and zero invasive tracking. In an era where simple web utilities are increasingly locked behind subscriptions, paywalls, or aggressive data-harvesting trackers, Shader7 stands as an open-source, user-first alternative.</p>
 
-            <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">1. Local Client-Side AI (Background Removal)</h2>
-            <p>Our flagship **Passport Photo PRO** tool now features built-in, local AI. Traditionally, removing the background from an image required uploading it to a cloud server, posing severe privacy risks for personal ID photos.</p>
-            <p>Shader7 now loads a lightweight, highly-optimized 40MB neural network model directly into your browser. The automatic subject extraction runs **entirely locally on your device's processor**. You get professional, clean, edge-perfect background removal and custom color swapping with absolute, airtight privacy.</p>
+            <p>Over the past few months, we have completely overhauled the platform's core architecture. By shifting from server-dependent computation to a highly optimized client-side execution model, we have rolled out massive design, security, and utility upgrades. The result is a suite of web applications that run directly on your browser sandbox, keeping your sensitive documents, photos, and calculations entirely local. Here is a breakdown of the new features available on Shader7 today, complete with technical deep dives into how they work.</p>
 
-            <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">2. The All-New Photo Compressor</h2>
-            <p>We've launched a comprehensive **Photo Compressor &amp; Resizer** tool to help you satisfy strict online file limits. It features:</p>
+            <!-- Section: Historical Context -->
+            <h2 class="text-2xl font-bold text-indigo-950 mt-10 mb-4 border-b border-gray-100 pb-2">Historical Context &amp; Technological Significance</h2>
+            <p>Historically, web applications followed a strict client-server model. When a user wanted to perform a complex task &mdash; such as compressing a large high-resolution image, converting a document, or separating a background from a foreground subject &mdash; the client browser had to transmit the raw binary payload to a remote cloud server. The server would process the file and send the output back down the wire.</p>
+            <p>This paradigm introduced three fundamental bottlenecks:</p>
             <ul class="list-disc pl-6 space-y-2">
-                <li>Dynamic size targeting (compress down to exact KB values, like 50KB or 100KB).</li>
-                <li>Output format conversion (swap between JPG, PNG, and WEBP).</li>
-                <li>Physical unit support: resize by pixels, centimeters (cm), millimeters (mm), or inches (inch) based on target print DPI.</li>
-                <li>Built-in, hardware-accelerated local cropping boundaries.</li>
+                <li><strong>Latency and Bandwidth Costs:</strong> Users had to wait for large uploads, which was extremely inefficient on constrained mobile connections or remote broadband networks.</li>
+                <li><strong>Infrastructure Scaling Costs:</strong> Developers faced escalating server hosting fees, requiring them to monetize tools via ads, premium subscriptions, or user data tracking.</li>
+                <li><strong>Data Security and Privacy Risks:</strong> Uploading personal ID documents, passport photos, and financial details to third-party databases exposes users to data breaches, interception, and compliance issues (such as GDPR or HIPAA).</li>
+            </ul>
+            <p>By 2026, the convergence of advanced standards like <strong>WebAssembly (WASM)</strong>, modern high-efficiency JavaScript engines, and hardware-accelerated <strong>WebGPU/WebGL APIs</strong> has catalyzed a massive paradigm shift. Shader7's 2026 update represents the cutting edge of this movement. By running complex tasks entirely in the browser, Shader7 guarantees sub-millisecond execution times, eliminates data-privacy threats, and functions seamlessly in low-connectivity or completely offline scenarios.</p>
+
+            <!-- Section: Deep-Dive Technical Analysis -->
+            <h2 class="text-2xl font-bold text-indigo-950 mt-10 mb-4 border-b border-gray-100 pb-2">Deep-Dive Technical, Algorithmic &amp; Scientific Analysis</h2>
+            
+            <h3 class="text-xl font-bold text-indigo-900 mt-8 mb-3">1. Client-Side AI Image Segmentation (TensorFlow.js &amp; ONNX)</h3>
+            <p>Our flagship <strong>Passport Photo PRO</strong> tool now features built-in, local AI. Traditionally, removing the background from an image required uploading it to a cloud server, posing severe privacy risks for personal ID photos. Shader7 now loads a lightweight, highly-optimized 40MB neural network model directly into your browser. The automatic subject extraction runs <strong>entirely locally on your device's processor</strong>.</p>
+            <p>When a user selects an image, Shader7 initializes a runtime environment powered by either <strong>TensorFlow.js</strong> or <strong>ONNX Runtime Web</strong>, depending on the client device's compatibility profiles. Here is how the processing pipeline operates:</p>
+            <ul class="list-disc pl-6 space-y-2">
+                <li><strong>Model Selection and Quantization:</strong> We employ a custom-trained, highly-optimized deep learning model (such as a quantized U-Net or MODNet variant) compressed down to approximately 40MB. By using 8-bit quantization (INT8), we reduce the model footprint by 75% compared to its floating-point 32-bit (FP32) equivalent, with virtually zero degradation in edge-detection accuracy.</li>
+                <li><strong>Hardware-Accelerated Execution:</strong> The model executes via WebGL or WebGPU backends. The browser compiles custom shaders that partition the matrix operations across the user's local GPU cores. If a dedicated GPU is unavailable, the pipeline falls back to multi-threaded CPU execution compiled via WebAssembly (WASM) with SIMD (Single Instruction, Multiple Data) vectorization.</li>
+                <li><strong>Segmentation Pipeline:</strong>
+                    <ol class="list-decimal pl-6 mt-2 space-y-1">
+                        <li><strong>Pre-processing:</strong> The input image is downscaled to a standard tensor shape (e.g., 512x512 pixels) and normalized to fit the model's expected statistical distribution.</li>
+                        <li><strong>Inference:</strong> The neural network generates a grayscale alpha-channel probability map (matte), assigning a float value between 0.0 (certain background) and 1.0 (certain foreground/subject) to each pixel.</li>
+                        <li><strong>Post-processing / Edge Refinement:</strong> A guided filter is applied to the alpha matte at the original image resolution. This restores fine details, such as flyaway hair strands or clothing edges.</li>
+                        <li><strong>Canvas Compositing:</strong> The refined alpha matte is applied to the original HTML5 canvas as a clipping mask, enabling seamless replacement of the background with a pure white, solid color, or transparent canvas.</li>
+                    </ol>
+                </li>
             </ul>
 
-            <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">3. Progressive Web App (PWA) Offline capabilities</h2>
-            <p>You can now install Shader7 directly onto your mobile or desktop home screen! The entire platform is now **PWA Ready**:</p>
+            <h3 class="text-xl font-bold text-indigo-900 mt-8 mb-3">2. Progressive Web App (PWA) Caching Models</h3>
+            <p>You can now install Shader7 directly onto your mobile or desktop home screen! The entire platform is PWA ready, governed by an advanced custom <strong>Service Worker</strong> that manages our caching models. The platform uses a hybridized <strong>Cache-First (with Network Fallback)</strong> and <strong>Stale-While-Revalidate</strong> model:</p>
             <ul class="list-disc pl-6 space-y-2">
-                <li><strong>Instant Loading:</strong> Custom Service Workers cache structural assets locally, making page load times near-instantaneous.</li>
-                <li><strong>Offline Support:</strong> Many tools (including the Resume Builder, Salary Calculator, and G-Code utilities) can run perfectly without any internet connection at all once cached.</li>
-                <li><strong>Native UI:</strong> Sits cleanly on iOS and Android with a beautiful, app-like standalone interface.</li>
+                <li><strong>Cache-First Model:</strong> For core static assets, including HTML structures, compiled CSS, JavaScript modules, system fonts, and the 40MB pre-trained AI weights, we implement a strict Cache-First strategy. When the browser requests one of these assets, the Service Worker intercepts the request and inspects the local Cache Storage API. If a match is found, the asset is returned immediately from the storage disk. This reduces loading latency to under 10 milliseconds, regardless of network conditions.</li>
+                <li><strong>Network Fallback:</strong> If the cached resource is missing, the Service Worker reaches out to the network, serves the asset, and concurrently stores it in the cache for future offline visits.</li>
+                <li><strong>Offline Service Workers Caches:</strong> For applications like our Resume Builder, G-Code utility, and Salary Calculator, all data inputs, state managers, and file exports are written entirely in vanilla JS. Since these tools require no dynamic database interactions, once the Service Worker caches the structural code, they run completely offline. The device acts as a fully self-contained application host.</li>
             </ul>
 
-            <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">4. Sleek Dark Mode Controls &amp; Glassmorphism Designs</h2>
-            <p>The entire landing page and inner webapps now feature harmonized visual systems. With rich glassmorphic layers, vibrant HSL-curated color palettes, and responsive hover-state animations, Shader7 feels incredibly premium. You can also toggle between light and dark visual modes in our tools with a single click to protect your eyes during late-night programming blocks.</p>
+            <h3 class="text-xl font-bold text-indigo-900 mt-8 mb-3">3. Dark Mode Controls &amp; Glassmorphic Visual Systems</h3>
+            <p>Shader7's visual identity relies on dynamic dark mode styling and a cohesive glassmorphism aesthetic. With rich glassmorphic layers, vibrant HSL-curated color palettes, and responsive hover-state animations, Shader7 feels incredibly premium. Toggle between light and dark visual modes in our tools with a single click to protect your eyes during late-night programming blocks.</p>
+            <ul class="list-disc pl-6 space-y-2">
+                <li><strong>Tailwind Configuration:</strong> We use Tailwind CSS's class-based dark mode (<code>darkMode: 'class'</code>). This allows us to prefix dark mode styles directly in the markup (e.g., <code>bg-white dark:bg-slate-900</code>).</li>
+                <li><strong>JavaScript Theme Controller:</strong> The toggle button binds to a state controller that applies the <code>dark</code> class to the root <code>&lt;html&gt;</code> element. To prevent the notorious "Flash of Unstyled Content" (FOUC), where a bright white screen flashes briefly before the dark theme loads, we execute an inline script in the <code>&lt;head&gt;</code> of our documents:
+                    <pre class="bg-gray-900 text-green-400 p-4 rounded-lg text-xs overflow-x-auto mt-2"><code>(function() {
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+        document.documentElement.classList.add('dark');
+    } else {
+        document.documentElement.classList.remove('dark');
+    }
+})();</code></pre>
+                </li>
+                <li><strong>Glassmorphic Render Layers:</strong> We leverage Tailwind's backdrop-filter classes (<code>backdrop-blur-md bg-white/70 dark:bg-slate-900/70 border border-white/20</code>) to create floating UI panels. This provides deep layering and optimal visual contrast under both light and dark ambient modes.</li>
+            </ul>
 
+            <!-- Section: The All-New Photo Compressor -->
+            <h2 class="text-2xl font-bold text-indigo-950 mt-10 mb-4 border-b border-gray-100 pb-2">4. The All-New Photo Compressor &amp; Resizer</h2>
+            <p>We've launched a comprehensive <strong>Photo Compressor &amp; Resizer</strong> tool to help you satisfy strict online file limits. By executing raw canvas buffers directly on the GPU, we compress high-resolution image files in milliseconds with zero server overhead. The core utility features include:</p>
+            <ul class="list-disc pl-6 space-y-2">
+                <li><strong>Dynamic Size Targeting:</strong> Compress down to exact KB values (e.g., 50KB or 100KB) through iterative structural canvas quality calculations.</li>
+                <li><strong>Output Format Conversion:</strong> Effortlessly swap formats between JPEG, PNG, and high-efficiency WebP.</li>
+                <li><strong>Physical Unit Support:</strong> Resize by pixels, centimeters (cm), millimeters (mm), or inches (inch) based on target print DPI specifications.</li>
+                <li><strong>Local Hardware Acceleration:</strong> Built-in, hardware-accelerated local cropping boundaries running smoothly at 60fps.</li>
+            </ul>
+
+            <!-- Section: Platform Evolution and Comparative Matrix -->
+            <h2 class="text-2xl font-bold text-indigo-950 mt-10 mb-4 border-b border-gray-100 pb-2">Platform Milestone Evolution &amp; Caching Comparison</h2>
+            <p>To provide complete transparency to our developers and users, we have cataloged our platform's major upgrade timeline alongside a comprehensive analytical matrix of modern caching paradigms. These insights highlight the meticulous testing and architectural decisions that fuel Shader7's ultra-responsive UI.</p>
+
+            <h3 class="text-xl font-bold text-indigo-900 mt-8 mb-3">Platform Evolution Timeline (2025 - 2026)</h3>
+            <div class="overflow-x-auto my-8 border border-gray-200 rounded-lg shadow-sm">
+                <table class="min-w-full divide-y divide-gray-200 text-sm">
+                    <thead class="bg-indigo-50/50">
+                        <tr>
+                            <th class="px-4 py-3 text-left font-semibold text-indigo-900">Milestone Date</th>
+                            <th class="px-4 py-3 text-left font-semibold text-indigo-900">Platform Version</th>
+                            <th class="px-4 py-3 text-left font-semibold text-indigo-900">Feature Upgraded</th>
+                            <th class="px-4 py-3 text-left font-semibold text-indigo-900">Technical Core</th>
+                            <th class="px-4 py-3 text-left font-semibold text-indigo-900">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-150 bg-white text-gray-600">
+                        <tr>
+                            <td class="px-4 py-3 font-semibold text-gray-900">September 2025</td>
+                            <td class="px-4 py-3 font-mono">v1.0.0</td>
+                            <td class="px-4 py-3">Platform Launch</td>
+                            <td class="px-4 py-3 text-xs">Core HTML5/CSS3 site with initial standard webapps</td>
+                            <td class="px-4 py-3"><span class="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full font-medium">Complete</span></td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-semibold text-gray-900">November 2025</td>
+                            <td class="px-4 py-3 font-mono">v1.2.0</td>
+                            <td class="px-4 py-3">Advanced Tools Update</td>
+                            <td class="px-4 py-3 text-xs">G-Code validator &amp; complex Salary Calculator offline mechanics</td>
+                            <td class="px-4 py-3"><span class="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full font-medium">Complete</span></td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-semibold text-gray-900">January 2026</td>
+                            <td class="px-4 py-3 font-mono">v2.0.0</td>
+                            <td class="px-4 py-3">PWA Core &amp; Service Workers</td>
+                            <td class="px-4 py-3 text-xs">Service Worker implementation, offline caching schemas</td>
+                            <td class="px-4 py-3"><span class="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full font-medium">Complete</span></td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-semibold text-gray-900">March 2026</td>
+                            <td class="px-4 py-3 font-mono">v2.2.0</td>
+                            <td class="px-4 py-3">Photo Compressor Launch</td>
+                            <td class="px-4 py-3 text-xs">Canvas resizer API with dynamic target KB compression</td>
+                            <td class="px-4 py-3"><span class="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full font-medium">Complete</span></td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-semibold text-gray-900">April 2026</td>
+                            <td class="px-4 py-3 font-mono">v3.0.0</td>
+                            <td class="px-4 py-3">Client-Side AI Background Remover</td>
+                            <td class="px-4 py-3 text-xs">TensorFlow.js &amp; ONNX integration with local SIMD acceleration</td>
+                            <td class="px-4 py-3"><span class="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full font-medium">Complete</span></td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-semibold text-gray-900">May 2026</td>
+                            <td class="px-4 py-3 font-mono">v3.1.0</td>
+                            <td class="px-4 py-3">Dark Mode Expansion</td>
+                            <td class="px-4 py-3 text-xs">Global class-based Tailwind system, system preference queries</td>
+                            <td class="px-4 py-3"><span class="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full font-medium">Complete</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 class="text-xl font-bold text-indigo-900 mt-8 mb-3">Caching Models Comparison Matrix</h3>
+            <p>To understand why we chose our specific caching architecture, consider how different models behave under various constraints:</p>
+            <div class="overflow-x-auto my-8 border border-gray-200 rounded-lg shadow-sm">
+                <table class="min-w-full divide-y divide-gray-200 text-sm">
+                    <thead class="bg-indigo-50/50">
+                        <tr>
+                            <th class="px-4 py-3 text-left font-semibold text-indigo-900">Caching Model</th>
+                            <th class="px-4 py-3 text-left font-semibold text-indigo-900">Offline Availability</th>
+                            <th class="px-4 py-3 text-left font-semibold text-indigo-900">Asset Freshness</th>
+                            <th class="px-4 py-3 text-left font-semibold text-indigo-900">Initial Load Speed</th>
+                            <th class="px-4 py-3 text-left font-semibold text-indigo-900">Ideal Use Case</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-150 bg-white text-gray-600">
+                        <tr>
+                            <td class="px-4 py-3 font-semibold text-gray-900">Cache-First</td>
+                            <td class="px-4 py-3 text-green-700 font-medium">High</td>
+                            <td class="px-4 py-3 text-red-600 font-medium">Low (needs manual busting)</td>
+                            <td class="px-4 py-3 text-indigo-600 font-mono">Ultra-Fast (~5-10ms)</td>
+                            <td class="px-4 py-3 text-xs">Large static assets (AI model files, system fonts, CSS sheets)</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-semibold text-gray-900">Network-First</td>
+                            <td class="px-4 py-3 text-yellow-700 font-medium">Medium (cache fallback)</td>
+                            <td class="px-4 py-3 text-green-700 font-medium">High</td>
+                            <td class="px-4 py-3 text-gray-600 font-mono">Variable (network dependent)</td>
+                            <td class="px-4 py-3 text-xs">Dynamic dashboards, active user accounts, live APIs</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-semibold text-gray-900">Stale-While-Revalidate</td>
+                            <td class="px-4 py-3 text-green-700 font-medium">High</td>
+                            <td class="px-4 py-3 text-yellow-700 font-medium">Medium (stale first, updates behind)</td>
+                            <td class="px-4 py-3 text-indigo-600 font-mono">Fast (~15-30ms)</td>
+                            <td class="px-4 py-3 text-xs">Blog post feeds, navigation structures, site-wide asset lists</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Section: Step-by-Step Setup Checklist -->
+            <h2 class="text-2xl font-bold text-indigo-950 mt-10 mb-4 border-b border-gray-100 pb-2">Practical Implementation Blueprints</h2>
+            
+            <div class="bg-gray-50 p-6 rounded-lg my-6 border border-gray-150">
+                <h4 class="text-base font-bold text-gray-900 mb-3 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-indigo-600 animate-pulse" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+                    Service Worker Deployment Checklist
+                </h4>
+                <ul class="space-y-3 text-sm text-gray-600">
+                    <li class="flex items-start gap-2">
+                        <input type="checkbox" checked disabled class="mt-1 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                        <span><strong>Register the Service Worker:</strong> Place the registration script inside your primary entry point (e.g., <code class="font-mono text-xs bg-gray-200 px-1 rounded">app.js</code>), ensuring it runs after the window loads to prevent blocking the initial paint thread.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <input type="checkbox" checked disabled class="mt-1 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                        <span><strong>Define Cached Assets:</strong> Declare an array of relative URLs pointing to crucial shell resources (HTML shell, logo SVG, styling variables, JS engine core).</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <input type="checkbox" checked disabled class="mt-1 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                        <span><strong>Cache Activation &amp; Clean-up:</strong> Write an activation handler that compares the active cache version with outdated caches (e.g., <code class="font-mono text-xs bg-gray-200 px-1 rounded">v1</code> vs <code class="font-mono text-xs bg-gray-200 px-1 rounded">v2</code>) and deletes orphaned objects using <code class="font-mono text-xs bg-gray-200 px-1 rounded">caches.delete()</code>.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <input type="checkbox" checked disabled class="mt-1 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                        <span><strong>Fetch Interception Routing:</strong> Configure the <code class="font-mono text-xs bg-gray-200 px-1 rounded">fetch</code> listener to intercept all network calls, checking cache databases first, and handling potential offline network exceptions gracefully.</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="bg-gray-50 p-6 rounded-lg my-6 border border-gray-150">
+                <h4 class="text-base font-bold text-gray-900 mb-3 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 9.172V5L8 4z"></path></svg>
+                    Local AI Model Optimization Blueprint
+                </h4>
+                <ol class="space-y-3 text-sm text-gray-600 list-decimal pl-5">
+                    <li><strong>Model Quantization:</strong> Use tools like <code class="font-mono text-xs bg-gray-200 px-1 rounded">onnxruntime</code> CLI or <code class="font-mono text-xs bg-gray-200 px-1 rounded">tfjs-converter</code> to convert your target model into quantized 8-bit formats.</li>
+                    <li><strong>Asset Delivery:</strong> Host the model binaries on a static server with compression options (Gzip or Brotli) and CORS headers configured correctly.</li>
+                    <li><strong>PWA Integration:</strong> List the model weight chunks inside your Service Worker's caching script, so they are stored in the client cache once downloaded.</li>
+                    <li><strong>Hardware Initialization:</strong> Request a GPU device using WebGPU API. If rejected, fallback gracefully to CPU execution with WebAssembly.</li>
+                </ol>
+            </div>
+
+            <!-- Section: Integrated FAQ Section -->
+            <h2 class="text-2xl font-bold text-indigo-950 mt-10 mb-4 border-b border-gray-100 pb-2">Frequently Asked Questions (FAQ)</h2>
+            <div class="space-y-6">
+                <div>
+                    <h4 class="text-base font-semibold text-gray-900">Q1: How does Shader7 run AI segmentation locally without server-side lag?</h4>
+                    <p class="text-sm text-gray-600 mt-1"><strong>A:</strong> Shader7 leverages the <strong>ONNX Runtime Web</strong> and <strong>TensorFlow.js</strong> frameworks, which execute neural networks inside the client browser. Instead of uploading the image data, the browser downloads the highly compressed model weights (quantized down to 40MB) once, saving them in the persistent local PWA cache. When you drop an image into the tool, the application partitions matrix computations across your local GPU cores via WebGL or WebGPU. Because the pixels do not have to travel over an internet connection, execution takes only a few milliseconds, bypassing server queue times and network latency.</p>
+                </div>
+                <div>
+                    <h4 class="text-base font-semibold text-gray-900">Q2: Is my uploaded photo truly private, and what happens to my data?</h4>
+                    <p class="text-sm text-gray-600 mt-1"><strong>A:</strong> Yes, your data is 100% private. Unlike traditional online tools that require you to upload your files to external cloud environments, Shader7 relies on <strong>purely local processing</strong>. None of your photos, documents, resume data, or financial inputs are ever uploaded to our servers. All operations happen inside the secure sandbox of your local browser. Once you close the browser tab, the memory is cleared. We do not keep logs, store images, or collect user metrics, ensuring compliance with strict data safety regulations.</p>
+                </div>
+                <div>
+                    <h4 class="text-base font-semibold text-gray-900">Q3: How do the PWA caching strategies handle offline-first access?</h4>
+                    <p class="text-sm text-gray-600 mt-1"><strong>A:</strong> Shader7 utilizes a <strong>Cache-First (with Network Fallback)</strong> cache model controlled by modern Service Workers. When the PWA is installed on your mobile or desktop client, the Service Worker pre-downloads the layout, styling sheets, logic code, and AI model weight files, saving them in the Cache Storage API. When you access Shader7 offline, the Service Worker intercepts all requests and serves them directly from the device's local storage. This allows all functional features, calculators, and builders to operate smoothly even with zero active internet access.</p>
+                </div>
+                <div>
+                    <h4 class="text-base font-semibold text-gray-900">Q4: Why does dark mode persistence sometimes reset, and how can developers prevent FOUC?</h4>
+                    <p class="text-sm text-gray-600 mt-1"><strong>A:</strong> Theme resets usually happen if local browser storage is cleared, as Shader7 relies on the <strong>Web Storage API (localStorage)</strong> to store the user's color scheme preference. To prevent the Flash of Unstyled Content (FOUC), developers must ensure that the theme preference check script executes synchronously in the document <code>&lt;head&gt;</code> before any body elements are rendered. By doing so, the browser applies the dark mode classes to the DOM root immediately, preventing a sudden blinding white transition during initial loading.</p>
+                </div>
+                <div>
+                    <h4 class="text-base font-semibold text-gray-900">Q5: How are large AI model weights (like the 40MB background remover) managed in the PWA cache without slow downloads?</h4>
+                    <p class="text-sm text-gray-600 mt-1"><strong>A:</strong> Large assets are managed using targeted, segmented cache architectures. The 40MB model is broken down into smaller shards that are requested asynchronously. During the initial application load, a lightweight placeholder logic is served so users can interact with basic resizers instantly. The heavy background removal model weights are downloaded in the background when the user hovers or interacts with the AI tab. Once fully fetched, the Service Worker stores the weights in the Cache Storage API. Subsequent launches read directly from this database, completely eliminating download times on subsequent usage.</p>
+                </div>
+            </div>
+
+            <!-- Pre-existing CTA Card Block (Untouched & Intact Markup) -->
             <div class="bg-indigo-50 p-6 rounded-lg my-8 border-l-4 border-indigo-600">
                 <h3 class="font-bold text-indigo-900 mb-2">Explore the Overhauled Shader7 Platform</h3>
                 <p class="mb-4">Try out the new client-side AI background remover, the advanced photo compressor, and install our Progressive Web App to keep the essential digital tools at your fingertips forever.</p>

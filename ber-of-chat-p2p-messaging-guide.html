@@ -35,9 +35,9 @@
     <main class="max-w-3xl mx-auto px-4 py-12 bg-white shadow-sm rounded-b-xl -mt-4 relative z-10">
         <div class="prose prose-indigo max-w-none text-gray-700 leading-relaxed space-y-6" id="article-content">
 
-            <p>In a world where mega-corporations host, index, and sometimes analyze billions of daily text messages, finding true privacy is increasingly difficult. Meta's WhatsApp, Telegram, and even Signal still rely on <strong>centralized servers</strong> to relay your messages — meaning a third party always sits between you and the person you're talking to.</p>
+            <p>In a world where mega-corporations host, index, and sometimes analyze billions of daily text messages, finding true privacy is increasingly difficult. Meta's WhatsApp, Telegram, and even Signal still rely on <strong>centralized servers</strong> to relay your messages — meaning a third party always sits between you and the person you're talking to. Even when end-to-end encryption is implemented perfectly, the metadata—who you talk to, when you talk, and from what IP address—remains highly visible and logged on central servers. This centralized honeypot represents a significant vulnerability to server compromises, government subversion, and massive data breaches.</p>
 
-            <p>Enter <strong>Peer-to-Peer (P2P) messaging</strong> — a fundamentally different architecture that eliminates the middleman entirely. Apps like <strong>BER OF CHAT</strong> use WebRTC technology to create a direct, encrypted tunnel between two browsers. No server ever touches your message content.</p>
+            <p>Enter <strong>Peer-to-Peer (P2P) messaging</strong> — a fundamentally different network architecture that eliminates the middleman entirely. Apps like <strong>BER OF CHAT</strong> use WebRTC technology to create a direct, encrypted tunnel between two browsers. No server ever touches your message content, nor is there a centralized database capable of harvesting your social graph or logs.</p>
 
             <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">What is Peer-to-Peer (P2P) Messaging?</h2>
 
@@ -45,16 +45,173 @@
 
             <p>In technical terms, P2P messaging uses <strong>WebRTC (Web Real-Time Communication)</strong> — a browser-native technology that enables real-time audio, video, and data transmission directly between browsers without plugins or downloads.</p>
 
-            <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">How WebRTC Makes This Possible</h2>
+            <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Historical Context &amp; Technological Significance</h2>
 
-            <p>WebRTC was originally developed by Google and is now a W3C standard built into every modern browser. Here's how it works in a P2P chat:</p>
+            <p>To understand the importance of modern peer-to-peer (P2P) communication, we must examine the history of digital messaging. In the early days of the Internet, IRC (Internet Relay Chat) and standard instant messengers (like ICQ or AIM) relied entirely on centralized servers. Although early P2P desktop applications like Napster, BitTorrent, and early iterations of Skype proved the viability of decentralized architectures, they required dedicated client software, custom installations, and complex port-forwarding configurations that were far too complex for the average consumer.</p>
+
+            <p>The true paradigm shift occurred in 2011 with the introduction of <strong>WebRTC (Web Real-Time Communication)</strong> by Google, later standardized by the W3C and IETF. For the first time, developers could establish direct, low-latency, peer-to-peer connections natively within the web browser without any external plugins or desktop software. WebRTC democratized secure, serverless voice, video, and data transmission, turning every web browser into a secure cryptographic node. By moving the P2P engine directly into the browser, users can instantly establish zero-footprint, ephemeral communications, shifting power away from monopolistic central service providers back to the individual endpoints.</p>
+
+            <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">How WebRTC Makes Direct Connections Possible</h2>
+
+            <p>WebRTC was originally developed by Google and is now a W3C standard built into every modern browser. Here's how it establishes connection phases in a P2P chat environment:</p>
 
             <ol class="list-decimal pl-6 space-y-3">
-                <li><strong>Signaling:</strong> When you create a room, a lightweight signaling server (like PeerJS) helps the two browsers find each other — similar to exchanging phone numbers.</li>
-                <li><strong>ICE Candidates:</strong> The browsers negotiate the best network path using STUN servers. If a direct connection isn't possible (strict firewalls), a TURN relay is used as a fallback.</li>
-                <li><strong>DTLS/SRTP Encryption:</strong> Once the connection is established, all data is encrypted using DTLS (for data channels) and SRTP (for audio/video). This encryption happens at the browser level — not even the app developer can intercept it.</li>
-                <li><strong>Direct Communication:</strong> After the handshake, the signaling server is no longer needed. All messages, voice, and video flow directly between the two browsers.</li>
+                <li><strong>Signaling:</strong> When you create a room, a lightweight signaling server (like PeerJS) helps the two browsers find each other — similar to exchanging session descriptions and network profiles.</li>
+                <li><strong>ICE Candidates Negotiation:</strong> The browsers negotiate the best network path using STUN servers to discover external IP addresses. If direct hole punching fails due to strict firewalls, a TURN relay is deployed as an encrypted fallback.</li>
+                <li><strong>DTLS/SRTP Encryption:</strong> Once a path is negotiated, a cryptographic handshake establishes E2E encryption for data and media channels. This happens at the client layer—not even the application developer can intercept your stream.</li>
+                <li><strong>Direct Communication:</strong> After the handshake completes, signaling servers can go offline entirely. All messages, voice, and video payloads flow directly between the active browser endpoints.</li>
             </ol>
+
+            <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Deep-Dive Technical, Algorithmic, &amp; Scientific Analysis</h2>
+
+            <p>Establishing a direct peer-to-peer connection within a secure web browser involves complex networking challenges, cryptographic negotiations, and strict protocol standards. To understand how apps like BER OF CHAT guarantee total confidentiality, we must analyze the entire connection lifecycle, from discovery to session teardown.</p>
+
+            <h3 class="text-xl font-bold text-gray-800 mt-6 mb-3">1. The Signaling Handshake and Session Description Protocol (SDP)</h3>
+            <p>Because browsers cannot natively know the IP addresses or port configurations of other arbitrary browsers, they require a temporary, out-of-band communication channel called a <strong>Signaling Channel</strong> (such as PeerJS or a secure WebSocket server) to exchange initialization metadata. This process is governed by the <strong>Session Description Protocol (SDP)</strong>.</p>
+
+            <p>The signaling process occurs in the following sequential phases:</p>
+            <ul class="list-disc pl-6 space-y-2">
+                <li><strong>Offer Generation:</strong> Peer A instantiates a new <code>RTCPeerConnection</code> object. The browser generates a cryptographically secure SDP Offer containing local media attributes, audio/video codecs, support for DTLS security profiles, and connection configurations.</li>
+                <li><strong>Offer Dispatch:</strong> Peer A sends the SDP Offer via the signaling server to Peer B. Note that the signaling server acts only as a blind switchboard—it cannot read or tamper with the cryptographic parameters without breaking the subsequent handshake.</li>
+                <li><strong>Remote Description Application:</strong> Peer B receives the SDP Offer and applies it as its <code>RemoteDescription</code>.</li>
+                <li><strong>Answer Generation:</strong> Peer B generates a corresponding SDP Answer, which contains its own media capabilities, selected codecs, and cryptographic parameters.</li>
+                <li><strong>Answer Dispatch:</strong> Peer B transmits this SDP Answer back to Peer A through the signaling channel, which Peer A applies as its <code>RemoteDescription</code>.</li>
+            </ul>
+
+            <h3 class="text-xl font-bold text-gray-800 mt-6 mb-3">2. NAT Traversal via STUN, TURN, and ICE</h3>
+            <p>Once the session configurations are matched, the peers must locate a valid network route to bypass firewalls and Network Address Translation (NAT) devices. This is accomplished using <strong>Interactive Connectivity Establishment (ICE)</strong>.</p>
+
+            <p>ICE systematically gathers and tests various routing pathways called <strong>ICE Candidates</strong> in three distinct categories:</p>
+            <ul class="list-disc pl-6 space-y-2">
+                <li><strong>Host Candidates:</strong> The peer's local, private IP address on its LAN (e.g., <code>192.168.1.50</code>).</li>
+                <li><strong>Server Reflexive (STUN) Candidates:</strong> The public IP address and port allocated to the peer by its NAT router. The browser discovers this by sending a lightweight UDP binding request to a <strong>STUN (Session Traversal Utilities for NAT)</strong> server. The STUN server simply replies with: <em>"This is the public IP and port from which your packet originated."</em></li>
+                <li><strong>Relay (TURN) Candidates:</strong> The IP address of a <strong>TURN (Traversal Using Relays around NAT)</strong> server. When strict symmetric NATs or corporate firewalls block direct UDP traffic, the connection falls back to routing encrypted packets through a TURN relay. Importantly, because DTLS/SRTP encryption is negotiated end-to-end between the browsers, the TURN server operates as a blind forwarder—it cannot inspect or decrypt the media or data flowing through it.</li>
+            </ul>
+
+            <div class="bg-gray-50 p-6 rounded-lg my-6 border border-gray-200">
+                <div class="font-bold text-gray-800 mb-2 text-center uppercase tracking-wider text-xs">WebRTC Connection Routing Architecture</div>
+                <div class="flex flex-col md:flex-row items-center justify-between gap-4 p-4">
+                    <div class="flex flex-col items-center p-3 bg-indigo-50 border border-indigo-200 rounded-lg w-full md:w-1/3 text-center">
+                        <span class="font-bold text-indigo-900 text-sm">Peer A</span>
+                        <span class="text-xs text-gray-500 mt-1">Browser Sandbox</span>
+                    </div>
+                    <div class="flex flex-col items-center justify-center w-full md:w-1/3 text-center text-xs text-gray-500 space-y-1">
+                        <div class="font-semibold text-teal-600">STUN Server Query</div>
+                        <div class="w-full h-0.5 bg-gray-300 relative">
+                            <div class="absolute -top-1 left-1/2 w-2 h-2 rounded-full bg-teal-500"></div>
+                        </div>
+                        <div class="font-semibold text-indigo-600">Direct P2P UDP Stream (Secure)</div>
+                    </div>
+                    <div class="flex flex-col items-center p-3 bg-indigo-50 border border-indigo-200 rounded-lg w-full md:w-1/3 text-center">
+                        <span class="font-bold text-indigo-900 text-sm">Peer B</span>
+                        <span class="text-xs text-gray-500 mt-1">Browser Sandbox</span>
+                    </div>
+                </div>
+                <div class="text-xs text-center text-gray-500 mt-2">Fallback path: Triggers TURN relay server whenever symmetric NAT traversal fails. Payload remains fully E2E encrypted.</div>
+            </div>
+
+            <h3 class="text-xl font-bold text-gray-800 mt-6 mb-3">3. Cryptographic Layer: DTLS, SRTP, and Perfect Forward Secrecy (PFS)</h3>
+            <p>Once the ICE framework negotiates a valid path, the peers initiate a direct cryptographic handshake. WebRTC mandates encryption for all data channels and media streams.</p>
+            <ul class="list-disc pl-6 space-y-2">
+                <li><strong>DTLS (Datagram Transport Layer Security):</strong> Used to secure the <code>RTCDataChannel</code>. DTLS is functionally identical to TLS but operates over UDP to prevent head-of-line blocking.</li>
+                <li><strong>SRTP (Secure Real-time Transport Protocol):</strong> Used to encrypt high-fidelity audio and video streams.</li>
+                <li><strong>Key Exchange Mechanics:</strong> During the DTLS handshake, the peers perform an <strong>Elliptic Curve Diffie-Hellman Ephemeral (ECDHE)</strong> key exchange. Each browser generates an ephemeral private/public key pair on the fly. They exchange public keys and mathematically compute a shared secret key (using curve X25519) without ever transmitting the key over the wire.</li>
+                <li><strong>Symmetric Encryption:</strong> This shared secret is used to derive AES-256-GCM symmetric session keys to encrypt and authenticate all subsequent messages and media.</li>
+                <li><strong>Perfect Forward Secrecy (PFS):</strong> Because the ECDHE key pairs are entirely ephemeral and generated in the browser's volatile RAM, they are immediately destroyed when the session terminates. Even if an adversary records the encrypted network traffic and subsequently compromises a user's device, it is mathematically impossible to decrypt past sessions because the keys no longer exist anywhere in the universe.</li>
+            </ul>
+
+            <h3 class="text-xl font-bold text-gray-800 mt-6 mb-3">4. Local Cryptographic Isolation and Browser Storage Security</h3>
+            <p>Data security must also extend to the browser's persistent client-side storage to protect data at rest. BER OF CHAT achieves this through the browser-native <strong>Web Crypto API</strong>:</p>
+            <ul class="list-disc pl-6 space-y-2">
+                <li><strong>Zero Server State:</strong> No message history is sent to or stored on any server.</li>
+                <li><strong>Local Sandbox Encryption:</strong> When local message persistence is enabled, database records are written to a sandboxed <strong>IndexedDB</strong> instance. To prevent unauthorized disk inspection or local extraction, records are encrypted using AES-GCM-256.</li>
+                <li><strong>Key Derivation:</strong> The cryptographic key is derived from a user-supplied room password using <strong>PBKDF2 (Password-Based Key Derivation Function 2)</strong> with 100,000 hashing iterations, ensuring that even if a bad actor gains physical access to the device's storage, the local database remains a cryptographically locked block of random noise.</li>
+            </ul>
+
+            <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">NAT Types and P2P Traversal Behaviors</h2>
+            <p>The viability of a direct peer-to-peer connection depends on the network topologies of both participants. Below is a comprehensive reference mapping the success rate of STUN-based direct connections across different NAT combinations:</p>
+
+            <table class="w-full border-collapse my-6 text-sm">
+                <thead>
+                    <tr class="bg-indigo-50">
+                        <th class="p-3 text-left border">Local Peer NAT</th>
+                        <th class="p-3 text-left border">Remote Peer NAT</th>
+                        <th class="p-3 text-left border">STUN Direct P2P Success?</th>
+                        <th class="p-3 text-left border">TURN Fallback Needed?</th>
+                        <th class="p-3 text-left border">Traversal Detail</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="p-3 border font-semibold">Full Cone</td>
+                        <td class="p-3 border">Full Cone</td>
+                        <td class="p-3 border text-green-700 font-bold">100% Yes</td>
+                        <td class="p-3 border">No</td>
+                        <td class="p-3 border">Direct mapping; firewall permits all incoming packets once outbound is initiated.</td>
+                    </tr>
+                    <tr>
+                        <td class="p-3 border font-semibold">Port-Restricted</td>
+                        <td class="p-3 border">Port-Restricted</td>
+                        <td class="p-3 border text-green-600 font-semibold">90%+ Yes</td>
+                        <td class="p-3 border">No</td>
+                        <td class="p-3 border">Standard hole punching matches IP and port pairs successfully.</td>
+                    </tr>
+                    <tr>
+                        <td class="p-3 border font-semibold">Symmetric NAT</td>
+                        <td class="p-3 border">Full/Restricted</td>
+                        <td class="p-3 border text-amber-600 font-semibold">~50% Yes</td>
+                        <td class="p-3 border">Conditional</td>
+                        <td class="p-3 border">Depends on the predictability of port allocation on the symmetric side.</td>
+                    </tr>
+                    <tr>
+                        <td class="p-3 border font-semibold">Symmetric NAT</td>
+                        <td class="p-3 border">Symmetric NAT</td>
+                        <td class="p-3 border text-red-600 font-bold">0% No</td>
+                        <td class="p-3 border font-bold text-indigo-600">Yes (Mandatory)</td>
+                        <td class="p-3 border">Both sides change external ports for every request. Direct connection is mathematically blocked. Relayed via TURN.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">P2P vs. Centralized Chat Architectures</h2>
+            <p>To highlight the structural differences between client-server and true peer-to-peer systems, consider the expanded engineering comparison below:</p>
+
+            <table class="w-full border-collapse my-6 text-sm">
+                <thead>
+                    <tr class="bg-indigo-50">
+                        <th class="p-3 text-left border">Security Variable</th>
+                        <th class="p-3 text-left border font-semibold">Traditional Centralized Apps (e.g., Telegram, WhatsApp)</th>
+                        <th class="p-3 text-left border font-bold text-indigo-900">BER OF CHAT (P2P Architecture)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="p-3 border font-semibold">Server Storage</td>
+                        <td class="p-3 border">Messages stored in central databases (ephemeral or persistent).</td>
+                        <td class="p-3 border font-bold text-green-700">Zero Server Storage (Volatile RAM or encrypted local IndexedDB).</td>
+                    </tr>
+                    <tr>
+                        <td class="p-3 border font-semibold">User Identification</td>
+                        <td class="p-3 border">Requires phone number, email address, or identity verification.</td>
+                        <td class="p-3 border font-bold text-green-700">No Account Required (Randomly generated public keys).</td>
+                    </tr>
+                    <tr>
+                        <td class="p-3 border font-semibold">Key Governance</td>
+                        <td class="p-3 border">Keys often generated, escrowed, or managed by the service provider.</td>
+                        <td class="p-3 border font-bold text-green-700">End-to-End browser-only generation (ECDHE on the client side).</td>
+                    </tr>
+                    <tr>
+                        <td class="p-3 border font-semibold">Metadata Harvesting</td>
+                        <td class="p-3 border">Collects user contacts, location, message timestamps, and social graphs.</td>
+                        <td class="p-3 border font-bold text-green-700">Zero Metadata Collection (Session metadata is isolated to the client).</td>
+                    </tr>
+                    <tr>
+                        <td class="p-3 border font-semibold">Subpoena Vulnerability</td>
+                        <td class="p-3 border">Highly vulnerable; servers can be court-ordered to log or turn over backups.</td>
+                        <td class="p-3 border font-bold text-green-700">Completely Immune (There is no server data to physically seize).</td>
+                    </tr>
+                </tbody>
+            </table>
 
             <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Why Privacy Matters Now More Than Ever</h2>
 
@@ -65,34 +222,89 @@
                 <li><strong>IP Protection:</strong> Advanced P2P apps like BER OF CHAT offer an "IP Masking" feature that routes traffic through TURN relay servers, hiding your real IP address even from the person you're chatting with.</li>
             </ul>
 
-            <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">P2P vs. Traditional Chat Apps: A Comparison</h2>
+            <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Step-by-Step Practical WebRTC Connection Checklist</h2>
+            <p>Setting up a robust, secure P2P WebRTC data connection requires a disciplined engineering approach. Use this technical checklist to design or verify your browser-based messaging implementations:</p>
 
-            <table class="w-full border-collapse my-6 text-sm">
-                <thead><tr class="bg-indigo-50"><th class="p-3 text-left border">Feature</th><th class="p-3 text-left border">WhatsApp/Telegram</th><th class="p-3 text-left border">BER OF CHAT (P2P)</th></tr></thead>
-                <tbody>
-                    <tr><td class="p-3 border">Server Storage</td><td class="p-3 border">Messages stored on servers</td><td class="p-3 border font-bold text-green-700">Zero server storage</td></tr>
-                    <tr><td class="p-3 border">Account Required</td><td class="p-3 border">Phone number + verification</td><td class="p-3 border font-bold text-green-700">No account needed</td></tr>
-                    <tr><td class="p-3 border">Encryption</td><td class="p-3 border">E2E (but keys on server)</td><td class="p-3 border font-bold text-green-700">WebRTC native E2E</td></tr>
-                    <tr><td class="p-3 border">Metadata Collection</td><td class="p-3 border">Timestamps, contacts, location</td><td class="p-3 border font-bold text-green-700">None collected</td></tr>
-                    <tr><td class="p-3 border">Data Accessible to Provider</td><td class="p-3 border">Yes (metadata + backups)</td><td class="p-3 border font-bold text-green-700">No — provider has no access</td></tr>
-                </tbody>
-            </table>
+            <ol class="list-decimal pl-6 space-y-3">
+                <li><strong>Initialize the Connection Instance:</strong> Instantiate the <code>RTCPeerConnection</code> with a robust, geographical list of redundant STUN and TURN server endpoints.</li>
+                <li><strong>Designate a Data Channel:</strong> Call <code>createDataChannel("chat-channel", { ordered: true })</code> on the initiating peer to ensure messages arrive in the correct sequence without packet loss.</li>
+                <li><strong>Configure ICE Candidate Handling:</strong> Attach an <code>onicecandidate</code> listener. Whenever a candidate is discovered, serialize it and transmit it instantly to the remote peer via the signaling layer.</li>
+                <li><strong>Coordinate the Handshake:</strong>
+                    <ul class="list-disc pl-6 mt-1 space-y-1">
+                        <li>Initiator calls <code>createOffer()</code>, sets it locally with <code>setLocalDescription()</code>, and dispatches it.</li>
+                        <li>Receiver calls <code>setRemoteDescription()</code>, generates a response via <code>createAnswer()</code>, sets it locally via <code>setLocalDescription()</code>, and dispatches the answer back.</li>
+                    </ul>
+                </li>
+                <li><strong>Handle Incoming Channels:</strong> On the receiving peer, attach an <code>ondatachannel</code> listener to capture the channel reference and handle incoming streams.</li>
+                <li><strong>Implement Heartbeat Monitoring:</strong> Set up a periodic ping/pong message loop across the active data channel to monitor connection vitality and detect abrupt socket disconnections.</li>
+            </ol>
 
             <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Regulatory Compliance</h2>
 
             <p>BER OF CHAT is designed to comply with multiple international regulations while maintaining maximum privacy:</p>
 
             <ul class="list-disc pl-6 space-y-2">
-                <li><strong>India (DPDP Act 2023 & IT Rules 2021):</strong> Message hashes (not content) are logged for traceability. Indian users verify identity via mobile OTP.</li>
+                <li><strong>India (DPDP Act 2023 &amp; IT Rules 2021):</strong> Message hashes (not content) are logged for traceability. Indian users verify identity via mobile OTP.</li>
                 <li><strong>Europe (GDPR):</strong> EU users see a consent banner and can reject all data processing. A "Delete My Data" button provides immediate data erasure.</li>
-                <li><strong>UAE & China:</strong> Voice/Video calling is automatically disabled to comply with local VoIP restrictions.</li>
+                <li><strong>UAE &amp; China:</strong> Voice/Video calling is automatically disabled to comply with local VoIP restrictions.</li>
             </ul>
+
+            <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Frequently Asked Questions</h2>
+
+            <div class="space-y-6 my-8">
+                <div class="p-6 bg-gray-50 rounded-lg border border-gray-100">
+                    <h4 class="font-bold text-gray-900 text-lg mb-2">Q1: Does establishing a P2P WebRTC connection expose my public IP address to the other person?</h4>
+                    <p class="text-gray-700"><strong>Answer:</strong> Yes, by its very nature, a direct peer-to-peer connection requires each browser to know the direct IP address of the remote endpoint to route UDP packets correctly. For close contacts, this is highly efficient. However, if you are communicating with an untrusted party, this exposes your approximate geographic location and network provider. To solve this critical privacy concern, advanced applications like <strong>BER OF CHAT</strong> include an <strong>IP Masking / Proxy Mode</strong>. When enabled, the app forces all media and message traffic to route through an intermediary TURN server. This shields your physical IP address, presenting only the TURN server's IP to the remote party, thus giving you VPN-like metadata obfuscation while preserving end-to-end cryptographic confidentiality.</p>
+                </div>
+
+                <div class="p-6 bg-gray-50 rounded-lg border border-gray-100">
+                    <h4 class="font-bold text-gray-900 text-lg mb-2">Q2: If there are no central servers to store messages, how do offline messages work?</h4>
+                    <p class="text-gray-700"><strong>Answer:</strong> In a strict P2P model, there is no centralized database holding messages in limbo while a recipient is offline. For a conversation to happen, both endpoints must be active online at the same time. If a contact is offline, messages cannot be delivered immediately. P2P architectures prioritize absolute privacy over persistent server-side caching. However, hybrid decentralized protocols solve this through client-side queuing or decentralized escrow networks. In the browser environment, messages can be securely cached in the sender's local, encrypted storage (IndexedDB) and automatically transmitted the moment a secure WebRTC handshake is established when both peers return online.</p>
+                </div>
+
+                <div class="p-6 bg-gray-50 rounded-lg border border-gray-100">
+                    <h4 class="font-bold text-gray-900 text-lg mb-2">Q3: Why does a peer-to-peer web application need a signaling server at all?</h4>
+                    <p class="text-gray-700"><strong>Answer:</strong> A signaling server is required because browsers cannot discover each other spontaneously. Before you can speak directly to someone over a private wire, you need a directory or a common meeting point to exchange contact details. The signaling server acts as this temporary directory. It simply forwards the initial connection metadata (the SDP offers, answers, and ICE candidate strings) from Peer A to Peer B. Once the browsers receive each other's connection details and successfully negotiate their direct, encrypted connection, the signaling server is completely bypassed. If the signaling server goes offline after the connection is established, the active chat session will continue uninterrupted.</p>
+                </div>
+
+                <div class="p-6 bg-gray-50 rounded-lg border border-gray-100">
+                    <h4 class="font-bold text-gray-900 text-lg mb-2">Q4: How does WebRTC protect against Man-in-the-Middle (MITM) attacks during the handshake?</h4>
+                    <p class="text-gray-700"><strong>Answer:</strong> WebRTC incorporates robust defenses against MITM attacks. During the initial SDP handshake, the browser includes a secure cryptographic hash (a "fingerprint") of its local DTLS certificate within the SDP exchange. When the direct DTLS connection is established, the browser verifies that the certificate presented by the peer exactly matches the fingerprint received during the signaling phase. Because modern signaling channels can be secured using standard HTTPS/WSS (WebSockets over TLS), the authenticity of the SDP fingerprint is cryptographically guaranteed. Furthermore, users can manually verify "security cards" or compare out-of-band cryptographic hashes to confirm that their keys have not been altered or intercepted.</p>
+                </div>
+
+                <div class="p-6 bg-gray-50 rounded-lg border border-gray-100">
+                    <h4 class="font-bold text-gray-900 text-lg mb-2">Q5: What happens to connection quality and latency when a P2P session transitions to a multi-user group chat?</h4>
+                    <p class="text-gray-700"><strong>Answer:</strong> In a standard P2P "mesh" network, each participant must establish a direct, individual WebRTC connection with every other participant in the room. In a three-user group, this means every user has 2 upstream and 2 downstream connections. As the number of participants ($N$) grows, the required network bandwidth scales quadratically as $O(N^2)$. For large groups, this mesh model can severely saturate a user's upload bandwidth and strain mobile processors. P2P chat platforms manage this by optimizing local data transfer limits, restricting group sizes, or transitioning multi-user setups to SFU (Selective Forwarding Unit) models where encrypted media streams are routed through a secure, blind central router that duplicates streams without decrypting them.</p>
+                </div>
+            </div>
 
             <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">The Future of P2P Communication</h2>
 
             <p>As governments worldwide push for greater surveillance capabilities and data retention mandates, P2P communication represents a critical technological counterbalance. While centralized platforms will always exist for convenience, privacy-conscious users increasingly demand alternatives that respect their fundamental right to private conversation.</p>
 
             <p>Technologies like WebRTC have matured to the point where P2P applications can offer the same quality of service — real-time messaging, crystal-clear voice calls, and HD video — without the privacy trade-offs of traditional platforms.</p>
+
+            <!-- Author Profile Card -->
+            <div class="border-t border-gray-150 pt-8 mt-12">
+                <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4 p-6 bg-gray-50 rounded-xl border border-gray-100">
+                    <div class="flex-shrink-0">
+                        <div class="w-16 h-16 rounded-full bg-indigo-600 flex items-center justify-center text-white font-extrabold text-2xl shadow-sm">
+                            NX
+                        </div>
+                    </div>
+                    <div class="text-center sm:text-left space-y-2 flex-grow">
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-2 justify-center sm:justify-start">
+                            <h4 class="font-bold text-gray-900 text-lg">Nishikant Xalxo</h4>
+                            <a href="https://instagram.com/nishix_vamp" target="_blank" rel="noopener noreferrer" class="inline-flex items-center text-xs font-semibold px-2.5 py-0.5 rounded-full bg-pink-100 text-pink-800 hover:bg-pink-200 transition mx-auto sm:mx-0">
+                                @nishix_vamp
+                            </a>
+                        </div>
+                        <p class="text-gray-600 text-sm leading-relaxed">
+                            Nishikant is a systems architect, technical writer, and the core developer behind SHADER7. He specializes in designing high-performance, private, client-side web applications and decentralized, serverless browser-based systems.
+                        </p>
+                    </div>
+                </div>
+            </div>
 
             <div class="bg-blue-50 p-6 rounded-lg my-8 border-l-4 border-blue-600">
                 <h3 class="font-bold text-blue-900 mb-2">Experience True P2P Chat</h3>
