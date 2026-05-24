@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mastering CNC Circular Interpolation: The Ultimate G02 &amp; G03 Programming Guide | SHADER7 Blog</title>
+    <meta name="description" content="The definitive shop-floor guide to G02 (CW) and G03 (CCW) circular interpolation. Learn G17/G18/G19 plane selections, R-word vs. IJK vector offsets, helical thread milling, cutter compensation, and feed rate calculations.">
+    <meta name="keywords" content="G02 G-code, G03 G-code, circular interpolation, CNC programming, IJK vector offsets, G17 G18 G19 planes, cutter compensation, G41 G42, thread milling, helical interpolation, feed rate calculator, CNC machining">
+    <meta name="author" content="Nishikant Xalxo">
+    <link rel="canonical" href="https://shader7.com/cnc-circular-interpolation-g02-g03.html">
+    <meta property="og:title" content="Mastering CNC Circular Interpolation: The Ultimate G02 &amp; G03 Programming Guide">
+    <meta property="og:description" content="Unlock precision CNC machining. Deep dive into G02/G03 syntax, Cartesian planes, incremental IJK vector math, cutter compensation, and helical ramping.">
+    <meta property="og:url" content="https://shader7.com/cnc-circular-interpolation-g02-g03.html">
+    <meta property="og:type" content="article">
+    <meta property="og:image" content="https://shader7.com/screenshots/gcode-reference.png">
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Mastering CNC Circular Interpolation: The Ultimate G02 & G03 Programming Guide",
+      "author": {
+        "@type": "Person",
+        "name": "Nishikant Xalxo",
+        "email": "nxdecore@gmail.com",
+        "sameAs": [
+          "https://instagram.com/nishix_vamp"
+        ]
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "SHADER7",
+        "url": "https://shader7.com/"
+      },
+      "datePublished": "2026-05-25",
+      "dateModified": "2026-05-25",
+      "description": "Exhaustive, premium shop-floor manual on G02 and G03 G-code circular interpolation. Master G17/G18/G19 planes, R vs IJK vectors, cutter compensation, helical thread milling, and feed adjustments."
+    }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .prose pre { background-color: #0f172a; color: #e2e8f0; padding: 1.25rem; border-radius: 0.5rem; overflow-x: auto; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+        .prose code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; background-color: #f1f5f9; color: #0f172a; padding: 0.125rem 0.25rem; border-radius: 0.25rem; font-size: 0.9em; }
+        .prose pre code { background-color: transparent; color: inherit; padding: 0; border-radius: 0; font-size: inherit; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 antialiased font-light">
+    <!-- Navigation Bar -->
+    <nav class="bg-white shadow-sm p-4 sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto flex justify-between items-center">
+            <a href="/" class="font-bold text-indigo-900 text-xl tracking-tight flex items-center gap-1">
+                SHADER<span class="text-indigo-600">7</span> <span class="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded font-mono">BLOG</span>
+            </a>
+            <a href="blog.html" class="text-sm font-semibold text-indigo-600 hover:text-indigo-800 transition flex items-center gap-1">
+                &larr; Back to Blog
+            </a>
+        </div>
+    </nav>
+
+    <!-- Header Section -->
+    <header class="bg-indigo-950 text-white py-20 px-4">
+        <div class="max-w-4xl mx-auto text-center">
+            <span class="text-orange-400 font-bold tracking-widest uppercase text-xs px-3 py-1 bg-indigo-900/60 rounded-full border border-indigo-800">Advanced G-Code &bull; CNC Engineering &bull; 2026</span>
+            <h1 class="text-3xl md:text-5xl font-extrabold mt-6 mb-6 leading-tight text-orange-50 tracking-tight">Mastering CNC Circular Interpolation: The Ultimate G02 &amp; G03 Programming Guide</h1>
+            <p class="text-indigo-200 text-lg md:text-xl max-w-3xl mx-auto font-light leading-relaxed">
+                An exhaustive, shop-floor manual for vertical and horizontal machining centers. Master plane selections (G17/G18/G19), 'R' programming vs. incremental IJK vectors, cutter compensation, helical interpolation, and feed rate compensation equations.
+            </p>
+            <div class="flex items-center justify-center gap-3 mt-8 text-sm text-indigo-300">
+                <span class="font-semibold text-white">By Nishikant Xalxo</span>
+                <span>&bull;</span>
+                <span>5,500+ Words Deep Dive</span>
+                <span>&bull;</span>
+                <span>Updated May 25, 2026</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 md:px-8 py-12 bg-white shadow-lg rounded-b-xl -mt-6 relative z-10 border border-gray-100">
+        
+        <!-- Table of Contents Sidebar/Box -->
+        <div class="mb-10 p-6 bg-indigo-50/50 rounded-xl border border-indigo-100/80">
+            <h2 class="text-lg font-bold text-indigo-950 mb-4 flex items-center gap-2">
+                <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path></svg>
+                Table of Contents
+            </h2>
+            <nav class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2 text-sm">
+                <a href="#introduction" class="text-indigo-600 hover:text-indigo-900 hover:underline">Introduction: The Evolution of Circular Motion</a>
+                <a href="#mathematical-concept" class="text-indigo-600 hover:text-indigo-900 hover:underline">1. Mathematical Concept &amp; Cartesian Planes (G17/G18/G19)</a>
+                <a href="#syntax-structures" class="text-indigo-600 hover:text-indigo-900 hover:underline">2. G02 (CW) and G03 (CCW) Syntax &amp; Commands</a>
+                <a href="#r-vs-ijk" class="text-indigo-600 hover:text-indigo-900 hover:underline">3. Radius 'R' vs. Vector 'IJK' Offsets</a>
+                <a href="#helical-interpolation" class="text-indigo-600 hover:text-indigo-900 hover:underline">4. Helical Interpolation &amp; Thread Milling</a>
+                <a href="#cutter-compensation" class="text-indigo-600 hover:text-indigo-900 hover:underline">5. Cutter Compensation Dynamics (G40/G41/G42)</a>
+                <a href="#feed-adjustments" class="text-indigo-600 hover:text-indigo-900 hover:underline">6. Feed Rate Adjustments (Internal vs. External)</a>
+                <a href="#troubleshooting" class="text-indigo-600 hover:text-indigo-900 hover:underline">7. Shop-Floor Troubleshooting &amp; Metrology</a>
+                <a href="#examples" class="text-indigo-600 hover:text-indigo-900 hover:underline">8. Complete G-Code Programming Examples</a>
+                <a href="#faqs" class="text-indigo-600 hover:text-indigo-900 hover:underline">9. Exhaustive FAQ Section</a>
+                <a href="#checklist" class="text-indigo-600 hover:text-indigo-900 hover:underline">10. Shop-Floor Verification Checklist</a>
+            </nav>
+        </div>
+
+        <div class="prose prose-indigo max-w-none text-gray-700 leading-relaxed space-y-8">
+            
+            <!-- INTRODUCTION -->
+            <section id="introduction" class="scroll-mt-20">
+                <h2 class="text-3xl font-extrabold text-gray-900 border-b pb-2">Introduction: The Evolution of Circular Motion</h2>
+                <p class="mt-4">
+                    In the landscape of Computer Numerical Control (CNC) manufacturing, the ability to command machine tools to move along precise circular trajectories represents the divider between rudimentary component shaping and high-precision aerospace, medical, and automotive engineering. At the heart of this capability lie two primary modal G-codes: <strong>G02 (Circular Interpolation Clockwise)</strong> and <strong>G03 (Circular Interpolation Counter-Clockwise)</strong>. Without these commands, machining a simple bore, thread, cylindrical boss, or o-ring groove would become an absolute programming nightmare.
+                </p>
+                <p>
+                    Historically, in the infancy of NC systems during the 1950s and early 1960s, machine controls were unable to process complex arcs directly. Hardware constraints meant that curves had to be broken down into extremely small, discrete linear segments. A simple 2-inch diameter circle might require hundreds of lines of linear coordinate points (G01 commands) to approximate a curved surface. This method, known as <em>linear approximation</em>, suffered from severe critical limitations:
+                </p>
+                <ul class="list-disc pl-6 space-y-2">
+                    <li><strong>Enormous File Sizes:</strong> The storage media of the era—primarily punched paper tapes—had strictly limited memory capacities. Storing thousands of lines of linear coordinates for a single contour was physically impossible or highly impractical.</li>
+                    <li><strong>Data Starvation (Buffer Starvation):</strong> Early NC controllers had low processing speeds and small input buffer sizes. When running short linear segments at high feeds, the controller could not process incoming lines fast enough, leading to rapid decelerations, surface stuttering, axis dwell marks, and poor surface finishes.</li>
+                    <li><strong>Aesthetic &amp; Tolerance Failures:</strong> Under magnification, linear approximations look like polygons. Meeting tight geometric tolerances (such as circularity and roundness within 0.0002 inches) was technically unachievable.</li>
+                </ul>
+                
+                <figure class="my-8">
+                    <img src="screenshots/cnc-machinist-app.png" alt="Circular Interpolation Calculator showing circular interpolation paths and coordinates" class="w-full rounded-xl shadow-lg border border-gray-200" loading="lazy" width="1200" height="675">
+                    <figcaption class="text-center text-sm text-gray-500 mt-3 italic">Figure 1: The SHADER7 CNC Machinist Hub features a specialized Circular Interpolation Calculator to calculate G02/G03 coordinate paths, IJK offsets, and feed rate compensation parameters.</figcaption>
+                </figure>
+
+                <p>
+                    The breakthrough came with the introduction of hardware-based circular interpolators embedded directly into the machine control unit (MCU). By supplying only the endpoint of the arc and the location of the circle's center (or the radius of the desired curve), the controller's internal algorithms took over. Using real-time differential equation solving, the controller coordinates the voltages and pulse frequencies directed to the orthogonal servo motors, executing a smooth, continuous, and mathematically perfect arc.
+                </p>
+                <p>
+                    Today, even with modern Computer-Aided Manufacturing (CAM) systems generating millions of lines of code, a deep, manual command of G02 and G03 is a core requirement for any high-level CNC programmer, applications engineer, or setup machinist. Relying blindly on CAM software post-processors without understanding the raw G-code leads to scrap parts, broken tooling, and catastrophic spindle crashes. On a fast-paced production floor, adjusting a circular toolpath to account for tool deflection or bore tolerances is a basic task, and manually writing toolpath entries at the control panel separates elite machinists from operators.
+                </p>
+            </section>
+
+            <!-- SECTION 1 -->
+            <section id="mathematical-concept" class="scroll-mt-20">
+                <h2 class="text-3xl font-extrabold text-gray-900 border-b pb-2">1. Mathematical Concept &amp; Cartesian Planes (G17/G18/G19)</h2>
+                <p class="mt-4">
+                    Before commanding a CNC machine tool to swing an arc, we must understand the mathematical representation of circles in two-dimensional Cartesian space. A circle with center coordinate \((X_c, Y_c)\) and radius \(R\) is represented by the standard Cartesian equation:
+                </p>
+                <div class="bg-indigo-50/50 p-6 rounded-lg my-6 border border-indigo-100 font-mono text-center text-lg text-indigo-950 font-semibold">
+                    (X &minus; X<sub>c</sub>)<sup>2</sup> + (Y &minus; Y<sub>c</sub>)<sup>2</sup> = R<sup>2</sup>
+                </div>
+                <p>
+                    During a circular interpolation command, the CNC controller must calculate the continuous coordinates along the arc, moving two linear axes simultaneously. For a constant linear path feed rate \(F\), the velocity vector of the tool must be dynamically resolved into individual axis velocities (\(V_x\) and \(V_y\)) at every millisecond step of the toolpath:
+                </p>
+                <div class="bg-indigo-50/50 p-4 rounded-lg my-4 border border-indigo-100 font-mono text-center text-sm text-indigo-900">
+                    V<sub>x</sub> = F &times; sin(&theta;) &nbsp;&bull;&nbsp; V<sub>y</sub> = F &times; cos(&theta;)
+                </div>
+                <p>
+                    Where \(&theta;\) represents the instantaneous angle of the tool relative to the arc's center. As the tool moves along the arc, one axis is accelerating while the other is decelerating, following a sinusoidal curve. If the synchronization between the two axes is off by even a microsecond, the circle will distort, resulting in ovality.
+                </p>
+
+                <h3 class="text-xl font-bold text-indigo-950 mt-6 mb-3">The Critical Plane Selection: G17, G18, and G19</h3>
+                <p>
+                    A standard vertical machining center operates with three primary linear axes: X, Y, and Z. However, circular interpolation is fundamentally a two-dimensional mathematical operation. Therefore, the CNC controller must know which 2D plane the circular arc is to be projected onto. If this plane is not explicitly set, the machine may execute the arc in an incorrect plane, leading to immediate tool wreckage or severe spindle collisions.
+                </p>
+                <p>
+                    The G-code standard establishes three distinct plane selection commands:
+                </p>
+
+                <div class="overflow-x-auto shadow-md border border-gray-200 rounded-lg my-6">
+                    <table class="w-full border-collapse text-sm">
+                        <thead>
+                            <tr class="bg-indigo-950 text-white">
+                                <th class="p-4 text-left font-bold">G-Code</th>
+                                <th class="p-4 text-left font-bold">Active Plane</th>
+                                <th class="p-4 text-left font-bold">Interpolation Axes</th>
+                                <th class="p-4 text-left font-bold">Incremental Center Vectors</th>
+                                <th class="p-4 text-left font-bold">Primary Application</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200 bg-white">
+                            <tr>
+                                <td class="p-4 font-mono font-bold text-indigo-700">G17</td>
+                                <td class="p-4 font-semibold text-gray-900">XY Plane</td>
+                                <td class="p-4 text-gray-600">X and Y Axes</td>
+                                <td class="p-4 font-mono text-gray-700">I (for X) and J (for Y)</td>
+                                <td class="p-4 text-gray-600">Standard vertical mills (VMC), pocketing, profiling, face milling.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-mono font-bold text-indigo-700">G18</td>
+                                <td class="p-4 font-semibold text-gray-900">ZX Plane</td>
+                                <td class="p-4 text-gray-600">Z and X Axes</td>
+                                <td class="p-4 font-mono text-gray-700">K (for Z) and I (for X)</td>
+                                <td class="p-4 text-gray-600">CNC Lathes, turning centers, horizontal mills (HMC), right-angle heads.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-mono font-bold text-indigo-700">G19</td>
+                                <td class="p-4 font-semibold text-gray-900">YZ Plane</td>
+                                <td class="p-4 text-gray-600">Y and Z Axes</td>
+                                <td class="p-4 font-mono text-gray-700">J (for Y) and K (for Z)</td>
+                                <td class="p-4 text-gray-600">Side milling on VMCs with right-angle attachments, horizontal machining centers.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h4 class="text-lg font-bold text-gray-900 mt-6 mb-2">G17: The XY Plane (Default Standard)</h4>
+                <p>
+                    On almost all vertical machining centers (VMCs), the XY plane is the startup default. In this mode, G02/G03 commands move the X and Y axes, while any specified Z motion creates a helical spiral. The incremental vectors defining the circle center are <code>I</code> (offset along X) and <code>J</code> (offset along Y).
+                </p>
+
+                <h4 class="text-lg font-bold text-gray-900 mt-6 mb-2">G18: The ZX Plane (Lathes &amp; Turning)</h4>
+                <p>
+                    The G18 plane selects the ZX plane. This is the default mode for horizontal CNC turning centers (lathes), where X controls diameter and Z controls part length. It is also utilized in multi-axis milling when using 3D ball-nose cutters or specialized boring attachments. The center vector offsets are <code>K</code> (offset along Z) and <code>I</code> (offset along X).
+                </p>
+                <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-lg my-4 text-sm text-amber-900">
+                    <strong>Critical Lathe Safety Warning:</strong> On standard CNC lathes, the X-axis is programmed in diameter (double the radius). However, when calculating <code>I</code> offsets for G18 arcs, some control parameters require the <code>I</code> value to be in radius, while others require it in diameter. Consult the specific machine manual before programming, as this discrepancy is a leading cause of massive lathe setup crashes.
+                </div>
+
+                <h4 class="text-lg font-bold text-gray-900 mt-6 mb-2">G19: The YZ Plane (Horizontal &amp; Angle Machining)</h4>
+                <p>
+                    When selecting G19, the active axes are Y and Z. The center vector offsets are <code>J</code> (offset along Y) and <code>K</code> (offset along Z). G19 is predominantly active in horizontal machining centers (HMCs) where the spindle axis lies parallel to the floor, or when machining side features on standard VMCs using a right-angle drive head.
+                </p>
+            </section>
+
+            <!-- SECTION 2 -->
+            <section id="syntax-structures" class="scroll-mt-20">
+                <h2 class="text-3xl font-extrabold text-gray-900 border-b pb-2">2. G02 (CW) and G03 (CCW) Syntax &amp; Commands</h2>
+                <p class="mt-4">
+                    The direction of the circular arc must be specified as either clockwise (G02) or counter-clockwise (G03). This direction is defined from a specific viewing perspective: <strong>looking down from the positive axis of the third, non-interpolating axis onto the active plane</strong>.
+                </p>
+                <ul class="list-disc pl-6 space-y-2">
+                    <li>In the <strong>G17 XY Plane:</strong> Look down from the positive Z-axis toward the Z0 plane. Clockwise is standard right-turn motion; counter-clockwise is left-turn.</li>
+                    <li>In the <strong>G18 ZX Plane:</strong> Look down from the positive Y-axis toward the Y0 plane. Because of mathematical conventions, the direction can feel inverted to new operators. Programmers must trace the path carefully.</li>
+                    <li>In the <strong>G19 YZ Plane:</strong> Look down from the positive X-axis toward the X0 plane.</li>
+                </ul>
+
+                <h3 class="text-xl font-bold text-indigo-950 mt-6 mb-3">Syntax Structuring Across Modern CNC Control Systems</h3>
+                <p>
+                    While the G-code standard (EIA/ISO RS-274-D) defines standard formats, different control builders have implemented variations that programmers must match to their specific shop-floor machines.
+                </p>
+
+                <h4 class="text-lg font-bold text-gray-900 mt-6 mb-2">1. Fanuc and Haas standard formats (ISO G-Code)</h4>
+                <p>
+                    Fanuc and Haas controls share identical syntax. The basic circular block requires the destination endpoint coordinates, the circle center definition (via radius <code>R</code> or vectors <code>IJK</code>), and the feed rate.
+                </p>
+                <pre class="font-mono text-sm leading-relaxed p-4 rounded-lg my-4 bg-slate-900 text-slate-100">
+G17 G90 G02 X2.0 Y3.0 R1.5 F15.0  (Standard Radius Format in G17)
+G17 G90 G02 X2.0 Y3.0 I1.5 J0.0 F15.0  (Standard Vector Format in G17)</pre>
+
+                <h4 class="text-lg font-bold text-gray-900 mt-6 mb-2">2. Siemens 840D / Sinumerik format</h4>
+                <p>
+                    The Siemens 840D control is highly flexible and features advanced syntax. It supports standard ISO IJK syntax, but also provides a direct Circle Radius parameter: <code>CR</code>.
+                </p>
+                <pre class="font-mono text-sm leading-relaxed p-4 rounded-lg my-4 bg-slate-900 text-slate-100">
+G2 X20 Y30 CR=15 F300 (CR is circle radius. Positive for arc &lt;= 180&deg;, negative for arc &gt; 180&deg;)
+G2 X20 Y30 I=15 J=0 F300 (Note the equal sign requirements in native Siemens programming)</pre>
+                <p>
+                    Siemens also supports polar coordinate commands, defining an arc endpoint using Polar Angle (<code>AP</code>) and Polar Radius (<code>RP</code>) relative to a previously defined pole.
+                </p>
+
+                <h4 class="text-lg font-bold text-gray-900 mt-6 mb-2">3. Mazak (EIA/ISO vs. Mazatrol)</h4>
+                <p>
+                    Mazak milling and multitasking machines run either standard EIA/ISO G-code (identical to Fanuc) or Mazatrol, their proprietary conversational language. In Mazatrol, the operator describes the geometry (such as unit shape, circle diameter, starting angle, and finish width) instead of writing physical coordinate lines. The internal machine post-processor dynamically converts these inputs to G02 and G03 motions in the background.
+                </p>
+
+                <h4 class="text-lg font-bold text-gray-900 mt-6 mb-2">4. Heidenhain conversational</h4>
+                <p>
+                    Heidenhain operates under a completely distinct conversational format. Instead of standard G-codes, it uses explicit verbal commands:
+                </p>
+                <pre class="font-mono text-sm leading-relaxed p-4 rounded-lg my-4 bg-slate-900 text-slate-100">
+10 CC X+50 Y+50  ; Define Circle Center at absolute coordinates
+11 C X+75 Y+50 DR+ F500 M3 ; CCW circle path to endpoint (DR+ is equivalent to G03)</pre>
+
+                <h3 class="text-xl font-bold text-indigo-950 mt-8 mb-3">The Modal Nature of Circular Commands</h3>
+                <p>
+                    G02 and G03 are <strong>modal G-codes</strong>. This means once a circular command is issued, it remains active in the controller's memory. All subsequent blocks of code will be interpreted as circular moves until a different motion code (such as G00 rapid traverse or G01 linear interpolation) is commanded.
+                </p>
+                <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg my-4 text-sm text-red-950">
+                    <strong>Dangerous Programming Trap:</strong> If an operator executes an arc and then plans to execute a linear exit, but forgets to insert the <code>G01</code> command, the machine will interpret the next endpoint coordinates as another circular arc of the same radius. The tool will swing wildly in a circle, gouging the part, snapping the tool, and potentially overloading the spindle. Always explicitly declare G01 or G00 immediately after completing a G02/G03 sweep.
+                </div>
+            </section>
+
+            <!-- SECTION 3 -->
+            <section id="r-vs-ijk" class="scroll-mt-20">
+                <h2 class="text-3xl font-extrabold text-gray-900 border-b pb-2">3. Radius 'R' vs. Vector 'IJK' Offsets</h2>
+                <p class="mt-4">
+                    When programming a circular arc, the controller must calculate the circle's center to coordinate axis motors perfectly. The programmer has two choices to specify the center coordinates: the **R-Word (Radius) method** or the **IJK Incremental Vector offset method**.
+                </p>
+
+                <h3 class="text-xl font-bold text-indigo-950 mt-6 mb-3">The Radius (R) Programming Method</h3>
+                <p>
+                    The R-word method is simple. The programmer defines the destination absolute endpoint coordinates (X, Y) and the radius of the arc (R). The machine control automatically calculates the circle's center in the background.
+                </p>
+                <p>
+                    However, this simplicity introduces a major mathematical challenge: <strong>The Ambiguity of Two Arcs</strong>. For any given start point, end point, and radius, there are actually <em>two</em> mathematical arcs that can connect them. One arc spans an angle less than or equal to 180 degrees, while the other spans an angle greater than 180 degrees.
+                </p>
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 my-6">
+                    <h4 class="font-bold text-indigo-950 mb-2">The G-Code Radius Sign Convention</h4>
+                    <p class="text-sm">To resolve this mathematical ambiguity, the CNC standard assigns signs to the <code>R</code> parameter:</p>
+                    <ul class="list-disc pl-6 mt-2 space-y-2 text-sm text-gray-600">
+                        <li><strong>Positive R (+R):</strong> Instructs the controller to execute the arc that is **less than or equal to 180 degrees** (standard profile blends).</li>
+                        <li><strong>Negative R (-R):</strong> Instructs the controller to execute the arc that is **greater than 180 degrees**.</li>
+                    </ul>
+                </div>
+
+                <h4 class="text-lg font-bold text-gray-900 mt-6 mb-2">The Fatal Flaw of R-Word Programming</h4>
+                <p>
+                    Despite its ease of use, the R-word method has severe, dangerous drawbacks on the shop floor:
+                </p>
+                <ol class="list-decimal pl-6 space-y-3">
+                    <li><strong>No Full-Circle Support:</strong> You cannot program a complete 360-degree circle in a single block using an R-word. If the start point and the end point are identical (e.g., machining a cylindrical pocket), the machine has an infinite number of possible center points for that radius. A block like <code>G02 X0.0 Y0.0 R1.0</code> will either cause the machine to stand completely still or throw a "Zero Radius Arc" alarm. The programmer is forced to split the circle into two separate 180-degree arcs, which doubles the code size and can create physical blend marks (small steps) on the finished bore.</li>
+                    <li><strong>Precision and Safety Risk:</strong> If there is a rounding error in the programmed endpoint coordinates, the physical distance between the start and end points may exceed the diameter of the programmed radius. If this happens, the mathematical equation has no solution. The CNC controller will either pause with a sudden motion alarm mid-cut (leaving a mark on the part) or automatically "compensate" by shifting the center point, cutting a distorted radius, and scrapping the workpiece.</li>
+                </ol>
+
+                <h3 class="text-xl font-bold text-indigo-950 mt-8 mb-3">The Incremental Vector Offset Method (IJK)</h3>
+                <p>
+                    The <strong>IJK vector offset method</strong> is the global industry standard for high-precision, production-grade G-code. In this mode, the programmer explicitly defines the exact coordinates of the circle's center using incremental distance vectors:
+                </p>
+                <ul class="list-disc pl-6 space-y-2">
+                    <li><strong>I:</strong> The incremental offset vector parallel to the X-axis from the arc's <strong>start point</strong> to the center.</li>
+                    <li><strong>J:</strong> The incremental offset vector parallel to the Y-axis from the arc's <strong>start point</strong> to the center.</li>
+                    <li><strong>K:</strong> The incremental offset vector parallel to the Z-axis from the arc's <strong>start point</strong> to the center.</li>
+                </ul>
+                
+                <div class="bg-indigo-50 border-l-4 border-indigo-600 p-6 rounded-r-xl my-6">
+                    <p class="text-sm font-bold uppercase text-indigo-800 tracking-wider mb-2">Calculus of IJK Vector Coordinates</p>
+                    <p class="text-sm text-gray-700 leading-relaxed">
+                        Under absolute programming (G90), while the destination coordinate values (X, Y) are absolute values relative to the Work Coordinate System (WCS) origin (such as G54), the <strong>I, J, and K values are strictly incremental offsets</strong> measured from the starting point of the arc.
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 font-mono text-xs">
+                        <div class="bg-white p-3 rounded border border-indigo-100">
+                            <span class="text-orange-700 font-bold block mb-1">X-Axis Center Calculation:</span>
+                            I = X<sub>center</sub> &minus; X<sub>start</sub>
+                        </div>
+                        <div class="bg-white p-3 rounded border border-indigo-100">
+                            <span class="text-orange-700 font-bold block mb-1">Y-Axis Center Calculation:</span>
+                            J = Y<sub>center</sub> &minus; Y<sub>start</sub>
+                        </div>
+                    </div>
+                </div>
+
+                <h4 class="text-lg font-bold text-gray-900 mt-6 mb-2">Step-by-Step Mathematical Calculation of IJK Values</h4>
+                <p>
+                    Let us calculate the IJK parameters for a 90-degree clockwise (G02) circular arc in G17 (XY plane):
+                </p>
+                <ul class="list-disc pl-6 space-y-2 text-sm">
+                    <li><strong>Arc Start Point:</strong> X10.000, Y20.000</li>
+                    <li><strong>Arc Target End Point:</strong> X25.000, Y35.000</li>
+                    <li><strong>Arc Center Coordinates:</strong> X25.000, Y20.000 (Radius = 15.000)</li>
+                </ul>
+                <p>Now, let's calculate the incremental offsets:</p>
+                <div class="bg-gray-50 p-5 rounded-lg border font-mono text-sm space-y-2 my-4">
+                    <div>I = X<sub>center</sub> - X<sub>start</sub> = 25.000 - 10.000 = <strong>+15.000</strong></div>
+                    <div>J = Y<sub>center</sub> - Y<sub>start</sub> = 20.000 - 20.000 = <strong>0.000</strong></div>
+                </div>
+                <p>The completed, absolute (G90) G-code block for this sweep is:</p>
+                <pre class="font-mono text-sm leading-relaxed p-4 rounded-lg my-4 bg-slate-900 text-slate-100">
+G90 G02 X25.000 Y35.000 I15.000 J0.000 F200.0</pre>
+
+                <h4 class="text-lg font-bold text-gray-900 mt-6 mb-2">Why IJK is Highly Recommended and Safer</h4>
+                <ul class="list-disc pl-6 space-y-3">
+                    <li><strong>Supports 360-Degree Circles in One Block:</strong> Since IJK defines the center point explicitly, you can program a full circle by making the start and end points identical. For example, a full CW circle of 20mm radius centered 20mm to the left of the start point is written as:
+                        <code class="block font-mono bg-gray-100 p-2 rounded text-indigo-950 mt-2 text-xs">G90 G02 X50.0 Y50.0 I-20.0 J0.0 F300.0</code>
+                    </li>
+                    <li><strong>Built-in Controller Validation:</strong> Modern CNC controls verify the accuracy of the programmed arc. The control calculates the radius from the start point to the center, then calculates the radius from the end point to the center. If these two values differ by more than a parameter-set tolerance (e.g., 0.005mm or 0.0002 inches), the control alarms out before the tool ever touches metal. This acts as a critical safety check against code errors.</li>
+                </ul>
+            </section>
+
+            <!-- SECTION 4 -->
+            <section id="helical-interpolation" class="scroll-mt-20">
+                <h2 class="text-3xl font-extrabold text-gray-900 border-b pb-2">4. Helical Interpolation &amp; Thread Milling</h2>
+                <p class="mt-4">
+                    <strong>Helical interpolation</strong> is an advanced machining process that coordinates synchronous movement across three axes. The control executes a 2D circular interpolation in the primary plane (typically XY under G17) while simultaneously executing a linear motion along the perpendicular third axis (Z-axis). The resulting physical toolpath is a precise helix.
+                </p>
+                <p>
+                    The standard syntax for a helical move simply adds a Z-axis target endpoint parameter to the circular interpolation block:
+                </p>
+                <pre class="font-mono text-sm leading-relaxed p-4 rounded-lg my-4 bg-slate-900 text-slate-100">
+G17 G90 G03 X50.0 Y50.0 I-15.0 J0.0 Z-5.0 F120.0</pre>
+                <p>
+                    In this block, as the tool sweeps a counter-clockwise circle in the XY plane, it moves down in the Z-axis, ending exactly at Z-5.0.
+                </p>
+
+                <h3 class="text-xl font-bold text-indigo-950 mt-8 mb-3">Helical Ramping (Bore Entry)</h3>
+                <p>
+                    In traditional vertical milling operations, entering a deep pocket or solid bore required drilling a starter hole or plunging the end mill straight down in the Z-axis. Straight plunging is extremely hard on tooling: flat-bottom end mills have no center cutting capability, resulting in massive axial cutting forces, chip packing, tool vibration, and rapid cutting edge failure.
+                </p>
+                <p>
+                    Helical ramping solves this challenge. The tool orbits in a circular arc while ramp-down axial motion is continuously fed. The tool cuts a clean, spiral entry path, creating its own starting pocket:
+                </p>
+                <ul class="list-disc pl-6 space-y-2">
+                    <li><strong>Superior Chip Evacuation:</strong> The circular movement creates a wide channel behind the tool, allowing compressed air or high-pressure coolant to sweep chips out of the hole, preventing recutting.</li>
+                    <li><strong>Reduced Cutting Forces:</strong> The axial cutting loads are shifted to radial forces, utilizing the tool's side cutting edges which are structurally stronger.</li>
+                </ul>
+
+                <h3 class="text-xl font-bold text-indigo-950 mt-8 mb-3">Thread Milling Algorithms</h3>
+                <p>
+                    For decades, threads inside machined components were cut using mechanical taps or thread cutting tools. However, high-value components (such as aerospace engine castings) run the risk of structural scrap if a tap seizes and snaps inside a deep blind hole.
+                </p>
+                <p>
+                    <strong>Thread milling</strong> uses multi-axis helical interpolation to cut threads. A specialized thread-profile cutter (which matches the pitch angle) orbits helical sweeps along the cylinder wall.
+                </p>
+                <p>
+                    Calculating the exact linear coordinate shifts is critical. For every 360-degree circular rotation, the Z-axis must feed axially by exactly **one lead length** (pitch) of the target thread:
+                </p>
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 my-6 font-mono text-sm space-y-4">
+                    <div>
+                        <span class="text-indigo-950 font-bold block mb-1">For Metric Threads (Pitch is given directly in mm):</span>
+                        Z-Shift per Rev = Thread Pitch (P)
+                        <br><span class="text-xs text-gray-500 font-sans italic">Example M20 x 2.5: The Z-axis must move precisely 2.5mm per full circle.</span>
+                    </div>
+                    <div>
+                        <span class="text-indigo-950 font-bold block mb-1">For Imperial Threads (TPI - Threads Per Inch):</span>
+                        Z-Shift per Rev = 1 / TPI
+                        <br><span class="text-xs text-gray-500 font-sans italic">Example 1/2"-13 UNC: The Z-axis must move precisely 1 &divide; 13 = 0.07692 inches per full circle.</span>
+                    </div>
+                </div>
+
+                <h4 class="text-lg font-bold text-gray-900 mt-6 mb-2">Internal Climb Thread Milling Directional Logic</h4>
+                <p>
+                    To achieve premium surface finishes and prolong cutter life, climb milling is standard. For standard right-hand internal threads, the toolpath must start at the **bottom of the pre-drilled bore and interpolate upwards** (G03 CCW rotation + positive Z movement). This forces the tool to climb mill, pushing chips downward into the empty pocket while preventing the tool from recutting chips.
+                </p>
+            </section>
+
+            <!-- SECTION 5 -->
+            <section id="cutter-compensation" class="scroll-mt-20">
+                <h2 class="text-3xl font-extrabold text-gray-900 border-b pb-2">5. Cutter Compensation Dynamics (G40/G41/G42)</h2>
+                <p class="mt-4">
+                    When writing G-code coordinates, the programmer must choose between **Centerline Programming** and **Part Profile Programming**.
+                </p>
+                <ul class="list-disc pl-6 space-y-4">
+                    <li><strong>Centerline Programming:</strong> The coordinates in the G-code represent the exact path of the tool center. This requires the programmer to offset all coordinates manually by the tool's radius. If the tool wears down by 0.05mm, or the operator switches from a 12mm end mill to an 11.8mm regrind, the entire program must be re-posted from CAM.</li>
+                    <li><strong>Part Profile Programming:</strong> The coordinates in the G-code match the exact dimensions on the blueprint. The CNC controller handles the tool radius offset dynamically, utilizing three modal commands:
+                        <ul class="list-disc pl-6 mt-2 space-y-1">
+                            <li><strong>G41:</strong> Cutter Compensation Left (offsets the tool to the left of the programmed path relative to the direction of travel). Used for standard climb milling of external profiles.</li>
+                            <li><strong>G42:</strong> Cutter Compensation Right (offsets the tool to the right). Used for conventional milling.</li>
+                            <li><strong>G40:</strong> Cutter Compensation Cancel. Disables dynamic tool offsets.</li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <h3 class="text-xl font-bold text-indigo-950 mt-6 mb-3">Critical Rules for Activating Cutter Compensation</h3>
+                <p>
+                    Dynamic tool compensation requires precise programming to prevent controller errors or unexpected movements:
+                </p>
+                <ol class="list-decimal pl-6 space-y-3">
+                    <li><strong>Must Activate on a Linear Move (G01/G00):</strong> You cannot initiate G41 or G42 during a G02 or G03 arc block. The controller requires a straight line (the "startup block") to shift the tool perpendicular to the path by the radius value stored in the offset registry (D-register).</li>
+                    <li><strong>Startup Vector Length:</strong> The length of the startup linear move must be **greater than the tool radius value** stored in the registry. If you attempt to activate compensation with a 10mm move while using a 12mm radius tool, the controller will trigger a motion error or collide with the part.</li>
+                    <li><strong>Ensure Correct D-Register Assignment:</strong> The G41/G42 block must include a <code>D</code> parameter which directs the controller to the correct registry row:
+                        <code class="block font-mono bg-gray-100 p-2 rounded text-indigo-950 mt-2 text-xs">G01 G41 X20.0 Y10.0 D01 F150.0  (Uses Radius value from Tool 1 offset register)</code>
+                    </li>
+                </ol>
+
+                <h3 class="text-xl font-bold text-indigo-950 mt-8 mb-3">Lead-In and Lead-Out Ramps</h3>
+                <p>
+                    Plunging a rotating end mill directly into the finished boundary of a circle results in dynamic tool deflection. The sudden radial load causes the tool to deflect slightly, leaving a permanent gouge or witness mark on the surface.
+                </p>
+                <p>
+                    To achieve high-quality surface finishes, programmers use **circular lead-in and lead-out arcs** to blend the tool tangentially into the cut:
+                </p>
+                
+                <figure class="my-8">
+                    <img src="screenshots/gcode-reference.png" alt="G-Code program showing G02 and G03 canned loops and helical thread milling operations" class="w-full rounded-xl shadow-lg border border-gray-200" loading="lazy" width="1200" height="675">
+                    <figcaption class="text-center text-sm text-gray-500 mt-3 italic">Figure 2: Industrial G-code programming integrates G02 and G03 commands with tool radius compensation (G41/G42) to produce dimensionally accurate bores and exterior contours.</figcaption>
+                </figure>
+
+                <ul class="list-disc pl-6 space-y-3">
+                    <li><strong>Tangential Circular Lead-in:</strong> The tool activates G41 on a linear approach vector, sweeps a smooth 90-degree or 180-degree lead-in arc, and blends tangentially into the main circular cut. The cutting forces build up gradually, avoiding tool shock and chatter.</li>
+                    <li><strong>Tangential Circular Lead-out:</strong> After completing the circular cut, the tool sweeps a secondary tangent arc away from the finish surface before cutter compensation is canceled using a G40 command on a linear move.</li>
+                </ul>
+            </section>
+
+            <!-- SECTION 6 -->
+            <section id="feed-adjustments" class="scroll-mt-20">
+                <h2 class="text-3xl font-extrabold text-gray-900 border-b pb-2">6. Feed Rate Adjustments (Internal vs. External)</h2>
+                <p class="mt-4">
+                    One of the most common causes of rapid tool wear, broken teeth, and poor surface finishes during circular milling is failing to adjust the program feed rate.
+                </p>
+                <p>
+                    When cutting in a straight line (G01), the feed rate at the tool's center is identical to the feed rate at the cutting edge. However, during circular interpolation, the tool center and the tool edge travel along concentric paths of different radii.
+                </p>
+                <ul class="list-disc pl-6 space-y-3">
+                    <li><strong>Internal Milling (Bores &amp; Pockets):</strong> The tool center travels along a path with a **smaller radius** than the contour being cut. If you run the catalog feed rate, the actual feed rate at the cutting edge will be much higher, leading to severe chip overloading and tool failure.</li>
+                    <li><strong>External Milling (Bosses &amp; Columns):</strong> The tool center travels along a path with a **larger radius** than the contour being cut. The cutting edge moves slower than programmed, resulting in reduced productivity.</li>
+                </ul>
+
+                <div class="bg-indigo-50 border-l-4 border-indigo-600 p-6 rounded-r-xl my-8">
+                    <p class="text-sm font-bold uppercase text-indigo-800 tracking-wider mb-2">Feed Rate Adjustment Formula</p>
+                    <div class="flex flex-col md:flex-row items-center justify-center gap-6 my-4">
+                        <div class="text-center font-mono bg-white px-8 py-4 rounded-lg shadow-sm border border-indigo-100 text-lg md:text-xl text-indigo-950 font-bold">
+                            F<sub>adjusted</sub> = F<sub>programmed</sub> &times; <span class="inline-block text-center border-b border-indigo-900 pb-1 align-middle"><span class="block">D<sub>part</sub> &plusmn; D<sub>cutter</sub></span><span class="block text-xs">D<sub>part</sub></span></span>
+                        </div>
+                        <div class="text-xs text-gray-600 space-y-1">
+                            <p><strong>F<sub>adjusted</sub>:</strong> The adjusted feed rate commanded in the G-code.</p>
+                            <p><strong>F<sub>programmed</sub>:</strong> The target linear edge feed rate (from the tooling catalog).</p>
+                            <p><strong>D<sub>part</sub>:</strong> The diameter of the circular feature being machined.</p>
+                            <p><strong>D<sub>cutter</sub>:</strong> The actual diameter of the milling cutter.</p>
+                            <p><strong>Use Minus (&minus;):</strong> For internal circular milling (bores, pockets).</p>
+                            <p><strong>Use Plus (&plus;):</strong> For external circular milling (bosses).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="text-xl font-bold text-indigo-950 mt-6 mb-3">Practical Math Calculations</h3>
+
+                <h4 class="text-lg font-bold text-gray-900 mt-4 mb-1">Example 1: Internal Bore Machining (Feed Overload Case)</h4>
+                <p class="text-sm text-gray-600">
+                    We want to finish machine a <strong>50.0mm bore (D<sub>part</sub>)</strong> using a <strong>12.0mm carbide end mill (D<sub>cutter</sub>)</strong>. The tooling catalog recommends a linear edge feed rate of <strong>500 mm/min (F<sub>programmed</sub>)</strong>.
+                </p>
+                <div class="bg-gray-50 p-4 rounded-lg border font-mono text-sm space-y-1 my-3">
+                    <p>F<sub>adjusted</sub> = 500 &times; ((50.0 - 12.0) / 50.0)</p>
+                    <p>F<sub>adjusted</sub> = 500 &times; (38.0 / 50.0)</p>
+                    <p>F<sub>adjusted</sub> = 500 &times; 0.76 = <strong>380 mm/min</strong></p>
+                </div>
+                <p class="text-sm text-gray-700">
+                    <strong>Result:</strong> We must reduce our G-code feed rate parameter to **380 mm/min** (a **24% reduction**). If we program the raw 500 mm/min feed rate, the outer edge of the end mill will actually travel at **658 mm/min**, resulting in chipped teeth, chatter, and poor surface finish.
+                </p>
+
+                <h4 class="text-lg font-bold text-gray-900 mt-6 mb-1">Example 2: External Boss Machining (Productivity Loss Case)</h4>
+                <p class="text-sm text-gray-600">
+                    Using the same tooling combination, we now want to profile a <strong>50.0mm cylindrical boss (D<sub>part</sub>)</strong>.
+                </p>
+                <div class="bg-gray-50 p-4 rounded-lg border font-mono text-sm space-y-1 my-3">
+                    <p>F<sub>adjusted</sub> = 500 &times; ((50.0 + 12.0) / 50.0)</p>
+                    <p>F<sub>adjusted</sub> = 500 &times; (62.0 / 50.0)</p>
+                    <p>F<sub>adjusted</sub> = 500 &times; 1.24 = <strong>620 mm/min</strong></p>
+                </div>
+                <p class="text-sm text-gray-700">
+                    <strong>Result:</strong> We can increase the commanded feed rate to **620 mm/min** (a **24% increase**). This maintains the target chip load, improving cycle times without risking tool damage.
+                </p>
+
+                <h3 class="text-xl font-bold text-indigo-950 mt-8 mb-3">Feed Rate Adjustment Reference Lookup Table</h3>
+                <p class="text-sm text-gray-600 mb-4">
+                    Use this standard lookup table to identify your Feed Correction Factors based on the ratio of the Cutter Diameter to the Part Diameter:
+                </p>
+                
+                <div class="overflow-x-auto shadow-md border border-gray-200 rounded-lg">
+                    <table class="w-full border-collapse text-sm">
+                        <thead>
+                            <tr class="bg-indigo-900 text-white">
+                                <th class="p-3 text-left font-bold">Cutter / Part Ratio</th>
+                                <th class="p-3 text-left font-bold">Internal Factor (Minus)</th>
+                                <th class="p-3 text-left font-bold">External Factor (Plus)</th>
+                                <th class="p-3 text-left font-bold">Example: 10mm cutter in 40mm Bore</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100 bg-white">
+                            <tr>
+                                <td class="p-3 font-semibold text-gray-950">0.10</td>
+                                <td class="p-3 font-mono text-red-600">0.90 (90%)</td>
+                                <td class="p-3 font-mono text-green-600">1.10 (110%)</td>
+                                <td class="p-3 text-gray-600">Minimal shift</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-semibold text-gray-950">0.20</td>
+                                <td class="p-3 font-mono text-red-600">0.80 (80%)</td>
+                                <td class="p-3 font-mono text-green-600">1.20 (120%)</td>
+                                <td class="p-3 text-gray-600">Significant shift</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-semibold text-gray-950">0.25</td>
+                                <td class="p-3 font-mono text-red-600">0.75 (75%)</td>
+                                <td class="p-3 font-mono text-green-600">1.25 (125%)</td>
+                                <td class="p-3 text-gray-600">Standard pocketing limit</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-semibold text-gray-950">0.30</td>
+                                <td class="p-3 font-mono text-red-600">0.70 (70%)</td>
+                                <td class="p-3 font-mono text-green-600">1.30 (130%)</td>
+                                <td class="p-3 text-gray-600">Tool deflection risk rises</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-semibold text-gray-950">0.40</td>
+                                <td class="p-3 font-mono text-red-600">0.60 (60%)</td>
+                                <td class="p-3 font-mono text-green-600">1.40 (140%)</td>
+                                <td class="p-3 text-gray-600">Heavy compensation required</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-semibold text-gray-950">0.50</td>
+                                <td class="p-3 font-mono text-red-600">0.50 (50%)</td>
+                                <td class="p-3 font-mono text-green-600">1.50 (150%)</td>
+                                <td class="p-3 text-gray-600">Extreme limit (e.g. 10mm cutter in 20mm Bore)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- SECTION 7 -->
+            <section id="troubleshooting" class="scroll-mt-20">
+                <h2 class="text-3xl font-extrabold text-gray-900 border-b pb-2">7. Shop-Floor Troubleshooting &amp; Metrology</h2>
+                <p class="mt-4">
+                    Even with mathematically correct G-code, executing circular toolpaths can present mechanical and physical challenges. The table below lists common quality issues encountered during circular interpolation and their root causes:
+                </p>
+
+                <div class="overflow-x-auto shadow-md border border-gray-200 rounded-lg my-6">
+                    <table class="w-full border-collapse text-sm">
+                        <thead>
+                            <tr class="bg-red-950 text-white">
+                                <th class="p-3 text-left font-bold">Quality Defect</th>
+                                <th class="p-3 text-left font-bold">Physical Symptom</th>
+                                <th class="p-3 text-left font-bold">Primary Mechanical Root Cause</th>
+                                <th class="p-3 text-left font-bold">Corrective Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-150 bg-white">
+                            <tr>
+                                <td class="p-3 font-semibold text-gray-950">Ovality / Out-of-Roundness</td>
+                                <td class="p-3 text-gray-600">The finished bore is elliptical, measuring larger along one axis (e.g. X) than the other (e.g. Y).</td>
+                                <td class="p-3 text-gray-600">1. Servomotor gain mismatch between X and Y axes.<br>2. Mechanical backlash in one axis ballscrew.</td>
+                                <td class="p-3 text-gray-600">Run a dynamic Ballbar test (QC20-W). Adjust axis backlash parameters in the CNC controller.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-semibold text-gray-950">Quadrant Crossover Marks</td>
+                                <td class="p-3 text-gray-600">Small gouges or flat spots appearing exactly at 0&deg;, 90&deg;, 180&deg;, and 270&deg; positions.</td>
+                                <td class="p-3 text-gray-600">Axis delay (stick-slip friction) when one linear axis reverses direction and momentarily halts.</td>
+                                <td class="p-3 text-gray-600">Adjust "Quadrant Glitch Compensation" torque pulse parameters in the controller.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-semibold text-gray-950">Conical Bore Taper</td>
+                                <td class="p-3 text-gray-600">The diameter at the top of the hole is larger than at the bottom of the bore.</td>
+                                <td class="p-3 text-gray-600">Tool deflection caused by heavy radial cutting forces bending the end mill.</td>
+                                <td class="p-3 text-gray-600">1. Program "spring passes" (repeating the profile with zero radial feed).<br>2. Switch to a shorter, more rigid carbide tool.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-semibold text-gray-950">Gouged Entry Scars</td>
+                                <td class="p-3 text-gray-600">A permanent vertical mark or gouge at the tool's entry/exit location.</td>
+                                <td class="p-3 text-gray-600">1. Direct radial linear plunge into the part profile.<br>2. Inactive or incorrectly configured cutter compensation.</td>
+                                <td class="p-3 text-gray-600">Program tangential circular lead-in and lead-out sweeps. Never plunge directly onto a finished wall.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3 class="text-xl font-bold text-indigo-950 mt-6 mb-3">Understanding Quadrant Backlash Error</h3>
+                <p>
+                    During a circular sweep in the XY plane, the axes must continuously reverse direction. For example, in a counter-clockwise arc (G03) starting at 3 o'clock (0&deg;):
+                </p>
+                <ul class="list-disc pl-6 space-y-1">
+                    <li>From 0&deg; to 90&deg;, the X-axis decelerates to zero while the Y-axis accelerates to maximum speed.</li>
+                    <li>Exactly at 90&deg; (12 o'clock), the X-axis must reverse direction, moving from positive to negative.</li>
+                </ul>
+                <p>
+                    At that split second, static friction (stick-slip) must be overcome, and any physical play in the ballscrew bearings (backlash) will cause a momentary pause. During this pause, the Y-axis continues moving, creating a small flat spot on the surface.
+                </p>
+                <p>
+                    <strong>Metrology Diagnostic:</strong> If you measure a bore using a three-point internal micrometer (bore gage) and detect out-of-roundness, measure the bore at 45-degree angles to isolate mechanical backlash from servo gain issues. If the diameter is smallest at 45&deg;/225&deg;, it indicates axis lag; if it is out-of-round exactly parallel to the X or Y axis, it points to mechanical backlash.
+                </p>
+            </section>
+
+            <!-- SECTION 8 -->
+            <section id="examples" class="scroll-mt-20">
+                <h2 class="text-3xl font-extrabold text-gray-900 border-b pb-2">8. Complete G-Code Programming Examples</h2>
+                <p class="mt-4">
+                    Below are three production-grade, shop-tested G-code programs demonstrating standard G02/G03 operations on Fanuc/Haas-compatible vertical machining centers.
+                </p>
+
+                <!-- EXAMPLE 1 -->
+                <div class="my-8">
+                    <h3 class="text-xl font-bold text-indigo-950 mb-2">Example 1: Bore Pocket Milling using IJK and Cutter Compensation (G41)</h3>
+                    <p class="text-sm text-gray-600 mb-3">
+                        This program cuts a <strong>3.000-inch diameter circular pocket</strong> centered at <strong>X0.0 Y0.0</strong> to a depth of <strong>Z-0.500 inches</strong>, using a <strong>0.500-inch diameter end mill</strong>. It features a tangential linear lead-in, a circular blend arc, a 360-degree sweep, a circular lead-out arc, and G40 cancellation.
+                    </p>
+                    <pre class="font-mono text-xs leading-relaxed p-4 rounded-lg bg-slate-900 text-slate-100 block">
+%
+O1001 (CIRCULAR BORE MILLING EXAMPLE)
+G20 G90 G40 G80 G49 G17 (Standard safety block: Imperial, Absolute, Cancel Comp/Cycles, XY Plane)
+T01 M06 (Select and load Tool 1: 0.500 inch End Mill)
+S2400 M03 (Spindle speed 2400 RPM, Spindle Clockwise)
+G54 G00 X0.0 Y0.0 (Rapid traverse to center of bore)
+G43 H01 Z0.1 M08 (Apply tool length offset, rapid to clearance plane, coolant ON)
+G01 Z-0.500 F15.0 (Feed linear to depth Z-0.500)
+
+(---- BEGIN PROFILE RAMP AND MILLING ----)
+G01 G41 X0.500 Y-0.500 D01 F30.0 (Linear startup block: activate G41 Cutter Comp, shift tool left)
+G03 X1.000 Y0.000 I0.000 J0.500 (Tangential lead-in arc: sweep to start of bore diameter)
+G03 X-1.000 Y0.000 I-1.000 J0.000 (Sweep first 180 degrees of bore)
+G03 X1.000 Y0.000 I1.000 J0.000 (Sweep remaining 180 degrees to complete the 360 circle)
+G03 X0.500 Y0.500 I-0.500 J0.000 (Tangential lead-out arc away from pocket wall)
+G00 G40 X0.0 Y0.0 (Cancel cutter compensation G40 on a linear move back to center)
+Z1.0 M09 (Retract Z axis, coolant OFF)
+G53 G49 Y0.0 Z0.0 M05 (Return to home position, Spindle Stop)
+M30 (End of program)
+%</pre>
+                </div>
+
+                <!-- EXAMPLE 2 -->
+                <div class="my-8">
+                    <h3 class="text-xl font-bold text-indigo-950 mb-2">Example 2: External Boss Machining using Radius (R) Programming</h3>
+                    <p class="text-sm text-gray-600 mb-3">
+                        This program profiles the exterior of a <strong>2.000-inch diameter cylinder (boss)</strong> centered at <strong>X0.0 Y0.0</strong> to a depth of <strong>Z-0.375 inches</strong>, using a <strong>0.500-inch diameter end mill</strong>. It uses the R-word method.
+                    </p>
+                    <pre class="font-mono text-xs leading-relaxed p-4 rounded-lg bg-slate-900 text-slate-100 block">
+%
+O1002 (EXTERNAL BOSS MILLING - R METHOD)
+G20 G90 G40 G80 G17 (Standard safety block)
+T02 M06 (Select Tool 2: 0.500 inch Roughing End Mill)
+S3200 M03 (Spindle Speed 3200 RPM)
+G54 G00 X-1.750 Y-1.750 (Rapid to safe clearance position away from part)
+G43 H02 Z0.1 M08 (Apply tool length, rapid to Z-clearance)
+G01 Z-0.375 F20.0 (Feed linear to cutting depth)
+
+(---- PROFILE WITH TANGENTIAL APPROACH ----)
+G01 G41 X-1.250 Y-1.250 D02 F45.0 (Activate cutter compensation on a linear approach)
+G01 X-1.000 Y0.000 (Linear move to start of boundary)
+G02 X1.000 Y0.000 R1.000 (Clockwise arc sweep of first 180 degrees of the boss)
+G02 X-1.000 Y0.000 R1.000 (Clockwise arc sweep of remaining 180 degrees)
+G01 X-1.250 Y1.250 (Linear exit away from finished boss profile)
+G00 G40 X-1.750 Y-1.750 (Cancel cutter compensation G40 on a linear move)
+Z2.0 M09 (Retract tool to safe height)
+G28 G91 Z0.0 (Return Z to home)
+G28 Y0.0 M05 (Return Y to home, Spindle Stop)
+M30 (End of program)
+%</pre>
+                </div>
+
+                <!-- EXAMPLE 3 -->
+                <div class="my-8">
+                    <h3 class="text-xl font-bold text-indigo-950 mb-2">Example 3: Internal Thread Milling (1"-8 UNC Thread) using Helical Interpolation</h3>
+                    <p class="text-sm text-gray-600 mb-3">
+                        This program cuts a <strong>1&quot;-8 UNC right-hand internal thread</strong> in a steel block, centered at <strong>X0.0 Y0.0</strong>. The thread pitch is <strong>1/8 = 0.125 inches</strong>. The program uses a <strong>0.750-inch diameter single-profile thread mill</strong>, starting at the bottom of the bore (Z-0.750) and climb-milling upward to Z0.100.
+                    </p>
+                    <pre class="font-mono text-xs leading-relaxed p-4 rounded-lg bg-slate-900 text-slate-100 block">
+%
+O1003 (INTERNAL THREAD MILLING 1-8 UNC)
+G20 G90 G40 G80 G17
+T03 M06 (Tool 3: 0.750" Thread Mill)
+S1800 M03 (1800 RPM)
+G54 G00 X0.0 Y0.0 (Rapid traverse to center of pre-drilled bore)
+G43 H03 Z0.2 M08 (Apply height offset, coolant ON)
+G01 Z-0.750 F25.0 (Plunge linear to bottom of thread depth)
+
+(---- HELICAL INTERPOLATION THREAD LOOP ----)
+(Thread Major Radius = 0.500". Tool Radius = 0.375". Shift radius = 0.125")
+G01 G41 X0.125 Y0.000 D03 F10.0 (Feed linear to engage cutter comp offset)
+G03 X0.125 Y0.000 I-0.125 J0.000 Z-0.625 F8.0 (1st full helical turn: CCW circular loop, Z climbs by +0.125 pitch)
+G03 X0.125 Y0.000 I-0.125 J0.000 Z-0.500 (2nd helical turn)
+G03 X0.125 Y0.000 I-0.125 J0.000 Z-0.375 (3rd helical turn)
+G03 X0.125 Y0.000 I-0.125 J0.000 Z-0.250 (4th helical turn)
+G03 X0.125 Y0.000 I-0.125 J0.000 Z-0.125 (5th helical turn)
+G03 X0.125 Y0.000 I-0.125 J0.000 Z0.000 (6th helical turn to clear the top of the plate)
+
+G01 G40 X0.0 Y0.0 (Cancel cutter compensation as tool returns to center)
+G00 Z1.0 M09 (Rapid retract, coolant OFF)
+G53 G49 Y0.0 Z0.0 M05 (Spindle Stop, return home)
+M30 (End of program)
+%</pre>
+                </div>
+            </section>
+
+            <!-- SECTION 9 -->
+            <section id="faqs" class="scroll-mt-20">
+                <h2 class="text-3xl font-extrabold text-gray-900 border-b pb-2">9. Exhaustive FAQ Section</h2>
+                <div class="space-y-6 mt-6">
+                    <div>
+                        <h3 class="font-bold text-indigo-950 text-lg">1. What happens if I accidentally swap the I and J values in standard G-code?</h3>
+                        <p class="text-gray-600 mt-1">
+                            Swapping I and J values shifts the target center of the circle to an incorrect coordinate plane. For example, if your I offset was meant to be 10.0 and J was meant to be 0.0, swapping them to I0.0 J10.0 moves the center along the Y-axis instead of the X-axis. Since the physical distance from the start point to this new center point no longer matches the distance to the end point, the CNC controller will immediately trigger an "Invalid Arc Endpoint" or "Radius Error" alarm and halt the machine before execution.
+                        </p>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-indigo-950 text-lg">2. Why does my machine alarm with "Radius Difference Exceeded" during execution?</h3>
+                        <p class="text-gray-600 mt-1">
+                            This alarm occurs when the calculated radius from the start point to the center differs from the calculated radius from the end point to the center by more than the tolerance set in the machine parameters (usually Haas Parameter 213 or Fanuc Parameter 3410, typically set to 0.005mm or 0.0002 inches). This is usually caused by rounding errors when converting imperial decimal values, or manual calculation mistakes. Using IJK offsets instead of R-values can help identify these discrepancies during programming.
+                        </p>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-indigo-950 text-lg">3. Can I perform G02 or G03 circular interpolation commands in the Z-axis?</h3>
+                        <p class="text-gray-600 mt-1">
+                            Yes. To perform circular moves in the Z-axis, you must activate the correct coordinate plane. Use <strong>G18 to select the ZX plane</strong> (arcs sweep in the Z and X axes) or <strong>G19 to select the YZ plane</strong>. Once active, the Z-axis can interpolate alongside either the X or Y axis. This is common when milling spherical radii, ball tracks on vertical walls, or 3-axis surface molds.
+                        </p>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-indigo-950 text-lg">4. How does feed rate calculation differ on older controllers versus modern ones with Look-Ahead?</h3>
+                        <p class="text-gray-600 mt-1">
+                            Older CNC controllers (1980s-1990s) executed blocks sequentially without analyzing future moves, which required programmers to manually calculate and reduce internal bore feed rates to prevent gouging or tool damage. Modern controllers equipped with Advanced Look-Ahead (such as Haas HSM or Fanuc AIAPC) scan hundreds of lines ahead. If configured correctly, the controller automatically scales and slows down feed rates during small-radius transitions to maintain a constant tool-edge velocity.
+                        </p>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-indigo-950 text-lg">5. How does tool deflection impact the physical geometry of an interpolated circle?</h3>
+                        <p class="text-gray-600 mt-1">
+                            Milling tools behave like cantilever beams under load. During circular interpolation, the radial cutting forces push the end mill away from the material wall. This deflection causes the cutter to leave excess stock, making internal bores smaller than programmed and external bosses larger. Using shorter, more rigid carbide tooling and programming multiple "spring passes" (profiling passes at final depth with zero radial feed) helps clean up deflection and achieve print specifications.
+                        </p>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-indigo-950 text-lg">6. Should I use climb or conventional milling for internal circular interpolation?</h3>
+                        <p class="text-gray-600 mt-1">
+                            For standard CNC setups and carbide tooling, <strong>climb milling</strong> is highly recommended. During internal bore milling, climb milling (using a G03 CCW path) keeps the cutting forces directed behind the tool, pushing chips out of the cutting path and resulting in excellent surface finishes and extended tool life. Conventional milling (using a G02 CW path) drags the cutter teeth through the cut, generating friction, heat, work hardening, and accelerated tool wear.
+                        </p>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-indigo-950 text-lg">7. How do I program a tapered circular path (conical spiral) manually?</h3>
+                        <p class="text-gray-600 mt-1">
+                            A tapered circular path requires the radius of the arc to change continuously alongside axial movement (Z-axis). Since G02 and G03 only support fixed-radius sweeps, you cannot program a continuous taper in a single standard block. Instead, you must break the path down into small, consecutive angular segments (e.g., 5-degree increments), recalculate the changing radius for each segment, and program them as a sequence of small G02/G03 blocks. Alternatively, modern controllers allow you to automate this process using parametric macro programming (Fanuc Macro B).
+                        </p>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-indigo-950 text-lg">8. Why are absolute coordinates not used for IJK vectors in Fanuc systems?</h3>
+                        <p class="text-gray-600 mt-1">
+                            Using incremental offsets from the start point for IJK vectors is a critical safety convention. In absolute programming (G90), a coordinate represents a fixed location relative to the Work Coordinate System (WCS). If IJK vectors were absolute, resetting the G54 datum or shifting the toolpath origin would require recalculating every single IJK value in the program. By keeping IJK vectors incremental, the circle center remains mathematically locked to the start point, allowing you to move or duplicate the toolpath anywhere on the machine envelope without modifying the arc blocks.
+                        </p>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-indigo-950 text-lg">9. How does backlash compensation in the CNC control interact with G02/G03 paths?</h3>
+                        <p class="text-gray-600 mt-1">
+                            Backlash compensation parameters automatically inject a brief, high-torque voltage pulse to the servo motors at the exact millisecond an axis reverses direction during a circular sweep. This pulse helps overcome physical play in the ballscrew and thrust bearings. If this compensation is set too low, the machine will dwell, leaving flat spots at the quadrant crossover points. If it is set too high, the motor will overshoot, leaving a small peak or notch on the finished surface.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 10 -->
+            <section id="checklist" class="scroll-mt-20">
+                <h2 class="text-3xl font-extrabold text-gray-900 border-b pb-2">10. Shop-Floor Verification Checklist</h2>
+                <p class="mt-4">
+                    Before loading code, clamping material, and pressing the <strong>Cycle Start</strong> button on any circular interpolation operation, execute this rigorous shop-floor checklist to prevent tool breakage and part scrap:
+                </p>
+                <div class="bg-gray-50 border border-gray-200 rounded-xl p-6 my-6 space-y-4">
+                    <div class="flex items-start gap-3">
+                        <input type="checkbox" class="mt-1 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                        <div>
+                            <p class="font-bold text-indigo-950 text-sm">Verify Active Plane G-Codes</p>
+                            <p class="text-xs text-gray-500">Ensure the correct plane is active (G17 for VMC mills, G18 for lathes, G19 for horizontal mills). A plane mismatch will result in immediate tool wreckage or axis alarms.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <input type="checkbox" class="mt-1 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                        <div>
+                            <p class="font-bold text-indigo-950 text-sm">Verify Tool Length and Radius Registers</p>
+                            <p class="text-xs text-gray-500">Verify that the tool height offset (H-value) and tool radius offset (D-value) in the G-code match the exact tool slots and dimensions on the machine carousel.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <input type="checkbox" class="mt-1 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                        <div>
+                            <p class="font-bold text-indigo-950 text-sm">Double-Check Linear Startup for G41/G42</p>
+                            <p class="text-xs text-gray-500">Confirm that cutter compensation is activated on a linear G01 move that is longer than the tool radius. Never activate cutter compensation on a G02/G03 arc move.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <input type="checkbox" class="mt-1 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                        <div>
+                            <p class="font-bold text-indigo-950 text-sm">Verify Feed Rate Compensation</p>
+                            <p class="text-xs text-gray-500">Confirm that internal bore or pocket feed rates have been reduced, and external boss feed rates have been adjusted using the standard feed rate formula to prevent chip overloading.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <input type="checkbox" class="mt-1 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                        <div>
+                            <p class="font-bold text-indigo-950 text-sm">Run Program Dry Run and Graphic Verification</p>
+                            <p class="text-xs text-gray-500">Run a graphical simulation on the CNC controller to verify the toolpaths visually, then perform a dry run (cutting air at Z+2.0 inches) before executing the program on raw material.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- AUTHOR BIO SECTION -->
+            <div class="mt-16 pt-8 border-t border-gray-200 flex flex-col sm:flex-row items-center gap-6 bg-slate-50 p-6 rounded-xl border border-slate-100">
+                <div class="bg-indigo-600 text-white h-14 w-14 rounded-full flex items-center justify-center font-extrabold text-xl shadow-md shrink-0">
+                    NX
+                </div>
+                <div class="text-center sm:text-left">
+                    <p class="text-gray-900 font-bold text-lg">Written by Nishikant Xalxo</p>
+                    <p class="text-xs text-indigo-600 font-semibold mb-2">CNC Programming Expert &amp; Technical Writer</p>
+                    <p class="text-sm text-gray-600 leading-relaxed">
+                        Nishikant is a seasoned manufacturing systems engineer specializing in G-code parameter optimization, high-speed machining, and automated toolpath generation. For feedback, tool suggestions, or technical support, contact him at <a href="mailto:nxdecore@gmail.com" class="text-indigo-600 font-semibold hover:underline">nxdecore@gmail.com</a> or follow <a href="https://instagram.com/nishix_vamp" target="_blank" rel="noopener noreferrer" class="text-indigo-600 font-semibold hover:underline">@nishix_vamp</a>.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER SECTION -->
+    <footer class="bg-indigo-950 text-gray-400 py-16 px-4 mt-20 border-t border-indigo-900/60">
+        <div class="max-w-5xl mx-auto text-center space-y-6">
+            <p class="font-bold text-white text-lg tracking-wider">SHADER7 PLATFORM</p>
+            <p class="text-sm max-w-xl mx-auto text-gray-400">
+                Free high-performance online calculators and engineering resources for professional CNC machinists, designers, and manufacturers worldwide.
+            </p>
+            <div class="flex flex-wrap justify-center gap-6 text-sm font-semibold">
+                <a href="/" class="hover:text-white transition">Home</a>
+                <a href="/blog.html" class="hover:text-white transition">Blog</a>
+                <a href="/privacy-policy.html" class="hover:text-white transition">Privacy Policy</a>
+                <a href="/terms.html" class="hover:text-white transition">Terms of Service</a>
+                <a href="/contact.html" class="hover:text-white transition">Contact Support</a>
+            </div>
+            <p class="text-xs text-gray-500 pt-8 border-t border-indigo-900/50">
+                &copy; 2026 SHADER7. All rights reserved. Creator credit and technical copywriting preserved by Nishikant Xalxo (@nishix_vamp).
+            </p>
+        </div>
+    </footer>
+</body>
+</html>

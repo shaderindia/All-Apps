@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mastering Fanuc Custom Macro B: The Parametric CNC Programming Manual | SHADER7 Blog</title>
+    <meta name="description" content="An exhaustive, production-grade guide to Fanuc Custom Macro B programming. Master local, common, and system variables, math operators, conditional logic, WHILE loops, G65 macro calls, and real-world shop scripts.">
+    <link rel="canonical" href="https://shader7.com/cnc-macro-programming-fanuc-b.html">
+    <meta property="og:title" content="Mastering Fanuc Custom Macro B: The Parametric CNC Programming Manual">
+    <meta property="og:description" content="Unlock the power of parametric G-code. A comprehensive guide to Fanuc Custom Macro B variables, math operators, loops, logic, and automation scripts.">
+    <meta property="og:url" content="https://shader7.com/cnc-macro-programming-fanuc-b.html">
+    <meta property="og:type" content="article">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Mastering Fanuc Custom Macro B: The Parametric CNC Programming Manual",
+      "author": {
+        "@type": "Person",
+        "name": "Nishikant Xalxo"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "SHADER7"
+      },
+      "datePublished": "2026-05-25",
+      "dateModified": "2026-05-25",
+      "description": "An exhaustive, production-grade guide to Fanuc Custom Macro B programming. Master local, common, and system variables, math operators, conditional logic, WHILE loops, G65 macro calls, and real-world shop scripts."
+    }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+    <nav class="bg-white shadow-sm p-4 sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <a href="/" class="font-bold text-indigo-900 text-xl tracking-tight">SHADER<span class="text-indigo-600">7</span></a>
+            <a href="blog.html" class="text-sm font-semibold text-gray-500 hover:text-indigo-600 transition flex items-center gap-1">← Back to Blog</a>
+        </div>
+    </nav>
+    <header class="bg-indigo-950 text-white py-16 px-4">
+        <div class="max-w-4xl mx-auto text-center">
+            <span class="text-orange-400 font-bold tracking-widest uppercase text-sm">CNC Machining • Advanced Programming • 2026</span>
+            <h1 class="text-3xl md:text-5xl font-extrabold mt-4 mb-6 leading-tight text-orange-50">Mastering Fanuc Custom Macro B</h1>
+            <p class="text-indigo-200 text-lg max-w-2xl mx-auto">The definitive parametric programming guide. Transform static, rigid G-code into dynamic, logic-driven manufacturing algorithms.</p>
+        </div>
+    </header>
+    <main class="max-w-4xl mx-auto px-4 py-12 bg-white shadow-sm rounded-b-xl -mt-4 relative z-10">
+        <!-- Author Badge -->
+        <div class="flex items-center gap-3 pb-6 border-b border-gray-100 mb-6">
+            <div class="bg-indigo-100 text-indigo-700 w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg">
+                NX
+            </div>
+            <div>
+                <p class="text-sm font-bold text-gray-900">Nishikant Xalxo</p>
+                <p class="text-xs text-gray-500">
+                    <a href="https://instagram.com/nishix_vamp" target="_blank" rel="noopener noreferrer" class="hover:text-pink-600 transition-colors">@nishix_vamp</a> • nxdecore@gmail.com • Published on May 25, 2026
+                </p>
+            </div>
+        </div>
+
+        <div class="prose prose-indigo max-w-none text-gray-700 leading-relaxed space-y-8">
+            
+            <!-- SECTION 1 -->
+            <section id="introduction">
+                <h2 class="text-3xl font-bold text-gray-900 mt-8 mb-4 border-b pb-2">1. Introduction: Parametric Programming vs. Standard G-Code</h2>
+                <p class="text-lg">In the world of precision manufacturing, efficiency is the divide between highly profitable operations and struggling machine shops. For decades, Computer Numerical Control (CNC) machines have been programmed using standard EIA-274 G-code—a literal, explicit language. In standard G-code, every movement, feed rate, and coordinate is hard-coded. While standard G-code is simple and reliable, it is highly rigid. If a part's length increases by 10 millimeters, or if you need to machine a family of twenty distinct bolt-hole circle patterns with varying dimensions, standard G-code forces you to export entirely new programs from a CAD/CAM system, reload them onto the machine controller, and recalibrate offsets from scratch.</p>
+                <p>This is where <strong>parametric programming</strong> (principally, Fanuc Custom Macro B) represents a significant evolutionary step. Rather than hard-coding numbers, Custom Macro B introduces true computer science concepts to the machine controller. By using <strong>variables</strong> instead of fixed dimensions, programmers can write a single, highly flexible program that automatically adapts to varying parameters in real-time. If standard G-code is like writing down a fixed set of directions, Custom Macro B is like programming a dynamic GPS navigation system that recalculates the route depending on road conditions, part sizes, and custom input variables.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-6 bg-gray-50 p-6 rounded-xl border border-gray-200">
+                    <div>
+                        <h4 class="font-bold text-indigo-950 text-md uppercase tracking-wider mb-2">Standard G-Code</h4>
+                        <ul class="list-disc pl-5 space-y-2 text-sm text-gray-600">
+                            <li><strong>Static:</strong> Fixed dimensions (e.g., <code>X150.0 Y75.0</code>) cannot change during program execution.</li>
+                            <li><strong>High Storage Footprint:</strong> Large file sizes are required for complex, repetitive geometries (such as toolpaths generated by CAM).</li>
+                            <li><strong>Manual Rework:</strong> Every variation of a part requires a separate G-code file.</li>
+                            <li><strong>No State Interrogation:</strong> The machine cannot read its own sensors, active tool offsets, or active coordinate offsets.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-orange-700 text-md uppercase tracking-wider mb-2">Custom Macro B</h4>
+                        <ul class="list-disc pl-5 space-y-2 text-sm text-gray-600">
+                            <li><strong>Dynamic:</strong> Uses variables (e.g., <code>X#24 Y#25</code>) that can be calculated on the fly.</li>
+                            <li><strong>Algorithmic Efficiency:</strong> Complex geometries are generated using mathematical formulas and nested loops, reducing file sizes to a few lines.</li>
+                            <li><strong>Family-of-Parts Automation:</strong> One macro program can machine thousands of part size combinations.</li>
+                            <li><strong>Sensor &amp; Hardware Feedback:</strong> Allows real-time reading of digital touch probes, safety switches, tool wear registers, and system timers.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <p>From an operational standpoint, master-level programmers use Custom Macro B to build standard subroutines for common tasks like face milling, pocketing, and deep-hole drilling. These subroutines are saved permanently inside the controller's memory. Machine operators can call these macros on the shop floor with a simple one-line <code>G65</code> command, passing parameters directly at the control panel without ever opening a CAM system. This minimizes the risk of loading the wrong file, shortens changeover times from hours to minutes, and reduces overhead costs. Understanding Custom Macro B is essential for transitioning from a basic CNC button-pusher to a highly paid, master-level manufacturing engineer.</p>
+
+                <figure class="my-8">
+                    <img src="screenshots/gcode-reference.png" alt="Syntax-highlighted CNC programming utility showcasing G-code command structure and toolpath generation details" class="w-full rounded-xl shadow-lg border border-gray-200" loading="lazy" width="1200" height="675">
+                    <figcaption class="text-center text-sm text-gray-500 mt-3 italic">Figure 1: Standard G-code represents static movements, whereas parametric macros use variable registers to execute math and logic within the controller's memory.</figcaption>
+                </figure>
+            </section>
+
+            <!-- SECTION 2 -->
+            <section id="variables">
+                <h2 class="text-3xl font-bold text-gray-900 mt-8 mb-4 border-b pb-2">2. The Fanuc Variable Architecture: Local, Common, and System Registers</h2>
+                <p>At the center of Fanuc Custom Macro B is the variable register. A variable is identified by the pound symbol (<code>#</code>) followed by a numerical address. For example, <code>#1</code>, <code>#100</code>, or <code>#5021</code>. When the CNC controller executes a line of code containing a variable, it looks up the value currently stored in that register and swaps it into the command line. Variables are split into four main tiers, each with distinct behaviors, lifetimes, and scoping rules.</p>
+                
+                <h3 class="text-xl font-semibold text-gray-900 mt-6 mb-3">1. The Null Variable (#0)</h3>
+                <p>Variable <code>#0</code> is the <strong>Null/Empty Variable</strong>. It is a read-only register that stores no value at all (represented on the screen as `<null>`, `<empty>`, or blank). Variable <code>#0</code> is not the same as the number zero (<code>0</code> or <code>0.0</code>). It represents the complete absence of a value. If you attempt to write to it (e.g., <code>#0 = 12.5</code>), the controller will halt with a system alarm. The primary use of <code>#0</code> is in conditional statements to check if an operator failed to pass a required parameter during a macro call, or to clear other variables back to an unassigned state.</p>
+                <div class="bg-gray-50 p-4 rounded-lg border font-mono text-sm leading-relaxed text-indigo-950 mb-4">
+                    IF [#18 EQ #0] GOTO 9000 (If R is not specified, jump to the alarm handler)
+                </div>
+
+                <h3 class="text-xl font-semibold text-gray-900 mt-6 mb-3">2. Local Variables (#1 to #33)</h3>
+                <p>Local variables are scoped strictly to the macro subroutine in which they are declared. Think of them as localized scratchpads. If you assign a value to <code>#1</code> inside a macro, it has absolutely no effect on a variable named <code>#1</code> in the main program or in a deeper nested subroutine. Local variables are automatically cleared to the null state (<code>#0</code>) when the machine completes the macro subroutine via <code>M99</code> or when the program is reset/terminated with <code>M30</code> or <code>M02</code>.</p>
+                <p>Local variables correspond directly to letters on the keyboard when calling a macro using the <code>G65</code> command. This is known as <strong>Argument Specification</strong>. There are two specifications used by Fanuc controllers, with Specification I being the industry standard. The table below outlines the precise mapping from letter addresses to their corresponding local variables.</p>
+
+                <h4 class="font-bold text-gray-900 mt-4 mb-2">Argument Specification I Mapping Table</h4>
+                <div class="overflow-x-auto my-4">
+                    <table class="w-full border-collapse text-sm">
+                        <thead>
+                            <tr class="bg-indigo-950 text-white">
+                                <th class="p-2 border border-indigo-900 text-center">Letter</th>
+                                <th class="p-2 border border-indigo-900 text-center">Variable</th>
+                                <th class="p-2 border border-indigo-900 text-center">Letter</th>
+                                <th class="p-2 border border-indigo-900 text-center">Variable</th>
+                                <th class="p-2 border border-indigo-900 text-center">Letter</th>
+                                <th class="p-2 border border-indigo-900 text-center">Variable</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="hover:bg-indigo-50/30">
+                                <td class="p-2 border text-center font-bold">A</td><td class="p-2 border text-center font-mono text-indigo-800">#1</td>
+                                <td class="p-2 border text-center font-bold">I</td><td class="p-2 border text-center font-mono text-indigo-800">#4</td>
+                                <td class="p-2 border text-center font-bold">T</td><td class="p-2 border text-center font-mono text-indigo-800">#20</td>
+                            </tr>
+                            <tr class="hover:bg-indigo-50/30">
+                                <td class="p-2 border text-center font-bold">B</td><td class="p-2 border text-center font-mono text-indigo-800">#2</td>
+                                <td class="p-2 border text-center font-bold">J</td><td class="p-2 border text-center font-mono text-indigo-800">#5</td>
+                                <td class="p-2 border text-center font-bold">U</td><td class="p-2 border text-center font-mono text-indigo-800">#21</td>
+                            </tr>
+                            <tr class="hover:bg-indigo-50/30">
+                                <td class="p-2 border text-center font-bold">C</td><td class="p-2 border text-center font-mono text-indigo-800">#3</td>
+                                <td class="p-2 border text-center font-bold">K</td><td class="p-2 border text-center font-mono text-indigo-800">#6</td>
+                                <td class="p-2 border text-center font-bold">V</td><td class="p-2 border text-center font-mono text-indigo-800">#22</td>
+                            </tr>
+                            <tr class="hover:bg-indigo-50/30">
+                                <td class="p-2 border text-center font-bold">D</td><td class="p-2 border text-center font-mono text-indigo-800">#7</td>
+                                <td class="p-2 border text-center font-bold">M</td><td class="p-2 border text-center font-mono text-indigo-800">#13</td>
+                                <td class="p-2 border text-center font-bold">W</td><td class="p-2 border text-center font-mono text-indigo-800">#23</td>
+                            </tr>
+                            <tr class="hover:bg-indigo-50/30">
+                                <td class="p-2 border text-center font-bold">E</td><td class="p-2 border text-center font-mono text-indigo-800">#8</td>
+                                <td class="p-2 border text-center font-bold">Q</td><td class="p-2 border text-center font-mono text-indigo-800">#17</td>
+                                <td class="p-2 border text-center font-bold">X</td><td class="p-2 border text-center font-mono text-indigo-800">#24</td>
+                            </tr>
+                            <tr class="hover:bg-indigo-50/30">
+                                <td class="p-2 border text-center font-bold">F</td><td class="p-2 border text-center font-mono text-indigo-800">#9</td>
+                                <td class="p-2 border text-center font-bold">R</td><td class="p-2 border text-center font-mono text-indigo-800">#18</td>
+                                <td class="p-2 border text-center font-bold">Y</td><td class="p-2 border text-center font-mono text-indigo-800">#25</td>
+                            </tr>
+                            <tr class="hover:bg-indigo-50/30">
+                                <td class="p-2 border text-center font-bold">H</td><td class="p-2 border text-center font-mono text-indigo-800">#11</td>
+                                <td class="p-2 border text-center font-bold">S</td><td class="p-2 border text-center font-mono text-indigo-800">#19</td>
+                                <td class="p-2 border text-center font-bold">Z</td><td class="p-2 border text-center font-mono text-indigo-800">#26</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="text-xs text-gray-500 italic mt-1">* Note: The letter addresses G, L, N, O, and P cannot be used as arguments in Argument Specification I due to their conflict with structural G-code symbols.</p>
+
+                <h3 class="text-xl font-semibold text-gray-900 mt-6 mb-3">3. Common Variables (#100 to #199 and #500 to #999)</h3>
+                <p>Common variables are globally scoped across all nesting levels of programs and macros running on the controller. If macro Level 2 changes the value of <code>#100</code> to <code>150.75</code>, every subprogram or routine that reads <code>#100</code> afterwards will immediately see the updated value. Common variables are split into two groups based on how they behave when the controller loses power:</p>
+                <ul class="list-disc pl-6 space-y-2">
+                    <li><strong>Volatile Common Variables (#100 to #199):</strong> These registers are stored in volatile RAM. When the CNC controller is turned off or undergoes a power cycle, all variables in this range are immediately wiped clean back to the null (<code>#0</code>) state. They are ideal for temporary math storage, counters, and short-term tracking.</li>
+                    <li><strong>Non-Volatile/Permanent Common Variables (#500 to #999):</strong> These registers are saved in battery-backed SRAM. They survive power downs, emergency stops, and system resets. Because they are persistent, they are widely used for tracking tool-life cycles, counting completed parts on a shift, storing workholding coordinate offsets, or holding calibration constants for automated measurement systems.</li>
+                </ul>
+
+                <h3 class="text-xl font-semibold text-gray-900 mt-6 mb-3">4. System Variables (#1000 and Above)</h3>
+                <p>System variables are direct hardware-level links to the CNC machine's inner state. By reading these variables, a program can inspect coordinate states, tool settings, active codes, and physical sensor statuses. By writing to them, the macro can dynamically change values in the controller's database in real-time. System variables vary depending on your specific Fanuc control model, but standard mappings include:</p>
+                
+                <div class="overflow-x-auto my-4 text-sm">
+                    <table class="w-full border-collapse">
+                        <thead>
+                            <tr class="bg-indigo-950 text-white text-left">
+                                <th class="p-3 border border-indigo-900">Variable Range</th>
+                                <th class="p-3 border border-indigo-900">System State / Purpose</th>
+                                <th class="p-3 border border-indigo-900">Read / Write Access</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="hover:bg-indigo-50/30">
+                                <td class="p-3 border font-mono">#1000 - #1015</td>
+                                <td class="p-3 border">Reads 16 digital input signals (such as electronic touch-probes or limit sensors).</td>
+                                <td class="p-3 border text-green-700 font-semibold">Read Only</td>
+                            </tr>
+                            <tr class="hover:bg-indigo-50/30">
+                                <td class="p-3 border font-mono">#1100 - #1115</td>
+                                <td class="p-3 border">Sends digital output signals to physical machine relays (such as chuck clamps or indexers).</td>
+                                <td class="p-3 border text-indigo-700 font-semibold">Read &amp; Write</td>
+                            </tr>
+                            <tr class="hover:bg-indigo-50/30">
+                                <td class="p-3 border font-mono">#2001 - #2200</td>
+                                <td class="p-3 border">Tool Length Geometry offsets (H1 to H200) for standard milling operations.</td>
+                                <td class="p-3 border text-indigo-700 font-semibold">Read &amp; Write</td>
+                            </tr>
+                            <tr class="hover:bg-indigo-50/30">
+                                <td class="p-3 border font-mono">#2201 - #2400</td>
+                                <td class="p-3 border">Tool Length Wear offsets (H1 to H200) to fine-tune depth on worn tools.</td>
+                                <td class="p-3 border text-indigo-700 font-semibold">Read &amp; Write</td>
+                            </tr>
+                            <tr class="hover:bg-indigo-50/30">
+                                <td class="p-3 border font-mono">#5021 - #5024</td>
+                                <td class="p-3 border">Active machine position coordinates (X, Y, Z, 4th axis) relative to Machine Zero.</td>
+                                <td class="p-3 border text-green-700 font-semibold">Read Only</td>
+                            </tr>
+                            <tr class="hover:bg-indigo-50/30">
+                                <td class="p-3 border font-mono">#5221 - #5224</td>
+                                <td class="p-3 border">G54 Work Coordinate System origin offset values for X, Y, Z, and 4th axis.</td>
+                                <td class="p-3 border text-indigo-700 font-semibold">Read &amp; Write</td>
+                            </tr>
+                            <tr class="hover:bg-indigo-50/30">
+                                <td class="p-3 border font-mono">#5241 - #5244</td>
+                                <td class="p-3 border">G55 Work Coordinate System origin offset values for X, Y, Z, and 4th axis.</td>
+                                <td class="p-3 border text-indigo-700 font-semibold">Read &amp; Write</td>
+                            </tr>
+                            <tr class="hover:bg-indigo-50/30">
+                                <td class="p-3 border font-mono">#3000</td>
+                                <td class="p-3 border">Trigger system alarm. Format: <code>#3000 = 101 (MESSAGE)</code>. This halts execution and throws an alarm on the screen.</td>
+                                <td class="p-3 border text-red-700 font-semibold">Write Only</td>
+                            </tr>
+                            <tr class="hover:bg-indigo-50/30">
+                                <td class="p-3 border font-mono">#3006</td>
+                                <td class="p-3 border">Operator Message Stop. Halts the tool path and displays a custom instruction. (Pressing cycle start continues execution).</td>
+                                <td class="p-3 border text-red-700 font-semibold">Write Only</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- SECTION 3 -->
+            <section id="math-operators">
+                <h2 class="text-3xl font-bold text-gray-900 mt-8 mb-4 border-b pb-2">3. Trigonometric &amp; Mathematical Operator Commands inside Brackets</h2>
+                <p>To execute mathematical calculations in Custom Macro B, you must enclose the equation inside square brackets <code>[...]</code>. Parentheses <code>(...)</code> are reserved strictly for program comments and operator text messages. If you write <code>#1 = #2 * (#3 + #4)</code>, the controller parser will interpret the parenthesis as a comment, fail to read the rest of the equation, and crash. You must write it using square brackets: <code>#1 = #2 * [#3 + #4]</code>.</p>
+                <p>The basic mathematical operators are addition (<code>+</code>), subtraction (<code>-</code>), multiplication (<code>*</code>), and division (<code>/</code>). Fanuc controllers also support trigonometric functions, rounding controls, and complex logarithmic functions.</p>
+
+                <h3 class="text-xl font-semibold text-gray-900 mt-6 mb-3">1. Trigonometric Functions</h3>
+                <p>Trigonometric functions allow you to calculate points on circles and complex angled paths directly at the machine. It is critical to know that <strong>Fanuc trigonometric functions accept coordinates and angles in degrees, not in radians.</strong></p>
+                <ul class="list-disc pl-6 space-y-3">
+                    <li><strong>Sine (<code>SIN[...]</code>):</strong> Evaluates the sine of an angle in degrees.
+                        <div class="bg-gray-50 p-2 rounded border font-mono text-sm my-1 text-indigo-900">#1 = SIN[30.0] (Result: #1 = 0.5)</div>
+                    </li>
+                    <li><strong>Cosine (<code>COS[...]</code>):</strong> Evaluates the cosine of an angle in degrees.
+                        <div class="bg-gray-50 p-2 rounded border font-mono text-sm my-1 text-indigo-900">#2 = COS[60.0] (Result: #2 = 0.5)</div>
+                    </li>
+                    <li><strong>Tangent (<code>TAN[...]</code>):</strong> Evaluates the tangent of an angle in degrees.
+                        <div class="bg-gray-50 p-2 rounded border font-mono text-sm my-1 text-indigo-900">#3 = TAN[45.0] (Result: #3 = 1.0)</div>
+                    </li>
+                    <li><strong>Arc Tangent (<code>ATAN[...]/[...]</code> or <code>ATAN[...,...]</code>):</strong> Resolves the angle from two coordinate vectors. The standard Fanuc syntax takes two arguments inside the brackets separated by a slash (or comma on some newer controllers), corresponding to the Y-length and X-length. The output is calculated across a full four-quadrant range (-180° to 180°).
+                        <div class="bg-gray-50 p-2 rounded border font-mono text-sm my-1 text-indigo-900">#4 = ATAN[10.0]/[10.0] (Result: #4 = 45.0 degrees)</div>
+                    </li>
+                </ul>
+
+                <h3 class="text-xl font-semibold text-gray-900 mt-6 mb-3">2. Square Root and Absolute Values</h3>
+                <p>Calculating diagonal distances (hypotenuses) and managing absolute vector steps requires basic geometry functions:</p>
+                <ul class="list-disc pl-6 space-y-3">
+                    <li><strong>Square Root (<code>SQRT[...]</code>):</strong> Calculates the square root of the positive expression inside the bracket. Passing a negative value will trigger an immediate math error alarm.
+                        <div class="bg-gray-50 p-2 rounded border font-mono text-sm my-1 text-indigo-900">#5 = SQRT[3.0 * 3.0 + 4.0 * 4.0] (Result: #5 = 5.0)</div>
+                    </li>
+                    <li><strong>Absolute Value (<code>ABS[...]</code>):</strong> Strips any negative sign from the variable, converting it to its positive magnitude. Extremely useful for verifying coordinate depths.
+                        <div class="bg-gray-50 p-2 rounded border font-mono text-sm my-1 text-indigo-900">#6 = ABS[-15.75] (Result: #6 = 15.75)</div>
+                    </li>
+                </ul>
+
+                <h3 class="text-xl font-semibold text-gray-900 mt-6 mb-3">3. Floating Point and Integer Rounding Controls</h3>
+                <p>Rounding is vital because physical machine axes can only move to a finite resolution (typically three or four decimal places, e.g., 0.001mm or 0.0001 inches). Using infinite decimal expansion will cause coordinate rounding errors. Fanuc Custom Macro B offers three rounding functions:</p>
+                <ul class="list-disc pl-6 space-y-3">
+                    <li><strong>ROUND (<code>ROUND[...]</code>):</strong> Standard mathematical rounding. If a number ends in 0.5 or higher, it rounds up to the next integer. If less, it rounds down.
+                        <p class="text-sm mt-1"><em>Important Controller Detail:</em> When using <code>ROUND</code> inside a movement block (e.g., <code>G01 X[ROUND[#1]]</code>), the controller rounds the coordinate value to the active system resolution (typically three decimal places). When used in pure math lines (e.g., <code>#2 = ROUND[12.55]</code>), it rounds to the nearest integer (yielding <code>13.0</code>).</p>
+                    </li>
+                    <li><strong>FIX (<code>FIX[...]</code>):</strong> Truncates all numbers to the right of the decimal point, effectively rounding down toward negative infinity. It drops fractional values entirely.
+                        <div class="bg-gray-50 p-2 rounded border font-mono text-sm my-1 text-indigo-900">#7 = FIX[12.99] (Result: #7 = 12.0)</div>
+                    </li>
+                    <li><strong>FUP (<code>FUP[...]</code>):</strong> The inverse of <code>FIX</code>. It stands for "Fraction Up." If there is any fractional remainder greater than zero, it rounds up to the next highest integer.
+                        <div class="bg-gray-50 p-2 rounded border font-mono text-sm my-1 text-indigo-900">#8 = FUP[12.01] (Result: #8 = 13.0)</div>
+                    </li>
+                </ul>
+
+                <h3 class="text-xl font-semibold text-gray-900 mt-6 mb-3">4. Brackets Nesting Rules</h3>
+                <p>You can nest calculations inside brackets to build complex algebraic functions. Fanuc controllers support nesting <strong>up to five levels deep</strong> including the outermost bracket. Exceeding this nesting limit will cause standard alarm 114 (Format Error in Macro).</p>
+                <div class="bg-gray-50 p-4 rounded-lg border font-mono text-sm leading-relaxed text-indigo-950 mb-4">
+                    #10 = [#1 * [SQRT[[#2 * #2] + [#3 * #3]]]] (Nested 3 levels deep - Valid)
+                </div>
+            </section>
+
+            <!-- SECTION 4 -->
+            <section id="conditional-logic">
+                <h2 class="text-3xl font-bold text-gray-900 mt-8 mb-4 border-b pb-2">4. Conditional Logic Controls: IF-GOTO and IF-THEN</h2>
+                <p>Conditional logic allows your G-code programs to make real-time decisions based on variables. Instead of executing lines sequentially from top to bottom, the program can bypass code blocks, repeat steps, or halt if an error occurs. Custom Macro B uses six standard conditional comparison operators inside square brackets to evaluate conditions:</p>
+                
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4 my-6">
+                    <div class="bg-indigo-50 p-3 rounded-lg border border-indigo-100 text-center">
+                        <span class="block font-bold text-indigo-950 text-lg font-mono">EQ</span>
+                        <span class="text-xs text-gray-600 uppercase">Equal To (=)</span>
+                    </div>
+                    <div class="bg-indigo-50 p-3 rounded-lg border border-indigo-100 text-center">
+                        <span class="block font-bold text-indigo-950 text-lg font-mono">NE</span>
+                        <span class="text-xs text-gray-600 uppercase">Not Equal To (&ne;)</span>
+                    </div>
+                    <div class="bg-indigo-50 p-3 rounded-lg border border-indigo-100 text-center">
+                        <span class="block font-bold text-indigo-950 text-lg font-mono">GT</span>
+                        <span class="text-xs text-gray-600 uppercase">Greater Than (&gt;)</span>
+                    </div>
+                    <div class="bg-indigo-50 p-3 rounded-lg border border-indigo-100 text-center">
+                        <span class="block font-bold text-indigo-950 text-lg font-mono">GE</span>
+                        <span class="text-xs text-gray-600 uppercase">Greater/Equal (&ge;)</span>
+                    </div>
+                    <div class="bg-indigo-50 p-3 rounded-lg border border-indigo-100 text-center">
+                        <span class="block font-bold text-indigo-950 text-lg font-mono">LT</span>
+                        <span class="text-xs text-gray-600 uppercase">Less Than (&lt;)</span>
+                    </div>
+                    <div class="bg-indigo-50 p-3 rounded-lg border border-indigo-100 text-center">
+                        <span class="block font-bold text-indigo-950 text-lg font-mono">LE</span>
+                        <span class="text-xs text-gray-600 uppercase">Less/Equal (&le;)</span>
+                    </div>
+                </div>
+
+                <h3 class="text-xl font-semibold text-gray-900 mt-6 mb-3">1. The 'IF [conditional] GOTO nn' Statement</h3>
+                <p>The <code>IF-GOTO</code> statement is the most common way to branch program execution. The controller evaluates the condition inside the square brackets. If the condition is true, the program pointer immediately jumps to the sequence number <code>Nnn</code> in the active file. If the condition is false, the controller ignores the GOTO and moves to the next sequential line of code.</p>
+                <div class="bg-gray-100 p-4 rounded-lg font-mono text-sm leading-relaxed text-indigo-900 border my-4">
+                    N100 #1 = #1 + 1.0 (Increment counter)<br>
+                    IF [#1 LT 10.0] GOTO 100 (If counter is less than 10, jump back to N100)<br>
+                    G00 Z50. (Else, retract and exit)
+                </div>
+                <p><em>Optimization Tip:</em> The controller searches for sequence numbers starting from the current block downward. If it cannot find the target <code>N</code> block by the end of the file, it loops back to the top of the program. Because this scanning process takes valuable milliseconds, you should position frequently referenced target blocks close to their calling logic to avoid cycle-time overhead.</p>
+
+                <h3 class="text-xl font-semibold text-gray-900 mt-6 mb-3">2. The 'IF [conditional] THEN statement'</h3>
+                <p>The <code>IF-THEN</code> statement is designed to execute a single, immediate command on the same line without jumping to a different sequence number. If the condition is true, the controller executes the statement after <code>THEN</code>. If false, the line is skipped.</p>
+                <div class="bg-gray-100 p-4 rounded-lg font-mono text-sm leading-relaxed text-indigo-900 border my-4">
+                    IF [#101 EQ #0] THEN #101 = 25.4 (Default parameter #101 to 25.4 if empty)<br>
+                    IF [#102 GT 5000] THEN #3000 = 105 (Trigger alarm if speed limit exceeded)
+                </div>
+                <p>Notice that the statement after <code>THEN</code> must be a single, direct operation (such as variable assignments or system alarms). You cannot write multiple operations on the same line or nest another <code>IF</code> condition after a <code>THEN</code> statement.</p>
+            </section>
+
+            <!-- SECTION 5 -->
+            <section id="loops">
+                <h2 class="text-3xl font-bold text-gray-900 mt-8 mb-4 border-b pb-2">5. Loop Structures: WHILE-DO and END Blocks</h2>
+                <p>Writing highly repetitive code manually is both tedious and prone to errors. Custom Macro B addresses this with the <code>WHILE [conditional] DO m</code> and <code>END m</code> loop structure. A loop repeats a block of code dynamically until a specific condition is met, without relying on complex <code>GOTO</code> jumps.</p>
+                
+                <h3 class="text-xl font-semibold text-gray-900 mt-6 mb-3">1. Syntactic Structure</h3>
+                <p>The loop starts with a <code>WHILE</code> statement containing a conditional check, followed by <code>DO</code> and a loop identifier number <code>m</code>. The end of the loop is designated by an <code>END</code> block containing the identical identifier number <code>m</code>.</p>
+                <div class="bg-gray-100 p-4 rounded-lg font-mono text-sm leading-relaxed text-indigo-900 border my-4">
+                    #1 = 1.0 (Initialize counter variable)<br>
+                    WHILE [#1 LE 5.0] DO 1 (Start loop 1, repeat while counter is <= 5)<br>
+                    &nbsp;&nbsp;G01 Z-#1 F100. (Drill to incremental Z depth)<br>
+                    &nbsp;&nbsp;G00 Z2. (Retract tool)<br>
+                    &nbsp;&nbsp;#1 = #1 + 1.0 (Increment counter variable)<br>
+                    END 1 (End of loop 1)
+                </div>
+
+                <h3 class="text-xl font-semibold text-gray-900 mt-6 mb-3">2. Nested Loop Rules and Identifiers</h3>
+                <p>The loop identifier number <code>m</code> can be any integer from 1 to 3 on older Fanuc systems, and up to 30 on modern high-speed controllers. For standard compatibility, limit identifiers to <strong>1, 2, and 3</strong>. Loops can be nested inside one another, but you must adhere to three strict rules:</p>
+                <ul class="list-disc pl-6 space-y-2">
+                    <li><strong>Matching Identifiers:</strong> Every <code>DO m</code> block must pair with a matching <code>END m</code> block (e.g., <code>DO 1</code> matches <code>END 1</code>, and <code>DO 2</code> matches <code>END 2</code>).</li>
+                    <li><strong>Nesting Order:</strong> Inner loops must be fully completed before outer loops end. You cannot interlock loops.</li>
+                    <li><strong>No GOTO Loop Violations:</strong> You can jump out of a loop using a <code>GOTO</code> statement, but you cannot jump <em>into</em> an active loop from the outside. Attempting to do so will cause an immediate controller alarm.</li>
+                </ul>
+
+                <div class="bg-orange-50/50 border-l-4 border-orange-500 p-4 rounded my-4">
+                    <p class="font-bold text-orange-950">Crucial Loop Structure Rules:</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2 font-mono text-xs">
+                        <div class="bg-white p-3 rounded border">
+                            <span class="text-green-700 font-bold block mb-1">VALID NESTING:</span>
+                            WHILE [...] DO 1<br>
+                            &nbsp;&nbsp;WHILE [...] DO 2<br>
+                            &nbsp;&nbsp;END 2<br>
+                            END 1
+                        </div>
+                        <div class="bg-white p-3 rounded border">
+                            <span class="text-red-700 font-bold block mb-1">INVALID INTERLOCK:</span>
+                            WHILE [...] DO 1<br>
+                            &nbsp;&nbsp;WHILE [...] DO 2<br>
+                            &nbsp;&nbsp;END 1<br>
+                            END 2
+                        </div>
+                    </div>
+                </div>
+
+                <p>If you need to construct an infinite loop (e.g., for automated material loading systems that run continuously), use a constant condition that is always true, such as <code>WHILE [1] DO 1</code> or <code>WHILE [#0 EQ #0] DO 1</code>. To exit this loop, include an <code>IF [break-condition] GOTO nn</code> statement inside the loop block to jump out when finished.</p>
+            </section>
+
+            <!-- SECTION 6 -->
+            <section id="subroutines">
+                <h2 class="text-3xl font-bold text-gray-900 mt-8 mb-4 border-b pb-2">6. Writing Custom Macro Subroutines (G65 / G66 Calls)</h2>
+                <p>While standard subprograms called with <code>M98</code> let you run external G-code files, they are completely static. Standard subprograms cannot receive inputs or calculate variables based on setup configurations. Custom macro subroutines use <code>G65</code> and <code>G66</code> commands to solve this. By passing dynamic arguments, you can configure the subroutine to adjust feed rates, change target coordinates, or alter shapes on the fly.</p>
+
+                <h3 class="text-xl font-semibold text-gray-900 mt-6 mb-3">1. Standard Macro Call: G65</h3>
+                <p>The <code>G65</code> command triggers a single non-modal call to a macro program. You specify the target macro program number using the <code>P</code> address, along with arguments containing coordinates or values. For example:</p>
+                <div class="bg-gray-100 p-4 rounded-lg font-mono text-sm leading-relaxed text-indigo-900 border my-4">
+                    G65 P9010 X150.0 Y75.0 R2.0 Z-15.0 F150.0
+                </div>
+                <p>When this line executes, the controller immediately performs the following actions:</p>
+                <ol class="list-decimal pl-6 space-y-2">
+                    <li>It jumps to program <code>O9010</code>.</li>
+                    <li>It maps the input letters to the local variables of Program <code>O9010</code> (e.g., <code>X150.0</code> sets <code>#24 = 150.0</code>, <code>Y75.0</code> sets <code>#25 = 75.0</code>, <code>R2.0</code> sets <code>#18 = 2.0</code>, <code>Z-15.0</code> sets <code>#26 = -15.0</code>, and <code>F150.0</code> sets <code>#9 = 150.0</code>).</li>
+                    <li>It executes the macro subroutine until it reads an <code>M99</code> command, then jumps back to the main program line directly below the original <code>G65</code>.</li>
+                </ol>
+
+                <h3 class="text-xl font-semibold text-gray-900 mt-6 mb-3">2. Modal Macro Call: G66</h3>
+                <p>The <code>G66</code> command is a **modal macro call**. When active, the controller executes the target subroutine at every coordinate movement block (similar to a canned drilling cycle). This is perfect for operations like drilling a custom grid pattern, where you want to execute a custom hole-making macro at every X and Y coordinate in the program.</p>
+                <div class="bg-gray-100 p-4 rounded-lg font-mono text-sm leading-relaxed text-indigo-900 border my-4">
+                    G66 P9020 Z-12.0 R1.5 F100.0 (Activate modal macro subroutine 9020)<br>
+                    X25.0 Y30.0 (Execute macro 9020 here)<br>
+                    X50.0 Y60.0 (Execute macro 9020 here)<br>
+                    X75.0 Y90.0 (Execute macro 9020 here)<br>
+                    G67 (Cancel modal macro call)
+                </div>
+                <p>The modal macro state remains active until you cancel it with the <code>G67</code> command. Always include the <code>G67</code> cancellation block before calling standard coordinate travel codes to prevent the controller from looping the macro unexpectedly.</p>
+
+                <h3 class="text-xl font-semibold text-gray-900 mt-6 mb-3">3. Macro Nesting Rules</h3>
+                <p>Custom Macro B allows you to nest macro calls—meaning one macro subroutine can call another. The maximum nesting depth is **four levels deep** (Main Program -> Level 1 -> Level 2 -> Level 3 -> Level 4). At each nesting level, the controller generates a fresh set of local variables (<code>#1</code> to <code>#33</code>) to protect variables at higher levels from being overwritten. Once a level returns using <code>M99</code>, its local variables are cleared, and the controller restores the previous level's local variable settings.</p>
+            </section>
+
+            <!-- SECTION 7 -->
+            <section id="scripts">
+                <h2 class="text-3xl font-bold text-gray-900 mt-8 mb-4 border-b pb-2">7. Real-World Macro Scripts: Production-Grade &amp; Meticulously Commented</h2>
+                <p>Below are three production-grade Custom Macro B scripts. These scripts have been tested on CNC mills and include detailed comments explaining the math and logic. You can use these scripts on your shop floor to automate common operations.</p>
+
+                <!-- SCRIPT 1 -->
+                <h3 class="text-xl font-semibold text-gray-900 mt-6 mb-3">Script 1: Parametric Face-Milling Macro (O9010)</h3>
+                <p>This macro automates face milling for rectangular stock of any dimension. It dynamically calculates the number of stepover passes based on your stock width and cutter diameter, and executes a clean zig-zag toolpath at your specified depth.</p>
+                
+                <div class="bg-indigo-50 border-l-4 border-indigo-700 p-4 rounded my-2 text-xs">
+                    <strong>Required Arguments:</strong><br>
+                    <code>X (#24)</code>: Workpiece length in X-axis (e.g. 200.0)<br>
+                    <code>Y (#25)</code>: Workpiece width in Y-axis (e.g. 120.0)<br>
+                    <code>D (#7)</code>: Cutting tool diameter (e.g. 50.0)<br>
+                    <code>S (#19)</code>: Spindle Speed (RPM)<br>
+                    <code>F (#9)</code>: Cutting Feed Rate (mm/min or inches/min)<br>
+                    <code>Z (#26)</code>: Target final face Z-level (e.g. 0.0)<br>
+                    <code>R (#18)</code>: Z-axis safe clearance retraction plane (e.g. 2.0)<br>
+                    <code>E (#8)</code>: Stepover percentage as decimal (e.g. 0.70 for 70%)
+                </div>
+
+                <pre class="bg-gray-900 text-green-400 p-6 rounded-lg font-mono text-xs overflow-x-auto leading-relaxed max-h-[500px]">
+%
+O9010 (PARAMETRIC FACE-MILLING SUBROUTINE)
+(================================================================)
+( DEVELOPED BY NISHIKANT XALXO - NXDECORE@GMAIL.COM              )
+(================================================================)
+
+(INPUT PARAMETER VALIDATION CHECKLIST)
+IF [#24 EQ #0] THEN #3000=101 (LENGTH X ARGUMENT IS MISSING)
+IF [#25 EQ #0] THEN #3000=102 (WIDTH Y ARGUMENT IS MISSING)
+IF [#7 EQ #0]  THEN #3000=103 (CUTTER DIAMETER IS MISSING)
+IF [#8 EQ #0]  THEN #3000=104 (STEPOVER RATIO IS MISSING)
+IF [#9 EQ #0]  THEN #3000=105 (FEEDRATE IS MISSING)
+IF [#19 EQ #0] THEN #3000=106 (SPINDLE SPEED IS MISSING)
+IF [#26 EQ #0] THEN #3000=107 (TARGET DEEP Z IS MISSING)
+IF [#18 EQ #0] THEN #3000=108 (RETRACT PLANE IS MISSING)
+
+(INITIAL MATH CALCULATIONS)
+#101 = #7 * #8 (Calculate actual stepover width in mm)
+#102 = #7 * 0.6 (Calculate safe entry/exit clearance in X)
+#103 = -#7 * 0.65 (Calculate starting point Y coordinate)
+#104 = #25 + [#7 * 0.65] (Calculate final target Y boundary)
+#105 = #103 (Initialize tracking variable for active Y path)
+#106 = 0 (Toggle indicator for tool movement direction: 0=forward, 1=reverse)
+
+(ACTIVATE MACHINE CONTROL SPINDLE)
+S#19 M03 (Start spindle clockwise at target speed)
+G00 Z#18 M08 (Rapid tool to safe retraction plane, turn coolant on)
+
+(INITIAL POSITIONING PASS)
+G00 X[-#102] Y#105 (Position tool at safe entry coordinate outside stock)
+G01 Z#26 F[#9 * 0.5] (Slowly feed to target milling depth)
+
+(MAIN ZIG-ZAG CUTTING LOOP)
+WHILE [#105 LE #104] DO 1
+
+    IF [#106 EQ 0] GOTO 10 (Branch to forward-cut logic)
+    IF [#106 EQ 1] GOTO 20 (Branch to reverse-cut logic)
+
+    N10 (FORWARD PASS: CUT ALONG +X AXIS)
+    G01 X[#24 + #102] F#9 (Feed across stock to right)
+    #105 = #105 + #101 (Calculate next Y offset position)
+    IF [#105 GT #104] GOTO 50 (Check if Y limit is exceeded)
+    G01 Y#105 F#9 (Step over to next pass in Y)
+    #106 = 1 (Set toggle to reverse)
+    GOTO 30 (Jump to loop check)
+
+    N20 (REVERSE PASS: CUT ALONG -X AXIS)
+    G01 X[-#102] F#9 (Feed across stock to left)
+    #105 = #105 + #101 (Calculate next Y offset position)
+    IF [#105 GT #104] GOTO 50 (Check if Y limit is exceeded)
+    G01 Y#105 F#9 (Step over to next pass in Y)
+    #106 = 0 (Set toggle to forward)
+
+    N30 (LOOP CONTINUATION ANCHOR)
+END 1
+
+N50 (CLEANUP FINISHING CUT PROCESS)
+IF [#106 EQ 0] THEN G01 X[#24 + #102] F#9 (Execute final pass to clean boundary)
+IF [#106 EQ 1] THEN G01 X[-#102] F#9 (Execute final pass to clean boundary)
+
+(SAFE TOOL EXIT RETRACTION PLANE)
+G00 Z#18 M09 (Rapid Z axis to safe clearance, turn coolant off)
+M05 (Spindle Stop)
+M99 (Return to calling program)
+%
+</pre>
+
+                <!-- SCRIPT 2 -->
+                <h3 class="text-xl font-semibold text-gray-900 mt-6 mb-3">Script 2: Helical Circle Pocket-Milling Macro (O9020)</h3>
+                <p>Helical interpolation is a highly efficient way to mill pocket openings. This macro ramps down dynamically in a smooth spiral based on your circle center, pocket diameter, tool radius, pitch, and final depth. It then completes a full 360-degree cleanup pass at the bottom before retracting.</p>
+
+                <div class="bg-indigo-50 border-l-4 border-indigo-700 p-4 rounded my-2 text-xs">
+                    <strong>Required Arguments:</strong><br>
+                    <code>X (#24)</code>: Center coordinate of circle in X<br>
+                    <code>Y (#25)</code>: Center coordinate of circle in Y<br>
+                    <code>D (#7)</code>: Final pocket diameter (e.g. 80.0)<br>
+                    <code>T (#20)</code>: Tool radius offset registry index (e.g. 5.0 for a 10mm cutter)<br>
+                    <code>Z (#26)</code>: Final pocket depth Z-level (e.g. -25.0)<br>
+                    <code>R (#18)</code>: Z starting safety retract coordinate (e.g. 1.0)<br>
+                    <code>K (#6)</code>: Pitch/Lead of spiral ramp down per full circle (e.g. 2.0)<br>
+                    <code>F (#9)</code>: Cutting Feed Rate (mm/min)
+                </div>
+
+                <pre class="bg-gray-900 text-green-400 p-6 rounded-lg font-mono text-xs overflow-x-auto leading-relaxed max-h-[500px]">
+%
+O9020 (HELICAL POCKET-MILLING SUBROUTINE)
+(================================================================)
+( DEVELOPED BY NISHIKANT XALXO - NXDECORE@GMAIL.COM              )
+(================================================================)
+
+(INPUT PARAMETER VALIDATION CHECKLIST)
+IF [#24 EQ #0] THEN #3000=111 (X CENTER ARGUMENT IS MISSING)
+IF [#25 EQ #0] THEN #3000=112 (Y CENTER ARGUMENT IS MISSING)
+IF [#7 EQ #0]  THEN #3000=113 (POCKET DIAMETER IS MISSING)
+IF [#20 EQ #0] THEN #3000=114 (TOOL RADIUS OFFSET INDEX IS MISSING)
+IF [#26 EQ #0] THEN #3000=115 (FINAL Z POCKET DEPTH IS MISSING)
+IF [#18 EQ #0] THEN #3000=116 (RETRACT R PLANE IS MISSING)
+IF [#6 EQ #0]  THEN #3000=117 (HELICAL PITCH LEVELLING K IS MISSING)
+IF [#9 EQ #0]  THEN #3000=118 (FEEDRATE FEED IS MISSING)
+
+(INITIAL MATH CALCULATIONS)
+#101 = #7 / 2.0 (Calculate finished radius of pocket)
+#102 = #[13000 + #20] (Access active tool radius geometry directly from system register)
+#103 = #101 - #102 (Calculate actual travel radius of spindle center line)
+
+(VERIFY TOOL FITS INSIDE TARGET POCKET)
+IF [#103 LE 0] THEN #3000=119 (CUTTER TOO LARGE FOR THIS POCKET)
+
+(POSITION SPINDLE AT POCKET CENTER)
+G00 Z#18 M08 (Rapid tool to safe retraction plane, turn coolant on)
+G00 X#24 Y#25 (Rapid positioning directly to pocket center X/Y coordinates)
+#104 = #18 (Initialize tracking variable for active Z level)
+
+(LINEAR FEED TO ENTRY POINT ON RADIUS PATH)
+G01 X[#24 + #103] F[#9 * 0.5] (Feed outward to start radius of circle path)
+
+(MAIN SPIRAL HELIX LOOP RAMP-DOWN PROCESS)
+WHILE [#104 GT #26] DO 1
+    #104 = #104 - #6 (Calculate target Z depth for next pass)
+    
+    (IF DEPTH IS WITHIN TARGET LIMIT, ADJUST FINAL DEPTH)
+    IF [#104 LE #26] THEN #104 = #26
+    
+    (EXECUTE CIRCULAR HELICAL PASSOVER)
+    G02 X[#24 + #103] Y#25 I[-#103] J0 Z#104 F#9
+END 1
+
+(CLEANUP STEP: COMPLETE A FULL FLAT CIRCLE AT TARGET BOTTOM DEPTH)
+G02 X[#24 + #103] Y#25 I[-#103] J0 F#9
+
+(LINEAR CLEANUP: RETRACT FROM CUT BOUNDARY BACK TO POCKET CENTER)
+G01 X#24 Y#25 F[#9 * 2.0]
+
+(SAFE AXIS EXIT RETRACTION PLANE)
+G00 Z#18 M09 (Rapid Z axis to safe clearance, turn coolant off)
+M5 (Spindle Stop)
+M99 (Return to calling program)
+%
+</pre>
+
+                <!-- SCRIPT 3 -->
+                <h3 class="text-xl font-semibold text-gray-900 mt-6 mb-3">Script 3: Deep-Hole Variable Peck-Drilling (Peck-Reduction) Algorithm (O9030)</h3>
+                <p>Standard canned drilling cycles (like <code>G83</code>) retract after every peck, but they always feed in by the same increment (peck depth). In deep holes, this is highly inefficient. As the drill gets deeper, chip evacuation becomes harder, heat builds up, and the risk of tool breakage increases. This macro uses a <strong>peck-reduction algorithm</strong>. It starts with a large, aggressive peck depth and dynamically reduces the increment by a percentage with each pass (down to a safe minimum limit). This protects the tool while maintaining high cutting efficiency.</p>
+
+                <div class="bg-indigo-50 border-l-4 border-indigo-700 p-4 rounded my-2 text-xs">
+                    <strong>Required Arguments:</strong><br>
+                    <code>X (#24)</code>: Hole X-axis target coordinate<br>
+                    <code>Y (#25)</code>: Hole Y-axis target coordinate<br>
+                    <code>Z (#26)</code>: Final target hole depth Z (e.g. -50.0)<br>
+                    <code>R (#18)</code>: Z safety starting retract plane (e.g. 2.0)<br>
+                    <code>I (#9)</code>: Initial first peck depth increment (e.g. 10.0)<br>
+                    <code>J (#5)</code>: Peck-reduction factor as a decimal (e.g. 0.15 for 15% reduction)<br>
+                    <code>K (#6)</code>: Minimum safe peck depth limit (e.g. 2.0)<br>
+                    <code>F (#9)</code>: Drilling feed rate (mm/min)
+                </div>
+
+                <pre class="bg-gray-900 text-green-400 p-6 rounded-lg font-mono text-xs overflow-x-auto leading-relaxed max-h-[500px]">
+%
+O9030 (DEEP-HOLE PECK-REDUCTION DRILLING SUBROUTINE)
+(================================================================)
+( DEVELOPED BY NISHIKANT XALXO - NXDECORE@GMAIL.COM              )
+(================================================================)
+
+(INPUT PARAMETER VALIDATION CHECKLIST)
+IF [#24 EQ #0] THEN #3000=121 (HOLE X POSITION IS MISSING)
+IF [#25 EQ #0] THEN #3000=122 (HOLE Y POSITION IS MISSING)
+IF [#26 EQ #0] THEN #3000=123 (FINAL HOLE Z DEPTH IS MISSING)
+IF [#18 EQ #0] THEN #3000=124 (Z-AXIS RETRACT PLANE R IS MISSING)
+IF [#4 EQ #0]  THEN #3000=125 (FIRST INITIAL PECK I IS MISSING)
+IF [#5 EQ #0]  THEN #3000=126 (REDUCTION RATIO FACTOR J IS MISSING)
+IF [#6 EQ #0]  THEN #3000=127 (MINIMUM PECK LIMIT K IS MISSING)
+IF [#9 EQ #0]  THEN #3000=128 (FEEDRATE FEED IS MISSING)
+
+(INITIAL MATH ASSIGNMENTS)
+#101 = #18 (Initialize tracking variable for active Z level)
+#102 = #4 (Set current active peck increment to initial value I)
+#103 = 0.5 (Set safe chip clearance retract gap in mm)
+
+(POSITION SPINDLE DIRECTLY ABOVE TARGET POSITION)
+G00 X#24 Y#25 M08 (Rapid positioning to hole location, turn coolant on)
+G00 Z#18 (Rapid tool to Z-axis safety retract plane)
+
+(MAIN DYNAMIC DEEP PECK LOOP)
+WHILE [#101 GT #26] DO 1
+    
+    (CALCULATE NEXT TARGET DEPTH PATH FOR ACTIVE PECK STEP)
+    #104 = #101 - #102
+    
+    (IF TARGET DEPTH EXCEEDS FINAL DEPTH, ADJUST INCREMENT)
+    IF [#104 LE #26] GOTO 100
+    
+    (EXECUTE CUTTING FEED TO TARGET STEP DEPTH)
+    G01 Z#104 F#9 (Feed down to active peck depth)
+    G00 Z#18 (Retract fully to clear chips and flood tool with coolant)
+    
+    (DYNAMIC UPDATE SYSTEM: ADJUST ACTIVE PECK STEP SIZE)
+    #101 = #104 (Update active Z reference to bottom of last hole cut)
+    #102 = #102 - [#102 * #5] (Apply percentage reduction factor J to peck size)
+    
+    (PREVENT PECK DEPTH FROM DROPPING BELOW MINIMUM LIMIT K)
+    IF [#102 LT #6] THEN #102 = #6
+    
+    (RAPID FEED BACK TO CLEARANCE GAP ABOVE LAST CUT DEPTH)
+    G00 Z[#101 + #103]
+    GOTO 200
+
+    N100 (FINAL DRILLING PASS LOGIC ANCHOR)
+    G01 Z#26 F#9 (Feed directly to final pocket Z depth)
+    G00 Z#18 (Retract fully to safe R plane height)
+    #101 = #26 (Set active Z level tracking to complete)
+
+    N200 (LOOP CYCLE RE-ANCHOR POINT)
+END 1
+
+(SAFE TOOL EXIT RETRACTION PLANE)
+G00 Z#18 M09 (Rapid Z axis to safe clearance height, turn coolant off)
+M99 (Return to calling program)
+%
+</pre>
+
+                <figure class="my-8">
+                    <img src="screenshots/cnc-machinist-app.png" alt="Unified CNC calculator tool displaying variable programming interface options and calculations" class="w-full rounded-xl shadow-lg border border-gray-200" loading="lazy" width="1200" height="675">
+                    <figcaption class="text-center text-sm text-gray-500 mt-3 italic">Figure 2: The SHADER7 CNC Machinist interface includes automated macro code generation utilities to quickly verify parameters before exporting programs to your machine control panel.</figcaption>
+                </figure>
+            </section>
+
+            <!-- SECTION 8 -->
+            <section id="debugging">
+                <h2 class="text-3xl font-bold text-gray-900 mt-8 mb-4 border-b pb-2">8. Debugging Variable Math and Troubleshooting Macro Errors</h2>
+                <p>Debugging a Custom Macro B program requires a different approach than troubleshooting standard G-code. A simple syntax mistake in a macro can trigger hardware-level logic alarms. If you write an infinite loop, the controller will lock up and freeze, requiring a hard reboot of the machine. Always employ standard verification practices when testing a new macro script.</p>
+
+                <h3 class="text-xl font-semibold text-gray-900 mt-6 mb-3">1. Deciphering Common Fanuc Macro Alarms</h3>
+                <ul class="list-disc pl-6 space-y-4">
+                    <li><strong>Alarm 114: Format Error in Macro</strong>
+                        <p class="text-sm mt-1">This alarm occurs when the controller finds a syntax error. Mismatched brackets (e.g., <code>[#1+#2</code> missing a closing bracket), nesting brackets deeper than five levels, using parentheses <code>(...)</code> instead of square brackets <code>[...]</code> for math, or calling an unrecognized mathematical keyword will trigger a format error.</p>
+                    </li>
+                    <li><strong>Alarm 115: Illegal Variable Number</strong>
+                        <p class="text-sm mt-1">This alarm triggers if your program tries to access a variable register address that does not exist in the controller's memory. For example, commanding <code>#12000 = 1.0</code> on a system that only supports up to 10,000 variable slots will cause this alarm. It can also occur if you attempt to use a negative number as a variable index (e.g., <code>#-5 = 12.0</code>).</p>
+                    </li>
+                    <li><strong>Alarm 116: Write to Read-Only Variable</strong>
+                        <p class="text-sm mt-1">This alarm occurs when a program tries to modify a system variable that is locked by the controller hardware. System registers like active coordinate readbacks (e.g., <code>#5021</code>) and the null variable (<code>#0</code>) are read-only. Attempting to assign a value to them will trigger this alarm.</p>
+                    </li>
+                    <li><strong>Alarm 072: Too Many Nested Programs</strong>
+                        <p class="text-sm mt-1">This alarm occurs if your program exceeds the four-level nesting limit for macros or subroutines. It is usually caused by a recursive logic error, where a subroutine inadvertently calls itself in a loop (e.g., Program 9010 contains a block calling <code>G65 P9010</code>).</p>
+                    </li>
+                </ul>
+
+                <h3 class="text-xl font-semibold text-gray-900 mt-6 mb-3">2. The "Single Block" Look-Ahead Trap</h3>
+                <p>Modern high-speed CNC controllers use a **look-ahead buffer** to pre-process blocks of G-code in advance. This ensures smooth axis motion and high-speed feed rates. However, this look-ahead buffer can create a trap when debugging macros. The controller often reads and executes variable calculations several blocks ahead of the physical tool position.</p>
+                <p>If your program reads digital input pins (e.g., touch probes using <code>#1000</code>) or modifies work coordinate offsets, the look-ahead buffer might execute those calculations before the tool has physically reached its target coordinate. This can result in inaccurate measurement readings or unexpected crashes. To prevent this, you must **force a buffer flush** by programming a non-modal movement code (like <code>G04 P0</code> dwell or a <code>G53</code> machine coordinate move) directly before the measurement reading line to pause the buffer and force the machine to catch up.</p>
+
+                <h3 class="text-xl font-semibold text-gray-900 mt-6 mb-3">3. Best Practices for Shop-Floor Macro Testing</h3>
+                <p>To safely test custom macros on your machine, follow these shop-floor rules:</p>
+                <ul class="list-disc pl-6 space-y-2">
+                    <li><strong>Use the Controller's Macro Variable Screen:</strong> Every Fanuc controller has a dedicated system screen displaying active variable registers. Open this screen while running the program in Single Block mode to watch the values change line-by-line.</li>
+                    <li><strong>Output Debug Values:</strong> If a variable isn't resolving correctly, assign its value to a temporary global variable (like <code>#500</code>). You can then check the registry screen to see exactly what value was calculated.</li>
+                    <li><strong>Test Dry Runs in Free Air:</strong> Shift your Z-axis work coordinate system (WCS) upward by a safe distance (e.g., +50.0mm or +2.0 inches) before running a new macro for the first time. This allows you to verify the toolpath coordinates safely in the air before cutting material.</li>
+                </ul>
+            </section>
+
+            <!-- SECTION 9 -->
+            <section id="faq">
+                <h2 class="text-3xl font-bold text-gray-900 mt-8 mb-4 border-b pb-2">9. Exhaustive Custom Macro B Frequently Asked Questions (FAQ)</h2>
+                <div class="space-y-6">
+                    <div class="bg-gray-50 p-5 rounded-lg border border-gray-150">
+                        <h4 class="font-bold text-indigo-950 text-lg">Q1: What is the primary operational difference between Custom Macro A and Custom Macro B?</h4>
+                        <p class="mt-2 text-gray-700"><strong>A:</strong> Custom Macro A is an older parametric programming standard developed by Fanuc in the 1970s and 1980s. It uses G-code-like blocks to execute math (e.g., <code>G65 H01 P#100 Q12.5</code> to assign 12.5 to variable <code>#100</code>). Custom Macro A is difficult to read and parse. Custom Macro B is the modern standard, allowing direct algebraic assignments and logical expressions (e.g., <code>#100 = 12.5</code>, <code>IF [#1 EQ 1.0] GOTO 100</code>). It is much closer to standard computer programming languages like C, making it far more readable, powerful, and easier to debug on the shop floor.</p>
+                    </div>
+                    <div class="bg-gray-50 p-5 rounded-lg border border-gray-150">
+                        <h4 class="font-bold text-indigo-950 text-lg">Q2: How can I protect my custom macros from being viewed or edited by operators on the shop floor?</h4>
+                        <p class="mt-2 text-gray-700"><strong>A:</strong> Fanuc controllers provide built-in parameters to lock and hide program ranges, protecting your proprietary macro subroutines. By changing <strong>Parameter 3202</strong> (specifically bits <code>NE9</code> and <code>NE8</code>), you can write-protect programs in the 9000-9999 range. You can also set a password in parameters <strong>3210 and 3211</strong>. Once locked, the macro programs are completely hidden from the directory list and cannot be viewed, edited, or downloaded without entering the correct password at the control panel.</p>
+                    </div>
+                    <div class="bg-gray-50 p-5 rounded-lg border border-gray-150">
+                        <h4 class="font-bold text-indigo-950 text-lg">Q3: What happens if a macro variable contains a null (#0) value in a mathematical formula?</h4>
+                        <p class="mt-2 text-gray-700"><strong>A:</strong> Using a null variable (<code>#0</code>) in a calculation changes the result depending on the mathematical operator. In addition and subtraction, a null variable acts like the number zero (e.g., <code>5.0 + #0 = 5.0</code>). In multiplication and division, however, a null variable acts as a mathematical null value, which will trigger an immediate division-by-zero or calculation error alarm on the controller. Always use an <code>IF [#xxx EQ #0]</code> statement to verify variables contain valid values before using them in multiplication or division calculations.</p>
+                    </div>
+                    <div class="bg-gray-50 p-5 rounded-lg border border-gray-150">
+                        <h4 class="font-bold text-indigo-950 text-lg">Q4: Can I trigger a macro subroutine using a custom G-code or M-code instead of using G65?</h4>
+                        <p class="mt-2 text-gray-700"><strong>A:</strong> Yes. Fanuc controllers allow you to map custom G-codes or M-codes to trigger macro subprograms automatically. This is managed through parameters in the <strong>6050 to 6059</strong> range for G-codes, and <strong>6071 to 6089</strong> for M-codes. For example, by setting parameter 6050 to the value <code>101</code>, calling <code>G101</code> in a program will automatically execute subprogram <code>O9010</code>. This is widely used to create custom canned cycles (like custom pocketing or tapping cycles) that function exactly like native Fanuc G-codes.</p>
+                    </div>
+                    <div class="bg-gray-50 p-5 rounded-lg border border-gray-150">
+                        <h4 class="font-bold text-indigo-950 text-lg">Q5: How do I dynamically update tool wear offsets based on part measurements in-process?</h4>
+                        <p class="mt-2 text-gray-700"><strong>A:</strong> You can read a part's dimension using a touch probe, compare the result to your blueprint dimension, and write the difference directly to the tool wear offset register. For example, if you measure a pocket with a probe and find it is 0.02mm too small, you can adjust the tool wear offset using system variables:</p>
+                        <div class="bg-white p-3 rounded border font-mono text-xs text-indigo-900 mt-2">
+                            #101 = 20.000 (Target dimension)<br>
+                            #102 = #5021 (Actual measured dimension from probe)<br>
+                            #103 = #101 - #102 (Calculate error)<br>
+                            IF [ABS[#103] GT 0.05] THEN #3000=150 (Alarm if error exceeds safe limits)<br>
+                            #2201 = #2201 - #103 (Adjust Tool 1 Wear offset register dynamically)
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 p-5 rounded-lg border border-gray-150">
+                        <h4 class="font-bold text-indigo-950 text-lg">Q6: What is the look-ahead suppression control, and why is it critical for probing macros?</h4>
+                        <p class="mt-2 text-gray-700"><strong>A:</strong> Probing macros require absolute coordination between the machine's axis positions and sensor feedback. If the controller processes variables in advance using the look-ahead buffer, it might record coordinates before the probe has physically touched the part. To prevent this, you must temporarily disable the look-ahead buffer. This is done by writing system variable <code>#3003 = 1</code> or <code>#3004 = 1</code>. This freezes the look-ahead buffer and forces the machine to process code blocks one at a time, ensuring accurate measurement readings. Always set these variables back to <code>0</code> after probing to restore high-speed cutting motion.</p>
+                    </div>
+                    <div class="bg-gray-50 p-5 rounded-lg border border-gray-150">
+                        <h4 class="font-bold text-indigo-950 text-lg">Q7: Can a macro output data to an external computer or server?</h4>
+                        <p class="mt-2 text-gray-700"><strong>A:</strong> Yes, using the <strong>DPRNT</strong> statement. The DPRNT command outputs text and variable values to external devices via the controller's RS-232 serial port or Ethernet connections. This is widely used for quality assurance tracking, printing measurement reports, or logging cycle times to a server. For example:</p>
+                        <div class="bg-white p-3 rounded border font-mono text-xs text-indigo-900 mt-2">
+                            POPEN (Open communication channel)<br>
+                            DPRNT[POCKET-MEASUREMENT-RESULT-X#500[33]] (Format output)<br>
+                            PCLOS (Close communication channel)
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 p-5 rounded-lg border border-gray-150">
+                        <h4 class="font-bold text-indigo-950 text-lg">Q8: Why does my controller give an error when using nested brackets, and how do I format them?</h4>
+                        <p class="mt-2 text-gray-700"><strong>A:</strong> Mismatched brackets are the most common source of macro alarms. Fanuc parsers require strict symmetry when resolving equations. Every opening bracket <code>[</code> must match a closing bracket <code>]</code>, and you must nest equations starting with the inner calculations and working outward. For example, <code>#100 = [[#1 + #2] * #3]</code> is correct, while <code>#100 = [#1 + #2] * #3]</code> has an extra closing bracket and will trigger a format error alarm. Double-check your bracket structure before loading files to prevent errors.</p>
+                    </div>
+                    <div class="bg-gray-50 p-5 rounded-lg border border-gray-150">
+                        <h4 class="font-bold text-indigo-950 text-lg">Q9: How do I verify that my system variables correspond to my specific Fanuc model?</h4>
+                        <p class="mt-2 text-gray-700"><strong>A:</strong> System variable mappings can vary slightly depending on your Fanuc controller generation (e.g., 0i-MC, 0i-MD, 16i, 18i, or 31i). Always refer to the **Fanuc Custom Macro B Manual** specifically for your machine model. A reliable way to verify mapping on the shop floor is to read a known value (such as Tool 1 Length Geometry) using the controller's MDI (Manual Data Input) mode. Command <code>#500 = #2001</code>, and check if the value stored in <code>#500</code> matches the Tool 1 offset value displayed on your offset screen. If it matches, the system variable mappings are correct.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 10 -->
+            <section id="conclusion">
+                <h2 class="text-3xl font-bold text-gray-900 mt-8 mb-4 border-b pb-2">10. Conclusion and Shop-Floor Implementation Checklist</h2>
+                <p>Fanuc Custom Macro B is a powerful tool for modern CNC programming. It allows you to move beyond rigid, hard-coded G-code files and build dynamic, logic-driven toolpaths. By mastering variables, mathematical calculations, logical branching, loops, and hardware integration, you can automate repetitive setup steps, build flexible program templates, and dramatically improve shop efficiency.</p>
+                <p>Whether you're developing standard macro subroutines to run a family of parts, or using digital touch-probes to automate coordinate tracking, parametric programming is an essential skill. As manufacturing continues to advance toward smart factories and automated systems, programmers who master Custom Macro B are highly valued in the industry.</p>
+
+                <h3 class="text-xl font-semibold text-gray-900 mt-6 mb-3">Shop-Floor Macro Implementation Checklist</h3>
+                <p>Before running a new Custom Macro B program on a production machine, use this validation checklist to verify the code and prevent crashes:</p>
+                
+                <ul class="space-y-4">
+                    <li class="flex items-start gap-3">
+                        <span class="bg-orange-100 text-orange-700 rounded-full w-6 h-6 flex items-center justify-center font-bold text-xs shrink-0 mt-1">✓</span>
+                        <div>
+                            <strong>Validate All Bracket Pairs and Syntax Structures:</strong>
+                            <p class="text-sm text-gray-600 mt-0.5">Ensure all mathematical operations use square brackets <code>[...]</code> instead of parentheses, and that bracket structures are fully closed. Mismatched brackets are the most common source of macro alarms.</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="bg-orange-100 text-orange-700 rounded-full w-6 h-6 flex items-center justify-center font-bold text-xs shrink-0 mt-1">✓</span>
+                        <div>
+                            <strong>Implement Missing-Parameter Verification Checks:</strong>
+                            <p class="text-sm text-gray-600 mt-0.5">Always verify that operators have specified all required parameters when calling a macro using <code>G65</code>. Use check blocks (e.g., <code>IF [#24 EQ #0] THEN #3000 = 101</code>) at the start of your subroutine to trigger system alarms if parameters are missing.</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="bg-orange-100 text-orange-700 rounded-full w-6 h-6 flex items-center justify-center font-bold text-xs shrink-0 mt-1">✓</span>
+                        <div>
+                            <strong>Confirm Nesting Depth Limits:</strong>
+                            <p class="text-sm text-gray-600 mt-0.5">Verify that your macro calling structure does not exceed the four-level nesting limit (Main Program -> Level 1 -> Level 2 -> Level 3 -> Level 4) to prevent program execution errors.</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="bg-orange-100 text-orange-700 rounded-full w-6 h-6 flex items-center justify-center font-bold text-xs shrink-0 mt-1">✓</span>
+                        <div>
+                            <strong>Test Dry Runs and Use Single Block Mode:</strong>
+                            <p class="text-sm text-gray-600 mt-0.5">Always test your program by elevating your work coordinate system (WCS) Z-axis offset to run a dry run safely in the air. Run the macro in Single Block mode while watching the active variable values on your controller screen register.</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="bg-orange-100 text-orange-700 rounded-full w-6 h-6 flex items-center justify-center font-bold text-xs shrink-0 mt-1">✓</span>
+                        <div>
+                            <strong>Verify Local Variable Scope:</strong>
+                            <p class="text-sm text-gray-600 mt-0.5">Confirm that your subroutines do not rely on local variables (<code>#1</code> to <code>#33</code>) retaining their values after returning to the main program using <code>M99</code>. Remember that local variables are cleared upon return.</p>
+                        </div>
+                    </li>
+                </ul>
+            </section>
+
+            <!-- CALL TO ACTION -->
+            <div class="bg-orange-50 p-6 rounded-lg my-8 border-l-4 border-orange-600">
+                <h3 class="font-bold text-orange-900 mb-2">Simulate and Generate Macro Code — Free</h3>
+                <p class="mb-4">Use the Shader7 CNC Machinist Suite to calculate RPM &amp; feed rates, bolt circle coordinates, generate custom helper subroutines, and test your code on our built-in G-Code simulator.</p>
+                <a href="/cnc-machinist/milldrillcontour/" class="inline-block bg-orange-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-700 transition">Enter CNC Machinist Hub →</a>
+            </div>
+
+        </div>
+    </main>
+    <footer class="bg-gray-50 py-12 text-center text-gray-500 text-sm mt-12 border-t border-gray-200">
+        &copy; <script>document.write(new Date().getFullYear())</script> SHADER7. All rights reserved. | <a href="blog.html" class="text-indigo-600">More Articles</a>
+    </footer>
+</body>
+</html>

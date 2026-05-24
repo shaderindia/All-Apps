@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>In-Browser 3D CAD Modeling for CNC Machinists: The Ultimate Shop-Floor Design & G-Code Synthesis Guide | SHADER7</title>
+    <meta name="description" content="Exhaustive engineering guide on WebGL browser-based 3D CAD modeling for CNC machinists. Master spatial math, coordinate systems, direct modeling, STEP/DXF export, and manual G-code synthesis.">
+    <link rel="canonical" href="https://shader7.com/3d-cad-browser-machinist-modeling.html">
+    <meta property="og:title" content="In-Browser 3D CAD Modeling for CNC Machinists: The Ultimate Shop-Floor Design & G-Code Synthesis Guide">
+    <meta property="og:description" content="A comprehensive manual on leveraging browser-based 3D CAD modeling on the shop floor. Understand WebGL graphics physics, Constructive Solid Geometry, direct editing, data pipelines, and manual G-code toolpath generation.">
+    <meta property="og:url" content="https://shader7.com/3d-cad-browser-machinist-modeling.html">
+    <meta property="og:type" content="article">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "In-Browser 3D CAD Modeling for CNC Machinists: The Ultimate Shop-Floor Design & G-Code Synthesis Guide",
+      "author": {
+        "@type": "Person",
+        "name": "Nishikant Xalxo"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "SHADER7"
+      },
+      "datePublished": "2026-05-25",
+      "dateModified": "2026-05-25",
+      "description": "Exhaustive engineering guide on browser-based 3D CAD modeling for CNC machinists. Learn spatial math, coordinate systems, WebGL rendering, STEP/DXF translation, direct modeling workflows, and manual G-code synthesis."
+    }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+    <nav class="bg-white shadow-sm p-4 sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <a href="/" class="font-bold text-indigo-900 text-xl tracking-tight">SHADER<span class="text-indigo-600">7</span></a>
+            <a href="blog.html" class="text-sm font-semibold text-gray-500 hover:text-indigo-600 transition flex items-center gap-1">← Back to Blog</a>
+        </div>
+    </nav>
+    <header class="bg-indigo-950 text-white py-16 px-4">
+        <div class="max-w-3xl mx-auto text-center">
+            <span class="text-orange-400 font-bold tracking-widest uppercase text-sm">CNC Machining • Web-CAD • 2026</span>
+            <h1 class="text-3xl md:text-5xl font-extrabold mt-4 mb-6 leading-tight text-orange-50 text-balance">In-Browser 3D CAD Modeling for CNC Machinists</h1>
+            <p class="text-indigo-200 text-lg">From manual drafting boards to interactive WebGL interfaces: How shop-floor machinists leverage browser-based 3D modeling to streamline manufacturing operations, design custom workholding, and bypass heavy engineering bottlenecks.</p>
+        </div>
+    </header>
+    <main class="max-w-3xl mx-auto px-4 py-12 bg-white shadow-sm rounded-b-xl -mt-4 relative z-10">
+        <div class="prose prose-indigo max-w-none text-gray-700 leading-relaxed space-y-8">
+            <p class="text-xl text-gray-600 leading-relaxed italic">
+                Modern computer-aided manufacturing is moving out of isolated, high-cost engineering workstations and straight onto the shop floor. Learn how interactive, WebGL-based browser CAD systems are changing the game for CNC machinists by providing direct, responsive geometric modeling tools right on their mobile devices and tablets, accelerating setup processes, workholding designs, and direct G-code programming.
+            </p>
+
+            <figure class="my-8">
+                <img src="screenshots/cnc-machinist-app.png" alt="SHADER7 3D CAD Web Application toolpath and modeling dashboard interface" class="w-full rounded-xl shadow-lg border border-gray-200" loading="lazy" width="1200" height="675">
+                <figcaption class="text-center text-sm text-gray-500 mt-3 italic">The SHADER7 CNC Machinist platform provides in-browser 3D visualization, PCD calculation, and direct geometry editing tools optimized for rapid shop-floor programming.</figcaption>
+            </figure>
+
+            <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight mt-12 mb-4">1. The Historical Arc: From Drafting Boards to WebGL-Based In-Browser Modeling</h2>
+            <p>For more than a century, the primary medium of exchange between mechanical design and physical production was the manual, hand-drawn blueprint. In the pre-digital era, industrial drafting tables, parallel rules, T-squares, compasses, and drafting scales dominated the manufacturing engineering landscape. Laying out geometries was a slow, deliberate process requiring a high level of spatial reasoning. When changes were necessary, drafting technicians physically erased lead or ink lines from paper, vellum, or linen film, or in worse scenarios, redrew entire sheet sets from scratch. If a machinist on the shop floor needed a modified cross-section or custom offset, they had to sketch it on scratchpad paper using basic calculations, or submit a drawing change request that could take days to clear through engineering bureaus.</p>
+            <p>The first significant leap came with early computer-aided design (CAD) systems in the 1960s and 1970s, such as Ivan Sutherland's Sketchpad and early mainframe-driven systems. By the 1985–1995 decade, desktop CAD platforms like AutoCAD, SolidWorks, Pro/ENGINEER, and Autodesk Inventor revolutionized the industry. These tools introduced parametric solid modeling, boundary representation (B-Rep) kernels, and complex assembly constraints. However, this desktop CAD era was marked by high financial barriers and rigid hardware limitations. Working with solid models required specialized, high-performance workstations equipped with expensive professional GPUs (e.g., NVIDIA Quadro series), massive RAM allocations, and steep per-seat licensing fees ranging from $3,000 to $10,000 annually. Machinists on the floor were completely isolated from these models. They were forced to rely on printed 2D prints, leading to lost context, layout mistakes, and an absolute dependency on the engineering office for minor dimensional updates.</p>
+            <p>The third wave of CAD evolution—which is currently unfolding—replaces specialized desktop installations with lightweight, direct, browser-native 3D modeling interfaces. Enabled by advanced web technologies such as WebGL, WebAssembly, HTML5 Canvas, and graphics rendering libraries like Three.js, full-featured solid modeling systems now run directly inside standard web browsers on consumer laptops, rugged shop-floor tablets, and mobile smartphones. This eliminates the need for expensive software installs, local driver management, or high-end graphics hardware. For a shop-floor machinist, browser CAD represents a democratization of geometric design. In-browser applications allow them to inspect solid models, generate custom bolt patterns, mock up clamping setups, modify critical dimensions, and export clean file geometry for CAM software instantly, on the spot, using whatever hardware is available beside the machine tool.</p>
+
+            <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight mt-12 mb-4">2. The WebGL Revolution: In-Browser Rendering & Modeling</h2>
+            <p>To understand the mechanics of browser-based 3D modeling, one must look at the technologies that make browser graphics possible. In the early days of the web, rendering dynamic graphics required third-party plugins like Adobe Flash or Java Applets, which were slow, insecure, and poorly integrated with system hardware. The launch of WebGL (Web Graphics Library) in 2011 completely transformed this landscape by introducing a low-level JavaScript API that allows browsers to interact directly with the computer's Graphics Processing Unit (GPU) without intermediate layers. WebGL is integrated directly into the browser's Document Object Model (DOM), enabling GPU-accelerated execution of complex rendering pipelines inside standard HTML Canvas elements.</p>
+            <p>While WebGL is exceptionally powerful, writing raw WebGL code is highly complex. A programmer must manually write vertex and fragment shaders in GLSL (OpenGL Shading Language), handle complex buffer operations, define perspective projections, and write customized matrix transformation math from scratch. To bridge this gap, high-level graphics engines like Three.js, Babylon.js, and specialized boundary representation (B-Rep) JavaScript kernels have emerged. These libraries abstract the low-level graphics code into intuitive objects: meshes, materials, light sources, orthographic and perspective cameras, and scene graphs. The browser handles the CPU-side calculations—such as processing user clicks, managing topological history, and calculating tool coordinates—while offloading the visual rasterization and matrix operations to the GPU. This combination provides buttery-smooth 60-FPS rendering of intricate 3D geometries even on entry-level mobile chipsets.</p>
+
+            <figure class="my-8">
+                <img src="screenshots/shader7-platform.png" alt="SHADER7 core web platform dashboard, showing CAD utilities and web application modules" class="w-full rounded-xl shadow-lg border border-gray-200" loading="lazy" width="1200" height="675">
+                <figcaption class="text-center text-sm text-gray-500 mt-3 italic">The SHADER7 browser suite integrates multi-axis toolpath engines and interactive CAD views utilizing GPU-accelerated WebGL pipelines.</figcaption>
+            </figure>
+
+            <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight mt-12 mb-4">3. Solid Modeling Paradigms: Extrusion, Rotation, and CSG Math</h2>
+            <p>When modeling physical metal or plastic parts destined for CNC subtractive manufacturing, geometries are constructed using highly structured spatial operations. Unlike surface meshes used in video games, machinist models must represent mathematically solid volumes. The three primary geometric operations used to construct these solid forms are linear extrusion, axis rotation, and Boolean operations. Under the hood, browser CAD apps leverage a mathematical paradigm known as Constructive Solid Geometry (CSG) alongside Boundary Representation (B-Rep) to compute and store these models.</p>
+
+            <h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">A. Linear Extrusion Mathematics</h3>
+            <p>Linear extrusion takes a two-dimensional closed boundary sketch in a given plane and projects it along a linear vector perpendicular to that plane to generate a three-dimensional volume. Mathematically, if we define a 2D profile bounded by a closed curve \(C(u) = (x(u), y(u))\) for \(u \in [0, 1]\) residing on the plane \(z = 0\), the linear extrusion of this profile along the positive Z-axis by a height \(H\) creates a solid volume \(V\):</p>
+            <div class="bg-gray-50 p-6 rounded-lg my-4 border border-gray-200 font-mono text-sm leading-relaxed text-indigo-950">
+                V = { (x, y, z) &isin; ℝ³ | (x, y) &isin; Interior(C), 0 &le; z &le; H }
+            </div>
+            <p>The lateral boundary surface of this extruded solid is defined parametrically by mapping the boundary curve along the extrusion vector:</p>
+            <div class="bg-gray-50 p-6 rounded-lg my-4 border border-gray-200 font-mono text-sm leading-relaxed text-indigo-950">
+                S(u, v) = (x(u), y(u), v), where u &isin; [0, 1] and v &isin; [0, H]
+            </div>
+            <p>This operation maps directly to standard shop milling processes, such as using a flat-bottom endmill to machine a pocket to a precise depth or contouring a peripheral boundary profile. The height \(H\) corresponds directly to the target Z-axis depth of the CNC toolpath.</p>
+
+            <h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">B. Rotational Profile Mathematics</h3>
+            <p>Rotation (or revolution) takes a 2D profile sketched in a plane and sweeps it around a central axis line to generate a symmetrical, circular solid volume. If the 2D profile is defined in the X-Z plane, bounded by a closed curve \(C(u) = (x(u), z(u))\) where \(x(u) \ge 0\) for all \(u \in [0, 1]\), and is rotated around the Z-axis by a sweep angle \(\theta \in [0, 2\pi]\), the resulting coordinates of the 3D surface are defined as:</p>
+            <div class="bg-gray-50 p-6 rounded-lg my-4 border border-gray-200 font-mono text-sm leading-relaxed text-indigo-950">
+                X(u, θ) = x(u) &times; cos(θ)<br>
+                Y(u, θ) = x(u) &times; sin(θ)<br>
+                Z(u, θ) = z(u)
+            </div>
+            <p>This rotational mapping represents the exact mechanical transformation underlying CNC lathe turning, live-tool cylindrical milling, and grinding operations. The distance of the profile from the Z-axis (\(x(u)\)) corresponds directly to the radial offset of the cutting insert on the lathe, which defines the finished component diameter (typically programmed in G-code using diameter mode via G90/G96 commands).</p>
+
+            <h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">C. Constructive Solid Geometry (CSG) & Boolean Operations</h3>
+            <p>Boolean operations combine existing solid volumes to create complex geometries. CSG represents parts as a binary tree structure, where leaf nodes are primitive solids (cubes, cylinders, spheres, cones) and internal nodes are Boolean operators: Intersection (\(\cap\)), Union (\(\cup\)), and Difference (\(-\)).</p>
+            
+            <div class="overflow-x-auto shadow border border-gray-200 rounded-lg my-6">
+                <table class="w-full border-collapse text-sm">
+                    <thead>
+                        <tr class="bg-indigo-50 border-b border-gray-200">
+                            <th class="p-4 text-left font-bold text-gray-700">Boolean Operation</th>
+                            <th class="p-4 text-left font-bold text-gray-700">Mathematical Notation</th>
+                            <th class="p-4 text-left font-bold text-gray-700">Physical Machining Equivalent</th>
+                            <th class="p-4 text-left font-bold text-gray-700">Shop-Floor Application Example</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100 bg-white">
+                        <tr>
+                            <td class="p-4 font-bold text-gray-900">Union</td>
+                            <td class="p-4 font-mono text-indigo-900">A ∪ B</td>
+                            <td class="p-4 text-gray-600">Material Additive Process</td>
+                            <td class="p-4 text-gray-600">Welding two raw plates, combining structural members, or laser metal deposition.</td>
+                        </tr>
+                        <tr>
+                            <td class="p-4 font-bold text-gray-900">Difference</td>
+                            <td class="p-4 font-mono text-indigo-900">A - B</td>
+                            <td class="p-4 text-gray-600">Material Subtractive Process</td>
+                            <td class="p-4 text-gray-600">Drilling a bolt hole, milling a pocket, or parting off a turning blank on a lathe.</td>
+                        </tr>
+                        <tr>
+                            <td class="p-4 font-bold text-gray-900">Intersection</td>
+                            <td class="p-4 font-mono text-indigo-900">A ∩ B</td>
+                            <td class="p-4 text-gray-600">Shared Volume Verification</td>
+                            <td class="p-4 text-gray-600">Calculating raw stock allowance, determining core volume inside a casting mold cavity.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p>For a machinist, Boolean difference is the most fundamental concept because all subtractive machining is a physical realization of this operation. When you drill a \(\phi 10\text{mm}\) hole through a fixture plate, you are physically computing: <code>Fixture Plate (A) - Cylinder (B)</code>. Browser CAD tools allow machinists to instantly simulate these Boolean cuts, visualising geometry changes without needing access to a high-end office workstation.</p>
+
+            <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight mt-12 mb-4">4. Shop Floor Spatial Awareness: Cognitive Visualizations and Collision Avoidance</h2>
+            <p>One of the most common causes of scrap parts, broken cutting tools, and catastrophic spindle collisions in precision CNC shops is a failure of spatial visualization. Blueprints are inherently static, flat, and two-dimensional. They represent 3D physical parts using orthographic multi-view projections (top, front, right-side views) coupled with detail circular callouts, auxiliary section cut views, and cross-sections. This requires the machinist to perform a complex mental coordinate conversion. They must piece together separate flat lines and depth dimensions into a cohesive 3D mental picture of the physical part.</p>
+            <p>When under stress on a noisy shop floor, this mental conversion can fail. A machinist might misinterpret a third-angle projection, resulting in a part that is machined as a mirror-image of the design (scrap). Similarly, they may misread a depth dimension on a blind pocket, leading to a tool plunge that breaks through the thin back wall of the component. Visualizing how workholding clamps, vise jaws, step blocks, and modular fixtures sit in relation to the moving spindle and active tooling is another major spatial challenge. If the machinist cannot verify clearance envelopes in 3D, a rapid-traverse tool motion (G00) can collide with a hardened steel vise jaw at 1,200 inches per minute, causing thousands of dollars in mechanical damage and weeks of machine downtime.</p>
+            <p>Browser-based 3D visualization solves these challenges by providing interactive solid models on a tablet or phone right at the machine. A machinist can swipe to rotate the solid part, zoom in to inspect deep pockets, hide workholding elements to check setup clearances, and inspect interior details using a simple dynamic cross-section tool. This immediate 3D visualization bridges the gap between digital design and physical manufacturing, allowing machinists to confirm setups and identify errors before the spindle ever turns.</p>
+
+            <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight mt-12 mb-4">5. The Geography of Data: CAD Geometry Formats and CAM Pipeline Integration</h2>
+            <p>To move a modeled component from an in-browser CAD environment into a physical CNC machine tool, the geometry must be exported into standardized file formats. Different manufacturing processes and CAM packages require specific types of geometric data. A professional machinist must understand how these data structures work under the hood to ensure seamless integration.</p>
+
+            <div class="space-y-6">
+                <div class="border-l-4 border-indigo-600 pl-4">
+                    <strong class="text-lg text-gray-900">A. DXF (Drawing Exchange Format) & SVG (Scalable Vector Graphics)</strong>
+                    <p class="text-gray-600 mt-1">DXF and SVG are vector-based 2D formats that store geometric entities (points, lines, arcs, polylines, splines) as discrete mathematical coordinates. They do not store 3D volumetric solids. For processes like laser, plasma, and waterjet cutting, or simple 2D profile milling, these formats are ideal. They are lightweight, highly portable, and can be imported directly by simple CNC control interfaces (such as Mach3 or LinuxCNC) without requiring complex CAM post-processing.</p>
+                </div>
+
+                <div class="border-l-4 border-indigo-600 pl-4">
+                    <strong class="text-lg text-gray-900">B. STEP (Standard for the Exchange of Product Model Data - ISO 10303)</strong>
+                    <p class="text-gray-600 mt-1">STEP is the global standard for 3D CAD data exchange. It is a Boundary Representation (B-Rep) format, meaning it preserves precise mathematical representations of faces, edges, vertices, and the topological relationships between them. For example, a cylinder in a STEP file is stored as a true circular face with a defined radius, rather than a collection of flat triangles. This mathematical precision is critical for CAM software, which requires exact geometries to calculate smooth toolpaths and locate features like drilled cylinder centers automatically.</p>
+                </div>
+
+                <div class="border-l-4 border-indigo-600 pl-4">
+                    <strong class="text-lg text-gray-900">C. IGES (Initial Graphics Exchange Specification)</strong>
+                    <p class="text-gray-600 mt-1">IGES is an older CAD translation standard developed in the late 1970s. It stores surface-based geometry rather than fully closed solid volumes. Because it lacks topological connectivity data, importing an IGES file into a modern CAM program often results in "stitched surface gaps" or open boundaries, requiring manual repairs before toolpaths can be generated. While still used in some legacy environments, STEP is generally preferred for solid modeling workflows.</p>
+                </div>
+
+                <div class="border-l-4 border-indigo-600 pl-4">
+                    <strong class="text-lg text-gray-900">D. STL (Stereolithography)</strong>
+                    <p class="text-gray-600 mt-1">STL is a tessellated format that represents 3D shapes as a mesh of flat triangles. While universal in additive manufacturing (3D printing) and stock simulation, STL files are suboptimal for subtractive CNC milling. Because curved features like cylindrical bores are broken down into hundreds of flat facets, a CAM system cannot locate the true center of a hole or generate a perfectly round circular G02/G03 arc path from an STL file, leading to faceted surfaces on finished parts.</p>
+                </div>
+            </div>
+
+            <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight mt-12 mb-4">6. Direct Editing vs. Parametric Systems: The Machinist's Edge</h2>
+            <p>CAD software generally follows one of two primary architectural modeling paradigms: parametric modeling or direct editing. Modern shop-floor browser CAD tools often combine aspects of both to provide an optimal workflow for machinists.</p>
+            <p><strong>Parametric CAD modeling</strong> is history-tree based and constraint-driven. The designer defines sketch geometry using geometric relations (collinear, horizontal, tangent, concentric) and variable parameters (dimensions like diameter, length, depth). The solid model is built by executing features sequentially down a history tree. The primary advantage of parametric design is that editing a parent sketch automatically updates all child features down the line. However, this history-based approach has a major drawback: if a model is imported from another CAD package without its original history tree (as a "dumb solid" STEP file), the parametric links are lost. If the history tree is present, editing a dimension out of sequence can cause features downstream to break, demanding tedious manual reconstruction.</p>
+            <p><strong>Direct editing</strong>, by contrast, is completely history-free and geometry-centric. Instead of editing sketches and rebuilding features, the user interacts directly with the 3D solid model. Faces can be pushed, pulled, offset, rotated, or deleted directly, and the software automatically adjusts surrounding surfaces to preserve solid volume. For a machinist on the shop floor, direct editing is a game-changer. They rarely need to build massive, complex parametric assemblies from scratch. Instead, their tasks are immediate and practical:</p>
+            <ul class="list-disc pl-6 space-y-2">
+                <li><strong>Removing non-essential features:</strong> Deleting tiny decorative fillets, text engravings, or complex chamfers that would slow down roughing passes or cause tooling deflection.</li>
+                <li><strong>Adding machining allowances:</strong> Offsetting a critical face by +0.5mm to allow extra stock material for a secondary precision grinding operation after heat treatment.</li>
+                <li><strong>Modifying standard tolerances:</strong> Adjusting a tight slide-fit shaft diameter to match the measured ID of a mating bore on the floor, correcting for tool wear or material spring-back on the fly.</li>
+            </ul>
+            <p>In-browser modeling tools excels at these tasks, providing a lightweight, responsive interface that allows machinists to modify geometry and export the updated file to CAM without waiting for the engineering office.</p>
+
+            <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight mt-12 mb-4">7. The Physics of WebGL & Three.js Coordinate Mathematics</h2>
+            <p>To master browser-based CAD and program CNC machines effectively, it is critical to understand the underlying coordinate systems and mathematics. In virtual 3D rendering engines like WebGL and Three.js, geometry coordinates must undergo a series of mathematical transformations to render accurately on a flat screen. These virtual transformations mirror the coordinate system shifts used in physical CNC machining.</p>
+
+            <h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">A. The Graphic Pipeline Transformations</h3>
+            <p>Rendering a 3D point onto a 2D screen requires a sequence of matrix transformations. The mathematical equation mapping a 3D coordinate vector from its local model space to the final 2D screen clip space is:</p>
+            <div class="bg-gray-50 p-6 rounded-lg my-4 border border-gray-200 font-mono text-sm leading-relaxed text-indigo-950">
+                V<sub>clip</sub> = M<sub>projection</sub> &times; M<sub>view</sub> &times; M<sub>model</sub> &times; V<sub>local</sub>
+            </div>
+            <p>Where:</p>
+            <ul class="list-disc pl-6 space-y-2">
+                <li><strong>V<sub>local</sub>:</strong> The 3D coordinate of a vertex relative to the local origin of the modeled part.</li>
+                <li><strong>M<sub>model</sub> (Model Matrix):</strong> Positions, rotates, and scales the part in the virtual world. This transformation is mathematically identical to using work offsets (G54, G55) on a CNC machine to position raw stock relative to the machine's physical table coordinate system.</li>
+                <li><strong>M<sub>view</sub> (View/Camera Matrix):</strong> Transforms world coordinates relative to the virtual camera's position and orientation.</li>
+                <li><strong>M<sub>projection</sub> (Projection Matrix):</strong> Project the 3D scene into the 2D clip space.</li>
+            </ul>
+
+            <h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">B. Projection Modes: Perspective vs. Orthographic</h3>
+            <p>WebGL engines support two primary projection modes, each serving a distinct purpose in engineering visualization:</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-6">
+                <div class="bg-white p-5 rounded-lg border border-gray-200 shadow-sm">
+                    <h4 class="font-bold text-indigo-950 text-lg mb-2">Perspective Projection</h4>
+                    <p class="text-sm text-gray-600 leading-relaxed">
+                        Mimics human vision by scaling objects smaller as they get further from the camera. While visually realistic, perspective projection distorts relative sizes and makes parallel lines appear to converge. This makes it unsuitable for engineering inspection, as measurements cannot be visually compared across different depths.
+                    </p>
+                </div>
+                <div class="bg-white p-5 rounded-lg border border-indigo-200 shadow-sm ring-1 ring-indigo-50">
+                    <h4 class="font-bold text-indigo-950 text-lg mb-2">Orthographic Projection</h4>
+                    <p class="text-sm text-gray-600 leading-relaxed">
+                        Projects geometry along parallel lines perpendicular to the screen, preserving relative scale and dimensions regardless of distance. For machinists, orthographic projection is essential. It ensures parallel lines remain parallel, circles retain their precise proportions, and visual dimensions can be verified accurately from standard view angles (Top, Front, Side).
+                    </p>
+                </div>
+            </div>
+
+            <h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">C. Vertices, Faces, and Surface Normals</h3>
+            <p>Inside the WebGL rendering engine, solid shapes are stored as unstructured mesh geometries defined by three primary elements:</p>
+            <ul class="list-disc pl-6 space-y-2">
+                <li><strong>Vertices:</strong> A flat array of float coordinates representing 3D spatial positions <code>[x1, y1, z1, x2, y2, z2, ...]</code>.</li>
+                <li><strong>Faces:</strong> Index groupings (typically triangles) that reference vertex positions to build surfaces. A triangle face connects three specific vertices to form a surface polygon.</li>
+                <li><strong>Surface Normals:</strong> Unit vectors pointing perpendicular to each face or vertex. Normal vectors are critical for lighting calculations, allowing the browser to render realistic highlights and shadows. For machinists, normals are also used to calculate tool approach vectors and toolpath offsets.</li>
+            </ul>
+
+            <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight mt-12 mb-4">8. Synthesizing Code: From 3D Mockups to Manual G-Code Coordinate Generation</h2>
+            <p>The ultimate goal of shop-floor modeling is to translate a 3D visual geometry into direct, physical cutting motions executed by a CNC machine. While CAM software automated this process, a professional CNC programmer should know how to synthesize G-code toolpaths manually from geometric coordinates. This skill is critical for editing post-processor errors, programming simple jobs quickly on the shop floor, and optimizing cutting paths for production.</p>
+
+            <h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">A. The Math of Toolpath Radius Offsets</h3>
+            <p>When milling a profile, the center of the cutting tool must be offset from the finished part boundary by the exact radius of the cutter (\(R_{\text{tool}}\)). If you program the toolpath directly to the part geometry, the cutter will overcut the part by its radius, scrapping the work.</p>
+            <p>For a basic linear profile, this offset calculation is straightforward. However, when milling a contour with angled corners or arc transitions, the coordinate offsets require trigonometric calculations. If we are milling a profile corner with an angle \(\phi\) and using a cutter with radius \(R_{\text{tool}}\), the offset distance to the corner point (\(D_{\text{offset}}\)) along the corner bisector line is:</p>
+            <div class="bg-gray-50 p-6 rounded-lg my-4 border border-gray-200 font-mono text-sm leading-relaxed text-indigo-950">
+                D<sub>offset</sub> = R<sub>tool</sub> / sin(φ / 2)
+            </div>
+            <p>In manual programming, coordinate offsets are handled in one of two ways:</p>
+            <ul class="list-disc pl-6 space-y-2">
+                <li><strong>Computer Offsets (Centerline Programming):</strong> The programmer manually calculates the tool centerline coordinates (accounting for tool radius) and codes these exact points in the G-code. This method requires a new G-code program if a different cutter diameter is used.</li>
+                <li><strong>Cutter Compensation (G41/G42):</strong> The programmer codes the exact physical part profile coordinates, and the CNC controller calculates the offset path in real-time based on the tool radius stored in the machine's offset register. <strong>G41</strong> offsets the tool to the left of the programmed path (climb milling), while <strong>G42</strong> offsets to the right (conventional milling). <strong>G40</strong> cancels cutter compensation.</li>
+            </ul>
+
+            <h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">B. Absolute vs. Incremental Coordinates (G90 vs G91)</h3>
+            <p>CNC programming utilizes two fundamental coordinate modes:</p>
+            <ul class="list-disc pl-6 space-y-2">
+                <li><strong>Absolute Positioning (G90):</strong> All coordinates in the program are referenced to a single static origin—the active Work Coordinate System (WCS, e.g., G54). Programming G01 X50.0 Y50.0 moves the tool to the coordinate position (50, 50) relative to that single WCS origin.</li>
+                <li><strong>Incremental Positioning (G91):</strong> Coordinates are referenced to the tool's current position. Programming G91 G01 X10.0 Y10.0 moves the tool 10mm positive in X and 10mm positive in Y from its current location. Incremental mode is highly effective for repetitive patterns, subprograms, and rapid drill indexing.</li>
+            </ul>
+
+            <h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">C. Circular Interpolation and Vector Math (G02/G03)</h3>
+            <p>Milling true circles and arcs requires circular interpolation commands: <strong>G02</strong> for clockwise arcs, and <strong>G03</strong> for counter-clockwise arcs. The machine coordinate words must define the arc's endpoint and the location of its center. This can be programmed using two methods:</p>
+            <ol class="list-decimal pl-6 space-y-2">
+                <li><strong>Radius Arc Programming (R Mode):</strong> The programmer defines the endpoint (X, Y) and the arc radius (R), e.g., <code>G02 X50.0 Y20.0 R15.0 F120.0</code>. If the arc angle exceeds 180 degrees, a negative radius value (R-15.0) must be specified. R mode is simple but cannot be used to program full 360-degree circles in a single block.</li>
+                <li><strong>Center Vector Programming (I, J, K Mode):</strong> The center of the arc is defined using incremental vector offsets from the arc start point to the arc center. <strong>I</strong> represents the X-axis offset, <strong>J</strong> represents the Y-axis offset, and <strong>K</strong> represents the Z-axis offset. Because vector programming is highly reliable and supports full 360-degree paths in a single line, it is the standard format generated by CAM post-processors.</li>
+            </ol>
+
+            <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight mt-12 mb-4">9. Step-by-Step Shop-Floor Project: Designing a Fixture Adapter in the Browser</h2>
+            <p>To demonstrate a practical, shop-floor CAD-to-G-code workflow, we will step through modeling a custom aluminum fixture adapter plate and manual G-code synthesis. This guide will take you from a blank screen to a finished CNC part program.</p>
+
+            <div class="my-6 p-6 bg-indigo-50 border-l-4 border-indigo-700 rounded-r-lg">
+                <h4 class="font-bold text-indigo-950 text-lg mb-2">Project Specifications:</h4>
+                <ul class="list-disc pl-6 space-y-1 text-sm text-indigo-900 font-mono">
+                    <li>Raw Stock: 6061-T6 Aluminum (150mm &times; 100mm &times; 20mm)</li>
+                    <li>Feature 1: Outer peripheral profile (contouring)</li>
+                    <li>Feature 2: Centered circular pocket (&phi;50.0mm &times; 10.0mm deep)</li>
+                    <li>Feature 3: 4-Hole PCD pattern (&phi;80.0mm PCD, M8 Clearance holes) centered at (0, 0)</li>
+                    <li>Hole Coordinates: 45&deg;, 135&deg;, 225&deg;, 315&deg;</li>
+                </ul>
+            </div>
+
+            <h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Step 1: Raw Stock Initialization</h3>
+            <p>Open the in-browser CAD workspace. Initialize a raw block with dimensions \(X = 150.0\text{mm}\), \(Y = 100.0\text{mm}\), and \(Z = 20.0\text{mm}\). Define the Work Coordinate System (WCS) origin (X0, Y0) at the geometric center of the stock top face. This aligns the virtual coordinate origin with the physical probing reference on the machining center table.</p>
+
+            <h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Step 2: Pocket Geometry Creation via Boolean Difference</h3>
+            <p>To create the pocket, model a virtual cylinder with diameter \(D = 50.0\text{mm}\) and height \(H = 10.0\text{mm}\). Position this cylinder at the center (X0, Y0, Z0). Execute a Boolean difference operation to subtract this cylinder volume from the main block, generating a precise, circular pocket geometry in the solid model.</p>
+
+            <h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Step 3: Calculating Bolt Circle Coordinates</h3>
+            <p>Using the trigonometry formulas detailed in our <a href="cnc-pcd-calculator-guide.html" class="text-indigo-600 hover:underline">PCD calculator guide</a>, calculate the coordinate positions for the four M8 clearance holes on the \(\phi 80\text{mm}\) pitch circle:</p>
+            <div class="bg-gray-50 p-6 rounded-lg my-4 border border-gray-200 font-mono text-sm leading-relaxed text-indigo-950 space-y-2">
+                Radius (R) = 80mm / 2 = 40mm<br>
+                Hole 1 (45&deg;): X = 40 &times; cos(45&deg;) = 28.284, Y = 40 &times; sin(45&deg;) = 28.284<br>
+                Hole 2 (135&deg;): X = 40 &times; cos(135&deg;) = -28.284, Y = 40 &times; sin(135&deg;) = 28.284<br>
+                Hole 3 (225&deg;): X = 40 &times; cos(225&deg;) = -28.284, Y = 40 &times; sin(225&deg;) = -28.284<br>
+                Hole 4 (315&deg;): X = 40 &times; cos(315&deg;) = 28.284, Y = 40 &times; sin(315&deg;) = -28.284
+            </div>
+
+            <h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Step 4: Manual G-Code Program Synthesis</h3>
+            <p>With coordinates established, write the manual G-code program. We will use two tools: Tool 1 (\(\phi 12\text{mm}\) carbide endmill for pocketing and profiling) and Tool 2 (\(\phi 9\text{mm}\) carbide drill for M8 clearance holes).</p>
+
+<pre class="bg-gray-900 p-6 rounded-lg font-mono text-xs leading-relaxed text-emerald-400 overflow-x-auto shadow-2xl">
+%
+O1001 (IN-BROWSER FIXTURE ADAPTER PLATE WORKFLOW)
+(WCS G54 ORIGIN: CENTER OF STOCK TOP SURFACE)
+(T1: 12MM FLAT ENDMILL - H01 - D01 - FLUTE LENGTH 25MM)
+(T2: 9.0MM TWIST DRILL - H02 - CLEARANCE HOLES)
+
+N10 G21 G90 G40 G80 G49 G17 (Metric, Absolute, Cancel cycles, XY Plane)
+N20 G28 G91 Z0. (Home Z axis)
+N30 M05 (Spindle off)
+
+(--- SECTION 1: MILL CENTRAL POCKET PHI-50 DEPTH 10.0 ---)
+N40 T01 M06 (Tool Change to 12mm Endmill)
+N50 G90 G54 G00 X0. Y0. S3200 M03 (Rapid to pocket center, spindle CW)
+N60 G43 H01 Z5.0 M08 (Apply tool length offset, coolant ON)
+N70 G01 Z1.0 F800. (Plunge to entry clearance plane)
+
+(Helical Interpolation Ramp Down to Z-10.0)
+N80 G03 X5.0 Y0. Z-2.0 I2.5 J0. F400. (Helix loop 1)
+N90 X-5.0 Y0. Z-4.0 I-5.0 J0.
+N100 X5.0 Y0. Z-6.0 I5.0 J0.
+N110 X-5.0 Y0. Z-8.0 I-5.0 J0.
+N120 X5.0 Y0. Z-10.0 I5.0 J0. (Final pocket depth Z-10)
+N130 I-5.0 J0. (Clean-up pocket core bottom loop)
+
+(Spiral pocket roughing out to target radius 25mm minus 6mm tool radius = 19mm path radius)
+N140 G01 X10.0 Y0. F600. (Step out to R10)
+N150 G03 I-10.0 J0. (Loop 1)
+N160 G01 X15.0 Y0.
+N170 G03 I-15.0 J0. (Loop 2)
+N180 G01 X19.0 Y0. (Step to finish profile radius)
+N190 G03 I-19.0 J0. (Finish circular pocket sweep)
+N200 G01 X0. Y0. (Retract to pocket center)
+N210 G00 Z5.0 M09 (Retract spindle out of pocket, coolant OFF)
+N220 G28 G91 Z0. (Send spindle home in Z)
+
+(--- SECTION 2: DRILL 4 PCD CLEARANCE HOLES ---)
+N230 T02 M06 (Tool Change to 9.0mm Drill)
+N240 G90 G54 G00 X28.284 Y28.284 S1800 M03 (Rapid to Hole 1, Spindle CW)
+N250 G43 H02 Z5.0 M08 (Apply tool offset, Coolant ON)
+(G83 Peck Drill: Z depth -22.0, R-plane Z2.0, Peck size Q3.0, Feed 180)
+N260 G83 G98 Z-22.0 R2.0 Q3.0 F180. (Initiate canned drilling cycle at Hole 1)
+N270 X-28.284 Y28.284 (Auto-drills Hole 2)
+N280 X-28.284 Y-28.284 (Auto-drills Hole 3)
+N290 X28.284 Y-28.284 (Auto-drills Hole 4)
+N300 G80 M09 (Cancel canned drilling cycle, Coolant OFF)
+N310 G91 G28 Z0. (Send spindle home in Z)
+N320 G28 Y0. (Bring machine table forward for operator)
+N330 M30 (End of program, reset pointer)
+%
+</pre>
+
+            <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight mt-12 mb-4">10. Troubleshooting and Shop-Floor Quality Assurance</h2>
+            <p>Even with advanced browser CAD and correct G-code programs, physical machining presents variables that must be managed on the shop floor. Standardizing your quality assurance processes prevents errors and protects machinery.</p>
+
+            <div class="space-y-6">
+                <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                    <strong class="text-lg text-red-800 flex items-center gap-2">
+                        ⚠️ 1. Pocket Dimensions Out of Tolerance (Too Small/Large)
+                    </strong>
+                    <p class="text-sm text-gray-600 mt-2">
+                        If a circular pocket measures slightly small, it is typically caused by tool deflection (where the cutter bends away from the material under high cutting forces) or minor cutter wear. On high-precision bores, always program a dedicated finish pass. You can adjust the hole size by entering small micro-adjustments in the tool diameter offset register (D-code value) on the CNC controller, executing a recut without changing the G-code program.
+                    </p>
+                </div>
+
+                <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                    <strong class="text-lg text-red-800 flex items-center gap-2">
+                        ⚠️ 2. Surface Finish Deficiencies (Chatter Marks)
+                    </strong>
+                    <p class="text-sm text-gray-600 mt-2">
+                        High-frequency vibrations (chatter) create visible ribbing patterns and ruin surface finish. This is usually caused by excessive cutter overhang, loose workholding, or incorrect cutting parameters. Solve chatter by reducing the tool overhang as much as possible, switching to an endmill with variable helix geometry, or adjusting spindle speed and feed rate overrides on the controller during the cut.
+                    </p>
+                </div>
+
+                <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                    <strong class="text-lg text-red-800 flex items-center gap-2">
+                        ⚠️ 3. Drill Point Deflection ("Walking")
+                    </strong>
+                    <p class="text-sm text-gray-600 mt-2">
+                        When a drill bit initiates contact with an raw extruded surface, it can deflect slightly off-center (walk). This misalignment causes the finished hole pattern to fail inspection, even though the program coordinate values are mathematically correct. Always prep the hole locations with a short, rigid spot drill before running the main twist drill. The 90-degree spot indent centers the drill point, ensuring absolute alignment.
+                    </p>
+                </div>
+            </div>
+
+            <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight mt-12 mb-4">11. Career Development: From Machine Operator to Modeling Specialist</h2>
+            <p>In modern high-precision manufacturing, the traditional boundary between the "engineering office" and the "machining shop floor" is dissolving. Historically, standard shop floor structures separated staff into distinct, rigid roles. Basic operators loaded raw stock and cleared chips. Setters configured tools, clamps, and fixtures. Dedicated programmers generated G-code in isolated offices, while engineers designed parts. This compartmentalized workflow was slow, prone to communication errors, and highly inefficient.</p>
+            <p>Today, knowing how to model 3D parts, design setups, and manipulate spatial files directly on the shop floor represents a massive career accelerator. Understanding in-browser CAD shifts your professional value from a basic machine tender to a highly skilled manufacturing technician. A machinist who can spot design flaws, model their own fixtures, and correct coordinate errors on the fly is incredibly valuable to precision shops. This skill set leads directly to career progression into roles like CNC Programmer, Lead Manufacturing Engineer, and CAD/CAM Setup Specialist, offering higher salaries and greater job security.</p>
+
+            <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight mt-12 mb-4">12. Exhaustive Machinist FAQ</h2>
+            
+            <div class="space-y-6">
+                <div>
+                    <h3 class="font-bold text-gray-900 text-lg">1. How do in-browser CAD tools handle massive solid assembly files without crashing?</h3>
+                    <p class="text-gray-600 mt-1">Modern browser CAD engines leverage multi-threaded calculations via Web Workers and stream spatial data dynamically. By processing geometry calculations in background threads, the main browser rendering loop remains responsive. Additionally, they use low-polygon level-of-detail (LOD) rendering styles for background parts, focusing full GPU rendering performance only on the active, selected component.</p>
+                </div>
+
+                <div>
+                    <h3 class="font-bold text-gray-900 text-lg">2. What security measures protect proprietary part designs when using browser-based CAD apps?</h3>
+                    <p class="text-gray-600 mt-1">Leading browser CAD tools utilize military-grade client-side encryption. Geometry data is processed locally within your browser sandbox, and any storage or sync operations use secure TLS 1.3 tunnels to cloud networks backed by strict SOC 2 compliance. For security-sensitive aerospace or defense shops, offline browser CAD configurations run entirely locally within a local area network, ensuring zero external data leakage.</p>
+                </div>
+
+                <div>
+                    <h3 class="font-bold text-gray-900 text-lg">3. Why do imported STEP models sometimes load with missing or corrupt faces ("wounded geometries")?</h3>
+                    <p class="text-gray-600 mt-1">This issue, known as geometry corruption, is caused by differences in mathematical tolerance definitions between the exporting CAD software and the importing browser kernel. When exporting, minor face seams can open up. Most modern browser CAD platforms include automatic geometry repair features that stitch these open boundaries back together, preserving the solid volume.</p>
+                </div>
+
+                <div>
+                    <h3 class="font-bold text-gray-900 text-lg">4. Can I use browser-based CAD tools on mobile devices without an active internet connection?</h3>
+                    <p class="text-gray-600 mt-1">Yes. Modern web apps leverage Service Workers and local database structures (IndexedDB) to run fully offline. Once the page is loaded, you can draft sketches, model geometries, inspect coordinates, and export DXF/SVG data without an active network connection, sync'ing any cloud changes once you go back online.</p>
+                </div>
+
+                <div>
+                    <h3 class="font-bold text-gray-900 text-lg">5. How does the choice of browser affect rendering performance and coordinate calculation accuracy?</h3>
+                    <p class="text-gray-600 mt-1">WebGL performance relies on Chrome's V8 engine or similar JavaScript engines. For optimal performance, utilize browsers with advanced WebGL2 hardware support (Google Chrome, Microsoft Edge, or Mozilla Firefox). Coordinate calculations are executed with IEEE 754 double-precision floats, ensuring absolute math precision regardless of the browser host.</p>
+                </div>
+
+                <div>
+                    <h3 class="font-bold text-gray-900 text-lg">6. What is the best way to model custom soft jaws for irregular, cast components?</h3>
+                    <p class="text-gray-600 mt-1">Import a STEP model of the cast component into your browser CAD. Model a solid rectangular block representing the raw soft jaw. Position the cast part so it intersects with the jaw block. Run a Boolean difference operation to subtract the cast geometry from the jaw block. This creates a perfect reverse contour in the soft jaw, securing the part for machining.</p>
+                </div>
+
+                <div>
+                    <h3 class="font-bold text-gray-900 text-lg">7. How do I choose between exporting a 2D profile as a DXF or an SVG file?</h3>
+                    <p class="text-gray-600 mt-1">Choose DXF if you are importing the geometry into traditional CAM software or old-school machine controllers, as DXF preserves metric/imperial scale units. Choose SVG if you are importing into modern laser software or vector design suites, as SVG has superior support for curve types but requires verifying output scaling.</p>
+                </div>
+
+                <div>
+                    <h3 class="font-bold text-gray-900 text-lg">8. How can I verify that my manual G-code coordinates are error-free before running a physical part?</h3>
+                    <p class="text-gray-600 mt-1">Use the in-browser G-code simulator on the SHADER7 platform. Upload your file, and the simulator will parse the G-code and draw the 3D toolpath on screen. Verify that the toolpath aligns with your 3D CAD model, checking for rapid-traverse cuts through solid material, correct drilling depths, and clear workholding offsets.</p>
+                </div>
+            </div>
+
+            <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight mt-12 mb-4">Shop Floor Integration Checklist</h2>
+            <div class="bg-indigo-50 p-6 rounded-lg border border-indigo-100 my-6">
+                <h4 class="font-bold text-indigo-950 text-lg mb-4">Steps to Implement Browser-Based CAD in Your Daily Workflow:</h4>
+                <ul class="space-y-3 text-sm text-indigo-900">
+                    <li class="flex items-start gap-2">
+                        <input type="checkbox" class="mt-1 rounded border-indigo-300 text-indigo-600 focus:ring-indigo-500" checked disabled>
+                        <span><strong>Equip the Floor:</strong> Set up rugged, drop-proof tablet holders near your CNC machines to keep interactive visual models within arm's reach of the operator.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <input type="checkbox" class="mt-1 rounded border-indigo-300 text-indigo-600 focus:ring-indigo-500" checked disabled>
+                        <span><strong>Standardize Formats:</strong> Default all exported 3D CAD assets to STEP format to preserve boundary representations and true mathematical curves.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <input type="checkbox" class="mt-1 rounded border-indigo-300 text-indigo-600 focus:ring-indigo-500" checked disabled>
+                        <span><strong>Set WCS Standards:</strong> Align model origins (X0, Y0, Z0) in browser CAD with the exact physical probing datums (G54 center or corner) on the machine table.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <input type="checkbox" class="mt-1 rounded border-indigo-300 text-indigo-600 focus:ring-indigo-500" checked disabled>
+                        <span><strong>Simulate Before Cutting:</strong> Always run your manual G-code programs through the browser toolpath simulator to verify depth values and tool clearances before cycles start.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <input type="checkbox" class="mt-1 rounded border-indigo-300 text-indigo-600 focus:ring-indigo-500" checked disabled>
+                        <span><strong>Upskill the Team:</strong> Train operators to use browser direct editing tools for minor geometric adjustments and fixture layouts, reducing office bottlenecks.</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="bg-orange-50 p-6 rounded-lg my-8 border-l-4 border-orange-600">
+                <h3 class="font-bold text-orange-900 mb-2">Ready to Start Modeling in Your Browser?</h3>
+                <p class="mb-4">Avoid manual mistakes and accelerate your CNC setups. Explore the SHADER7 in-browser 3D CAD app, import your models, view toolpath simulations, and optimize your manufacturing layouts today.</p>
+                <a href="cnc-machinist/" class="inline-block bg-orange-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-700 transition">Enter CNC Machinist Hub &rarr;</a>
+            </div>
+
+            <div class="mt-12 pt-6 border-t border-gray-100 flex items-center gap-4 text-sm text-gray-500">
+                <div class="bg-indigo-100 text-indigo-700 h-10 w-10 rounded-full flex items-center justify-center font-bold text-lg">
+                    NX
+                </div>
+                <div>
+                    <p class="text-gray-900 font-semibold">Written by Nishikant Xalxo</p>
+                    <p class="text-xs">CNC Programming Expert & Technical Writer | Follow <a href="https://twitter.com/nishix_vamp" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:underline">@nishix_vamp</a> | Contact: <a href="mailto:nxdecore@gmail.com" class="text-indigo-600 hover:underline">nxdecore@gmail.com</a></p>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer class="bg-gray-50 py-12 text-center text-gray-500 text-sm mt-12 border-t border-gray-200">
+        &copy; <script>document.write(new Date().getFullYear())</script> SHADER7. All rights reserved. | <a href="blog.html" class="text-indigo-600">More Articles</a>
+    </footer>
+</body>
+</html>

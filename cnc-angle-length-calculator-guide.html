@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CNC Angle and Length Calculator Guide: Mastering Shop Floor Trigonometry | SHADER7 Blog</title>
+    <meta name="description" content="The definitive CNC machinist guide to angle and length calculations. Master SOH CAH TOA, tapers, included angles, sine bar setups, chamfer offsets, radial geometry, and G68/G52 code.">
+    <link rel="canonical" href="https://shader7.com/cnc-angle-length-calculator-guide.html">
+    <meta property="og:title" content="CNC Angle and Length Calculator Guide: Mastering Shop Floor Trigonometry">
+    <meta property="og:description" content="Master shop floor trigonometry, taper calculations, sine bar coordinate layouts, chamfer tool nose compensation, radial segments, and Fanuc/Haas G68 rotation and G52 shifting.">
+    <meta property="og:url" content="https://shader7.com/cnc-angle-length-calculator-guide.html">
+    <meta property="og:type" content="article">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "CNC Angle and Length Calculator Guide: Mastering Shop Floor Trigonometry",
+      "author": {
+        "@type": "Person",
+        "name": "Nishikant Xalxo",
+        "email": "nxdecore@gmail.com"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "SHADER7"
+      },
+      "datePublished": "2026-05-25",
+      "dateModified": "2026-05-25",
+      "description": "Exhaustive CNC guide for angle and length calculations. Learn SOH CAH TOA, taper calculations, sine bar coordinate layouts, chamfer offsets, radial layouts, G68/G69 rotation, and G52 coordinate shifting."
+    }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+    <nav class="bg-white shadow-sm p-4 sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <a href="/" class="font-bold text-indigo-900 text-xl tracking-tight">SHADER<span class="text-indigo-600">7</span></a>
+            <a href="blog.html" class="text-sm font-semibold text-gray-500 hover:text-indigo-600 transition flex items-center gap-1">← Back to Blog</a>
+        </div>
+    </nav>
+    <header class="bg-indigo-950 text-white py-16 px-4">
+        <div class="max-w-4xl mx-auto text-center">
+            <span class="text-orange-400 font-bold tracking-widest uppercase text-sm">CNC Machining • Engineering • 2026</span>
+            <h1 class="text-3xl md:text-5xl font-extrabold mt-4 mb-6 leading-tight text-orange-50">CNC Angle &amp; Length Calculations</h1>
+            <p class="text-indigo-200 text-lg max-w-2xl mx-auto">Master the trigonometry formulas behind taper, bevel, chamfer, and coordinate layout systems. Learn coordinate rotation (G68) and sine bar setups for precision CNC operations.</p>
+        </div>
+    </header>
+    <main class="max-w-4xl mx-auto px-4 md:px-8 py-12 bg-white shadow-sm rounded-b-xl -mt-4 relative z-10">
+        <div class="prose prose-indigo max-w-none text-gray-700 leading-relaxed space-y-8">
+            
+            <!-- SECTION 0: Introduction -->
+            <section class="space-y-4">
+                <p class="text-xl text-gray-600 leading-relaxed italic">
+                    In modern CNC programming and precision metalworking, the ability to rapidly convert blueprint angles and linear dimensions into machine coordinate data is the primary differentiator between an entry-level operator and a master machinist. 
+                </p>
+                <p>
+                    Every day on the shop floor, setup technicians and programmers confront blueprints calling out angled cuts, tapers, bevels, and complex circular profiles. While modern Computer-Aided Design (CAD) and Computer-Aided Manufacturing (CAM) systems generate cutting paths automatically, total reliance on these tools creates a dangerous vulnerability. When a part fails quality control inspection by a few thousandths of an inch due to tool deflection, or when a taper does not fit a mating gauge, a machine operator cannot afford to stop production, walk back to the programming office, and wait for a CAM model revision.
+                </p>
+                <p>
+                    Having a deep, mechanical understanding of right-angle trigonometry, taper variables, and coordinate shifting formulas allows you to modify toolpaths directly at the machine controller. By calculating coordinate adjustments manually, you can quickly diagnose fixture misalignment, compensate for tool wear, set up precision sine bars, and program advanced subroutines. This guide serves as an exhaustive, step-by-step masterclass in shop floor trigonometry and coordinate geometry, providing the practical formulas, programming routines, and troubleshooting strategies necessary to master the art and science of CNC angle and length calculations.
+                </p>
+                
+                <figure class="my-8">
+                    <img src="screenshots/cnc-machinist-app.png" alt="CNC Machinist Calculator App Angle and Length page" class="w-full rounded-xl shadow-lg border border-gray-200" loading="lazy" width="1200" height="675">
+                    <figcaption class="text-center text-sm text-gray-500 mt-3 italic">Figure 1: The SHADER7 Angle Length Calculator simplifies shop floor trigonometry, allowing machinists to solve tapers, bevels, and coordinate layouts instantly without manual calculations.</figcaption>
+                </figure>
+            </section>
+
+            <!-- SECTION 1: Trigonometry Foundations on the Shop Floor -->
+            <section id="trig-foundations" class="space-y-6 pt-6 border-t border-gray-100">
+                <h2 class="text-3xl font-extrabold text-gray-900">1. Trigonometry Foundations on the Shop Floor</h2>
+                <p>
+                    All coordinate calculations on a CNC machine are fundamentally based on the Cartesian coordinate system, which is resolved mathematically using right-angle triangles. The core mathematical framework is known by the simple memory aid <strong>SOH CAH TOA</strong>. In precision machining, this acronym defines the exact relationship between the angles of a workpiece and the travel lengths of the machine axes (typically the X, Y, and Z axes).
+                </p>
+                
+                <div class="bg-gray-50 p-6 rounded-lg border border-gray-200 space-y-4">
+                    <h4 class="font-bold text-gray-900 text-lg uppercase tracking-wide">The SOH CAH TOA Core Definitions</h4>
+                    <p>For any right-angled triangle where &theta; represents the angle under consideration:</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                        <div class="bg-white p-4 rounded shadow-sm border border-gray-100">
+                            <span class="block text-indigo-700 font-extrabold text-xl">SOH</span>
+                            <span class="block text-sm text-gray-500 mt-1">Sine = Opposite / Hypotenuse</span>
+                            <span class="block font-mono text-sm mt-2 text-indigo-900">sin(&theta;) = Opp / Hyp</span>
+                        </div>
+                        <div class="bg-white p-4 rounded shadow-sm border border-gray-100">
+                            <span class="block text-indigo-700 font-extrabold text-xl">CAH</span>
+                            <span class="block text-sm text-gray-500 mt-1">Cosine = Adjacent / Hypotenuse</span>
+                            <span class="block font-mono text-sm mt-2 text-indigo-900">cos(&theta;) = Adj / Hyp</span>
+                        </div>
+                        <div class="bg-white p-4 rounded shadow-sm border border-gray-100">
+                            <span class="block text-indigo-700 font-extrabold text-xl">TOA</span>
+                            <span class="block text-sm text-gray-500 mt-1">Tangent = Opposite / Adjacent</span>
+                            <span class="block font-mono text-sm mt-2 text-indigo-900">tan(&theta;) = Opp / Adj</span>
+                        </div>
+                    </div>
+                </div>
+
+                <p>
+                    In physical machining setups:
+                </p>
+                <ul class="list-disc pl-6 space-y-2">
+                    <li><strong>Hypotenuse (Hyp):</strong> Represents the physical diagonal tool path, the centerline length of a taper, or the physical body of a sine bar. It is always the longest side of the right triangle, directly opposite the 90-degree angle.</li>
+                    <li><strong>Opposite (Opp):</strong> Represents the offset or rise perpendicular to the reference axis. For instance, on a lathe turning a taper, the opposite side is the radial change (half of the diametrical change).</li>
+                    <li><strong>Adjacent (Adj):</strong> Represents the run or longitudinal travel along the machine's primary reference axis (most commonly the Z-axis in turning or the X/Y axes in milling).</li>
+                </ul>
+
+                <h3 class="text-xl font-bold text-gray-900">Solving for Unknown Angles and Sides: Step-by-Step</h3>
+                
+                <h4 class="font-bold text-gray-800">Case Study 1: Finding an Unknown Side (Chamfer Coordinates)</h4>
+                <p>
+                    Imagine you are programming a CNC lathe to machine a custom 30-degree bevel (measured relative to the Z-axis) on a shaft. The blueprint specifies that the Z-axis length of the bevel is exactly 0.500 inches (Adjacent). You must calculate the radial change in X (Opposite) to determine the starting diameter of the cut.
+                </p>
+                <ol class="list-decimal pl-6 space-y-2">
+                    <li><strong>Identify the knowns:</strong> Angle (&theta;) = 30&deg;, Adjacent side (Z-axis length) = 0.500".</li>
+                    <li><strong>Identify the unknown:</strong> Opposite side (radial offset, X-axis travel).</li>
+                    <li><strong>Select the correct formula:</strong> Since we know the Adjacent side and need the Opposite side, we use the Tangent function (TOA):
+                        <div class="my-2 bg-gray-50 p-2 font-mono text-center rounded border text-indigo-900">tan(&theta;) = Opposite / Adjacent</div>
+                    </li>
+                    <li><strong>Rearrange the formula to solve for the Opposite:</strong>
+                        <div class="my-2 bg-gray-50 p-2 font-mono text-center rounded border text-indigo-900">Opposite = Adjacent &times; tan(&theta;)</div>
+                    </li>
+                    <li><strong>Execute the calculation:</strong>
+                        <div class="my-2 bg-gray-50 p-2 font-mono text-center rounded border text-indigo-900">Opposite = 0.500 &times; tan(30&deg;) = 0.500 &times; 0.57735 = 0.2887 inches (radial)</div>
+                    </li>
+                    <li><strong>Apply to G-code:</strong> On a CNC lathe, coordinates are programmed in diameter. Therefore, the X-axis diameter change is twice the radial change:
+                        <div class="my-2 bg-gray-50 p-2 font-mono text-center rounded border text-indigo-900">Diameter Change = 2 &times; 0.2887" = 0.5774"</div>
+                        If the outer diameter is 2.0000", the taper starting diameter is <code class="bg-gray-100 px-1 font-mono rounded">2.0000 - 0.5774 = 1.4226"</code>.
+                    </li>
+                </ol>
+
+                <h4 class="font-bold text-gray-800">Case Study 2: Finding an Unknown Angle (V-Groove Verification)</h4>
+                <p>
+                    A quality control inspector measures a V-groove using a coordinate measuring machine (CMM). The depth of the groove (Adjacent) is 0.375 inches, and the width of the groove at the top face is measured at 0.433 inches. The inspector needs to verify if the included angle conforms to the standard 60-degree V-groove spec.
+                </p>
+                <ol class="list-decimal pl-6 space-y-2">
+                    <li><strong>Divide the groove into two right triangles:</strong> The depth of the groove represents the Adjacent side (0.375"). The opposite side of the half-angle represents half of the top width:
+                        <div class="my-2 bg-gray-50 p-2 font-mono text-center rounded border text-indigo-900">Opposite = 0.433" / 2 = 0.2165"</div>
+                    </li>
+                    <li><strong>Identify the unknown:</strong> The half-angle (&theta;).</li>
+                    <li><strong>Select the correct formula:</strong> Using Tangent (TOA):
+                        <div class="my-2 bg-gray-50 p-2 font-mono text-center rounded border text-indigo-900">tan(&theta;) = Opposite / Adjacent</div>
+                    </li>
+                    <li><strong>Solve for &theta; using the inverse tangent function (arctan):</strong>
+                        <div class="my-2 bg-gray-50 p-2 font-mono text-center rounded border text-indigo-900">&theta; = arctan(Opposite / Adjacent)</div>
+                    </li>
+                    <li><strong>Execute the calculation:</strong>
+                        <div class="my-2 bg-gray-50 p-2 font-mono text-center rounded border text-indigo-900">&theta; = arctan(0.2165 / 0.375) = arctan(0.57733) &asymp; 30.0&deg;</div>
+                    </li>
+                    <li><strong>Determine the included angle:</strong> The included angle is twice the half-angle:
+                        <div class="my-2 bg-gray-50 p-2 font-mono text-center rounded border text-indigo-900">Included Angle = 2 &times; 30.0&deg; = 60.0&deg;</div>
+                        The V-groove is perfectly accurate to spec.
+                    </li>
+                </ol>
+            </section>
+
+            <!-- SECTION 2: Taper Calculations: TPF, TPI, and Included Angles -->
+            <section id="taper-calculations" class="space-y-6 pt-6 border-t border-gray-100">
+                <h2 class="text-3xl font-extrabold text-gray-900">2. Taper Calculations: TPF, TPI, and Included Angles</h2>
+                <p>
+                    Tapers are fundamental engineering elements used to align and lock mechanical components rigidly, such as machine spindles, tool holders, and tailstock centers. A taper represents a uniform, gradual change in diameter along the length of a cylindrical part. Because blueprints represent tapers in a variety of styles, a machinist must be fluent in converting between Taper Per Foot (TPF), Taper Per Inch (TPI), and the Included Angle.
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-indigo-50 p-6 rounded-lg border border-indigo-100">
+                        <h4 class="font-bold text-indigo-950 text-md uppercase tracking-wider mb-2">Taper Per Foot (TPF) Formula</h4>
+                        <p class="text-sm text-indigo-900 mb-4">Calculates the diameter variation over 12 inches of length:</p>
+                        <div class="bg-white p-3 font-mono text-sm rounded border border-indigo-200 text-center text-indigo-950 font-bold">
+                            TPF = ((D_large - D_small) &divide; Length) &times; 12
+                        </div>
+                    </div>
+                    <div class="bg-indigo-50 p-6 rounded-lg border border-indigo-100">
+                        <h4 class="font-bold text-indigo-950 text-md uppercase tracking-wider mb-2">Taper Per Inch (TPI) Formula</h4>
+                        <p class="text-sm text-indigo-900 mb-4">Calculates the diameter variation over 1 inch of length:</p>
+                        <div class="bg-white p-3 font-mono text-sm rounded border border-indigo-200 text-center text-indigo-950 font-bold">
+                            TPI = (D_large - D_small) &divide; Length
+                        </div>
+                    </div>
+                </div>
+
+                <p>
+                    The <strong>Included Angle</strong> is the total wedge angle formed by the tapered surface if its lines projected outward to an intersection point. The <strong>Taper Angle</strong> (or half angle) is the angle between the tapered side and the centerline of the part, which is the actual angle programmed on a lathe or aligned on a manual machine's compound slide.
+                </p>
+
+                <div class="bg-gray-50 p-6 rounded-lg border border-gray-200 font-mono text-sm space-y-2">
+                    <span class="text-orange-700 font-bold block mb-2">// Angle Conversion Equations:</span>
+                    Taper Angle (&theta;) = arctan((D_large - D_small) &divide; (2 &times; Length))
+                    <br>Taper Angle (&theta;) = arctan(TPI &divide; 2)
+                    <br>Taper Angle (&theta;) = arctan(TPF &divide; 24)
+                    <br>Included Angle = 2 &times; Taper Angle
+                </div>
+
+                <h3 class="text-xl font-bold text-gray-900">Standard Morse Taper Reference</h3>
+                <p>
+                    Morse Tapers (MT) are standard self-holding tapers utilized globally on drill presses, manual lathes, and machining tooling. Interestingly, because they were developed in the mid-19th century using physical master gauges, Morse Tapers do not have a single uniform taper value. For instance:
+                </p>
+                <ul class="list-disc pl-6 space-y-2">
+                    <li><strong>MT1:</strong> 0.62013 inches of taper per foot (Included Angle: ~2.96&deg;)</li>
+                    <li><strong>MT2:</strong> 0.59941 inches of taper per foot (Included Angle: ~2.86&deg;)</li>
+                    <li><strong>MT3:</strong> 0.60232 inches of taper per foot (Included Angle: ~2.88&deg;)</li>
+                    <li><strong>MT4:</strong> 0.62326 inches of taper per foot (Included Angle: ~2.98&deg;)</li>
+                    <li><strong>MT5:</strong> 0.63151 inches of taper per foot (Included Angle: ~3.02&deg;)</li>
+                </ul>
+
+                <h3 class="text-xl font-bold text-gray-900">Manual Lathe Program: Turn a Taper Over a Defined Length</h3>
+                <p>
+                    Let us write a raw G-code program for a Fanuc-controlled CNC lathe to turn an external taper. 
+                    <br><strong>Part Specifications:</strong>
+                </p>
+                <ul class="list-disc pl-6 space-y-1">
+                    <li>Material: 1045 Carbon Steel (1.750" raw stock diameter)</li>
+                    <li>Taper Length: 2.500"</li>
+                    <li>Start Diameter (D_small): 1.125"</li>
+                    <li>End Diameter (D_large): 1.625"</li>
+                </ul>
+                <p>
+                    Let's calculate the taper characteristics:
+                    <br><code class="bg-gray-100 px-1 font-mono rounded">TPI = (1.625 - 1.125) &divide; 2.5 = 0.500 &divide; 2.5 = 0.200"</code> per inch.
+                    <br><code class="bg-gray-100 px-1 font-mono rounded">TPF = 0.200" &times; 12 = 2.400"</code> per foot.
+                    <br><code class="bg-gray-100 px-1 font-mono rounded">Taper Angle (&theta;) = arctan(0.200 / 2) = arctan(0.100) = 5.7106&deg;</code>.
+                    <br><code class="bg-gray-100 px-1 font-mono rounded">Included Angle = 2 &times; 5.7106&deg; = 11.4212&deg;</code>.
+                </p>
+
+                <div class="space-y-2">
+                    <span class="block font-bold text-gray-800 text-sm">G-Code Program: Taper Turning Cycle</span>
+                    <pre class="bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-sm overflow-x-auto leading-relaxed border border-gray-800">
+%
+O1002 (TAPER TURNING DEMO PROGRAM)
+(TOOL 01 - ROUGH TURNING TOOL, CNMG 432)
+G20 G90 G99 (Imperial, Absolute Mode, Feed per Revolution)
+G50 S2000 (Limit Spindle Speed to 2000 RPM)
+G96 S500 M03 (Constant Surface Speed ON, 500 SFM, Spindle CW)
+T0101 (Select Tool 1, Offset 1)
+G00 X1.85 Z0.1 M08 (Rapid close to part, Coolant ON)
+
+(Pass 1 - Roughing straight box cuts to clear bulk stock)
+G00 X1.60 Z0.05
+G01 Z-2.48 F0.012
+G01 X1.75
+G00 Z0.05
+
+(Pass 2 - Roughing box cut)
+G00 X1.40
+G01 Z-1.38 F0.012
+G01 X1.60
+G00 Z0.05
+
+(Pass 3 - Roughing box cut)
+G00 X1.20
+G01 Z-0.38 F0.012
+G01 X1.40
+G00 Z0.05
+
+(Rough Taper Path - rough cutting close to the taper profile)
+G00 X1.10
+G01 X1.125 Z0.0 F0.008 (Position to taper start)
+G01 X1.600 Z-2.375 F0.008 (Interpolate rough taper path)
+G01 X1.75 Z-2.40
+G00 X1.85 Z0.1
+
+(TOOL 02 - FINISH TURNING TOOL, VNMG 331)
+G96 S650 M03 (Increase Surface Speed for Finisher)
+T0202 (Select Tool 2, Offset 2)
+G00 X1.80 Z0.1 M08
+G00 X1.00 Z0.05
+G01 X1.125 Z0.0 F0.004 (Face entry point)
+G01 X1.625 Z-2.500 F0.004 (Interpolate finished taper perfectly)
+G01 X1.72 Z-2.55 (Clear workpiece flange face)
+G00 X1.85 Z0.1 M09 (Rapid retract, Coolant OFF)
+G28 U0 W0 M05 (Return to machine home, Spindle Stop)
+M30 (End Program)
+%</pre>
+                </div>
+            </section>
+
+            <!-- SECTION 3: Coordinate Layout Methods: Sine Bars, Gauge Blocks, and Dial Indicators -->
+            <section id="coordinate-layout" class="space-y-6 pt-6 border-t border-gray-100">
+                <h2 class="text-3xl font-extrabold text-gray-900">3. Coordinate Layout Methods: Sine Bars, Gauge Blocks, and Dial Indicators</h2>
+                <p>
+                    When machining fixtures or performing quality assurance on angled parts manually, optical comparators and rotary tables may not be precise enough. To set up and verify parts to sub-thousandth precision (e.g., angular tolerances of &plusmn;5 seconds of arc), shop technicians rely on a combination of a <strong>sine bar</strong>, precision <strong>gauge blocks</strong> (Jo blocks), and a sensitive <strong>dial test indicator</strong> on a precision surface plate.
+                </p>
+
+                <h3 class="text-xl font-bold text-gray-900">The Anatomy of a Sine Bar</h3>
+                <p>
+                    A sine bar consists of a hardened, stabilized steel bar containing two precision cylinders of equal diameter ground and positioned with exact center-to-center spacing. The cylinder centers are held perfectly parallel to the top surface of the bar. Sine bars are designed in standard lengths—typically 5.0000 inches or 10.0000 inches in imperial shops, and 100.00 mm or 200.00 mm in metric shops—making calculations fast and scaling easy.
+                </p>
+
+                <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                    <h4 class="font-bold text-gray-900 text-md uppercase mb-2">Calculating Gauge Block Stack Height ($H = L \cdot \sin(\theta)$)</h4>
+                    <p class="text-sm mb-4">To establish a specific angle, one cylinder of the sine bar rests on the surface plate, while the other sits on a stack of gauge blocks. This forms a right triangle where:</p>
+                    <ul class="list-disc pl-6 space-y-1 text-sm mb-4">
+                        <li><strong>Hypotenuse (L):</strong> Center distance of the sine bar (e.g., 5.0000" or 10.0000").</li>
+                        <li><strong>Opposite (H):</strong> Height of the gauge block stack.</li>
+                        <li><strong>Angle (&theta;):</strong> Desired angle of the setup relative to the surface plate.</li>
+                    </ul>
+                    <div class="bg-white p-3 font-mono text-sm rounded border text-center text-indigo-900 font-bold">
+                        Height (H) = Sine Bar Length (L) &times; sin(&theta;)
+                    </div>
+                </div>
+
+                <h4 class="font-bold text-gray-800">Sine Bar Stack Calculation Example</h4>
+                <p>
+                    You are setting up a 5.0000" imperial sine bar to machine a fixture at an angle of 14&deg; 30' (14.500 degrees). Calculate the required gauge block height stack.
+                </p>
+                <ol class="list-decimal pl-6 space-y-1">
+                    <li><code class="bg-gray-100 px-1 font-mono rounded">H = 5.0000" &times; sin(14.500&deg;)</code></li>
+                    <li><code class="bg-gray-100 px-1 font-mono rounded">H = 5.0000" &times; 0.250380 = 1.2519"</code></li>
+                </ol>
+
+                <h3 class="text-xl font-bold text-gray-900">Selecting Blocks from a Standard 81-Piece Gauge Block Set</h3>
+                <p>
+                    To build a stack of exactly 1.2519" from a standard imperial 81-piece gauge block set, we must target decimal places sequentially from right to left to minimize the total block count and eliminate mechanical errors:
+                </p>
+                
+                <div class="overflow-x-auto shadow border border-gray-200 rounded-lg">
+                    <table class="w-full border-collapse text-sm">
+                        <thead>
+                            <tr class="bg-indigo-50 border-b border-gray-200">
+                                <th class="p-3 text-left font-bold text-gray-700">Target Value</th>
+                                <th class="p-3 text-left font-bold text-gray-700">Block Selected</th>
+                                <th class="p-3 text-left font-bold text-gray-700">Mathematical Operation</th>
+                                <th class="p-3 text-left font-bold text-gray-700 font-mono">Remaining Stack Value</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100 bg-white">
+                            <tr>
+                                <td class="p-3">Initial Target Height</td>
+                                <td class="p-3 font-semibold">—</td>
+                                <td class="p-3">Starting baseline</td>
+                                <td class="p-3 font-mono text-indigo-900">1.2519"</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3">Fourth Decimal (0.0009")</td>
+                                <td class="p-3 font-semibold">0.1009"</td>
+                                <td class="p-3">1.2519 - 0.1009</td>
+                                <td class="p-3 font-mono text-indigo-900">1.1510"</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3">Third Decimal (0.0010")</td>
+                                <td class="p-3 font-semibold">0.101"</td>
+                                <td class="p-3">1.1510 - 0.101</td>
+                                <td class="p-3 font-mono text-indigo-900">1.0500"</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3">Second Decimal (0.0500")</td>
+                                <td class="p-3 font-semibold">0.150"</td>
+                                <td class="p-3">1.0500 - 0.150</td>
+                                <td class="p-3 font-mono text-indigo-900">0.9000"</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3">First Decimal (0.9000")</td>
+                                <td class="p-3 font-semibold">0.900"</td>
+                                <td class="p-3">0.9000 - 0.900</td>
+                                <td class="p-3 font-mono text-indigo-900">0.0000" (Completed)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <p class="text-sm text-gray-500 italic">
+                    By stacking the 0.1009", 0.101", 0.150", and 0.900" blocks, and carefully cleaning their surfaces to allow them to "wring" together, you obtain a physical standard exactly 1.2519 inches high with less than 0.00005" of stack-up error.
+                </p>
+
+                <h3 class="text-xl font-bold text-gray-900">Dial Indicator Sweep Procedure</h3>
+                <p>
+                    Once the sine bar is wrung to the calculated block height, align the workpiece on the angled bar. To verify the alignment:
+                </p>
+                <ol class="list-decimal pl-6 space-y-2">
+                    <li>Mount a 0.0001" dial test indicator on a high-rigidity surface gage stand.</li>
+                    <li>Lower the indicator stylus contact point onto one end of the workpiece's angled top edge. Zero the dial face.</li>
+                    <li>Slowly slide the indicator stand across the surface plate, sweeping along the entire length of the workpiece.</li>
+                    <li><strong>Interpretation:</strong> If the dial indicator stays at zero, the workpiece angle is perfectly aligned. If the needle moves, the workpiece exhibits angular deviation. You must calculate the corrective block height adjustments, or physically adjust the workpiece seating.</li>
+                </ol>
+            </section>
+
+            <!-- SECTION 4: Right-Triangle Geometry for Beveling and Chamfer Offsets -->
+            <section id="right-triangle-geometry" class="space-y-6 pt-6 border-t border-gray-100">
+                <h2 class="text-3xl font-extrabold text-gray-900">4. Right-Triangle Geometry for Beveling and Chamfer Offsets</h2>
+                <p>
+                    Chamfering—removing sharp corners and creating a bevel edge—is critical to facilitate easy assembly of parts and prevent operator injury. In G-code, programming a simple chamfer seems straightforward, but real-world tooling introduces a complication: the <strong>Tool Nose Radius (TNR)</strong>.
+                </p>
+                
+                <h3 class="text-xl font-bold text-gray-900">The Problem of the Virtual Tool Tip</h3>
+                <p>
+                    When a CNC lathe tool is calibrated on a tool presetter, the machine measures the "virtual" tool tip (the intersection of the theoretical X and Z datum lines). However, the actual cutting edge is a round radius (e.g., 1/32" or 0.0312" radius). When interpolating a taper or chamfer, the rounded tip contacts the workpiece at a different point than the virtual tip. 
+                </p>
+                <p>
+                    If you program the virtual tip directly without compensation, the chamfer will be machined undersized and display a flat error profile.
+                </p>
+
+                <h3 class="text-xl font-bold text-gray-900">Manual Mathematical Offsets for a 45-Degree Chamfer</h3>
+                <p>
+                    To program a chamfer without active Tool Nose Radius Compensation (G41/G42), the programmer must calculate mathematical compensation offsets. For a standard 45-degree chamfer, the formulas are:
+                </p>
+                
+                <div class="bg-gray-50 p-6 rounded-lg border border-gray-200 font-mono text-sm space-y-2">
+                    <span class="text-orange-700 font-bold block mb-2">// 45-Degree Compensation Formulas:</span>
+                    Z-axis Offset (&Delta;Z) = Tool Nose Radius &times; (1 - tan(22.5&deg;))
+                    <br>Z-axis Offset (&Delta;Z) = Tool Nose Radius &times; 0.5858
+                    <br>X-axis Diameter Offset (&Delta;Xd) = 2 &times; Tool Nose Radius &times; (1 - tan(22.5&deg;))
+                    <br>X-axis Diameter Offset (&Delta;Xd) = Tool Nose Radius &times; 1.1716
+                </div>
+
+                <p>
+                    If you use a tool with a 0.0312" radius to cut a 45-degree chamfer:
+                    <br><code class="bg-gray-100 px-1 font-mono rounded">&Delta;Z = 0.0312" &times; 0.5858 = 0.0183"</code>
+                    <br><code class="bg-gray-100 px-1 font-mono rounded">&Delta;Xd = 0.0312" &times; 1.1716 = 0.0366"</code>
+                </p>
+
+                <h3 class="text-xl font-bold text-gray-900">Advanced: Arbitrary Bevel Angles</h3>
+                <p>
+                    For angles other than 45 degrees, the formula requires solving the tangent of the tool contact angle relative to the bevel slope. Let &alpha; represent the angle of the bevel relative to the Z-axis:
+                </p>
+
+                <div class="bg-gray-50 p-6 rounded-lg border border-gray-200 font-mono text-sm space-y-2">
+                    <span class="text-orange-700 font-bold block mb-2">// General Angle Compensation Formulas:</span>
+                    &Delta;Z = TNR &times; (1 - tan( (90&deg; - &alpha;) &divide; 2 ))
+                    <br>&Delta;X (Diameter) = 2 &times; TNR &times; (1 - tan( &alpha; &divide; 2 ))
+                </div>
+
+                <h3 class="text-xl font-bold text-gray-900">Comparison of Tool Nose Radius Compensation (TNRC) Methods</h3>
+                
+                <div class="overflow-x-auto shadow border border-gray-200 rounded-lg">
+                    <table class="w-full border-collapse text-sm">
+                        <thead>
+                            <tr class="bg-indigo-50 border-b border-gray-200">
+                                <th class="p-3 text-left font-bold text-gray-700">Programming Approach</th>
+                                <th class="p-3 text-left font-bold text-gray-700">G-Code Command</th>
+                                <th class="p-3 text-left font-bold text-gray-700">Advantages</th>
+                                <th class="p-3 text-left font-bold text-gray-700">Disadvantages</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100 bg-white">
+                            <tr>
+                                <td class="p-3 font-semibold">Uncompensated (Virtual Tip)</td>
+                                <td class="p-3 font-mono">G40 (Default)</td>
+                                <td class="p-3">Simple code structure, no offset variables to load.</td>
+                                <td class="p-3 text-red-600">Chamfer is physically smaller. Requires custom math calculations for every tool radius change.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-semibold">Manual Trigonometric Offset</td>
+                                <td class="p-3 font-mono">G40 (Manual Math)</td>
+                                <td class="p-3">Produces highly accurate geometric parts without relying on controller calculations.</td>
+                                <td class="p-3 text-red-600">If the machinist swaps a 1/32" nose radius insert for a 1/64" insert, the entire program coordinates must be recalculated.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-semibold">Active Control Compensation</td>
+                                <td class="p-3 font-mono">G41 (Left) / G42 (Right)</td>
+                                <td class="p-3 text-green-700">Program matches blueprint dimensions exactly. If insert radius changes, the operator simply updates the radius offset in the controller.</td>
+                                <td class="p-3">Requires an entry lead-in block (G01) and exit lead-out block to initiate and cancel compensation safely. Can lead to "over-cut" alarms on tight profiles.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3 class="text-xl font-bold text-gray-900">G-Code Sample: Turning a Chamfer Using G42 Compensation</h3>
+                <p>
+                    In this turning subroutine, we turn an external chamfer from Z0 to X1.500 Z-0.100 using active G42 Tool Nose Radius Compensation:
+                </p>
+                <pre class="bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-sm overflow-x-auto leading-relaxed border border-gray-800">
+G00 X1.100 Z0.100 M08 (Rapid positioning outside the profile)
+G01 G42 X1.200 Z0.100 F0.005 (Initiate G42 Compensation, move to clear start)
+G01 Z0.0 F0.003 (Feed to part face)
+G01 X1.500 Z-0.150 F0.003 (Execute chamfer directly to blueprint dimensions)
+G01 Z-1.000 F0.005 (Continue turning diameter)
+G01 G40 X1.800 Z-0.900 F0.010 (De-activate G40 Compensation during lead-out step)
+G00 Z1.000 M09</pre>
+            </section>
+
+            <!-- SECTION 5: Radial and Circular Layout Calculations -->
+            <section id="radial-calculations" class="space-y-6 pt-6 border-t border-gray-100">
+                <h2 class="text-3xl font-extrabold text-gray-900">5. Radial and Circular Layout Calculations</h2>
+                <p>
+                    Machining radial slots, bolt-circle flanges, turbine blades, or circular pockets requires robust geometry skills to define the exact positions of curves, arcs, and chords. To layout these operations, machinists must be able to calculate three key components of a circular sector: <strong>Chord Length</strong>, <strong>Arc Length</strong>, and <strong>Segment Height</strong> (often referred to as the <em>sagitta</em>).
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-indigo-50 p-4 rounded border border-indigo-100">
+                        <span class="block font-bold text-indigo-950 text-sm">Chord Length (C)</span>
+                        <p class="text-xs text-indigo-900 mt-1">Straight-line distance between two points on an arc:</p>
+                        <div class="bg-white p-2 font-mono text-xs rounded border border-indigo-200 mt-2 text-center text-indigo-950 font-bold">
+                            C = 2 &times; R &times; sin(&theta; &divide; 2)
+                        </div>
+                    </div>
+                    <div class="bg-indigo-50 p-4 rounded border border-indigo-100">
+                        <span class="block font-bold text-indigo-950 text-sm">Arc Length (A)</span>
+                        <p class="text-xs text-indigo-900 mt-1">Curved distance along the perimeter of the circle:</p>
+                        <div class="bg-white p-2 font-mono text-xs rounded border border-indigo-200 mt-2 text-center text-indigo-950 font-bold">
+                            A = (R &times; &pi; &times; &theta;) &divide; 180&deg;
+                        </div>
+                    </div>
+                    <div class="bg-indigo-50 p-4 rounded border border-indigo-100">
+                        <span class="block font-bold text-indigo-950 text-sm">Segment Height (H)</span>
+                        <p class="text-xs text-indigo-900 mt-1">Perpendicular distance from the center of the chord to the arc peak:</p>
+                        <div class="bg-white p-2 font-mono text-xs rounded border border-indigo-200 mt-2 text-center text-indigo-950 font-bold">
+                            H = R &times; (1 - cos(&theta; &divide; 2))
+                        </div>
+                    </div>
+                </div>
+
+                <p class="text-sm italic text-gray-500">
+                    Where <strong>R</strong> is the radius of the circle, and <strong>&theta;</strong> is the included center angle of the segment in degrees.
+                </p>
+
+                <h3 class="text-xl font-bold text-gray-900">Real-World Case Study: Milling a Curved Arc Profile</h3>
+                <p>
+                    A milling operation requires you to machine a concave pocket along the edge of a plate. The blueprint specifies an arc length with a radius of 6.000 inches, and a chord length of 4.000 inches. To verify if your milling cutter will breach the outer wall of the plate, you must calculate the exact segment height (depth of the cut).
+                </p>
+                
+                <h4 class="font-bold text-gray-800">Step 1: Calculate the included half-angle (&theta;/2)</h4>
+                <p>
+                    We can rearrange the Chord Length formula:
+                    <br><code class="bg-gray-100 px-1 font-mono rounded">C = 2 &times; R &times; sin(&theta;/2)</code>
+                    <br><code class="bg-gray-100 px-1 font-mono rounded">4.000 = 2 &times; 6.000 &times; sin(&theta;/2)</code>
+                    <br><code class="bg-gray-100 px-1 font-mono rounded">4.000 = 12.000 &times; sin(&theta;/2)</code>
+                    <br><code class="bg-gray-100 px-1 font-mono rounded">sin(&theta;/2) = 4.000 / 12.000 = 0.33333</code>
+                    <br><code class="bg-gray-100 px-1 font-mono rounded">&theta;/2 = arcsin(0.33333) = 19.471&deg;</code>
+                </p>
+
+                <h4 class="font-bold text-gray-800">Step 2: Calculate the Segment Height (H)</h4>
+                <p>
+                    Using the Segment Height formula:
+                    <br><code class="bg-gray-100 px-1 font-mono rounded">H = R &times; (1 - cos(&theta;/2))</code>
+                    <br><code class="bg-gray-100 px-1 font-mono rounded">H = 6.000 &times; (1 - cos(19.471&deg;))</code>
+                    <br><code class="bg-gray-100 px-1 font-mono rounded">H = 6.000 &times; (1 - 0.94280) = 6.000 &times; 0.05720 = 0.3432 inches</code>
+                </p>
+                <p>
+                    The physical depth of the pocket profile is exactly 0.3432 inches.
+                </p>
+            </section>
+
+            <!-- SECTION 6: CNC Coordinate Rotations (G68/G69) and Work Coordinate System Shifting (G52) -->
+            <section id="coordinate-rotations" class="space-y-6 pt-6 border-t border-gray-100">
+                <h2 class="text-3xl font-extrabold text-gray-900">6. CNC Coordinate Rotations (G68/G69) and Work Coordinate System Shifting (G52)</h2>
+                <p>
+                    When machining identical angled profiles, pockets, or multi-cavity fixtures, manually calculating trigonometry for every offset point is slow and can introduce keyboard input errors. Modern CNC controls (like Fanuc, Haas, and Mazak) support coordinate manipulation commands that make programming complex components much simpler.
+                </p>
+
+                <h3 class="text-xl font-bold text-gray-900">Understanding G68 Coordinate System Rotation</h3>
+                <p>
+                    The <strong>G68</strong> command rotates the coordinate system relative to a specified center point by a defined angle. This allows you to program a part as if it were oriented vertically (orthogonal to the X/Y axes) and rotate the entire toolpath relative to a custom angle.
+                </p>
+                
+                <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                    <h4 class="font-bold text-gray-900 text-sm uppercase mb-2">Standard Fanuc/Haas G68 Command Structure</h4>
+                    <div class="bg-white p-3 font-mono text-sm rounded border text-indigo-900 mb-4">
+                        G68 X_ Y_ R_
+                    </div>
+                    <ul class="list-disc pl-6 space-y-1 text-sm text-gray-600">
+                        <li><strong>X, Y:</strong> The absolute coordinates of the rotation center (rotation origin). If omitted, the active work coordinate system origin (X0, Y0) is used as the center.</li>
+                        <li><strong>R:</strong> The rotation angle in degrees. Positive values rotate counter-clockwise (CCW); negative values rotate clockwise (CW).</li>
+                    </ul>
+                </div>
+                
+                <p>
+                    The <strong>G69</strong> command cancels all coordinate rotations, returning the machine coordinate system to standard alignment.
+                </p>
+
+                <figure class="my-8">
+                    <img src="screenshots/gcode-reference.png" alt="G-Code Reference Guide for Angle and Length Programming" class="w-full rounded-xl shadow-lg border border-gray-200" loading="lazy" width="1200" height="675">
+                    <figcaption class="text-center text-sm text-gray-500 mt-3 italic">Figure 2: Understanding G-code commands like G68 rotation and G52 local coordinate shifts allows for a seamless transition from calculations to machine execution.</figcaption>
+                </figure>
+
+                <h3 class="text-xl font-bold text-gray-900">Understanding G52 Local Coordinate System Shifts</h3>
+                <p>
+                    The <strong>G52</strong> command shifts the Work Coordinate System (WCS, e.g., G54) by a specific linear distance, establishing a "Local Coordinate System" (LCS). This is useful for machining identical features nested across a single fixture plate.
+                </p>
+                <div class="bg-gray-50 p-4 rounded border font-mono text-sm text-indigo-950">
+                    G52 X_ Y_ Z_ &nbsp;&nbsp;&nbsp;&nbsp;(Establishes local origin shift)
+                    <br>G52 X0 Y0 Z0 &nbsp;&nbsp;&nbsp;&nbsp;(Cancels local offset, returning to G54 home)
+                </div>
+
+                <h3 class="text-xl font-bold text-gray-900">Practical G-Code Subroutine Setup</h3>
+                <p>
+                    This complete program machines two identical pocket slots. Slot 1 is located at the center origin, aligned at 0&deg;. Slot 2 is shifted by 4.0 inches in X and 2.0 inches in Y, and rotated 30 degrees counter-clockwise.
+                </p>
+
+                <pre class="bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-sm overflow-x-auto leading-relaxed border border-gray-800">
+%
+O2004 (NESTED SHIFT AND ROTATION DEMO)
+G90 G21 G17 (Absolute, Metric, XY Plane Selection)
+G28 G91 Z0 (Return Z axis to machine home)
+G90 (Back to Absolute Mode)
+T03 M06 (Select Tool 3 - 10mm Carbide Flat Endmill)
+S3200 M03 (Spindle CW, 3200 RPM)
+G54 (Establish G54 main work datum)
+G00 X0 Y0 Z25. M08 (Rapid tool to main origin, clear part by 25mm)
+
+( ======================================================= )
+( MACHINE CAVITY 1 - ORIGIN X0 Y0, ANGLE 0 )
+( ======================================================= )
+M98 P2005 (Call Pocket Machining Subroutine)
+
+( ======================================================= )
+( MACHINE CAVITY 2 - SHIFT TO X100. Y50., ROTATE 30 DEG )
+( ======================================================= )
+G52 X100.0 Y50.0 (Shift WCS to center of Cavity 2)
+G68 X0 Y0 R30.0 (Rotate coordinate system 30 degrees CCW about new center)
+M98 P2005 (Call same subroutine! Cut identical profile angled)
+G69 (Cancel Coordinate Rotation first!)
+G52 X0 Y0 (Reset local coordinate system offsets)
+
+( ======================================================= )
+( MACHINE CLOSEOUT )
+( ======================================================= )
+G00 Z50. M09 (Rapid tool to safety height, Coolant OFF)
+G28 G91 Z0 (Home Z-axis)
+G28 G91 X0 Y0 (Home X and Y axes)
+M30 (End of Master Program)
+
+( ======================================================= )
+( SUBROUTINE P2005 - 30mm x 15mm POCKET PATTERN )
+( ======================================================= )
+O2005 (Pocket Subroutine)
+G90 G00 X-15.0 Y-7.5 (Rapid to starting corner of slot)
+G01 Z-2.0 F150. (Feed to depth)
+G01 X15.0 F400. (Cut bottom wall)
+G01 Y7.5 (Cut right wall)
+G01 X-15.0 (Cut top wall)
+G01 Y-7.5 (Cut left wall)
+G00 Z10.0 (Retract tool to local clearance plane)
+M99 (Return to master program)
+%</pre>
+            </section>
+
+            <!-- SECTION 7: Tabular Conversion Guide: Blueprint to Shop Floor -->
+            <section id="tabular-guide" class="space-y-6 pt-6 border-t border-gray-100">
+                <h2 class="text-3xl font-extrabold text-gray-900">7. Tabular Conversion Guide: Blueprint to Shop Floor</h2>
+                <p>
+                    Blueprints utilize stylized dimensions, annotations, and symbols to communicate design intent. The conversion chart below translates common blueprint annotations into actionable mathematical equations and G-code variables:
+                </p>
+
+                <div class="overflow-x-auto shadow border border-gray-200 rounded-lg">
+                    <table class="w-full border-collapse text-sm">
+                        <thead>
+                            <tr class="bg-indigo-50 border-b border-gray-200">
+                                <th class="p-3 text-left font-bold text-gray-700">Blueprint Callout</th>
+                                <th class="p-3 text-left font-bold text-gray-700">Mathematical Equation</th>
+                                <th class="p-3 text-left font-bold text-gray-700">Shop Floor Conversion Process</th>
+                                <th class="p-3 text-left font-bold text-gray-700 font-mono">G-Code Implementation</th>
+                                <th class="p-3 text-left font-bold text-gray-700">Standard Tolerances</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100 bg-white">
+                            <tr>
+                                <td class="p-3 font-semibold">Taper Per Foot (TPF)</td>
+                                <td class="p-3 font-mono">TPF = (D_large - D_small) &times; 12 / L</td>
+                                <td class="p-3">Divide TPF by 24 to find the tangent of the toolpath half-angle.</td>
+                                <td class="p-3 font-mono">G01 X_ Z_ (Taper angle calculation)</td>
+                                <td class="p-3">&plusmn;0.002" per foot</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-semibold">Included Angle</td>
+                                <td class="p-3 font-mono">&alpha; = 2 &times; &theta;</td>
+                                <td class="p-3">Divide by 2 to get the tool orientation angle relative to the spindle axis.</td>
+                                <td class="p-3 font-mono">X_ Z_ A_ (Control angular interpolation)</td>
+                                <td class="p-3">&plusmn;5' (Minutes of arc)</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-semibold">Chamfer Offset (e.g., C 0.05)</td>
+                                <td class="p-3 font-mono">X_start = OD - (2 &times; C)</td>
+                                <td class="p-3">Calculate tool nose radius compensation offsets to avoid undersized edges.</td>
+                                <td class="p-3 font-mono">G41 / G42 tool radius compensation</td>
+                                <td class="p-3">&plusmn;0.010"</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-semibold">Sine Bar Height (5")</td>
+                                <td class="p-3 font-mono">H = 5.0000 &times; sin(&theta;)</td>
+                                <td class="p-3">Select gauge blocks from a physical set to match target height H exactly.</td>
+                                <td class="p-3 font-mono">Physical machine bed alignment setup</td>
+                                <td class="p-3">&plusmn;0.00005" stack error</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-semibold">Chord Length</td>
+                                <td class="p-3 font-mono">C = 2R &times; sin(&theta;/2)</td>
+                                <td class="p-3">Direct straight-line distance. Use to verify hole spacing with calipers.</td>
+                                <td class="p-3 font-mono">Position coordinates X_ Y_ in G81 cycle</td>
+                                <td class="p-3">&plusmn;0.003"</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-semibold">Segment Height (Sagitta)</td>
+                                <td class="p-3 font-mono">H = R &times; (1 - cos(&theta;/2))</td>
+                                <td class="p-3">Check spatial clearances and pocket depth boundary walls.</td>
+                                <td class="p-3 font-mono">Z-depth profiling offsets</td>
+                                <td class="p-3">&plusmn;0.001"</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-semibold">Coordinate Rotation</td>
+                                <td class="p-3 font-mono">G68 X_ Y_ R_</td>
+                                <td class="p-3">Establish center of rotation and rotate axes to match angle.</td>
+                                <td class="p-3 font-mono">G68 (Activate), G69 (Cancel)</td>
+                                <td class="p-3">&plusmn;0.001&deg; controller step</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-semibold">Local Coordinate Shift</td>
+                                <td class="p-3 font-mono">G52 X_ Y_ Z_</td>
+                                <td class="p-3">Temporarily shifts WCS to nested feature origin.</td>
+                                <td class="p-3 font-mono">G52 (Shift), G52 X0 Y0 Z0 (Reset)</td>
+                                <td class="p-3">&plusmn;0.0001" precision</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- SECTION 8: Step-by-Step Layout Troubleshooting & Advanced Shop Workflows -->
+            <section id="troubleshooting" class="space-y-6 pt-6 border-t border-gray-100">
+                <h2 class="text-3xl font-extrabold text-gray-900">8. Step-by-Step Layout Troubleshooting &amp; Advanced Shop Workflows</h2>
+                <p>
+                    Calculations on paper can be mathematically perfect, but still fail on the machine. Physical elements on the shop floor can introduce dimensional errors that lead to failed parts.
+                </p>
+
+                <h3 class="text-xl font-bold text-gray-900">Identifying and Correcting Dimensional Errors</h3>
+                <ol class="list-decimal pl-6 space-y-4 text-gray-700">
+                    <li>
+                        <strong>Cosine Error (Dial Indicator Alignment):</strong>
+                        <p class="text-sm mt-1">
+                            <em>Problem:</em> If the stylus of a dial test indicator is set at an angle to the direction of measurement instead of perfectly perpendicular, the indicator reading will be artificially high.
+                            <br><em>Correction:</em> Always align the indicator stylus within 15 degrees of the measurement axis, or apply the standard correction factor:
+                            <code class="bg-gray-100 px-1 font-mono rounded text-indigo-900">Correct Value = Indicated Value &times; cos(&phi;)</code> (where &phi; is the stylus tilt angle).
+                        </p>
+                    </li>
+                    <li>
+                        <strong>Sine Bar Flat/Seat Interference:</strong>
+                        <p class="text-sm mt-1">
+                            <em>Problem:</em> Dust particles, grinding grit, or microscopic burrs under the sine bar cylinders or gauge block surfaces can lift the setup, ruining angular precision.
+                            <br><em>Correction:</em> Implement a clean-room wipe protocol using isopropyl alcohol. Check the assembly flat surface using an optical flat before setting up critical parts.
+                        </p>
+                    </li>
+                    <li>
+                        <strong>Backlash and Mechanical Hysteresis:</strong>
+                        <p class="text-sm mt-1">
+                            <em>Problem:</em> Moving the machine axis back and forth during setup can introduce microscopic positioning errors due to mechanical slop in ball screws and gears.
+                            <br><em>Correction:</em> Always approach target coordinates from the same direction. For high-precision angular indexing, verify table coordinates using a dual-encoder feedback rotary scale.
+                        </p>
+                    </li>
+                </ol>
+
+                <h3 class="text-xl font-bold text-gray-900">The Machinist Career Shop Workflow Checklist</h3>
+                <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                    <h4 class="font-bold text-indigo-950 text-md uppercase mb-3">Pre-Setup Verification Steps</h4>
+                    <ul class="space-y-2 text-sm text-gray-700">
+                        <li class="flex items-start gap-2">
+                            <input type="checkbox" class="mt-1" checked disabled>
+                            <span><strong>Validate units and scale:</strong> Ensure G20/G21 matches the blueprint dimensions exactly.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <input type="checkbox" class="mt-1" checked disabled>
+                            <span><strong>Clean all locating datums:</strong> Wipe down surface plates, sine bars, gauge blocks, and machine fixtures.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <input type="checkbox" class="mt-1" checked disabled>
+                            <span><strong>Verify tool offset registration:</strong> Match H/D codes (tool length and radius offsets) in G-code with controller tables.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <input type="checkbox" class="mt-1" checked disabled>
+                            <span><strong>Sweep fixture alignment:</strong> Sweep clamping setups along the active machine travel paths to confirm alignment.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <input type="checkbox" class="mt-1" checked disabled>
+                            <span><strong>Run Dry Run / Graph Test:</strong> Run the G-code program without parts loaded at 2" above the workpiece to visually inspect rotation transitions.</span>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- SECTION 9: Comprehensive Frequently Asked Questions (FAQ) -->
+            <section id="faq" class="space-y-6 pt-6 border-t border-gray-100">
+                <h2 class="text-3xl font-extrabold text-gray-900">9. Comprehensive Frequently Asked Questions (FAQ)</h2>
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="font-bold text-gray-900 text-lg">1. What is the difference between standard taper angle and included angle?</h3>
+                        <p class="text-gray-600 mt-1">The <strong>included angle</strong> is the total wedge angle formed by the tapered surface if its lines projected outward to an intersection point. The <strong>taper angle</strong> (or half angle) is the angle measured from the centerline of the part to one of its tapered sides. Programmers must divide the included angle by two to determine the correct taper angle for turning toolpaths or manual compound setups.</p>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-900 text-lg">2. How does temperature affect sine bar measurements and coordinate layouts?</h3>
+                        <p class="text-gray-600 mt-1">Metals expand and contract based on temperature. Standard physical measurements are calibrated at 68&deg;F (20&deg;C). If your machining shop floor reaches 90&deg;F (32&deg;C), thermal expansion can cause dimensional errors in long sine bars and gauge blocks. To maintain precision, keep tools and parts in temperature-controlled spaces, or apply standard expansion coefficients to your calculations.</p>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-900 text-lg">3. Why does my tool nose radius create a flat or radius mismatch on a chamfer when not using G41/G42?</h3>
+                        <p class="text-gray-600 mt-1">Since CNC tools are calibrated relative to a theoretical virtual tool tip, the actual round radius of the tool nose cuts inside the programmed coordinates when interpolating diagonals. This leaves an undersized chamfer edge. You must either apply manual mathematical compensation offsets to the coordinates, or use G41/G42 tool nose radius compensation.</p>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-900 text-lg">4. Can I use G68 coordinate rotation on a 2-axis CNC lathe?</h3>
+                        <p class="text-gray-600 mt-1">No. The G68 coordinate system rotation command is typically limited to 3-axis milling environments operating in the XY (G17), ZX (G18), or YZ (G19) planes. On standard 2-axis lathes, angled toolpaths are programmed using direct taper coordinates or built-in lathe controller canned cycles.</p>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-900 text-lg">5. What is "cosine error" and how do I calculate the correction factor when sweeping a face with a dial test indicator at an angle?</h3>
+                        <p class="text-gray-600 mt-1">Cosine error occurs when an indicator stylus contact tip is not aligned parallel to the direction of movement. This creates an artificially high reading. The correction formula is: <code class="bg-gray-100 px-1 font-mono rounded">True Displacement = Indicated Value &times; cos(&phi;)</code>, where &phi; is the angle between the stylus axis and the surface normal of the swept plane.</p>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-900 text-lg">6. How do I calculate the height of a gauge block stack for a sine bar when the angle is specified in degrees, minutes, and seconds?</h3>
+                        <p class="text-gray-600 mt-1">First, convert the angle to decimal degrees. To do this, divide minutes by 60 and seconds by 3600, then sum the values. For example, for 14&deg; 30' 45", the calculation is: <code class="bg-gray-100 px-1 font-mono rounded">14 + (30 &divide; 60) + (45 &divide; 3600) = 14 + 0.5 + 0.0125 = 14.5125&deg;</code>. Plug this decimal angle value directly into the sine bar height formula: <code class="bg-gray-100 px-1 font-mono rounded">H = L &times; sin(14.5125&deg;)</code>.</p>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-900 text-lg">7. What is the difference between G52 (Local Coordinate System) and G54.1 P1-P48 (Additional Work Coordinate Systems)?</h3>
+                        <p class="text-gray-600 mt-1">G52 shifts the current active coordinate system (such as G54) by a temporary offset relative to its original origin. It does not overwrite the main coordinate system parameters, making it ideal for subroutines. Additional WCS codes (G54.1 P1-P48) represent separate, fixed coordinate datums, each with its own coordinates saved in the machine's memory.</p>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-900 text-lg">8. How does the sagitta (segment height) calculation help in machining curved cylindrical pockets on a mill?</h3>
+                        <p class="text-gray-600 mt-1">The segment height (sagitta) defines the maximum depth of an arc profile relative to a chord length. Programmers use this value to verify toolpath boundaries, calculate pocket clearance heights, and confirm the raw material size required to cut a curved feature without running out of material.</p>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-900 text-lg">9. What are the best practices for cutting tapered threads (such as NPT or BSPT) on a CNC lathe?</h3>
+                        <p class="text-gray-600 mt-1">Use standard tapered threading canned cycles like <strong>G76</strong>, specifying the taper angle in the block parameters. For NPT threads, the standard taper rate is 1 in 16 (0.75 inches per foot, or a taper angle of 1.7899&deg;). Ensure the toolpath is aligned with the tapered surface, and make test cuts using thread ring gauges to verify pitch diameter alignment.</p>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-900 text-lg">10. How can I verify that my sine bar setup is perfectly aligned with the machine axes before beginning a milling cut?</h3>
+                        <p class="text-gray-600 mt-1">Position the sine bar assembly on the machine table. Place a dial test indicator in the spindle, and touch it to the side reference edge of the sine bar. Feed the machine axis (X or Y) longitudinally along the bar. Adjust the table setup until the indicator stays at zero across the entire length of the bar. This confirms the setup is parallel to the machine's travel path before cutting.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Action Banner -->
+            <div class="bg-orange-50 p-6 rounded-lg my-8 border-l-4 border-orange-600">
+                <h3 class="font-bold text-orange-900 mb-2">Solve CNC Angles and Lengths Instantly</h3>
+                <p class="mb-4 text-orange-950">Save time and avoid manual trigonometry mistakes on the shop floor. Use the SHADER7 Angle Length Calculator to solve tapers, bevels, sine bar heights, and radial layouts instantly.</p>
+                <a href="/cnc-machinist/angleslengthcalculator/" class="inline-block bg-orange-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-700 transition">Access CNC Angle Length Calculator &rarr;</a>
+            </div>
+
+            <!-- Author & Bio -->
+            <div class="mt-12 pt-6 border-t border-gray-100 flex items-center gap-4 text-sm text-gray-500">
+                <div class="bg-indigo-100 text-indigo-700 h-12 w-12 rounded-full flex items-center justify-center font-bold text-xl">
+                    NX
+                </div>
+                <div>
+                    <p class="text-gray-900 font-semibold text-base">Written by Nishikant Xalxo</p>
+                    <p class="text-xs text-gray-500">CNC Programming Specialist, Manufacturing Engineer, and Technical Editor | Contact: <a href="mailto:nxdecore@gmail.com" class="text-indigo-600 hover:underline">nxdecore@gmail.com</a> | Follow <a href="https://twitter.com/nishix_vamp" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:underline">@nishix_vamp</a></p>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer class="bg-gray-50 py-12 text-center text-gray-500 text-sm mt-12 border-t border-gray-200">
+        &copy; <script>document.write(new Date().getFullYear())</script> SHADER7. All rights reserved. | <a href="blog.html" class="text-indigo-600 hover:underline">More Articles</a>
+    </footer>
+</body>
+</html>
