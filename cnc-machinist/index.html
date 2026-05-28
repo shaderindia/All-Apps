@@ -89,7 +89,7 @@ nav.sticky-nav{position:sticky;top:56px;z-index:190;background:rgba(255,255,255,
 .tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem;max-width:1120px;margin:0 auto;}
 
 /* WHITE TOOL CARDS */
-.tool-card{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid #e2e8f0;border-radius:18px;padding:2rem;text-decoration:none;display:block;transition:transform 0.3s,box-shadow 0.3s,border-color 0.3s;position:relative;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.3);}
+.tool-card{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid #e2e8f0;border-radius:18px;padding:2rem;text-decoration:none;display:block;transition:transform 0.3s,box-shadow 0.3s,border-color 0.3s;position:relative;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.3);cursor:pointer;}
 .tool-card::before{content:'';position:absolute;inset:0;border-radius:18px;background:linear-gradient(135deg,rgba(59,130,246,0.03),rgba(99,102,241,0.03));opacity:0;transition:opacity 0.3s;}
 .tool-card:hover::before{opacity:1;}
 .tool-card:hover{transform:translateY(-6px);border-color:#93c5fd;box-shadow:0 20px 50px rgba(0,0,0,0.4), 0 0 20px rgba(59,130,246,0.2);}
@@ -401,6 +401,22 @@ window.addEventListener('DOMContentLoaded', () => {
   } else {
     reveals.forEach(item => item.classList.add('visible'));
   }
+
+  // Make entire tool card clickable
+  document.querySelectorAll('.tool-card').forEach(card => {
+    if (card.classList.contains('coming-soon')) return;
+    card.addEventListener('click', (e) => {
+      // If clicked element is a link or inside a link, let the browser handle it naturally
+      if (e.target.tagName === 'A' || e.target.closest('a')) {
+        return;
+      }
+      // Otherwise, trigger click on the primary link inside the card
+      const primaryLink = card.querySelector('.card-link');
+      if (primaryLink) {
+        primaryLink.click();
+      }
+    });
+  });
 
   // THREE.JS CNC SCENE SAFE CHECK
   if (typeof THREE === 'undefined') {
