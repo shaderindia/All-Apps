@@ -329,7 +329,8 @@ nav {
 
 .contact-buttons {
   display: grid;
-  gap: 12px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
 }
 
 .btn {
@@ -496,6 +497,70 @@ nav {
   text-decoration: underline;
 }
 
+/* Premium Info Section for AdSense and SEO */
+.app-info-section {
+  margin-top: 40px;
+  background: rgba(10, 12, 30, 0.78) !important;
+  border: 1px solid rgba(129, 140, 248, 0.2) !important;
+  border-radius: 20px;
+  padding: 35px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+  text-align: left !important;
+  color: #e2e8f0 !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+.app-info-section h2 {
+  font-size: 1.8rem !important;
+  font-weight: 900 !important;
+  margin-bottom: 20px !important;
+  background: linear-gradient(135deg, #e0e7ff, #a5b4fc, #c084fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  border-bottom: none !important;
+  padding-bottom: 0 !important;
+}
+.app-info-section h3 {
+  color: var(--indigo) !important;
+  font-size: 1.25rem !important;
+  margin-top: 25px !important;
+  margin-bottom: 12px !important;
+  border-bottom: 1px solid rgba(129, 140, 248, 0.16) !important;
+  padding-bottom: 6px !important;
+  font-weight: 700 !important;
+  text-transform: none !important;
+  text-align: left !important;
+}
+.app-info-section h3:first-of-type {
+  margin-top: 0 !important;
+}
+.app-info-section p {
+  color: var(--muted) !important;
+  font-size: 0.95rem !important;
+  line-height: 1.75 !important;
+  margin-bottom: 15px !important;
+  text-align: left !important;
+}
+.app-info-section ul, .app-info-section ol {
+  margin-left: 24px !important;
+  margin-bottom: 15px !important;
+  color: var(--muted) !important;
+  text-align: left !important;
+}
+.app-info-section li {
+  margin-bottom: 6px !important;
+  font-size: 0.95rem !important;
+  line-height: 1.65 !important;
+}
+.app-info-section code {
+  background: rgba(0, 0, 0, 0.3) !important;
+  padding: 2px 6px !important;
+  border-radius: 4px !important;
+  font-family: monospace !important;
+  color: var(--pink) !important;
+  font-size: 0.9rem !important;
+}
+
 @media (max-width: 760px) {
   nav {
     padding: 0 1rem;
@@ -522,8 +587,47 @@ nav {
     border-radius: 22px;
   }
 
+  .contact-buttons {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
   .info-grid {
     grid-template-columns: 1fr;
+  }
+
+  .app-info-section {
+    padding: 22px 16px !important;
+    border-radius: 16px;
+    margin-top: 24px !important;
+  }
+  .app-info-section h2 {
+    font-size: 1.4rem !important;
+    margin-bottom: 12px !important;
+  }
+  .app-info-section h3 {
+    font-size: 1.15rem !important;
+    margin-top: 18px !important;
+    margin-bottom: 8px !important;
+  }
+  .app-info-section p, .app-info-section li {
+    font-size: 0.88rem !important;
+    line-height: 1.65 !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .btn {
+    padding: 0.85rem 1rem;
+    font-size: 0.85rem;
+    gap: 8px;
+  }
+  .card h2 {
+    font-size: 1.5rem;
+  }
+  .grievance-info {
+    font-size: 0.8rem;
+    padding: 12px;
   }
 }
 </style>
@@ -641,35 +745,8 @@ nav {
 
   </section>
 
-  <footer class="footer">
-    <p>
-      Built by <strong>Nishikant Xalxo</strong> · Creator credit:
-      <a href="https://instagram.com/nishix_vamp" target="_blank" rel="noopener noreferrer">@nishix_vamp</a>
-    </p>
-
-    <div class="footer-links">
-      <a href="/">Home</a>
-      <a href="/about.html">About</a>
-      <a href="/privacy-policy.html">Privacy Policy</a>
-      <a href="/terms.html">Terms of Service</a>
-      <a href="/sitemap.html">Sitemap</a>
-    </div>
-
-    <p style="margin-top:8px;">© <span id="year"></span> SHADER7. All rights reserved.</p>
-  </footer>
-
-</main>
-
-<script>
-const yearEl = document.getElementById("year");
-if (yearEl) {
-  yearEl.textContent = new Date().getFullYear();
-}
-</script>
-
-
   <!-- Professional Collaboration & Privacy Policy Guide -->
-  <section class="max-w-4xl mx-auto px-4 py-16 border-t border-indigo-900/40" style="margin-top: 40px; text-align: left;">
+  <section class="max-w-4xl mx-auto px-4 py-16 border-t border-indigo-900/40" style="margin-top: 40px; text-align: left; width: 100%;">
     <div class="app-info-section">
       <h2 style="font-size: 1.8rem; font-weight: 900; color: #ffffff; margin-bottom: 20px;">Sponsorships, Partnerships, & Security Policies</h2>
       <p>Shader7 is an independent, developer-funded portal dedicated to providing free, high-performance, and privacy-first web utilities to millions of users worldwide. We welcome technical collaborations, corporate sponsorships, and developer feedback to ensure the platform remains stable, responsive, and secure. Below are our official procedures for business inquiries, security reports, and data privacy records.</p>
@@ -696,5 +773,31 @@ if (yearEl) {
       All variables and assets are processed locally in your browser's sandboxed virtual memory. Consequently, we cannot comply with personal data extraction or deletion requests under GDPR or CCPA, as we possess **absolutely zero user data** to extract or delete.</p>
     </div>
   </section>
+
+  <footer class="footer">
+    <p>
+      Built by <strong>Nishikant Xalxo</strong> · Creator credit:
+      <a href="https://instagram.com/nishix_vamp" target="_blank" rel="noopener noreferrer">@nishix_vamp</a>
+    </p>
+
+    <div class="footer-links">
+      <a href="/">Home</a>
+      <a href="/about.html">About</a>
+      <a href="/privacy-policy.html">Privacy Policy</a>
+      <a href="/terms.html">Terms of Service</a>
+      <a href="/sitemap.html">Sitemap</a>
+    </div>
+
+    <p style="margin-top:8px;">© <span id="year"></span> SHADER7. All rights reserved.</p>
+  </footer>
+
+</main>
+
+<script>
+const yearEl = document.getElementById("year");
+if (yearEl) {
+  yearEl.textContent = new Date().getFullYear();
+}
+</script>
 </body>
 </html>
