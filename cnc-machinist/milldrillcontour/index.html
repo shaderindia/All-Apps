@@ -66,6 +66,86 @@
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
+        /* Premium Info Section for AdSense and SEO */
+        .app-info-section {
+            margin-top: 40px;
+            background: #1e293b !important;
+            border: 1px solid #334155 !important;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
+            text-align: left !important;
+            color: #e2e8f0 !important;
+        }
+        .app-info-section h3 {
+            color: #22c55e !important;
+            font-size: 1.35rem !important;
+            margin-top: 25px !important;
+            margin-bottom: 12px !important;
+            border-bottom: 1px solid #334155 !important;
+            padding-bottom: 6px !important;
+            font-weight: 700 !important;
+            text-transform: none !important;
+            text-align: left !important;
+        }
+        .app-info-section h3:first-of-type {
+            margin-top: 0 !important;
+        }
+        .app-info-section p {
+            color: #cbd5e1 !important;
+            font-size: 0.95rem !important;
+            line-height: 1.7 !important;
+            margin-bottom: 15px !important;
+            text-align: left !important;
+        }
+        .app-info-section ul, .app-info-section ol {
+            margin-left: 24px !important;
+            margin-bottom: 15px !important;
+            color: #cbd5e1 !important;
+            text-align: left !important;
+        }
+        .app-info-section li {
+            margin-bottom: 6px !important;
+            font-size: 0.95rem !important;
+            line-height: 1.6 !important;
+        }
+        .app-info-section code {
+            background: #020617 !important;
+            padding: 2px 6px !important;
+            border-radius: 4px !important;
+            font-family: monospace !important;
+            color: #22c55e !important;
+            font-size: 0.9rem !important;
+        }
+        .app-info-section .guide-promo-box {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.08), rgba(59, 130, 246, 0.08)) !important;
+            border: 1px dashed rgba(34, 197, 94, 0.3) !important;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+            text-align: center !important;
+        }
+        .app-info-section .guide-promo-box p {
+            text-align: center !important;
+            margin-bottom: 12px !important;
+            font-weight: 600 !important;
+            color: #ffffff !important;
+        }
+        .app-info-section .promo-btn {
+            display: inline-block !important;
+            background: #22c55e !important;
+            color: #022c22 !important;
+            padding: 10px 20px !important;
+            border-radius: 6px !important;
+            text-decoration: none !important;
+            font-weight: 700 !important;
+            transition: background 0.2s !important;
+            font-size: 0.9rem !important;
+        }
+        .app-info-section .promo-btn:hover {
+            background: #16a34a !important;
+        }
+
         body { font-family: 'Inter', sans-serif; }
         .input-group { position: relative; }
         .input-unit { position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 0.875rem; }
@@ -213,6 +293,44 @@
         
         <div class="text-center mt-8 pt-4 border-t border-gray-700 text-gray-500 text-sm">
             &copy; <script>document.write(new Date().getFullYear())</script> SHADER7 • Developed by <a href="https://instagram.com/nishix_vamp" target="_blank" rel="noopener noreferrer" class="text-indigo-400 hover:underline">@nishix_vamp</a>
+        </div>
+    
+        <div class="app-info-section">
+            <h3>Parametric CNC Programming: Fanuc Macro B</h3>
+            <p>Standard G-code represents hardcoded, static coordinates. If you want to change a part width or bolt count, you must completely rewrite or post-process the coordinates from CAM software. **Parametric Programming** (using Fanuc Macro B or Haas equivalent systems) allows machinists to write programs utilizing algebraic variables, loops, conditional IF-THEN logic, and complex subroutines.</p>
+            
+            <p>The variable categories utilized inside modern macro programs are:</p>
+            <ul>
+                <li><strong>Local Variables (#1 - #33):</strong> Used inside subroutines to map arguments passed from a <code>G65</code> macro call block.</li>
+                <li><strong>Common Variables (#100 - #199 / #500 - #999):</strong> Global variables that persist across program resets, ideal for storing fixture coordinates or cycle counter registers.</li>
+                <li><strong>System Variables (#1000+):</strong> Read/write variables that directly monitor machine encoders, tool height offsets, active modal G-codes, and alarm parameters.</li>
+            </ul>
+
+            <h3>Step-by-Step Macro & Parametric Script Generation</h3>
+            <ol>
+                <li><strong>Select Template:</strong> Choose from parametric cycle models (Face Milling grid, circular pocket helical entry, or peck-drilling patterns).</li>
+                <li><strong>Define Variables:</strong> Input key variables such as part width, part height, cutter diameter, stepover percentage, and finish allowances.</li>
+                <li><strong>Set Control Flow:</strong> Define looping parameters using standard Haas/Fanuc syntax (e.g., <code>WHILE [#101 LT #102] DO 1</code>).</li>
+                <li><strong>Generate Script:</strong> Review the clean parametric G-code complete with inline variables, mathematical calculations, and loop controls.</li>
+            </ol>
+
+            <h3>Real-World Macro Application: Pocket Helical Entry</h3>
+            <p>Instead of hardcoding a complex spiral ramp, standard macro subroutines use parametric variables to increment depth and radius dynamically. In your main program, calling a macro utilizing argument mapping (such as <code>G65 P1000 X0 Y0 D20. Z-15. F100.</code>) passes parameters into the macro subroutine, which dynamically computes the exact spiral coordinates in real time directly on the machine control console.</p>
+
+            <h3>CNC Macro Programming Frequently Asked Questions (FAQ)</h3>
+            <p><strong>Q: What is a G65 Macro Subroutine Call?</strong><br>
+            A: <code>G65</code> is the G-code command used to call a macro subroutine and pass local arguments to it (e.g. <code>A</code> maps to variable <code>#1</code>, <code>B</code> maps to <code>#2</code>, <code>H</code> maps to <code>#11</code>, etc.).</p>
+            
+            <p><strong>Q: How do I debug parametric variables on the shop floor?</strong><br>
+            A: Use the machine's "Single Block" execution mode. Most modern CNC controls feature a variable inspection screen where you can watch variables update in real time as each block executes.</p>
+
+            <p><strong>Q: Can macro programs cause dangerous physical machine collisions?</strong><br>
+            A: Yes. A mathematical mistake (like an infinite loop or wrong sign direction) can make the Z-axis plunge rapidly. Always test macros using "Dry Run" mode, high Z-axis offset space, and graphic simulators before actual material cutting.</p>
+
+            <div class="guide-promo-box">
+                <p>Want to master Parametric Math, conditional loops, Custom G-code mapping, and probe scripts?</p>
+                <a href="/cnc-macro-programming-fanuc-b.html" class="promo-btn">Read the Ultimate Fanuc Macro B Guide (5,000+ Words) →</a>
+            </div>
         </div>
     </div>
 

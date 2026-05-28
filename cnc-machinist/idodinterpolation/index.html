@@ -62,6 +62,86 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
   <style>
+        /* Premium Info Section for AdSense and SEO */
+        .app-info-section {
+            margin-top: 40px;
+            background: #1e293b !important;
+            border: 1px solid #334155 !important;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
+            text-align: left !important;
+            color: #e2e8f0 !important;
+        }
+        .app-info-section h3 {
+            color: #22c55e !important;
+            font-size: 1.35rem !important;
+            margin-top: 25px !important;
+            margin-bottom: 12px !important;
+            border-bottom: 1px solid #334155 !important;
+            padding-bottom: 6px !important;
+            font-weight: 700 !important;
+            text-transform: none !important;
+            text-align: left !important;
+        }
+        .app-info-section h3:first-of-type {
+            margin-top: 0 !important;
+        }
+        .app-info-section p {
+            color: #cbd5e1 !important;
+            font-size: 0.95rem !important;
+            line-height: 1.7 !important;
+            margin-bottom: 15px !important;
+            text-align: left !important;
+        }
+        .app-info-section ul, .app-info-section ol {
+            margin-left: 24px !important;
+            margin-bottom: 15px !important;
+            color: #cbd5e1 !important;
+            text-align: left !important;
+        }
+        .app-info-section li {
+            margin-bottom: 6px !important;
+            font-size: 0.95rem !important;
+            line-height: 1.6 !important;
+        }
+        .app-info-section code {
+            background: #020617 !important;
+            padding: 2px 6px !important;
+            border-radius: 4px !important;
+            font-family: monospace !important;
+            color: #22c55e !important;
+            font-size: 0.9rem !important;
+        }
+        .app-info-section .guide-promo-box {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.08), rgba(59, 130, 246, 0.08)) !important;
+            border: 1px dashed rgba(34, 197, 94, 0.3) !important;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+            text-align: center !important;
+        }
+        .app-info-section .guide-promo-box p {
+            text-align: center !important;
+            margin-bottom: 12px !important;
+            font-weight: 600 !important;
+            color: #ffffff !important;
+        }
+        .app-info-section .promo-btn {
+            display: inline-block !important;
+            background: #22c55e !important;
+            color: #022c22 !important;
+            padding: 10px 20px !important;
+            border-radius: 6px !important;
+            text-decoration: none !important;
+            font-weight: 700 !important;
+            transition: background 0.2s !important;
+            font-size: 0.9rem !important;
+        }
+        .app-info-section .promo-btn:hover {
+            background: #16a34a !important;
+        }
+
     body { font-family: system-ui, Arial, sans-serif; margin: 18px; background-color: #f8fafc; }
     .wrap { max-width: 980px; margin: 0 auto; }
 
@@ -273,7 +353,45 @@
     <div class="credits">
       &copy; <script>document.write(new Date().getFullYear())</script> SHADER7 • Developed by <a href="https://www.instagram.com/nishix_vamp" target="_blank" rel="noopener noreferrer">@nishix_vamp</a>
     </div>
-  </div>
+  
+        <div class="app-info-section">
+            <h3>Circular Interpolation: G02 & G03 Explained</h3>
+            <p>Circular interpolation commands direct a CNC machine to move cutting tools along circular paths or arcs in standard Cartesian space. The movements are designated by <code>G02</code> for Clockwise (CW) motion and <code>G03</code> for Counter-Clockwise (CCW) motion. These commands require target endpoints (X, Y) and arc center definitions (specified either using radius <code>R</code> programming or incremental vectors <code>I</code> and <code>J</code>).</p>
+            
+            <p>The circular feed rate must also be adjusted when milling circular profiles to ensure the tool's outer edge maintains constant feed. The standard mathematical feed correction formulas are:</p>
+            <ul>
+                <li><strong>Internal Circular Milling:</strong> <code>F_adjusted = F_linear * ((D_hole - D_cutter) / D_hole)</code></li>
+                <li><strong>External Circular Milling:</strong> <code>F_adjusted = F_linear * ((D_boss + D_cutter) / D_boss)</code></li>
+            </ul>
+
+            <h3>Step-by-Step Arc Programming</h3>
+            <ol>
+                <li><strong>Select Direction:</strong> Choose G02 (Clockwise) or G03 (Counter-Clockwise).</li>
+                <li><strong>Specify Coordinates:</strong> Input your start points and endpoint coordinates (X, Y) relative to G54.</li>
+                <li><strong>Specify Vector Parameters:</strong> Choose standard <code>R</code> (radius value) or the incremental vectors <code>I</code> and <code>J</code> (X-axis and Y-axis offsets from the start point to the arc's center).</li>
+                <li><strong>Set Tool & Target Dimensions:</strong> Input cutter diameter and linear speed parameters.</li>
+                <li><strong>Generate G-Code:</strong> Instantly view the calculated G-code blocks and the feed rate adjustment report to prevent gouging or slow metal removal rates.</li>
+            </ol>
+
+            <h3>Why IJK Vector Programming is Safer than R-Programming</h3>
+            <p>While R-programming (e.g., <code>G02 X30. Y20. R15. F150.</code>) is simple to type, it presents significant safety hazards. If a typographical error is made in the endpoint coordinates, the CNC control will still force a valid arc radius through the coordinate, resulting in an offset center path and scrapped parts. Incremental vector programming (using <code>I</code> and <code>J</code> offsets) forces a strict geometric check. If the endpoint doesn't match the circle mathematically, the control raises an alarm and stops the machine before a collision occurs.</p>
+
+            <h3>Circular Interpolation Frequently Asked Questions (FAQ)</h3>
+            <p><strong>Q: What are G17, G18, and G19 G-codes?</strong><br>
+            A: These codes define the active machining plane. <code>G17</code> is the X-Y plane (typical for vertical mills), <code>G18</code> is the Z-X plane (typical for lathes or horizontal mills), and <code>G19</code> is the Y-Z plane.</p>
+            
+            <p><strong>Q: Why does my internal bore feel rough or tool-marked?</strong><br>
+            A: Without feed rate adjustments, the outer cutting edge of the tool moves much faster than the tool center path, resulting in chip overload, surface finish degradation, and chatter.</p>
+
+            <p><strong>Q: What is tool radius compensation (G41 / G42)?</strong><br>
+            A: <code>G41</code> represents cutter compensation left, and <code>G42</code> represents cutter compensation right. These allow the programmer to write drawing dimensions directly in G-code, allowing the CNC control to offset the path automatically depending on the tool diameter entered in the machine's offset register.</p>
+
+            <div class="guide-promo-box">
+                <p>Want to master circular interpolation vector algebra, cutter compensation, and helical ramping?</p>
+                <a href="/cnc-circular-interpolation-g02-g03.html" class="promo-btn">Read the Ultimate Circular Interpolation Guide (5,000+ Words) →</a>
+            </div>
+        </div>
+    </div>
 
 <script>
   function n(v){ const num = Number(v); return Number.isFinite(num) ? num : NaN; }

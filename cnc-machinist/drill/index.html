@@ -62,6 +62,86 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     <style>
+        /* Premium Info Section for AdSense and SEO */
+        .app-info-section {
+            margin-top: 40px;
+            background: #1e293b !important;
+            border: 1px solid #334155 !important;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
+            text-align: left !important;
+            color: #e2e8f0 !important;
+        }
+        .app-info-section h3 {
+            color: #22c55e !important;
+            font-size: 1.35rem !important;
+            margin-top: 25px !important;
+            margin-bottom: 12px !important;
+            border-bottom: 1px solid #334155 !important;
+            padding-bottom: 6px !important;
+            font-weight: 700 !important;
+            text-transform: none !important;
+            text-align: left !important;
+        }
+        .app-info-section h3:first-of-type {
+            margin-top: 0 !important;
+        }
+        .app-info-section p {
+            color: #cbd5e1 !important;
+            font-size: 0.95rem !important;
+            line-height: 1.7 !important;
+            margin-bottom: 15px !important;
+            text-align: left !important;
+        }
+        .app-info-section ul, .app-info-section ol {
+            margin-left: 24px !important;
+            margin-bottom: 15px !important;
+            color: #cbd5e1 !important;
+            text-align: left !important;
+        }
+        .app-info-section li {
+            margin-bottom: 6px !important;
+            font-size: 0.95rem !important;
+            line-height: 1.6 !important;
+        }
+        .app-info-section code {
+            background: #020617 !important;
+            padding: 2px 6px !important;
+            border-radius: 4px !important;
+            font-family: monospace !important;
+            color: #22c55e !important;
+            font-size: 0.9rem !important;
+        }
+        .app-info-section .guide-promo-box {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.08), rgba(59, 130, 246, 0.08)) !important;
+            border: 1px dashed rgba(34, 197, 94, 0.3) !important;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+            text-align: center !important;
+        }
+        .app-info-section .guide-promo-box p {
+            text-align: center !important;
+            margin-bottom: 12px !important;
+            font-weight: 600 !important;
+            color: #ffffff !important;
+        }
+        .app-info-section .promo-btn {
+            display: inline-block !important;
+            background: #22c55e !important;
+            color: #022c22 !important;
+            padding: 10px 20px !important;
+            border-radius: 6px !important;
+            text-decoration: none !important;
+            font-weight: 700 !important;
+            transition: background 0.2s !important;
+            font-size: 0.9rem !important;
+        }
+        .app-info-section .promo-btn:hover {
+            background: #16a34a !important;
+        }
+
         :root {
             --bg-page: #0f172a;
             --bg-card: #1e293b;
@@ -400,7 +480,46 @@
             </div>
         </div>
     </div>
-</div>
+
+        <div class="app-info-section">
+            <h3>CNC Speeds & Feeds Theory & Equations</h3>
+            <p>To achieve high-quality surface finishes and maximize cutting tool life, CNC machinists must calculate the exact spindle speed (RPM) and cutting feed rate (mm/min or inches/min). These parameters depend directly on the cutter diameter, cutting tool material (High-Speed Steel, Cobalt, or Solid Carbide), workpiece material density, and chip load guidelines.</p>
+            
+            <p>The standard industrial mathematical formulas used inside this calculator are:</p>
+            <ul>
+                <li><strong>Spindle Speed (RPM):</strong> <code>N = (V * 1000) / (pi * D)</code>, where <code>N</code> is Spindle Speed (RPM), <code>V</code> is Cutting Speed (Surface Meters per Minute - SFM/SMM), and <code>D</code> is Tool Diameter (mm).</li>
+                <li><strong>Feed Rate (F):</strong> <code>F = N * f_rev</code>, where <code>F</code> is Feed Rate (mm/min), <code>N</code> is Spindle Speed (RPM), and <code>f_rev</code> is Feed per Revolution (mm/rev).</li>
+            </ul>
+
+            <h3>Step-by-Step Tapping & Drilling Instructions</h3>
+            <ol>
+                <li><strong>Select Operation:</strong> Choose either standard Drilling or Rigid Tapping from the operation dropdown.</li>
+                <li><strong>Enter Diameter:</strong> Input the nominal diameter of the drill bit or machine tap in millimeters.</li>
+                <li><strong>For Tapping:</strong> The calculator will suggest the standard metric coarse thread pitch (e.g., 1.0mm for M6, 1.5mm for M10). You can override this value for fine threads.</li>
+                <li><strong>Select Tool & Work Materials:</strong> HSS is ideal for soft steels and aluminum under conventional setups; Cobalt offers excellent heat tolerance for alloy steels; Solid Carbide represents the industry gold standard for high-rigidity high-speed production.</li>
+                <li><strong>Verify Peck Depth:</strong> If the drilling depth exceeds three times (3x) the drill diameter, a warning is displayed. CNC program blocks should use peck drilling cycles like <code>G83</code> (deep-hole peck) or <code>G73</code> (high-speed break-chip) to prevent tool failure.</li>
+            </ol>
+
+            <h3>Shop-Floor Tapping Integration: Rigid Tapping (G84)</h3>
+            <p>Modern CNC machines (such as Haas, Fanuc, or Mazak controls) utilize <strong>Rigid Tapping</strong> cycles, represented by G-code <code>G84</code>. During rigid tapping, the spindle's rotation and the Z-axis linear feed are mechanically synchronized. The feed rate must satisfy the rigid ratio: <code>Feed = Spindle Speed (RPM) * Thread Pitch</code>.</p>
+            <p>Our calculator features a built-in <strong>Smart Sync</strong> algorithm. Standard math yields fractional values for Feed Rate, which cause micro-pitch mismatch on older controls that do not support float-decimal feeds. Smart Sync slightly adjusts the spindle speed (+/- 5 RPM) to guarantee that both Spindle Speed and Z-Axis Feed are perfect whole-number integers in your G-code program blocks.</p>
+
+            <h3>Drilling & Tapping Frequently Asked Questions (FAQ)</h3>
+            <p><strong>Q: What happens if my feed rate is too high?</strong><br>
+            A: Excess feed rate causes the chip load to exceed the physical tooth capacity, resulting in immediate cutter breakage, chip packing, or severe structural deflection.</p>
+            
+            <p><strong>Q: Why does carbide require much higher cutting speeds (V)?</strong><br>
+            A: Solid carbide tools exhibit extreme red-hardness, retaining their structure at temperatures exceeding 900°C. This allows cutting speeds 3x to 4x higher than standard HSS.</p>
+
+            <p><strong>Q: Do I need to use cutting fluid or coolant?</strong><br>
+            A: Yes, cutting fluid provides lubrication and cooling. For aluminum, it prevents the material from galling and welding to the flutes. For deep-hole steel drilling, high-pressure through-spindle coolant is recommended to flush chips upward.</p>
+
+            <div class="guide-promo-box">
+                <p>Want to master the physics of Taylor's tool life equations, chip thickness, and advanced speeds & feeds?</p>
+                <a href="/cnc-speeds-feeds-machining-guide.html" class="promo-btn">Read the Ultimate Speeds & Feeds Guide (5,000+ Words) →</a>
+            </div>
+        </div>
+    </div>
 
 <script>
 // Elements

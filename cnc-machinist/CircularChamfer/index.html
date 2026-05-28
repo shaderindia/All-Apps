@@ -63,6 +63,86 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
+        /* Premium Info Section for AdSense and SEO */
+        .app-info-section {
+            margin-top: 40px;
+            background: #1e293b !important;
+            border: 1px solid #334155 !important;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
+            text-align: left !important;
+            color: #e2e8f0 !important;
+        }
+        .app-info-section h3 {
+            color: #22c55e !important;
+            font-size: 1.35rem !important;
+            margin-top: 25px !important;
+            margin-bottom: 12px !important;
+            border-bottom: 1px solid #334155 !important;
+            padding-bottom: 6px !important;
+            font-weight: 700 !important;
+            text-transform: none !important;
+            text-align: left !important;
+        }
+        .app-info-section h3:first-of-type {
+            margin-top: 0 !important;
+        }
+        .app-info-section p {
+            color: #cbd5e1 !important;
+            font-size: 0.95rem !important;
+            line-height: 1.7 !important;
+            margin-bottom: 15px !important;
+            text-align: left !important;
+        }
+        .app-info-section ul, .app-info-section ol {
+            margin-left: 24px !important;
+            margin-bottom: 15px !important;
+            color: #cbd5e1 !important;
+            text-align: left !important;
+        }
+        .app-info-section li {
+            margin-bottom: 6px !important;
+            font-size: 0.95rem !important;
+            line-height: 1.6 !important;
+        }
+        .app-info-section code {
+            background: #020617 !important;
+            padding: 2px 6px !important;
+            border-radius: 4px !important;
+            font-family: monospace !important;
+            color: #22c55e !important;
+            font-size: 0.9rem !important;
+        }
+        .app-info-section .guide-promo-box {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.08), rgba(59, 130, 246, 0.08)) !important;
+            border: 1px dashed rgba(34, 197, 94, 0.3) !important;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+            text-align: center !important;
+        }
+        .app-info-section .guide-promo-box p {
+            text-align: center !important;
+            margin-bottom: 12px !important;
+            font-weight: 600 !important;
+            color: #ffffff !important;
+        }
+        .app-info-section .promo-btn {
+            display: inline-block !important;
+            background: #22c55e !important;
+            color: #022c22 !important;
+            padding: 10px 20px !important;
+            border-radius: 6px !important;
+            text-decoration: none !important;
+            font-weight: 700 !important;
+            transition: background 0.2s !important;
+            font-size: 0.9rem !important;
+        }
+        .app-info-section .promo-btn:hover {
+            background: #16a34a !important;
+        }
+
 :root{
   --bg:#0f172a;
   --panel:#1e293b;
@@ -451,7 +531,45 @@ pre{
       <pre id="output"></pre>
     </div>
   </div>
-</div>
+
+        <div class="app-info-section">
+            <h3>Circular Interpolation Chamfering</h3>
+            <p>Circular chamfering involves deburring or beveling the circular edges of round holes, bores, bosses, and thread-entry countersinks. When writing coordinates for circular deburring using <code>G02</code> (CW) or <code>G03</code> (CCW) circular interpolation commands, the toolpath calculations must account for the cutter's effective cutting diameter at its deep Z-axis location. Additionally, tool path feed rate compensation is required for internal hole contours to prevent overloading the chamfer flutes.</p>
+            
+            <p>The geometry mathematical foundations for circular chamfers are:</p>
+            <ul>
+                <li><strong>Theoretical Tool Radius Offset:</strong> The offset from the hole edge coordinates depends on your plunge depth. Plunging lower moves the active cutting diameter of the chamfer mill outward, requiring a corresponding XY radial coordinate correction.</li>
+                <li><strong>Circular Feed Compensation:</strong> Like standard internal circular milling, internal chamfer feed rates must be slowed down to maintain constant cutting face speed.</li>
+            </ul>
+
+            <h3>Step-by-Step Circular Chamfer Toolpath Generation</h3>
+            <ol>
+                <li><strong>Specify Hole Dimensions:</strong> Enter the nominal hole diameter and target bevel size (e.g., 0.5mm x 45°).</li>
+                <li><strong>Define Chamfer Mill:</strong> Enter cutter diameter and tip specifications (pointed or flat tip).</li>
+                <li><strong>Select Path Direction:</strong> Choose G02 (Clockwise) or G03 (Counter-Clockwise). For climbing cuts (ideal surface finishes), use G03 on internal bores.</li>
+                <li><strong>Z-Offset Calibration:</strong> Specify the Z-axis plunge depth. Shifting Z lower prevents the center tip of the cutter from dragging on the workpiece.</li>
+                <li><strong>Generate G-Code:</strong> Instantly view the clean circular arc G-code sequence ready for your machine control.</li>
+            </ol>
+
+            <h3>Calculating Countersink Hole Entrance Diameters</h3>
+            <p>Before tapping threads, circular chamfers are used to machine a lead-in bevel (countersink). To ensure a flat bolt can sit flush, the final chamfer diameter must exceed the absolute outer major diameter of the thread (e.g., countersink diameter of at least 6.4mm for an M6 thread). This calculator helps you determine the precise tool coordinates and depth variables to generate clean thread leads without manual trial-and-error.</p>
+
+            <h3>Circular Chamfering Frequently Asked Questions (FAQ)</h3>
+            <p><strong>Q: What is climb vs. conventional milling for circular chamfers?</strong><br>
+            A: Climb milling (G03 for internal bores with tool radius compensation) pulls the chips behind the tool, leaving a superior, mirror-like finish. Conventional milling (G02 for internal bores) pushes the chips in front, which can cause micro-chatter marks.</p>
+            
+            <p><strong>Q: Why does my chamfer appear oval rather than perfectly circular?</strong><br>
+            A: Ovality typically indicates backlash errors in your CNC machine's X or Y axis ball screws, or servo-tuning lag during multi-axis coordinate synchronization.</p>
+
+            <p><strong>Q: What is a spot drill, and can I use it for circular chamfers?</strong><br>
+            A: Yes! Standard 90-degree spotted drills serve double-duty. They create a precise dimple to guide your twist drills, and also double as a chamfer mill to debur circular holes in a single setup.</p>
+
+            <div class="guide-promo-box">
+                <p>Want to master 3D circular chamfer math, countersinking offsets, and helical deburring profiles?</p>
+                <a href="/cnc-chamfer-programming-guide.html" class="promo-btn">Read the Ultimate CNC Chamfer Guide (5,000+ Words) →</a>
+            </div>
+        </div>
+    </div>
 
 <script>
 function val(id){

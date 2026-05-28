@@ -68,6 +68,86 @@
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <style>
+        /* Premium Info Section for AdSense and SEO */
+        .app-info-section {
+            margin-top: 40px;
+            background: #1e293b !important;
+            border: 1px solid #334155 !important;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
+            text-align: left !important;
+            color: #e2e8f0 !important;
+        }
+        .app-info-section h3 {
+            color: #22c55e !important;
+            font-size: 1.35rem !important;
+            margin-top: 25px !important;
+            margin-bottom: 12px !important;
+            border-bottom: 1px solid #334155 !important;
+            padding-bottom: 6px !important;
+            font-weight: 700 !important;
+            text-transform: none !important;
+            text-align: left !important;
+        }
+        .app-info-section h3:first-of-type {
+            margin-top: 0 !important;
+        }
+        .app-info-section p {
+            color: #cbd5e1 !important;
+            font-size: 0.95rem !important;
+            line-height: 1.7 !important;
+            margin-bottom: 15px !important;
+            text-align: left !important;
+        }
+        .app-info-section ul, .app-info-section ol {
+            margin-left: 24px !important;
+            margin-bottom: 15px !important;
+            color: #cbd5e1 !important;
+            text-align: left !important;
+        }
+        .app-info-section li {
+            margin-bottom: 6px !important;
+            font-size: 0.95rem !important;
+            line-height: 1.6 !important;
+        }
+        .app-info-section code {
+            background: #020617 !important;
+            padding: 2px 6px !important;
+            border-radius: 4px !important;
+            font-family: monospace !important;
+            color: #22c55e !important;
+            font-size: 0.9rem !important;
+        }
+        .app-info-section .guide-promo-box {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.08), rgba(59, 130, 246, 0.08)) !important;
+            border: 1px dashed rgba(34, 197, 94, 0.3) !important;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+            text-align: center !important;
+        }
+        .app-info-section .guide-promo-box p {
+            text-align: center !important;
+            margin-bottom: 12px !important;
+            font-weight: 600 !important;
+            color: #ffffff !important;
+        }
+        .app-info-section .promo-btn {
+            display: inline-block !important;
+            background: #22c55e !important;
+            color: #022c22 !important;
+            padding: 10px 20px !important;
+            border-radius: 6px !important;
+            text-decoration: none !important;
+            font-weight: 700 !important;
+            transition: background 0.2s !important;
+            font-size: 0.9rem !important;
+        }
+        .app-info-section .promo-btn:hover {
+            background: #16a34a !important;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
         }
@@ -181,7 +261,46 @@
                 <pre id="gcode-output" class="bg-gray-900 text-white p-4 rounded-lg text-sm whitespace-pre-wrap max-h-60 overflow-auto"></pre>
             </div>
 
+        
+        <div class="app-info-section">
+            <h3>Understanding Pitch Circle Diameter (PCD) Coordinates</h3>
+            <p>A Pitch Circle Diameter (PCD), also referred to as a bolt circle, represents the imaginary circle passing through the exact centers of a circular pattern of holes (like on a pipe flange, wheel hub, or coupling). To machine these patterns on standard 3-axis CNC vertical milling machines, programmers must convert the polar coordinates (radius and angle) into Cartesian coordinates (X and Y offsets from the center coordinate system G54).</p>
+            
+            <p>The core trigonometry equations used to compute each hole coordinate are:</p>
+            <ul>
+                <li><code>X_i = X_center + (PCD / 2) * cos(theta_i)</code></li>
+                <li><code>Y_i = Y_center + (PCD / 2) * sin(theta_i)</code></li>
+            </ul>
+            <p>Where <code>PCD / 2</code> represents the radius of the bolt circle, and <code>theta_i</code> is the absolute angular position of the hole <code>i</code>, calculated dynamically depending on the start angle and number of divisions.</p>
+
+            <h3>How to Use the PCD Coordinates Calculator</h3>
+            <ol>
+                <li><strong>Center X & Y Coordinate:</strong> Enter the coordinate offsets of the circle's center relative to your part origin (G54 G90 coordinate). By default, these are set to 0.</li>
+                <li><strong>Pitch Circle Diameter (PCD):</strong> Enter the total diameter of the bolt circle in millimeters.</li>
+                <li><strong>Number of Holes:</strong> Enter how many holes are in the circular array. The calculator handles patterns ranging from 2 up to 128 divisions.</li>
+                <li><strong>Start Angle:</strong> Specify the angle of the first hole relative to the standard 3 o'clock position (positive X-axis). A start angle of 90 degrees starts the first hole at the 12 o'clock position (positive Y-axis).</li>
+                <li><strong>Click Calculate:</strong> Instantly view the structured table containing the relative G-code coordinates, absolute coordinates, and step-by-step offsets.</li>
+            </ol>
+
+            <h3>Shop Floor G-Code Integration</h3>
+            <p>After calculating the Cartesian coordinates, you can transfer these values directly into standard drilling canned cycles. For example, in a Fanuc or Haas G-code system, you can set the canned cycle (such as <code>G81</code> for basic drilling, or <code>G83</code> for peck drilling) and specify the X and Y coordinates for each hole division sequential block, canceling with <code>G80</code> at the end of the sequence.</p>
+
+            <h3>PCD Coordinates Frequently Asked Questions (FAQ)</h3>
+            <p><strong>Q: What is a start angle and how does it affect Cartesian layout?</strong><br>
+            A: The start angle defines the rotational position of the first hole. In trigonometry, 0° is on the positive X-axis (east), 90° is on the positive Y-axis (north), 180° is on the negative X-axis (west), and 270° is on the negative Y-axis (south).</p>
+            
+            <p><strong>Q: Why is my first hole coordinates not perfectly integer?</strong><br>
+            A: Due to trigonometric sine and cosine functions, values are rounded to the nearest ten-thousandth of a millimeter (four decimal places <code>0.0001 mm</code>) which is standard resolution for precision CNC encoders.</p>
+
+            <p><strong>Q: How do I handle unevenly spaced holes on a bolt circle?</strong><br>
+            A: This calculator is designed for symmetrical spacing (equal angle index divisions). For asymmetric layout patterns, individual coordinates must be calculated step-by-step using separate polar-to-Cartesian trigonometry.</p>
+
+            <div class="guide-promo-box">
+                <p>Want to master bolt circle layout, polar coordinate commands (G15/G16), and coordinate rotation systems?</p>
+                <a href="/cnc-pcd-calculator-guide.html" class="promo-btn">Read the Ultimate PCD Calculator Guide (5,000+ Words) →</a>
+            </div>
         </div>
+    </div>
     </main>
 
     <script>

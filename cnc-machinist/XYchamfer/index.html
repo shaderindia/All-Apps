@@ -65,6 +65,86 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* Premium Info Section for AdSense and SEO */
+        .app-info-section {
+            margin-top: 40px;
+            background: #1e293b !important;
+            border: 1px solid #334155 !important;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
+            text-align: left !important;
+            color: #e2e8f0 !important;
+        }
+        .app-info-section h3 {
+            color: #22c55e !important;
+            font-size: 1.35rem !important;
+            margin-top: 25px !important;
+            margin-bottom: 12px !important;
+            border-bottom: 1px solid #334155 !important;
+            padding-bottom: 6px !important;
+            font-weight: 700 !important;
+            text-transform: none !important;
+            text-align: left !important;
+        }
+        .app-info-section h3:first-of-type {
+            margin-top: 0 !important;
+        }
+        .app-info-section p {
+            color: #cbd5e1 !important;
+            font-size: 0.95rem !important;
+            line-height: 1.7 !important;
+            margin-bottom: 15px !important;
+            text-align: left !important;
+        }
+        .app-info-section ul, .app-info-section ol {
+            margin-left: 24px !important;
+            margin-bottom: 15px !important;
+            color: #cbd5e1 !important;
+            text-align: left !important;
+        }
+        .app-info-section li {
+            margin-bottom: 6px !important;
+            font-size: 0.95rem !important;
+            line-height: 1.6 !important;
+        }
+        .app-info-section code {
+            background: #020617 !important;
+            padding: 2px 6px !important;
+            border-radius: 4px !important;
+            font-family: monospace !important;
+            color: #22c55e !important;
+            font-size: 0.9rem !important;
+        }
+        .app-info-section .guide-promo-box {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.08), rgba(59, 130, 246, 0.08)) !important;
+            border: 1px dashed rgba(34, 197, 94, 0.3) !important;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+            text-align: center !important;
+        }
+        .app-info-section .guide-promo-box p {
+            text-align: center !important;
+            margin-bottom: 12px !important;
+            font-weight: 600 !important;
+            color: #ffffff !important;
+        }
+        .app-info-section .promo-btn {
+            display: inline-block !important;
+            background: #22c55e !important;
+            color: #022c22 !important;
+            padding: 10px 20px !important;
+            border-radius: 6px !important;
+            text-decoration: none !important;
+            font-weight: 700 !important;
+            transition: background 0.2s !important;
+            font-size: 0.9rem !important;
+        }
+        .app-info-section .promo-btn:hover {
+            background: #16a34a !important;
+        }
+
         body { font-family: 'Inter', sans-serif; background-color: #111827; color: #ffffff; }
         .input-group { position: relative; }
         .input-unit { position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 0.875rem; }
@@ -284,6 +364,44 @@
 
         <div class="text-center mt-8 pt-4 border-t border-gray-700 text-gray-500 text-sm">
             &copy; <script>document.write(new Date().getFullYear())</script> SHADER7 • Developed by <a href="https://instagram.com/nishix_vamp" target="_blank" rel="noopener noreferrer" class="text-indigo-400 hover:underline">@nishix_vamp</a>
+        </div>
+    
+        <div class="app-info-section">
+            <h3>Linear XY Chamfering and Deburring</h3>
+            <p>Chamfering represents the removal of sharp corners along raw cut edges, typically creating a 45-degree bevel. In manufacturing, chamfering serves three critical functions: deburring (removing sharp metal flakes that pose safety risks), enhancing stress distribution to prevent fatigue cracks, and improving assembly clearances. To write coordinates for 45-degree chamfer tools along flat linear profiles (G17 plane), programmers must compute exact Z-depth offsets and lateral tool radius compensation values.</p>
+            
+            <p>The mathematical coordinates used to calculate linear chamfer setups are:</p>
+            <ul>
+                <li><strong>Cutter Tip Offset:</strong> The Z-axis plunge depth must exceed the actual chamfer width to ensure the cutting action occurs along the center face of the bevel, avoiding the fragile tip of the chamfer mill.</li>
+                <li><strong>Effective Diameter:</strong> <code>D_eff = D_tip + 2 * (Z_depth - Chamfer_width) * tan(alpha)</code>, where <code>alpha</code> is the half-angle of the tool (typically 45°).</li>
+            </ul>
+
+            <h3>Step-by-Step XY Chamfer Path Generation</h3>
+            <ol>
+                <li><strong>Input Chamfer Geometry:</strong> Enter the blueprint chamfer width (typically 0.2mm to 1.5mm) and the chamfer tool angle (default is 90° for standard chamfer mills).</li>
+                <li><strong>Define Tool Dimensions:</strong> Enter the nominal cutter diameter and the flat tip diameter (tip diameter is 0 for pointed chamfer mills).</li>
+                <li><strong>Z-Axis Clearance:</strong> Define your plunge clearance depth. Plunging slightly lower ensures you do not drag the tool tip directly on the finished part face.</li>
+                <li><strong>Lead-In / Lead-Out:</strong> Select linear or circular arc entry. Circular arc lead-in prevents dwelling tool marks on finished part walls.</li>
+                <li><strong>Generate G-Code:</strong> Instantly view the clean linear G-code incorporating cutter offset compensation.</li>
+            </ol>
+
+            <h3>Why You Should Never Chamfer with the Tool Tip</h3>
+            <p>Standard chamfer mills come to a sharp point. However, at the absolute center tip of a pointed cutter, the cutting speed (Surface Feet per Minute) drops to exactly zero (since the diameter is virtually zero). Dragging a zero-speed tip through material results in tearing, heavy burrs, chip packing, and immediate cutter damage. This calculator automatically shifts the toolpath down (Z-depth shift) and offsets the XY path to ensure you cut with the highly efficient middle portion of the carbide insert.</p>
+
+            <h3>Linear Chamfering Frequently Asked Questions (FAQ)</h3>
+            <p><strong>Q: What tool should I use for general deburring on a mill?</strong><br>
+            A: Standard 90-degree spot drills, 90-degree high-performance chamfer mills, or indexable carbide chamfer cutters are ideal. For tight spaces, solid carbide engraving tools can also be used.</p>
+            
+            <p><strong>Q: Why does my chamfer have a small step or lip along the bottom?</strong><br>
+            A: This occurs due to tool deflection (chatter) or if your Z-axis height calibration (tool setter coordinate) is slightly misaligned from the G54 workspace coordinate.</p>
+
+            <p><strong>Q: Can I use standard end mills to chamfer?</strong><br>
+            A: Standard square end mills cannot chamfer in a single pass. You must use 3D surfacing toolpaths (e.g. ball nose end mills step-over profiling), which requires a CAM post-processor. Single-pass XY chamfering requires an angled chamfer cutter.</p>
+
+            <div class="guide-promo-box">
+                <p>Want to master right-angle chamfer algebra, countersinking, and circular pocket deburring?</p>
+                <a href="/cnc-chamfer-programming-guide.html" class="promo-btn">Read the Ultimate CNC Chamfer Guide (5,000+ Words) →</a>
+            </div>
         </div>
     </div>
 
