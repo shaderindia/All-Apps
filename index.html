@@ -811,7 +811,49 @@
       </div>
 
     </div>
-  </footer>
+  
+  <!-- PWA & Client-Side Web Apps Architecture Technical Documentation -->
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 border-t border-gray-200">
+    <div class="bg-indigo-950/90 border border-indigo-900/50 rounded-3xl p-8 md:p-12 text-slate-200 text-left">
+      <h2 class="text-3xl font-black tracking-tight text-white mb-6">The Software Architecture of Client-Side Web Apps & PWAs</h2>
+      <p class="text-slate-300 text-base leading-relaxed mb-6">
+        Traditionally, web applications relied heavily on server-side rendering (SSR) or remote API endpoints to execute basic logical operations. Under these models, every user interaction—whether compressing a photo, calculating an hourly wage, or generating a receipt—required transmitting data payloads across HTTP networks. This architectural pattern introduced latency, bandwidth overhead, and severe data privacy vulnerabilities.
+      </p>
+      
+      <p class="text-slate-300 text-base leading-relaxed mb-6">
+        Shader7 represents a shift in modern web architecture by utilizing **Progressive Web App (PWA)** frameworks and browser-first client-side processing pipelines. By executing complex operations locally inside the browser's sandbox using JavaScript, WebAssembly, and modern HTML5 APIs, Shader7 offers offline capabilities and guaranteed data privacy, processing all files and numbers locally.
+      </p>
+
+      <h3 class="text-xl font-bold text-indigo-300 mt-8 mb-4">Core Client-Side Technology Stack Blueprint</h3>
+      <p class="text-slate-300 text-base leading-relaxed mb-4">
+        To construct a highly responsive and private utility suite, we leverage several advanced browser-native libraries and standards:
+      </p>
+      <ul class="list-disc ml-6 mb-6 space-y-2 text-slate-300">
+        <li><strong>Service Workers and Caching:</strong> PWAs use background service worker scripts (like <code>sw.js</code>) to intercept network requests. Using the Cache Storage API, the application caches CSS, JS, and HTML documents locally, enabling near-instant load times and complete offline functionality: <code>caches.open('shader7-v1').then(cache => cache.addAll(urlsToCache))</code>.</li>
+        <li><strong>Canvas-Based Image Compression:</strong> The Photo Compressor utilizes the browser's native <strong>HTMLCanvasElement</strong>. By reading uploaded files as <code>Blob</code> structures, drawing them onto offscreen canvas buffers, and adjusting the export quality parameters via <code>canvas.toBlob(callback, 'image/jpeg', qualityRatio)</code>, raw image bytes are mathematically optimized entirely inside the user's local memory.</li>
+        <li><strong>Client-Side PDF Generation:</strong> Utilities like CV Banao and Receipt Maker generate vector-perfect PDF layouts locally using <strong>jsPDF</strong>. Text strings, bounding boxes, and geometric alignments are rendered directly in browser RAM, and then downloaded as raw array buffers.</li>
+        <li><strong>WebRTC Peer-to-Peer Signaling:</strong> The Quick Private Chat application utilizes the <strong>WebRTC API</strong> (specifically <code>RTCPeerConnection</code> and <code>RTCDataChannel</code>). Direct browser-to-browser communication bypasses intermediate chat databases, leveraging asymmetric key handshakes to secure the data stream.</li>
+      </ul>
+
+      <h3 class="text-xl font-bold text-indigo-300 mt-8 mb-4">Security Benefits of Browser-First Computing</h3>
+      <p class="text-slate-300 text-base leading-relaxed mb-5">
+        Because Shader7 tools execute logic locally inside your browser's sandboxed virtual machine, your sensitive personal documents, transaction history, work experience details, and biometric facial data never travel over the public internet to third-party databases. This architecture provides an absolute safeguard against server-side data leaks, man-in-the-middle (MITM) interceptions, and corporate profiling.
+      </p>
+
+      <h3 class="text-xl font-bold text-indigo-300 mt-8 mb-4">Shader7 Platform Frequently Asked Questions (FAQ)</h3>
+      <div class="space-y-4">
+        <p><strong>Q: What is a Progressive Web App (PWA) and how do I install it?</strong><br>
+        A: A PWA is a website that behaves like a native mobile or desktop application. To install it, click the "Install App" button in your browser's address bar (on desktop) or select "Add to Home Screen" in your mobile Safari/Chrome settings. This creates a standalone icon and allows the app to launch offline.</p>
+        
+        <p><strong>Q: Does Shader7 log my private chat rooms or files?</strong><br>
+        A: No. We do not maintain databases to store your uploaded files, receipts, resumes, or chat history. P2P chat messages are stored in volatile local browser memory and are permanently wiped the moment the browser tab is closed.</p>
+
+        <p><strong>Q: Why does my device load these tools instantly after the first visit?</strong><br>
+        A: Our background Service Worker automatically registers during your first visit and pre-caches the assets. On subsequent visits, the browser retrieves the application code directly from the local Cache Storage API, bypassing network lookups entirely.</p>
+      </div>
+    </div>
+  </section>
+</footer>
 
   <script>
     const year = document.getElementById("year");

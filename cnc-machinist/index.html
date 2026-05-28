@@ -24,6 +24,58 @@
      crossorigin="anonymous"></script>
 
 <style>
+        /* Premium Info Section for AdSense and SEO */
+        .app-info-section {
+            margin-top: 40px;
+            background: #1e293b !important;
+            border: 1px solid #334155 !important;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
+            text-align: left !important;
+            color: #e2e8f0 !important;
+        }
+        .app-info-section h3 {
+            color: #3b82f6 !important;
+            font-size: 1.35rem !important;
+            margin-top: 25px !important;
+            margin-bottom: 12px !important;
+            border-bottom: 1px solid #334155 !important;
+            padding-bottom: 6px !important;
+            font-weight: 700 !important;
+            text-transform: none !important;
+            text-align: left !important;
+        }
+        .app-info-section h3:first-of-type {
+            margin-top: 0 !important;
+        }
+        .app-info-section p {
+            color: #cbd5e1 !important;
+            font-size: 0.95rem !important;
+            line-height: 1.7 !important;
+            margin-bottom: 15px !important;
+            text-align: left !important;
+        }
+        .app-info-section ul, .app-info-section ol {
+            margin-left: 24px !important;
+            margin-bottom: 15px !important;
+            color: #cbd5e1 !important;
+            text-align: left !important;
+        }
+        .app-info-section li {
+            margin-bottom: 6px !important;
+            font-size: 0.95rem !important;
+            line-height: 1.6 !important;
+        }
+        .app-info-section code {
+            background: #020617 !important;
+            padding: 2px 6px !important;
+            border-radius: 4px !important;
+            font-family: monospace !important;
+            color: #3b82f6 !important;
+            font-size: 0.9rem !important;
+        }
+
 *{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}
 body{font-family:'Segoe UI',sans-serif;background:#04090f;color:#e2e8f0;overflow-x:hidden;}
@@ -351,6 +403,42 @@ footer a:hover{color:#93c5fd;}
     <a href="https://shader7.com/contact.html">Contact</a>
     <a href="https://instagram.com/nishix_vamp" target="_blank" rel="noopener noreferrer">@nishix_vamp</a>
   </p>
+
+  <!-- CNC Machinist Hub Technical Overview -->
+  <section class="reveal visible" style="max-w: 1120px; margin: 40px auto 0; padding: 0 1.5rem; text-align: left;">
+    <div class="app-info-section">
+      <h2 style="font-size: 1.8rem; font-weight: 900; color: #ffffff; margin-bottom: 20px;">Fundamental Principles of CNC Machining & G-Code Syntax</h2>
+      <p>Precision CNC (Computer Numerical Control) machining represents the intersection of mechanical engineering, geometry, metallurgy, and software programming. To transform raw metal stock into complex aerospace, automotive, or medical components, vertical and horizontal milling centers execute toolpaths described by standardized G-code blocks (ISO 6983). Master machinists must calculate exact linear coordinate motions, feed rates, and rotational spindle speeds to optimize tool life and surface finishes.</p>
+      
+      <p>This CNC Machinist Toolkit is a suite of browser-native calculators designed to solve complex trigonometry offsets, coordinate shifts, circular arc vectors, and parametric programming blocks directly on the shop floor.</p>
+
+      <h3>Core CNC Programming Foundations</h3>
+      <ul>
+        <li><strong>Cartesian Coordinate Workspace (G54–G59):</strong> Milling tools navigate along three perpendicular axes: X (lateral motion), Y (transverse motion), and Z (vertical depth motion). Work offset coordinates (represented by G54, G55, G56, etc.) map the machine's physical encoder positions back to a designated part origin point.</li>
+        <li><strong>Modal Command Status:</strong> Many G-codes are "modal," meaning they remain active in the machine's control memory until canceled or overridden by another code in the same group. For example, selecting <code>G01</code> (linear feed) keeps the machine in linear motion mode for all subsequent coordinate blocks until a <code>G00</code> (rapid travel) or <code>G02</code> (circular arc) is encountered.</li>
+        <li><strong>Cutter Radius Compensation (G40–G42):</strong> Because cutting tools have physical diameters, writing blueprints coordinate values directly in G-code would cut parts undersized. <code>G41</code> (cutter compensation left) and <code>G42</code> (cutter compensation right) shift the toolpath centerline outward by the exact tool radius entered in the machine's offset register. Cancel compensation with <code>G40</code>.</li>
+        <li><strong>Canned Drilling Cycles (G80–G89):</strong> Writing individual feed and rapid blocks for multiple holes is highly redundant. Canned cycles simplify programming. G-code <code>G81</code> executes a single-plunge drill cycle, <code>G83</code> performs a deep peck-drill cycle with full chip clearing retraction, and <code>G84</code> handles rigid tapping. Cancel active canned cycles with <code>G80</code>.</li>
+      </ul>
+
+      <h3>Safe Shop-Floor Verification Procedures</h3>
+      <p>Before executing any generated G-code or parametric macros on a physical machine, programmers must strictly enforce safety verification steps to prevent catastrophic tool collisions or spindle crashes:</p>
+      <ol>
+        <li><strong>Perform Visual Simulators:</strong> Test coordinate paths in a 3D graphic simulator or backplotter to catch any Z-axis plunge errors or sign direction mistakes.</li>
+        <li><strong>Dry Run Execution:</strong> Run the program on the machine with work offsets shifted highly positive in the Z-axis (air cut), keeping the tool far above the material.</li>
+        <li><strong>Single Block Mode:</strong> Activate single block execution on the control panel, forcing the machine to pause and wait for manual approval before executing each consecutive block. Keep your hand on the feed hold button and monitor the distance-to-go screen.</li>
+      </ol>
+
+      <h3>CNC Machinist Hub Frequently Asked Questions (FAQ)</h3>
+      <p><strong>Q: What is the difference between G02 and G03?</strong><br>
+      A: <code>G02</code> commands the tool to interpolate along a circular arc in a Clockwise (CW) direction, while <code>G03</code> commands a Counter-Clockwise (CCW) arc motion, depending on the active coordinate plane (G17 for X-Y, G18 for Z-X, G19 for Y-Z).</p>
+      
+      <p><strong>Q: Why does my rigid tap G84 cycle require exact feed synchronization?</strong><br>
+      A: During rigid tapping, the feed rate is mechanically synchronized with the spindle's rotation. If the synchronization ratio: <code>Feed = Spindle Speed (RPM) * Thread Pitch</code> is not perfect, the tap will strip the threads or break in the hole. Our Speeds & Feeds tool uses a Smart Sync calculation to guarantee perfect integer values in G-code blocks.</p>
+
+      <p><strong>Q: How do polar coordinates work in G-code?</strong><br>
+      A: Activating <code>G16</code> switches the control from Cartesian (X, Y) to Polar coordinate mapping. The X-value represents the radius of the pitch circle, and the Y-value represents the angle (in degrees). Polar coordinates are canceled with <code>G15</code>.</p>
+    </div>
+  </section>
 </footer>
 
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
