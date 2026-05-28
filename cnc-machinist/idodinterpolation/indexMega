@@ -65,6 +65,7 @@
     body { font-family: system-ui, Arial, sans-serif; margin: 18px; background-color: #f8fafc; }
     .wrap { max-width: 980px; margin: 0 auto; }
 
+    /* Navigation styling */
     .nav-header {
       display: flex;
       justify-content: space-between;
@@ -100,6 +101,7 @@
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
       transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
     }
+    
     .banner:hover {
       filter: brightness(1.1);
       transform: translateY(-2px);
@@ -119,6 +121,7 @@
       width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px;
       font-size:14px;box-sizing:border-box;background:#fff; color: #1e293b;
     }
+    
     input:focus, select:focus {
         outline: none;
         border-color: #1a73e8;
@@ -155,14 +158,15 @@
 </head>
 <body>
   <div class="wrap">
+    
     <div class="nav-header">
-      <a href="../" class="back-link">
-        <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"></path></svg>
-        Back to CNC Hub
-      </a>
+        <a href="../" class="back-link">
+            <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"></path></svg>
+            Back to CNC Hub
+        </a>
     </div>
 
-    <a href="https://shader7.com" target="_blank" class="banner">⚙️ Shader7 OD / ID INTERPOLATION</a>
+    <a href="https://shader7.com" target="_blank" class="banner">âï¸ Shader7 OD / ID INTERPOLATION</a>
     <h1>OD / ID Interpolation Macro Generator</h1>
 
     <div class="grid">
@@ -172,23 +176,13 @@
           <option value="OD" selected>OD (Outside Diameter)</option>
           <option value="ID">ID (Inside Diameter)</option>
         </select>
-        <div class="note">ID mode uses N29/N35/N36. OD mode uses N80/N120/N130.</div>
-      </div>
-
-      <div class="row">
-        <label for="plane">Plane Selection</label>
-        <select id="plane">
-          <option value="G17" selected>G17 - XY Plane</option>
-          <option value="G18">G18 - XZ Plane</option>
-          <option value="G19">G19 - YZ Plane</option>
-        </select>
-        <div class="note" id="planeNote">G17: XY arc using I/J. Depth axis is Z.</div>
+        <div class="note">ID mode matches your N29/N35/N36 program.</div>
       </div>
 
       <div class="row">
         <label for="progNum">Program Number (O####)</label>
         <input id="progNum" type="number" step="1" value="1" />
-        <div class="note">Default O0001. Example: 30 → O0030</div>
+        <div class="note">Default O0001. Example: 30 â O0030</div>
       </div>
 
       <div class="row">
@@ -210,27 +204,27 @@
       </div>
 
       <div class="row">
-        <label for="x" id="xLabel">X coordinate (#16)</label>
+        <label for="x">X coordinate (#16)</label>
         <input id="x" type="number" step="any" value="0" />
       </div>
 
       <div class="row">
-        <label for="y" id="yLabel">Y coordinate (#17)</label>
+        <label for="y">Y coordinate (#17)</label>
         <input id="y" type="number" step="any" value="0" />
       </div>
 
       <div class="row">
-        <label for="firstDepth" id="firstDepthLabel">First depth (#1)</label>
+        <label for="firstDepth">First depth (#1)</label>
         <input id="firstDepth" type="number" step="any" value="0" />
       </div>
 
       <div class="row">
-        <label for="finalDepth" id="finalDepthLabel">Final depth (#2)</label>
+        <label for="finalDepth">Final depth (#2)</label>
         <input id="finalDepth" type="number" step="any" value="-0.50" />
       </div>
 
       <div class="row">
-        <label for="doc" id="docLabel">Depth of cut (#3)</label>
+        <label for="doc">Depth of cut (#3)</label>
         <input id="doc" type="number" step="any" value="0.05" />
       </div>
 
@@ -242,7 +236,7 @@
       <div class="row">
         <label for="cutterR">Cutter radius (#5)</label>
         <input id="cutterR" type="number" step="any" value="50" />
-        <div class="note">Enter cutter <b>radius</b>.</div>
+        <div class="note">Enter cutter <b>radius</b> (matches your ID example).</div>
       </div>
 
       <div class="row" id="odSafetyRow">
@@ -267,11 +261,11 @@
 
     <div class="note">
       Output starts with <b>%</b> and ends with <b>%</b>. Program header is <b>O####</b>.
-      Plane selection changes the arc axes and I/J/K center words. Validate on your control/simulator before cutting.
+      Validate on your control/simulator before cutting.
     </div>
 
     <div class="credits">
-      &copy; <script>document.write(new Date().getFullYear())</script> SHADER7 • Developed by <a href="https://www.instagram.com/nishix_vamp" target="_blank" rel="noopener noreferrer">@nishix_vamp</a>
+      &copy; <script>document.write(new Date().getFullYear())</script> SHADER7 â¢ Developed by <a href="https://www.instagram.com/nishix_vamp" target="_blank" rel="noopener noreferrer">@nishix_vamp</a>
     </div>
   </div>
 
@@ -291,112 +285,53 @@
 
   function getSpindleCode(spindleMode){
     if(spindleMode === "gear"){
-      return `M141 S550 ;\nM103 ;`;
+      return `M141 S550 ;
+M103 ;`;
     }
     return `M03 S550 ;`;
   }
 
-  function getPlaneData(plane){
-    const planes = {
-      G17: {
-        code: "G17",
-        name: "XY",
-        u: "X",
-        v: "Y",
-        d: "Z",
-        cu: "I",
-        cv: "J",
-        note: "G17: XY arc using I/J. Depth axis is Z."
-      },
-      G18: {
-        code: "G18",
-        name: "XZ",
-        u: "X",
-        v: "Z",
-        d: "Y",
-        cu: "I",
-        cv: "K",
-        note: "G18: XZ arc using I/K. Depth axis is Y."
-      },
-      G19: {
-        code: "G19",
-        name: "YZ",
-        u: "Y",
-        v: "Z",
-        d: "X",
-        cu: "J",
-        cv: "K",
-        note: "G19: YZ arc using J/K. Depth axis is X."
-      }
-    };
-    return planes[plane] || planes.G17;
-  }
-
-  function safeBlock(pl){
-    if(pl.d === "Z") return `G43 G0 Z50 ;`;
-    return `G43 G0 Z50 ;\nG0 ${pl.d}50 ;`;
-  }
-
-  function retractBlock(pl){
-    if(pl.d === "Z") return `G90 G0 Z300 ;`;
-    return `G90 G0 ${pl.d}300 ;\nG0 Z300 ;`;
-  }
-
-  function arcLine(pl, radiusVar, includeDepth, nLabel){
-    const label = nLabel ? `${nLabel} ` : "";
-    const depthMove = includeDepth ? ` ${pl.d}-#3` : "";
-    return `${label}G03 ${pl.u}0 ${pl.v}0${depthMove} ${pl.cu}0 ${pl.cv}-${radiusVar} ;`;
-  }
-
-  function updatePlaneUI(){
-    const pl = getPlaneData(document.getElementById("plane").value);
-    document.getElementById("xLabel").textContent = `${pl.u} coordinate (#16)`;
-    document.getElementById("yLabel").textContent = `${pl.v} coordinate (#17)`;
-    document.getElementById("firstDepthLabel").textContent = `First depth on ${pl.d} axis (#1)`;
-    document.getElementById("finalDepthLabel").textContent = `Final depth on ${pl.d} axis (#2)`;
-    document.getElementById("docLabel").textContent = `Depth of cut on ${pl.d} axis (#3)`;
-    document.getElementById("planeNote").textContent = pl.note;
-  }
-
   function buildOD(p){
-    const pl = getPlaneData(p.plane);
+    // OD macro format (no "(1ST)")
     return (
 `%
-${padO(p.progNum)} (OD INTERPOLATION - ${pl.code} ${pl.name} PLANE);
+${padO(p.progNum)} (OD INTERPOLATION);
 
-G40 G80 G49 G90 G54 ${pl.code} ;
+G40 G80 G49 G90 G54 G17 ;
 ${getSpindleCode(p.spindleMode)}
 
-#16=${fmt(p.x)} (${pl.u}) ;
-#17=${fmt(p.y)} (${pl.v}) ;
+#16=${fmt(p.x)} (X) ;
+#17=${fmt(p.y)} (Y) ;
 
-#1=${fmt(p.firstDepth)} (FIRST DEPTH - ${pl.d} AXIS) ;
-#2=${fmt(p.finalDepth)} (FINAL DEPTH - ${pl.d} AXIS) ;
+#1=${fmt(p.firstDepth)} (FIRST DEPTH) ;
+#2=${fmt(p.finalDepth)} (FINAL DEPTH) ;
 #30=${fmt(p.diaMake)} (DIA) (DIA TO MAKE) ;
-#3=${fmt(p.doc)} (DEPTH OF CUT - ${pl.d} AXIS) ;
+#3=${fmt(p.doc)} (DEPTH OF CUT) ;
 #4=[#30/2] ;
 #5=${fmt(p.cutterR)} (CUTTER RADIUS) ;
 #7=#4+#5 ;
-#8=${fmt(p.safety)} (SAFETY ENGAGE) ;
 #6=#5+#4+#8 ;
+#8=${fmt(p.safety)} (SAFETY ENGAGE) ;
 #12=#1 ;
 #15=#1 ;
 
-G52 ${pl.u}#16 ${pl.v}#17 ;
-G0 ${pl.u}0 ${pl.v}0 ;
-${safeBlock(pl)}
-${pl.u}0 ${pl.v}#6 ;
-${pl.d}#15 ;
-G91 G01 ${pl.v}-#8 F${fmt(p.feed)} ;
+G52 X#16 Y#17 ;
+G0 X0 Y0 ;
+G43 G0 Z50 ;
+X0 Y#6 ;
+Z#15 ;
+G91 G01 Y-#8 F${fmt(p.feed)} ;
 IF[#1 EQ #2] GOTO 120 ;
-${arcLine(pl, "#7", true, "N80")}
+N80 G03 X0 Y0 Z-#3 I0 J-#7 ;
+
+G03 X0 Y0 I0 J-#7 ;
 #15=[#15-#3] ;
 IF[#15 GT #2] GOTO 80 ;
 IF[#12 EQ 0] GOTO 130 ;
-${arcLine(pl, "#7", false, "N120")}
-N130 G01 G40 ${pl.u}0 ${pl.v}#8 ;
-${retractBlock(pl)}
-G52 ${pl.u}0 ${pl.v}0 ${pl.d}0 ;
+N120 G03 X0 Y0 I0 J-#7 ;
+N130 G01 G40 X0 Y#8 ;
+G90 G0 Z300 ;
+G52 X0 Y0 ;
 M5 ;
 M9 ;
 ${p.endCode} ;
@@ -406,41 +341,42 @@ ${p.endCode} ;
   }
 
   function buildID(p){
-    const pl = getPlaneData(p.plane);
+    // ID macro EXACTLY like user-provided format (no safety engage, N29/N35/N36)
     return (
 `%
-${padO(p.progNum)} (ID INTERPOLATION - ${pl.code} ${pl.name} PLANE);
+${padO(p.progNum)} (ID INTERPOLATION);
 
-G40 G80 G49 G90 G54 ${pl.code} ;
+G40 G80 G49 G90 G54 G17 ;
 ${getSpindleCode(p.spindleMode)}
 
-#16=${fmt(p.x)} (${pl.u}) ;
-#17=${fmt(p.y)} (${pl.v}) ;
+#16=${fmt(p.x)} (X) ;
+#17=${fmt(p.y)} (Y) ;
 
-#1=${fmt(p.firstDepth)} (FIRST DEPTH - ${pl.d} AXIS) ;
-#2=${fmt(p.finalDepth)} (FINAL DEPTH - ${pl.d} AXIS) ;
+#1=${fmt(p.firstDepth)} (FIRST DEPTH) ;
+#2=${fmt(p.finalDepth)} (FINAL DEPTH) ;
 #30=${fmt(p.diaMake)} (DIA TO MAKE) ;
-#3=${fmt(p.doc)} (DEPTH OF CUT - ${pl.d} AXIS) ;
+#3=${fmt(p.doc)} (DEPTH OF CUT) ;
 #4=[#30/2] ;
 #5=${fmt(p.cutterR)} (CUTTER RADIUS) ;
 #6=#4-#5 ;
 #12=#1 ;
 #15=#1 ;
 
-G52 ${pl.u}#16 ${pl.v}#17 ;
-G0 ${pl.u}0 ${pl.v}0 ;
-${safeBlock(pl)}
-${pl.d}#15 ;
-G91 G01 ${pl.v}#6 F${fmt(p.feed)} ;
+G52 X#16 Y#17 ;
+G0 X0 Y0 ;
+G43 G0 Z50 ;
+Z#15 ;
+G91 G01 Y#6 F${fmt(p.feed)} ;
 IF[#1 EQ #2] GOTO 35 ;
-${arcLine(pl, "#6", true, "N29")}
+N29 G03 X0 Y0 Z-#3 I0 J-#6 ;
+G03 X0 Y0 I0 J-#6 ;
 #15=[#15-#3] ;
 IF[#15 GT #2] GOTO 29 ;
 IF[#12 EQ 0] GOTO 36 ;
-${arcLine(pl, "#6", false, "N35")}
-N36 G01 G40 ${pl.u}0 ${pl.v}0 ;
-${retractBlock(pl)}
-G52 ${pl.u}0 ${pl.v}0 ${pl.d}0 ;
+N35 G03 X0 Y0 I0 J-#6 ;
+N36 G01 G40 X0 Y0 ;
+G90 G0 Z300 ;
+G52 X0 Y0 ;
 M5 ;
 ${p.endCode} ;
 %
@@ -452,20 +388,18 @@ ${p.endCode} ;
     const errs = [];
 
     for(const [k,v] of Object.entries(p)){
-      if(k === "mode" || k === "endCode" || k === "spindleMode" || k === "plane") continue;
+      if(k === "mode" || k === "endCode" || k === "spindleMode") continue;
       if(!Number.isFinite(v)) errs.push(`${k} must be a number`);
     }
 
-    if(!["G17", "G18", "G19"].includes(p.plane)) errs.push("Plane must be G17, G18, or G19");
     if(Number.isFinite(p.progNum) && p.progNum < 0) errs.push("Program number cannot be negative");
     if(Number.isFinite(p.doc) && p.doc <= 0) errs.push("Depth of cut (#3) must be > 0");
     if(Number.isFinite(p.diaMake) && p.diaMake <= 0) errs.push("Diameter to make (#30) must be > 0");
     if(Number.isFinite(p.cutterR) && p.cutterR <= 0) errs.push("Cutter radius (#5) must be > 0");
     if(Number.isFinite(p.feed) && p.feed <= 0) errs.push("Feed must be > 0");
-    if(p.mode === "OD" && Number.isFinite(p.safety) && p.safety < 0) errs.push("Safety engage (#8) cannot be negative");
 
     if(p.mode === "ID"){
-      const pathR = (p.diaMake/2) - p.cutterR;
+      const pathR = (p.diaMake/2) - p.cutterR; // #6
       if(Number.isFinite(pathR) && pathR <= 0){
         errs.push("ID too small for this cutter: (#30/2 - #5) must be > 0");
       }
@@ -473,7 +407,7 @@ ${p.endCode} ;
 
     if(Number.isFinite(p.firstDepth) && Number.isFinite(p.finalDepth)){
       if(p.finalDepth > p.firstDepth){
-        errs.push("Final depth (#2) is greater than first depth (#1). If cutting down in negative direction, final depth is usually <= first.");
+        errs.push("Final depth (#2) is greater than first depth (#1). If cutting down in Z-, final depth is usually <= first.");
       }
     }
 
@@ -483,7 +417,6 @@ ${p.endCode} ;
   function getParams(){
     return {
       mode: document.getElementById("mode").value,
-      plane: document.getElementById("plane").value,
       progNum: parseInt(document.getElementById("progNum").value, 10),
       spindleMode: document.getElementById("spindleMode").value,
       endCode: document.getElementById("endCode").value,
@@ -500,17 +433,17 @@ ${p.endCode} ;
   }
 
   function generate(){
-    updatePlaneUI();
     const p = getParams();
     const errs = validate(p);
 
+    // Show/hide OD safety row
     document.getElementById("odSafetyRow").style.display = (p.mode === "OD") ? "block" : "none";
 
     const errEl = document.getElementById("err");
     const outEl = document.getElementById("output");
 
     if(errs.length){
-      errEl.textContent = errs.join(" • ");
+      errEl.textContent = errs.join(" â¢ ");
       outEl.value = "";
       return;
     }
@@ -529,9 +462,9 @@ ${p.endCode} ;
       copyBtn.style.background = "#16a34a";
       copyBtn.style.color = "#fff";
       setTimeout(() => {
-        copyBtn.textContent = originalText;
-        copyBtn.style.background = "#e2e8f0";
-        copyBtn.style.color = "#334155";
+          copyBtn.textContent = originalText;
+          copyBtn.style.background = "#e2e8f0";
+          copyBtn.style.color = "#334155";
       }, 2000);
     }catch{
       const ta = document.getElementById("output");
@@ -549,7 +482,7 @@ ${p.endCode} ;
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `${p.mode}_${p.plane}_INTERPOLATION_O${String(p.progNum).padStart(4,'0')}.txt`;
+    a.download = `${p.mode}_INTERPOLATION_O${String(p.progNum).padStart(4,'0')}.txt`;
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -560,12 +493,10 @@ ${p.endCode} ;
   document.getElementById("copyBtn").addEventListener("click", copyOut);
   document.getElementById("downloadBtn").addEventListener("click", downloadOut);
 
-  // Auto update layout on input changes
-  const inputs = document.querySelectorAll("input, select");
-  inputs.forEach(element => {
-    element.addEventListener("input", generate);
-    element.addEventListener("change", generate);
-  });
+  // auto-generate when switching
+  document.getElementById("mode").addEventListener("change", generate);
+  document.getElementById("spindleMode").addEventListener("change", generate);
+  document.getElementById("endCode").addEventListener("change", generate);
 
   generate();
 </script>
