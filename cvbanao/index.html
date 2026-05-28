@@ -1159,11 +1159,23 @@
 
     @media (max-width: 850px) {
       .nav {
+        display: flex;
+        gap: 12px;
+        font-size: 13px;
+        overflow-x: auto;
+        white-space: nowrap;
+        padding-bottom: 4px;
+        scrollbar-width: none;
+      }
+      .nav::-webkit-scrollbar {
         display: none;
       }
 
       .header-inner {
-        padding: 14px 16px;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
       }
 
       .hero {
@@ -1233,6 +1245,679 @@
       .quick-link {
         padding: 16px;
       }
+    }
+
+    /* Template Cards & Hover Preview System */
+    .preview {
+      position: relative;
+    }
+    .preview-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+      z-index: 5;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      border-radius: inherit;
+    }
+    .preview:hover .preview-overlay {
+      opacity: 1;
+    }
+    .preview-overlay .promo-btn {
+      box-shadow: 0 10px 24px rgba(79, 70, 229, 0.35);
+      background: #4f46e5 !important;
+      border: none !important;
+      padding: 12px 24px !important;
+      border-radius: 10px !important;
+      font-weight: 800 !important;
+      color: #ffffff !important;
+      cursor: pointer !important;
+      transform: translateY(10px);
+      transition: transform 0.25s ease, background 0.2s;
+    }
+    .preview:hover .preview-overlay .promo-btn {
+      transform: translateY(0);
+    }
+    .preview-overlay .promo-btn:hover {
+      background: #4338ca !important;
+    }
+
+    /* Real CV Preview Modal Styling */
+    .cv-preview-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .cv-preview-modal.show {
+      display: flex;
+    }
+    .cv-modal-content {
+      background: #ffffff;
+      width: min(96vw, 1180px);
+      height: min(94vh, 880px);
+      border-radius: 28px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 35px 80px rgba(0,0,0,0.45);
+      border: 1px solid rgba(255,255,255,0.15);
+      overflow: hidden;
+    }
+    .cv-modal-header {
+      padding: 18px 24px;
+      background: #f8fafc;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .cv-modal-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      color: #1e293b;
+    }
+    .cv-modal-controls select {
+      padding: 8px 14px;
+      border-radius: 10px;
+      border: 1px solid #cbd5e1;
+      font-weight: 700;
+      background: #ffffff;
+      color: #1e293b;
+      outline: none;
+    }
+    .cv-modal-controls select:focus {
+      border-color: #4f46e5;
+    }
+    .cv-modal-close {
+      background: none;
+      border: none;
+      font-size: 2.2rem;
+      font-weight: 300;
+      cursor: pointer;
+      color: #64748b;
+      transition: color 0.2s;
+      line-height: 1;
+    }
+    .cv-modal-close:hover {
+      color: #ef4444;
+    }
+    .cv-modal-body {
+      flex-grow: 1;
+      display: grid;
+      grid-template-columns: 1.3fr 0.7fr;
+      overflow: hidden;
+    }
+    .cv-modal-page-wrapper {
+      background: #dfe3ea;
+      padding: 24px;
+      overflow: auto;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      height: 100%;
+    }
+    .modal-a4-container {
+      width: 210mm;
+      min-height: 297mm;
+      background: #ffffff;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+      color: #374151;
+      transform-origin: top center;
+      box-sizing: border-box;
+    }
+    .cv-modal-sidebar {
+      padding: 30px 24px;
+      border-left: 1px solid #e2e8f0;
+      display: flex;
+      flex-direction: column;
+      background: #f8fafc;
+      overflow-y: auto;
+    }
+    .cv-modal-sidebar h3 {
+      margin-top: 0;
+      font-size: 1.4rem;
+      color: #17457e;
+      font-weight: 900;
+      margin-bottom: 20px;
+    }
+    .cv-modal-sidebar ul {
+      padding-left: 20px;
+      color: #475569;
+      line-height: 1.6;
+      margin-bottom: 30px;
+      flex-grow: 1;
+    }
+    .cv-modal-sidebar li {
+      margin-bottom: 12px;
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+    .cv-modal-cta {
+      width: 100%;
+    }
+    .cv-modal-cta .btn {
+      width: 100%;
+      font-size: 1rem;
+      padding: 14px;
+    }
+
+    @media (max-width: 850px) {
+      .cv-modal-body {
+        grid-template-columns: 1fr;
+      }
+      .cv-modal-sidebar {
+        border-left: none;
+        border-top: 1px solid #e2e8f0;
+        padding: 20px;
+      }
+      .cv-modal-sidebar h3 {
+        margin-bottom: 10px;
+      }
+      .cv-modal-sidebar ul {
+        display: none;
+      }
+    }
+
+    /* Respective PDF template styling systems inside modal */
+    .modal-a4-container.modal-t1 {
+      padding: 16mm;
+      font-size: 10.5pt;
+      line-height: 1.35;
+      font-family: "Inter", sans-serif;
+    }
+    .modal-t1 .t1-header {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid #e5e7eb;
+      margin-bottom: 20px;
+    }
+    .modal-t1 .t1-photo {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      border: 3px solid #4f46e5;
+      background:
+        radial-gradient(circle at 50% 36%, #f2c4a4 0 16%, transparent 17%),
+        radial-gradient(circle at 50% 58%, #334155 0 16%, transparent 17%),
+        linear-gradient(135deg, #dbeafe, #94a3b8);
+      flex-shrink: 0;
+    }
+    .modal-t1 h1 {
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: #111827;
+      margin: 0 0 4px;
+      text-align: left;
+    }
+    .modal-t1 .t1-role {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #4f46e5;
+      margin-bottom: 8px;
+    }
+    .modal-t1 .t1-contact {
+      display: flex;
+      gap: 12px;
+      font-size: 0.85rem;
+      color: #64748b;
+      flex-wrap: wrap;
+    }
+    .modal-t1 .t1-body {
+      display: grid;
+      grid-template-columns: 1.5fr 0.9fr;
+      gap: 24px;
+    }
+    .modal-t1 .t1-section {
+      margin-bottom: 20px;
+    }
+    .modal-t1 .t1-section h3 {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #1f2937;
+      margin: 0 0 8px;
+      background-color: #e0e7ff;
+      border-radius: 6px;
+      padding: 6px 10px;
+      text-transform: uppercase;
+      text-align: left;
+    }
+    .modal-t1 .t1-section p, .modal-t1 .t1-section li {
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: #374151;
+      margin-bottom: 6px;
+      text-align: left;
+    }
+    .modal-t1 .t1-section ul {
+      padding-left: 16px;
+    }
+    .modal-t1 .t1-experience-item {
+      margin-bottom: 12px;
+    }
+    .modal-t1 .t1-experience-title {
+      font-weight: 800;
+      color: #111827;
+    }
+    .modal-t1 .t1-declaration {
+      margin-top: 30px;
+      border-top: 1px solid #e5e7eb;
+      padding-top: 10px;
+      text-align: center;
+      font-style: italic;
+      font-size: 0.8rem;
+      color: #64748b;
+    }
+
+    .modal-a4-container.modal-t2 {
+      padding: 18mm;
+      font-size: 10pt;
+      line-height: 1.4;
+      font-family: "Inter", sans-serif;
+    }
+    .modal-t2 .t2-header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 120px;
+      gap: 24px;
+      align-items: center;
+      padding-bottom: 18px;
+      border-bottom: 2px solid #e2e8f0;
+      margin-bottom: 24px;
+    }
+    .modal-t2 h1 {
+      font-size: 2.4rem;
+      font-weight: 800;
+      color: #17457e;
+      margin: 0 0 6px;
+      text-align: left;
+    }
+    .modal-t2 .t2-role {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #17457e;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+    .modal-t2 .t2-contact {
+      font-size: 0.9rem;
+      color: #2f3542;
+      line-height: 1.45;
+    }
+    .modal-t2 .t2-photo {
+      width: 110px;
+      height: 130px;
+      border-radius: 12px;
+      border: 2px solid #17457e;
+      background:
+        radial-gradient(circle at 50% 32%, #f5c9a9 0 16%, transparent 17%),
+        radial-gradient(circle at 50% 58%, #475569 0 18%, transparent 19%),
+        linear-gradient(135deg, #dbeafe, #94a3b8);
+      justify-self: end;
+    }
+    .modal-t2 .t2-body {
+      display: grid;
+      grid-template-columns: 1.55fr 0.9fr;
+      gap: 30px;
+    }
+    .modal-t2 .t2-section {
+      margin-bottom: 20px;
+    }
+    .modal-t2 .t2-section h3 {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #17457e;
+      margin: 0 0 10px;
+      padding-bottom: 5px;
+      border-bottom: 1px solid #d6d9de;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      text-align: left;
+    }
+    .modal-t2 .t2-section p, .modal-t2 .t2-section li {
+      font-size: 0.9rem;
+      line-height: 1.45;
+      color: #2f3542;
+      margin-bottom: 6px;
+      text-align: left;
+    }
+    .modal-t2 .t2-section ul {
+      padding-left: 18px;
+    }
+    .modal-t2 .t2-experience-item {
+      margin-bottom: 12px;
+    }
+    .modal-t2 .t2-experience-title {
+      font-weight: 800;
+      color: #1f2937;
+    }
+    .modal-t2 .t2-declaration {
+      margin-top: 30px;
+      border-top: 1px solid #d6d9de;
+      padding-top: 8px;
+      text-align: center;
+      font-style: italic;
+      font-size: 0.8rem;
+      color: #64748b;
+      font-weight: 700;
+    }
+
+    .modal-a4-container.modal-t3 {
+      display: grid;
+      grid-template-columns: 74mm 1fr;
+      min-height: 297mm;
+      padding: 0;
+      font-size: 10pt;
+      line-height: 1.35;
+      font-family: "Inter", sans-serif;
+    }
+    .modal-t3 .t3-sidebar {
+      background: #0f172a;
+      color: #ffffff;
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .modal-t3 .t3-photo {
+      width: 100px;
+      height: 120px;
+      border-radius: 12px;
+      background:
+        radial-gradient(circle at 50% 32%, #f5c9a9 0 16%, transparent 17%),
+        radial-gradient(circle at 50% 58%, #64748b 0 18%, transparent 19%),
+        linear-gradient(135deg, #dbeafe, #94a3b8);
+      border: 2px solid rgba(255, 255, 255, 0.45);
+      margin: 0 auto 10px;
+    }
+    .modal-t3 .t3-main {
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .modal-t3 h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #1e293b;
+      margin: 0 0 4px;
+      text-align: left;
+      line-height: 1.1;
+    }
+    .modal-t3 .t3-role {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #2563eb;
+      margin-bottom: 12px;
+      text-align: left;
+    }
+    .modal-t3 .t3-section {
+      text-align: left;
+    }
+    .modal-t3 .t3-section h3 {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #1e293b;
+      margin: 0 0 10px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .modal-t3 .t3-section h3::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #2563eb;
+      display: inline-block;
+    }
+    .modal-t3 .t3-sidebar .t3-section h3 {
+      color: #93c5fd;
+    }
+    .modal-t3 .t3-sidebar .t3-section h3::before {
+      background: #93c5fd;
+    }
+    .modal-t3 .t3-section p, .modal-t3 .t3-section li {
+      font-size: 0.88rem;
+      line-height: 1.45;
+      color: #334155;
+      margin-bottom: 6px;
+    }
+    .modal-t3 .t3-sidebar .t3-section p, .modal-t3 .t3-sidebar .t3-section li {
+      color: #e2e8f0;
+    }
+    .modal-t3 .t3-section ul {
+      padding-left: 16px;
+    }
+    .modal-t3 .t3-experience-item {
+      margin-bottom: 12px;
+    }
+    .modal-t3 .t3-experience-title {
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .modal-a4-container.modal-t4 {
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+      font-size: 10pt;
+      line-height: 1.35;
+      font-family: "Inter", sans-serif;
+    }
+    .modal-t4 .t4-header {
+      height: 120px;
+      background: linear-gradient(135deg, #7c2d12, #ea580c);
+      padding: 24px;
+      display: grid;
+      grid-template-columns: 1fr 80px;
+      gap: 20px;
+      align-items: center;
+    }
+    .modal-t4 h1 {
+      font-size: 2.3rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin: 0 0 4px;
+      text-align: left;
+    }
+    .modal-t4 .t4-role {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #ffedd5;
+      margin: 0;
+      text-align: left;
+    }
+    .modal-t4 .t4-photo {
+      width: 76px;
+      height: 90px;
+      border-radius: 10px;
+      border: 2px solid rgba(255,255,255,0.55);
+      background:
+        radial-gradient(circle at 50% 32%, #f5c9a9 0 16%, transparent 17%),
+        radial-gradient(circle at 50% 58%, #9a3412 0 18%, transparent 19%),
+        rgba(255,255,255,0.22);
+      justify-self: end;
+    }
+    .modal-t4 .t4-contact {
+      height: 36px;
+      background: #fff7ed;
+      border-bottom: 1px solid #fed7aa;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 0 24px;
+      font-size: 0.85rem;
+      color: #7c2d12;
+      font-weight: 700;
+    }
+    .modal-t4 .t4-body {
+      padding: 24px;
+      display: grid;
+      grid-template-columns: 1.4fr 0.9fr;
+      gap: 24px;
+      flex-grow: 1;
+    }
+    .modal-t4 .t4-section {
+      margin-bottom: 20px;
+    }
+    .modal-t4 .t4-section h3 {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #ea580c;
+      margin: 0 0 10px;
+      text-transform: uppercase;
+      text-align: left;
+    }
+    .modal-t4 .t4-section p, .modal-t4 .t4-section li {
+      font-size: 0.88rem;
+      line-height: 1.45;
+      color: #475569;
+      margin-bottom: 6px;
+      text-align: left;
+    }
+    .modal-t4 .t4-section ul {
+      padding-left: 16px;
+    }
+    .modal-t4 .t4-experience-card {
+      background: #fff7ed;
+      border-left: 3px solid #ea580c;
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 12px;
+    }
+    .modal-t4 .t4-experience-title {
+      font-weight: 800;
+      color: #1e293b;
+      margin-bottom: 4px;
+    }
+
+    .modal-a4-container.modal-t5 {
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+      font-size: 10pt;
+      line-height: 1.35;
+      font-family: "Inter", sans-serif;
+      position: relative;
+    }
+    .modal-t5 .t5-header {
+      height: 110px;
+      background: #984c58;
+      position: relative;
+      padding: 24px 24px 24px 160px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .modal-t5 h1 {
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: #ffffff;
+      margin: 0 0 4px;
+      text-align: left;
+      text-transform: uppercase;
+      letter-spacing: -0.5px;
+    }
+    .modal-t5 .t5-role {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.9);
+      text-align: left;
+    }
+    .modal-t5 .t5-photo {
+      position: absolute;
+      left: 34px;
+      top: 24px;
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 50% 34%, #f8d4bc 0 16%, transparent 17%),
+        radial-gradient(circle at 50% 56%, #22405f 0 15%, transparent 16%),
+        linear-gradient(135deg, #ffffff, #f1f5f9);
+      border: 8px solid #ffffff;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
+      z-index: 2;
+    }
+    .modal-t5 .t5-body {
+      padding: 45px 24px 24px;
+      display: grid;
+      grid-template-columns: 105px 1fr;
+      gap: 30px;
+      flex-grow: 1;
+    }
+    .modal-t5 .t5-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      padding: 0;
+      border-left: none;
+      background: none;
+      overflow: visible;
+    }
+    .modal-t5 .t5-main {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .modal-t5 .t5-section {
+      text-align: left;
+    }
+    .modal-t5 .t5-section h3 {
+      font-size: 1.05rem;
+      font-weight: 900;
+      color: #984c58;
+      margin: 0 0 8px;
+      text-align: left;
+      text-transform: uppercase;
+    }
+    .modal-t5 .t5-section h3::after {
+      content: "";
+      display: block;
+      width: 45px;
+      height: 2px;
+      background: #984c58;
+      margin-top: 4px;
+    }
+    .modal-t5 .t5-section p, .modal-t5 .t5-section li {
+      font-size: 0.88rem;
+      line-height: 1.45;
+      color: #22252b;
+      margin-bottom: 6px;
+    }
+    .modal-t5 .t5-section ul {
+      padding-left: 14px;
+    }
+    .modal-t5 .t5-experience-item {
+      margin-bottom: 12px;
+    }
+    .modal-t5 .t5-experience-title {
+      font-weight: 800;
+      color: #0f172a;
+    }
+    .modal-t5 .t5-bottom-bar {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 12px;
+      background: #984c58;
     }
   </style>
 </head>
@@ -1338,6 +2023,9 @@
       <div class="templates">
         <article class="template-card">
           <div class="preview">
+            <div class="preview-overlay">
+              <button class="promo-btn btn-view-preview" data-template="1">Preview Template</button>
+            </div>
             <div class="mini-resume template-one" aria-hidden="true">
               <div class="t1-head">
                 <div class="t1-photo"></div>
@@ -1397,6 +2085,9 @@
 
         <article class="template-card">
           <div class="preview">
+            <div class="preview-overlay">
+              <button class="promo-btn btn-view-preview" data-template="2">Preview Template</button>
+            </div>
             <div class="mini-resume template-two" aria-hidden="true">
               <div class="mini-head">
                 <div>
@@ -1456,6 +2147,9 @@
 
         <article class="template-card">
           <div class="preview">
+            <div class="preview-overlay">
+              <button class="promo-btn btn-view-preview" data-template="3">Preview Template</button>
+            </div>
             <div class="mini-resume template-three" aria-hidden="true">
               <div class="t3-side">
                 <div class="t3-photo"></div>
@@ -1509,6 +2203,9 @@
 
         <article class="template-card">
           <div class="preview">
+            <div class="preview-overlay">
+              <button class="promo-btn btn-view-preview" data-template="4">Preview Template</button>
+            </div>
             <div class="mini-resume template-four" aria-hidden="true">
               <div class="t4-header">
                 <div>
@@ -1572,6 +2269,9 @@
 
         <article class="template-card featured-template">
           <div class="preview preview-maroon">
+            <div class="preview-overlay">
+              <button class="promo-btn btn-view-preview" data-template="5">Preview Template</button>
+            </div>
             <div class="mini-resume template-five" aria-hidden="true">
               <div class="t5-top">
                 <div class="t5-photo"></div>
@@ -1876,5 +2576,552 @@
       <a href="https://shader7.com/cvbanao/template5">Template 5</a>
     </div>
   </footer>
+
+  <!-- Real CV Preview Modal -->
+  <div id="cvPreviewModal" class="cv-preview-modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="cv-modal-content">
+      <div class="cv-modal-header">
+        <h2 id="modalTitle" style="margin:0; font-size:1.25rem; font-weight:800; color:#1e293b;">Live CV Preview</h2>
+        <div class="cv-modal-controls">
+          <label for="templateSelect" style="font-size:0.9rem; font-weight:700; margin-right:4px;">Template:</label>
+          <select id="templateSelect">
+            <option value="1">Template 1 - Classic Photo CV</option>
+            <option value="2">Template 2 - Clean Two-Column CV</option>
+            <option value="3">Template 3 - Dark Sidebar Modern CV</option>
+            <option value="4">Template 4 - Color Theme Header CV</option>
+            <option value="5">Template 5 - Maroon Classic Fitter CV</option>
+          </select>
+          <button id="closeModalBtn" class="cv-modal-close" aria-label="Close modal">&times;</button>
+        </div>
+      </div>
+      <div class="cv-modal-body">
+        <div class="cv-modal-page-wrapper">
+          <div id="modalA4Container" class="modal-a4-container">
+            <!-- Dynamic HTML CV content injected here -->
+          </div>
+        </div>
+        <div class="cv-modal-sidebar">
+          <h3>Template Details</h3>
+          <ul id="modalTemplateFeatures">
+            <!-- Dynamic template features injected here -->
+          </ul>
+          <div class="cv-modal-cta">
+            <a id="useTemplateCtaBtn" href="https://shader7.com/cvbanao/template1" class="btn btn-primary">Use This Template Now</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Dynamic CV data structure
+      const templatesData = {
+        "1": {
+          name: "Template 1 - Classic Photo CV",
+          link: "https://shader7.com/cvbanao/template1",
+          cssClass: "modal-t1",
+          features: [
+            "Perfect for traditional corporate & service sector roles.",
+            "Features circular profile photo in the header.",
+            "Well-structured two-column content organization.",
+            "Modern Indigo/Violet aesthetic accents.",
+            "Fully ATS-friendly semantic parsing layout."
+          ],
+          html: `
+            <div class="t1-header">
+              <div class="t1-photo"></div>
+              <div style="flex:1;">
+                <h1>Aarav Sharma</h1>
+                <div class="t1-role">Mechanical Technician</div>
+                <div class="t1-contact">
+                  <span>Email: aarav.sharma@email.com</span>
+                  <span>Phone: +91 98765 43210</span>
+                  <span>Address: New Delhi, India</span>
+                </div>
+              </div>
+            </div>
+            <div class="t1-body">
+              <div>
+                <div class="t1-section">
+                  <h3>Profile</h3>
+                  <p>Dedicated and detail-oriented Mechanical Technician with over 4 years of experience in CNC machine programming, metal fabrication, and quality control. Proven track record of optimizing manufacturing cycle times and maintaining 100% adherence to rigorous industrial safety standards.</p>
+                </div>
+                <div class="t1-section">
+                  <h3>Work Experience</h3>
+                  <div class="t1-experience-item">
+                    <div class="t1-experience-title">Senior Machinist - Nova Engineering</div>
+                    <div style="font-size:0.85rem; color:#4b5563; font-style:italic; margin-bottom:4px;">2022 - Present | New Delhi, India</div>
+                    <ul>
+                      <li>Setup and programmed multi-axis CNC mills and lathes using Fanuc controller systems, reducing cycle times by 15%.</li>
+                      <li>Read and interpreted complex engineering blueprints, orthographic CAD drawings, and geometric dimensioning & tolerancing (GD&T).</li>
+                      <li>Performed routine preventative maintenance on workshop machinery, minimizing operational downtime.</li>
+                    </ul>
+                  </div>
+                  <div class="t1-experience-item">
+                    <div class="t1-experience-title">Apprentice Fitter - Apex Manufacturing</div>
+                    <div style="font-size:0.85rem; color:#4b5563; font-style:italic; margin-bottom:4px;">2020 - 2022 | New Delhi, India</div>
+                    <ul>
+                      <li>Assisted in manual milling, bench grinding, and surface preparation for heavy industrial components.</li>
+                      <li>Checked part dimensions using high-precision measuring instruments (micrometers, Vernier calipers, and thread pitch gauges).</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div class="t1-section">
+                  <h3>Hard Skills</h3>
+                  <ul>
+                    <li>CNC Programming (G-Code)</li>
+                    <li>Blueprints & GD&T</li>
+                    <li>Milling & Lathes</li>
+                    <li>Precision Metrology</li>
+                  </ul>
+                </div>
+                <div class="t1-section">
+                  <h3>Soft Skills</h3>
+                  <ul>
+                    <li>Troubleshooting</li>
+                    <li>Safe Operation</li>
+                    <li>Detailed Reporting</li>
+                    <li>Collaborative Teamwork</li>
+                  </ul>
+                </div>
+                <div class="t1-section">
+                  <h3>Education</h3>
+                  <div style="margin-bottom:8px;">
+                    <div class="t1-experience-title" style="font-size:0.9rem;">Government ITI Delhi</div>
+                    <div style="font-size:0.8rem; color:#4b5563;">Mechanical Fitter Trade | 2018 - 2020</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="t1-declaration">
+              I hereby declare that all the information provided above is true and correct to the best of my knowledge and belief.
+            </div>
+          `
+        },
+        "2": {
+          name: "Template 2 - Clean Two-Column CV",
+          link: "https://shader7.com/cvbanao/template2",
+          cssClass: "modal-t2",
+          features: [
+            "Sleek administrative & executive layout.",
+            "Elegant top-right rectangular photo crop.",
+            "Side-by-side work history & skillset presentation.",
+            "High information density without visual clutter.",
+            "Dual-column structure readable by modern parsers."
+          ],
+          html: `
+            <div class="t2-header">
+              <div>
+                <h1>Priya Nair</h1>
+                <div class="t2-role">Office Administrator</div>
+                <div class="t2-contact">
+                  Email: priya.nair@email.com | Phone: +91 88888 45678<br>
+                  Address: Kochi, Kerala, India
+                </div>
+              </div>
+              <div class="t2-photo"></div>
+            </div>
+            <div class="t2-body">
+              <div>
+                <div class="t2-section">
+                  <h3>Summary</h3>
+                  <p>Efficient and highly organized Office Administrator with 5+ years of experience managing front-desk operations, vendor coordination, executive scheduling, and accounts billing. Expertise in optimizing digital workspace structures and streamlining corporate workflows to increase administrative efficiency.</p>
+                </div>
+                <div class="t2-section">
+                  <h3>Work History</h3>
+                  <div class="t2-experience-item">
+                    <div class="t2-experience-title">Office Administrator - Brightline Services</div>
+                    <div style="font-size:0.85rem; color:#475569; font-style:italic; margin-bottom:4px;">2021 - Present | Kochi, India</div>
+                    <ul>
+                      <li>Managed calendar coordination and business travel logistics for five senior executives, reducing scheduling conflicts to zero.</li>
+                      <li>Supervised front-desk communications, handling an average of 80+ daily client inquiries and partner routing.</li>
+                      <li>Re-architected the office digital filing system, improving file retrieval speeds by 30% across the department.</li>
+                    </ul>
+                  </div>
+                  <div class="t2-experience-item">
+                    <div class="t2-experience-title">Front Desk Executive - Vertex Solutions</div>
+                    <div style="font-size:0.85rem; color:#475569; font-style:italic; margin-bottom:4px;">2019 - 2021 | Kochi, India</div>
+                    <ul>
+                      <li>Greeted corporate guests, registered incoming shipments, and oversaw administrative inventory procurement.</li>
+                      <li>Managed petty cash logs and compiled monthly office expense sheets using Microsoft Excel templates.</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div class="t2-section">
+                  <h3>Technical Skills</h3>
+                  <ul>
+                    <li>Office Administration</li>
+                    <li>Accounts & Billing</li>
+                    <li>Microsoft Office 365</li>
+                    <li>Vendor Coordination</li>
+                  </ul>
+                </div>
+                <div class="t2-section">
+                  <h3>Core Competencies</h3>
+                  <ul>
+                    <li>Dynamic Scheduling</li>
+                    <li>Workspace Organization</li>
+                    <li>Professional Communication</li>
+                    <li>Problem Solving</li>
+                  </ul>
+                </div>
+                <div class="t2-section">
+                  <h3>Education</h3>
+                  <div style="margin-bottom:8px;">
+                    <div class="t2-experience-title" style="font-size:0.9rem;">St. Teresa's College</div>
+                    <div style="font-size:0.8rem; color:#475569;">B.Com (Honors) | 2016 - 2019</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="t2-declaration">
+              I hereby declare that all the information provided above is true and correct to the best of my knowledge and belief.
+            </div>
+          `
+        },
+        "3": {
+          name: "Template 3 - Dark Sidebar Modern CV",
+          link: "https://shader7.com/cvbanao/template3",
+          cssClass: "modal-t3",
+          features: [
+            "Visual-first modern designer layout.",
+            "Left-hand deep dark navigation panel.",
+            "Outstanding skill & credential highlight badges.",
+            "Perfect contrast ratio for immediate scanability.",
+            "Distinct bullet headings for chronological flow."
+          ],
+          html: `
+            <div class="t3-sidebar">
+              <div class="t3-photo"></div>
+              <div class="t3-section">
+                <h3>Contact</h3>
+                <p style="font-size:0.8rem; margin-bottom:4px; color:#e2e8f0;">Email: milan.roy@email.com</p>
+                <p style="font-size:0.8rem; margin-bottom:4px; color:#e2e8f0;">Phone: +91 77777 22334</p>
+                <p style="font-size:0.8rem; margin-bottom:4px; color:#e2e8f0;">Address: Kolkata, WB, India</p>
+              </div>
+              <div class="t3-section">
+                <h3>Hard Skills</h3>
+                <ul style="padding-left:14px; margin:0; color:#e2e8f0;">
+                  <li>MIG & TIG Welding</li>
+                  <li>Steel Fabrication</li>
+                  <li>Blueprints Reading</li>
+                  <li>NDT Weld Testing</li>
+                </ul>
+              </div>
+              <div class="t3-section">
+                <h3>Certifications</h3>
+                <ul style="padding-left:14px; margin:0; color:#e2e8f0;">
+                  <li>AWS Certified Welder</li>
+                  <li>OSHA Safety Standard</li>
+                </ul>
+              </div>
+            </div>
+            <div class="t3-main">
+              <h1 style="margin:0;">Milan Roy</h1>
+              <div class="t3-role">Fabrication Welder</div>
+              <div class="t3-section">
+                <h3>Profile Summary</h3>
+                <p>Certified Welder with 4+ years of hands-on experience in structural steel fabrication, high-quality MIG/TIG/SMAW welding, and metal assembly work. Expert in reading mechanical blueprints, verifying joint fit-up, and adhering to strict OSHA workshop safety regulations.</p>
+              </div>
+              <div class="t3-section">
+                <h3>Work Experience</h3>
+                <div class="t3-experience-item">
+                  <div class="t3-experience-title">Structural Welder - Apex Steel Works</div>
+                  <div style="font-size:0.85rem; color:#475569; font-style:italic; margin-bottom:6px;">2021 - Present | Kolkata, India</div>
+                  <ul>
+                    <li>Executed heavy-duty MIG and TIG welding on structural steel beams, pressure vessels, and customized frames.</li>
+                    <li>Inspected completed welds using non-destructive testing (NDT) methods to ensure zero surface defects.</li>
+                    <li>Interpreted welding symbols and blueprints to perform precise cuts and fit-ups.</li>
+                  </ul>
+                </div>
+                <div class="t3-experience-item">
+                  <div class="t3-experience-title">Welder Trainee - Hindustan Shipbuilding</div>
+                  <div style="font-size:0.85rem; color:#475569; font-style:italic; margin-bottom:6px;">2019 - 2021 | Kolkata, India</div>
+                  <ul>
+                    <li>Supported ship hull plate preparation, grinding, and basic tack-welding operations under senior supervisors.</li>
+                    <li>Maintained safe workspace practices, minimizing scrap steel generation by 10%.</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="t3-section">
+                <h3>Education</h3>
+                <div class="t3-experience-item">
+                  <div class="t3-experience-title">Welding Trade Certification</div>
+                  <div style="font-size:0.85rem; color:#475569;">Kolkata Technical Institute | 2017 - 2019</div>
+                </div>
+              </div>
+            </div>
+          `
+        },
+        "4": {
+          name: "Template 4 - Color Theme Header CV",
+          link: "https://shader7.com/cvbanao/template4",
+          cssClass: "modal-t4",
+          features: [
+            "Vibrant customizable header design.",
+            "Built-in orange-to-terracotta horizontal gradient.",
+            "Horizontal contact row for compact spacing.",
+            "Elegant rounded experience block borders.",
+            "Ideal for customer service & creative profiles."
+          ],
+          html: `
+            <div class="t4-header">
+              <div>
+                <h1>Neha Kapoor</h1>
+                <div class="t4-role">Customer Support Executive</div>
+              </div>
+              <div class="t4-photo"></div>
+            </div>
+            <div class="t4-contact">
+              <span>Email: neha.kapoor@email.com</span>
+              <span>Phone: +91 99999 88888</span>
+              <span>Address: Bangalore, India</span>
+            </div>
+            <div class="t4-body">
+              <div>
+                <div class="t4-section">
+                  <h3>Summary Profile</h3>
+                  <p>Energetic and empathetic Customer Support Professional with 3+ years of experience delivering top-tier technical assistance, customer retention strategies, and CRM management. Proven ability to maintain a 98% positive satisfaction rating under fast-paced SLA requirements.</p>
+                </div>
+                <div class="t4-section">
+                  <h3>Work Experience</h3>
+                  <div class="t4-experience-card">
+                    <div class="t4-experience-title">Support Specialist - BluePeak Solutions</div>
+                    <div style="font-size:0.82rem; color:#ea580c; font-style:italic; margin-bottom:6px;">2022 - Present | Bangalore, India</div>
+                    <ul>
+                      <li>Resolved an average of 65+ complex technical support tickets daily via email, live chat, and voice channels.</li>
+                      <li>Created comprehensive internal knowledge base articles, cutting average ticket resolution time by 12%.</li>
+                      <li>Monitored customer escalation queues, collaborating directly with product developers to patch software bugs.</li>
+                    </ul>
+                  </div>
+                  <div class="t4-experience-card">
+                    <div class="t4-experience-title">Support Executive - TelePerformance</div>
+                    <div style="font-size:0.82rem; color:#ea580c; font-style:italic; margin-bottom:6px;">2020 - 2022 | Bangalore, India</div>
+                    <ul>
+                      <li>Handled incoming international client accounts, answering product-use questions and managing billing returns.</li>
+                      <li>Earned "Employee of the Quarter" award twice for exceeding target satisfaction scores.</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div class="t4-section">
+                  <h3>Core Skills</h3>
+                  <ul>
+                    <li>Zendesk & Salesforce CRM</li>
+                    <li>Multi-Channel Support</li>
+                    <li>Conflict Resolution</li>
+                    <li>SLA Adherence</li>
+                  </ul>
+                </div>
+                <div class="t4-section">
+                  <h3>Education</h3>
+                  <div style="margin-bottom:12px;">
+                    <div class="t4-experience-title" style="font-size:0.9rem; color:#1e293b;">Mount Carmel College</div>
+                    <div style="font-size:0.8rem; color:#475569;">B.Sc in Computer Science | 2017 - 2020</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `
+        },
+        "5": {
+          name: "Template 5 - Maroon Classic Fitter CV",
+          link: "https://shader7.com/cvbanao/template5",
+          cssClass: "modal-t5",
+          features: [
+            "The ultimate vocational & industrial layout.",
+            "Warm classic maroon border & footer panel.",
+            "Circular profile photo overlapping the header block.",
+            "Dedicated side-by-side hard/soft skill listings.",
+            "Structured specifically for technical & engineering resumes."
+          ],
+          html: `
+            <div class="t5-header">
+              <div class="t5-photo"></div>
+              <h1>Rohan Kumar Singh</h1>
+              <div class="t5-role">Production Fitter</div>
+            </div>
+            <div class="t5-body">
+              <div class="t5-sidebar">
+                <div class="t5-section">
+                  <h3>My Contact</h3>
+                  <p style="font-size:0.8rem; line-height:1.4; margin-bottom:8px;">
+                    <strong>Email:</strong><br>rohan.singh@email.com
+                  </p>
+                  <p style="font-size:0.8rem; line-height:1.4; margin-bottom:8px;">
+                    <strong>Phone:</strong><br>+91 90123 45678
+                  </p>
+                  <p style="font-size:0.8rem; line-height:1.4; margin-bottom:8px;">
+                    <strong>Address:</strong><br>Pune, MH, India
+                  </p>
+                </div>
+                <div class="t5-section">
+                  <h3>Hard Skills</h3>
+                  <ul style="padding-left:14px; margin:0;">
+                    <li>Steel Fitting</li>
+                    <li>Bench Grinding</li>
+                    <li>MAG Drilling</li>
+                    <li>Power Tools</li>
+                    <li>Vernier Caliper</li>
+                  </ul>
+                </div>
+                <div class="t5-section">
+                  <h3>Soft Skills</h3>
+                  <ul style="padding-left:14px; margin:0;">
+                    <li>Observation</li>
+                    <li>Teamwork</li>
+                    <li>Decision Making</li>
+                    <li>Time Management</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="t5-main">
+                <div class="t5-section">
+                  <h3>Career Objective</h3>
+                  <p>Highly skilled and safety-conscious ITI Fitter with over 6 years of experience in mechanical assembly, machine alignment, precision metal fitting, and preventative maintenance. Seeking a production fitter position to utilize structural fitting skills and drive high manufacturing throughput.</p>
+                </div>
+                <div class="t5-section">
+                  <h3>Professional Experience</h3>
+                  <div class="t5-experience-item">
+                    <div class="t5-experience-title">Production Fitter - Prime Agro Machines</div>
+                    <div style="font-size:0.85rem; color:#475569; font-style:italic; margin-bottom:4px;">2022 - Present | Pune, India</div>
+                    <ul>
+                      <li>Assembled complex agricultural machine frames and structural safety guards, improving assembly line speed by 18%.</li>
+                      <li>Performed precise drilling, tapping, and bench grinding of custom steel and cast iron components.</li>
+                      <li>Measured and aligned shaft parts using dial indicators, Vernier calipers, and precision micrometers.</li>
+                    </ul>
+                  </div>
+                  <div class="t5-experience-item">
+                    <div class="t5-experience-title">Trainee Fitter - Metro Fabrication</div>
+                    <div style="font-size:0.85rem; color:#475569; font-style:italic; margin-bottom:4px;">2019 - 2022 | Pune, India</div>
+                    <ul>
+                      <li>Assisted senior fitters and prepared working tools for fabrication operations.</li>
+                      <li>Cleaned, oiled, and lubricated workshop machinery daily to maintain operating health.</li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="t5-section">
+                  <h3>Education</h3>
+                  <div class="t5-experience-item">
+                    <div class="t5-experience-title">ITI Fitter Trade</div>
+                    <div style="font-size:0.85rem; color:#475569;">National Technical Institute | 2017 - 2019</div>
+                  </div>
+                </div>
+                <div class="t5-section">
+                  <h3>Languages</h3>
+                  <ul style="padding-left:14px; margin:0;">
+                    <li>English</li>
+                    <li>Hindi</li>
+                    <li>Marathi</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="t5-bottom-bar"></div>
+          `
+        }
+      };
+
+      const modal = document.getElementById('cvPreviewModal');
+      const closeBtn = document.getElementById('closeModalBtn');
+      const templateSelect = document.getElementById('templateSelect');
+      const modalA4Container = document.getElementById('modalA4Container');
+      const modalTemplateFeatures = document.getElementById('modalTemplateFeatures');
+      const useTemplateCtaBtn = document.getElementById('useTemplateCtaBtn');
+
+      function scaleA4Preview() {
+        if (!modal.classList.contains('show')) return;
+        
+        // Reset scale style before measuring
+        modalA4Container.style.transform = 'none';
+        modalA4Container.style.marginBottom = '0px';
+        
+        const wrapper = modalA4Container.parentElement;
+        const wrapperWidth = wrapper.clientWidth - 48; // accounting for padding
+        const containerWidth = modalA4Container.offsetWidth;
+        const containerHeight = modalA4Container.offsetHeight;
+        
+        let scale = wrapperWidth / containerWidth;
+        if (scale > 1) scale = 1; // Don't scale up past 100%
+        
+        modalA4Container.style.transform = `scale(${scale})`;
+        
+        // Offset negative margin to collapse the blank space underneath the scaled-down container
+        const scaledHeight = containerHeight * scale;
+        const heightDiff = containerHeight - scaledHeight;
+        modalA4Container.style.marginBottom = `-${heightDiff}px`;
+      }
+
+      function loadTemplatePreview(templateId) {
+        const data = templatesData[templateId];
+        if (!data) return;
+
+        // Reset classes and set new class
+        modalA4Container.className = 'modal-a4-container ' + data.cssClass;
+        modalA4Container.innerHTML = data.html;
+
+        // Update sidebar details
+        modalTemplateFeatures.innerHTML = data.features.map(f => `<li>${f}</li>`).join('');
+
+        // Update CTA button link
+        useTemplateCtaBtn.href = data.link;
+
+        // Make sure it renders and measures before scaling
+        setTimeout(() => {
+          scaleA4Preview();
+        }, 10);
+      }
+
+      function openModal(templateId) {
+        modal.classList.add('show');
+        templateSelect.value = templateId;
+        loadTemplatePreview(templateId);
+        document.body.style.overflow = 'hidden'; // Lock background scrolling
+      }
+
+      function closeModal() {
+        modal.classList.remove('show');
+        document.body.style.overflow = ''; // Unlock scrolling
+      }
+
+      // Add click event listeners to trigger buttons
+      document.querySelectorAll('.btn-view-preview').forEach(button => {
+        button.addEventListener('click', (e) => {
+          e.preventDefault();
+          const templateId = button.getAttribute('data-template');
+          openModal(templateId);
+        });
+      });
+
+      // Handle dropdown change event
+      templateSelect.addEventListener('change', () => {
+        loadTemplatePreview(templateSelect.value);
+      });
+
+      // Handle close events
+      closeBtn.addEventListener('click', closeModal);
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          closeModal();
+        }
+      });
+
+      // Recalculate A4 layout scale on window resize
+      window.addEventListener('resize', () => {
+        scaleA4Preview();
+      });
+      
+      // Also listen to orientationchange for mobile layout transitions
+      window.addEventListener('orientationchange', () => {
+        setTimeout(scaleA4Preview, 200);
+      });
+    });
+  </script>
 </body>
 </html>
