@@ -32,6 +32,88 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
 
   <style>
+        /* Premium Info Section for AdSense and SEO */
+        .app-info-section {
+            margin-top: 40px;
+            background: #1e293b !important;
+            border: 1px solid #334155 !important;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
+            text-align: left !important;
+            color: #e2e8f0 !important;
+        }
+        .app-info-section h3 {
+            color: #3b82f6 !important;
+            font-size: 1.35rem !important;
+            margin-top: 25px !important;
+            margin-bottom: 12px !important;
+            border-bottom: 1px solid #334155 !important;
+            padding-bottom: 6px !important;
+            font-weight: 700 !important;
+            text-transform: none !important;
+            text-align: left !important;
+        }
+        .app-info-section h3:first-of-type {
+            margin-top: 0 !important;
+        }
+        .app-info-section p {
+            color: #cbd5e1 !important;
+            font-size: 0.95rem !important;
+            line-height: 1.7 !important;
+            margin-bottom: 15px !important;
+            text-align: left !important;
+        }
+        .app-info-section ul, .app-info-section ol {
+            margin-left: 24px !important;
+            margin-bottom: 15px !important;
+            color: #cbd5e1 !important;
+            text-align: left !important;
+        }
+        .app-info-section li {
+            margin-bottom: 6px !important;
+            font-size: 0.95rem !important;
+            line-height: 1.6 !important;
+        }
+        .app-info-section code {
+            background: #020617 !important;
+            padding: 2px 6px !important;
+            border-radius: 4px !important;
+            font-family: monospace !important;
+            color: #3b82f6 !important;
+            font-size: 0.9rem !important;
+        }
+        .app-info-section .guide-promo-box {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(168, 85, 247, 0.08)) !important;
+            border: 1px dashed rgba(139, 92, 246, 0.3) !important;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+            text-align: center !important;
+        }
+        .app-info-section .guide-promo-box p {
+            text-align: center !important;
+            margin-bottom: 12px !important;
+            font-weight: 600 !important;
+            color: #ffffff !important;
+        }
+        .app-info-section .promo-btn {
+            display: inline-block !important;
+            background: #6366f1 !important;
+            color: #ffffff !important;
+            padding: 10px 20px !important;
+            border-radius: 6px !important;
+            text-decoration: none !important;
+            font-weight: 700 !important;
+            transition: background 0.2s !important;
+            font-size: 0.9rem !important;
+            border: none !important;
+            cursor: pointer !important;
+        }
+        .app-info-section .promo-btn:hover {
+            background: #4f46e5 !important;
+        }
+
     :root {
       --accent-color: #00a8ff;
       --accent-2: #7c3aed;
@@ -1790,7 +1872,45 @@
       <button id="gdpr-reject" class="cookie-btn cookie-secondary" type="button">Essential Only</button>
       <button id="gdpr-accept" class="cookie-btn cookie-primary" type="button">Accept Preferences</button>
     </div>
-  </div>
+  
+        <div class="app-info-section">
+            <h3>WebRTC P2P NAT Traversal, STUN/TURN, & Client-Side E2EE</h3>
+            <p>Centralized messaging platforms store your chat logs on database servers, exposing your private communications to security breaches and profiling. Quick Private Chat is an experimental peer-to-peer (P2P) messaging application that establishes a direct cryptographic connection between browsers using the WebRTC protocol, completely bypassing external database storage.</p>
+            
+            <p>The network and security protocols under the hood of WebRTC include:</p>
+            <ul>
+                <li><strong>ICE Connection Negotiations:</strong> Interactive Connectivity Establishment (ICE) is a framework used to find the fastest path between two browsers. It gathers connection options (known as ICE candidates) using STUN and TURN servers.</li>
+                <li><strong>STUN vs. TURN Traversal:</strong> A **STUN** server simply helps a browser discover its own public IP address and port behind local NAT routers; if strict firewalls block direct connection, a **TURN** relay server acts as a fallback to securely forward encrypted traffic.</li>
+                <li><strong>Client-Side E2EE Cryptography:</strong> Text payloads are encrypted inside your browser before transmission using symmetric keys generated via the Diffie-Hellman algorithm, ensuring that even TURN relay servers cannot read your messages: <code>Ciphertext = Encrypt(Message, Key_symmetric)</code>.</li>
+            </ul>
+
+            <h3>Step-by-Step P2P Chat Room Setup</h3>
+            <ol>
+                <li><strong>Create a Room:</strong> Generate a unique, secure room code directly on the interface.</li>
+                <li><strong>Share the Key:</strong> Send the room code securely to your partner. This code is used to coordinate the initial WebRTC connection handshake.</li>
+                <li><strong>Negotiate Handshake:</strong> The signaling network maps both clients, exchanges ICE candidates, and establishes the peer-to-peer data channel.</li>
+                <li><strong>Chat Privately:</strong> Once connected, the chat indicator turns green, indicating a direct, encrypted browser-to-browser connection.</li>
+            </ol>
+
+            <h3>How WebRTC Guarantees Zero Server Footprints</h3>
+            <p>Unlike standard apps that use REST APIs or WebSockets to route messages through databases, WebRTC's <code>RTCDataChannel</code> allows browsers to stream encrypted bytes directly to one another. The signaling server is only utilized during the first 10 seconds to help the browsers locate one another. Once the P2P channel is active, the signaling server is disconnected, leaving zero logs or footprints on the web.</p>
+
+            <h3>Quick Private Chat Frequently Asked Questions (FAQ)</h3>
+            <p><strong>Q: What is a TURN server and can it intercept my chat history?</strong><br>
+            A: A TURN (Traversal Using Relays around NAT) server is used as a backup to route traffic when firewalls block direct connections. However, because messages are encrypted inside your browser using end-to-end symmetric keys, the TURN server only passes unreadable binary blocks, keeping your chat history completely private.</p>
+            
+            <p><strong>Q: Why does my chat fail to connect on certain cellular networks?</strong><br>
+            A: Some cellular providers enforce strict "Symmetric NAT" routing configurations that block standard peer connections. If direct STUN discovery fails, the application automatically fallbacks to TURN servers to establish the connection.</p>
+
+            <p><strong>Q: Is my chat history lost when I close the browser window?</strong><br>
+            A: Yes. Quick Private Chat stores your messages locally in volatile browser memory. Closing the tab immediately destroys the cryptographic keys and chat history, leaving absolutely no digital trace on your device.</p>
+
+            <div class="guide-promo-box">
+                <p>Want to master WebRTC protocols, Diffie-Hellman handshakes, and NAT traversal cryptography?</p>
+                <a href="/ber-of-chat-p2p-messaging-guide.html" class="promo-btn">Read the Ultimate P2P Messaging Guide (5,000+ Words) →</a>
+            </div>
+        </div>
+    </div>
 
   <script>
     (function () {

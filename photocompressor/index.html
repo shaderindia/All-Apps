@@ -106,6 +106,88 @@
   </script>
 
   <style>
+        /* Premium Info Section for AdSense and SEO */
+        .app-info-section {
+            margin-top: 40px;
+            background: #1e293b !important;
+            border: 1px solid #334155 !important;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
+            text-align: left !important;
+            color: #e2e8f0 !important;
+        }
+        .app-info-section h3 {
+            color: #3b82f6 !important;
+            font-size: 1.35rem !important;
+            margin-top: 25px !important;
+            margin-bottom: 12px !important;
+            border-bottom: 1px solid #334155 !important;
+            padding-bottom: 6px !important;
+            font-weight: 700 !important;
+            text-transform: none !important;
+            text-align: left !important;
+        }
+        .app-info-section h3:first-of-type {
+            margin-top: 0 !important;
+        }
+        .app-info-section p {
+            color: #cbd5e1 !important;
+            font-size: 0.95rem !important;
+            line-height: 1.7 !important;
+            margin-bottom: 15px !important;
+            text-align: left !important;
+        }
+        .app-info-section ul, .app-info-section ol {
+            margin-left: 24px !important;
+            margin-bottom: 15px !important;
+            color: #cbd5e1 !important;
+            text-align: left !important;
+        }
+        .app-info-section li {
+            margin-bottom: 6px !important;
+            font-size: 0.95rem !important;
+            line-height: 1.6 !important;
+        }
+        .app-info-section code {
+            background: #020617 !important;
+            padding: 2px 6px !important;
+            border-radius: 4px !important;
+            font-family: monospace !important;
+            color: #3b82f6 !important;
+            font-size: 0.9rem !important;
+        }
+        .app-info-section .guide-promo-box {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(168, 85, 247, 0.08)) !important;
+            border: 1px dashed rgba(139, 92, 246, 0.3) !important;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+            text-align: center !important;
+        }
+        .app-info-section .guide-promo-box p {
+            text-align: center !important;
+            margin-bottom: 12px !important;
+            font-weight: 600 !important;
+            color: #ffffff !important;
+        }
+        .app-info-section .promo-btn {
+            display: inline-block !important;
+            background: #6366f1 !important;
+            color: #ffffff !important;
+            padding: 10px 20px !important;
+            border-radius: 6px !important;
+            text-decoration: none !important;
+            font-weight: 700 !important;
+            transition: background 0.2s !important;
+            font-size: 0.9rem !important;
+            border: none !important;
+            cursor: pointer !important;
+        }
+        .app-info-section .promo-btn:hover {
+            background: #4f46e5 !important;
+        }
+
     * {
       box-sizing: border-box;
       font-family: Arial, Helvetica, sans-serif;
@@ -984,7 +1066,44 @@
             <summary>Is my uploaded photo stored or shared?</summary>
             <p>No. Privacy is a core feature of Shader7. Since the tool operates 100% client-side, your photos remain secure on your own device. No data is sent to external servers, protecting your privacy completely.</p>
           </details>
+        
+        <div class="app-info-section">
+            <h3>The Mathematics of Lossy DCT & Lossless Huffman Compression</h3>
+            <p>Digital images require immense storage space if saved as raw pixels. To optimize images for web performance, modern compressors use either lossy algorithms (such as JPEG/WebP) or lossless algorithms (such as PNG). Our Photo Compressor operates directly inside your browser using canvas rendering pipelines, allowing you to compress images with zero server-side exposure.</p>
+            
+            <p>The mathematical principles governing these compression methods are:</p>
+            <ul>
+                <li><strong>Lossy Discrete Cosine Transform (DCT):</strong> Used in JPEG compression to convert spatial 8x8 pixel grids into frequency domains. Low-frequency values are preserved, while high-frequency details (which human eyes barely detect) are divided by values in a <strong>Quantization Matrix</strong> and discarded: <code>C_(u,v) = round( F_(u,v) / Q_(u,v) )</code>.</li>
+                <li><strong>Lossless Huffman & LZW Coding:</strong> Used in PNG compression to scan repetitive patterns of data and index them in a dynamic dictionary, reducing file size with absolutely zero loss in quality.</li>
+            </ul>
+
+            <h3>Step-by-Step Image Optimization Guidelines</h3>
+            <ol>
+                <li><strong>Select the Right Format:</strong> Use **PNG** for screenshots, diagrams, text layouts, and images containing transparency; use **JPEG** or **WebP** for real-world photography and complex colorful scenes.</li>
+                <li><strong>Calibrate Compression Ratio:</strong> Set your target quality percentage between 70% and 85%. This represents the sweet spot, yielding up to a 90% reduction in file size while retaining excellent visual fidelity.</li>
+                <li><strong>Resize to Target Boundaries:</strong> Lowering spatial resolution (width and height) is the most effective way to reduce file sizes. Our tool allows custom dimensions in pixels, centimeters, and inches.</li>
+                <li><strong>Preserve Color Profiles:</strong> The compressor automatically retains standard sRGB profiles to ensure consistent color rendering across different mobile and desktop displays.</li>
+            </ol>
+
+            <h3>Understanding Compression Metrics</h3>
+            <p>When compressing files, the compression ratio is calculated as: <code>CR = Original Size / Compressed Size</code>. A compression ratio of 10:1 indicates that the optimized file is only 10% of the original size. The tool displays this metric in real time so you can audit optimization thresholds before downloading.</p>
+
+            <h3>Photo Compressor Frequently Asked Questions (FAQ)</h3>
+            <p><strong>Q: What is the difference between JPEG and WebP?</strong><br>
+            A: WebP is a modern web image format developed by Google that offers both lossy and lossless compression. WebP files are typically 25% to 30% smaller than JPEGs at equivalent quality settings, and they support transparent alpha channels.</p>
+            
+            <p><strong>Q: Does compressing an image reduce its print quality?</strong><br>
+            A: Yes, if the quality index is set too low (under 60%) or if the pixel dimensions are downscaled. For print, keep pixel dimensions intact and maintain quality above 85% at a minimum resolution of 300 DPI.</p>
+
+            <p><strong>Q: Are my uploaded photos safe?</strong><br>
+            A: Absolutely. Our compressor is built using Web Assembly and HTML5 canvas APIs that process the image bytes directly within your local browser memory. No data is transmitted to external servers, ensuring complete privacy.</p>
+
+            <div class="guide-promo-box">
+                <p>Want to master the physics of color spaces, DCT matrix operations, and Huffman coding algorithms?</p>
+                <a href="/photo-compression-guide-online.html" class="promo-btn">Read the Ultimate Photo Compression Guide (5,000+ Words) →</a>
+            </div>
         </div>
+    </div>
       </article>
     </section>
 
