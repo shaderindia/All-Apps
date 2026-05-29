@@ -896,8 +896,8 @@
                                     <div class="form-group">
                                         <label>Action</label>
                                         <select id="feat-type">
-                                            <option value="solid">Add (Solid)</option>
-                                            <option value="hole">Cut (Hole)</option>
+                                            <option value="solid">Add Solid</option>
+                                            <option value="hole">Subtract Solid</option>
                                         </select>
                                     </div>
 
@@ -1815,7 +1815,7 @@
                         label = `Text: "${str.length > 10 ? str.slice(0,8)+'...' : str}"`;
                     }
                     
-                    const actionLabel = feat.type === 'hole' ? 'Cut' : 'Add';
+                    const actionLabel = feat.type === 'hole' ? 'Subtract Solid' : 'Add Solid';
                     
                     html += `
                         <div class="tree-item feature-item ${isSelected ? 'selected' : ''}" onclick="selectTreeItem('${feat.id}')">
@@ -1950,7 +1950,7 @@
                 
                 const feat = state.features.find(f => f.id === state.selectedId);
                 if (feat) {
-                    let actionText = feat.type === 'hole' ? 'Cut' : 'Add';
+                    let actionText = feat.type === 'hole' ? 'Subtract Solid' : 'Add Solid';
                     let shapeText = feat.shape.charAt(0).toUpperCase() + feat.shape.slice(1);
                     statusSelected.textContent = `Selected: ${shapeText} (${actionText})`;
                     
