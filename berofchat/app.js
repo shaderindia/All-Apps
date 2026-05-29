@@ -1746,6 +1746,15 @@
      FEATURE 14: CALL UI + FLOATING CALL CONTROLS BAR
      ============================================================ */
 
+  function updateVideoGridClasses() {
+    if (!videoGrid) return;
+    const videoCount = videoGrid.querySelectorAll("video").length;
+    videoGrid.classList.remove("video-count-1", "video-count-2", "video-count-3", "video-count-4");
+    if (videoCount > 0) {
+      videoGrid.classList.add("video-count-" + Math.min(videoCount, 4));
+    }
+  }
+
   function showCallUI(hasVideo) {
     document.body.classList.add("qpc-call-active");
     document.body.classList.toggle("qpc-video-call", Boolean(hasVideo));
@@ -1760,11 +1769,14 @@
 
     if (hasVideo) {
       btnMuteCam?.classList.remove("hidden");
+      ctrlMuteCam?.classList.remove("hidden");
     } else {
       btnMuteCam?.classList.add("hidden");
+      ctrlMuteCam?.classList.add("hidden");
     }
 
     // Show floating call controls bar
+    callControlsBar?.classList.add("visible");
     callControlsBar?.classList.remove("hidden");
     syncFloatingCallControls();
   }
@@ -1786,6 +1798,7 @@
     video.setAttribute("data-peer-id", "me");
 
     videoGrid.appendChild(video);
+    updateVideoGridClasses();
   }
 
   function addRemoteVideo(peerId, stream) {
@@ -1804,6 +1817,7 @@
     video.setAttribute("data-peer-id", peerId);
 
     videoGrid.appendChild(video);
+    updateVideoGridClasses();
   }
 
   function removeRemoteVideo(peerId) {
@@ -1814,6 +1828,7 @@
     if (video) {
       video.remove();
     }
+    updateVideoGridClasses();
   }
 
   function endCall(sendNotice = true, showLocalMessage = true) {
@@ -1858,6 +1873,7 @@
     if (videoGrid) {
       videoGrid.innerHTML = "";
       videoGrid.classList.add("hidden");
+      videoGrid.classList.remove("video-count-1", "video-count-2", "video-count-3", "video-count-4");
     }
 
     btnMuteMic?.classList.add("hidden");
@@ -1878,6 +1894,7 @@
     }
 
     // Hide floating call controls bar
+    callControlsBar?.classList.remove("visible");
     callControlsBar?.classList.add("hidden");
     syncFloatingCallControls();
 
