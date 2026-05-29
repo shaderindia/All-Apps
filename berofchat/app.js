@@ -2932,6 +2932,25 @@
       }
     });
 
+    // Reset call code listener
+    const resetBtn = document.getElementById("btn-reset-my-code");
+    resetBtn?.addEventListener("click", async () => {
+      if (confirm("Regenerate your Call Code? Your friends will need the new code to call you directly. Your old code will be instantly invalidated.")) {
+        const randomPart = Math.random().toString(36).substring(2, 10).toUpperCase();
+        myPersonalId = "QPC-" + randomPart;
+        localStorage.setItem("qpc_personal_id", myPersonalId);
+        
+        if (codeDisplay) {
+          codeDisplay.textContent = myPersonalId;
+        }
+        
+        addSystemMessage("Your Direct Call Code was successfully regenerated!");
+        
+        // Re-initialize personal background peer with new code!
+        await initPersonalPeer();
+      }
+    });
+
     // Manual Friend Adder listener
     const addFriendBtn = document.getElementById("btn-add-friend-manual");
     addFriendBtn?.addEventListener("click", () => {
