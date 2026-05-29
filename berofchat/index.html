@@ -434,7 +434,7 @@
       border-radius: 17px;
       background: rgba(15, 23, 42, 0.06);
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(3, 1fr);
       gap: 7px;
     }
 
@@ -1922,6 +1922,9 @@
           <button id="tab-create" class="tab-btn" type="button" role="tab" aria-selected="false" aria-controls="create-form" data-target="create-form">
             Create Room
           </button>
+          <button id="tab-friends" class="tab-btn" type="button" role="tab" aria-selected="false" aria-controls="friends-form" data-target="friends-form">
+            Friends List
+          </button>
         </div>
 
         <div id="join-form" class="form-container active" role="tabpanel" aria-labelledby="tab-join">
@@ -1948,6 +1951,40 @@
             <i class="fa-solid fa-magic" aria-hidden="true"></i>
             Generate & Host Room
           </button>
+        </div>
+
+        <div id="friends-form" class="form-container" role="tabpanel" aria-labelledby="tab-friends" style="display:none;">
+          <!-- Display user's own persistent friend code/personal ID so they can easily share it! -->
+          <div class="my-friend-code-container" style="background:rgba(0,168,255,0.06); border:1px dashed rgba(0,168,255,0.3); border-radius:15px; padding:12px; margin-bottom:14px; text-align:center;">
+            <span style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.04em; display:block; margin-bottom:4px;">My Direct Call Code</span>
+            <div style="display:flex; align-items:center; justify-content:center; gap:8px;">
+              <strong id="my-persistent-id-display" style="font-size:18px; font-weight:900; color:#0f172a; letter-spacing:0.04em;">QPC-XXXX-XXXX</strong>
+              <button id="btn-copy-my-code" class="icon-btn-micro" type="button" title="Copy My Code" style="width:28px; height:28px; font-size:12px; border-radius:8px; border:none; background:rgba(0,168,255,0.1); color:var(--accent-color); cursor:pointer; display:grid; place-items:center;">
+                <i class="fa-regular fa-copy"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Add Friend manually option -->
+          <div class="input-group" style="margin-bottom:10px;">
+            <i class="fa-solid fa-user-plus" aria-hidden="true"></i>
+            <input type="text" id="add-friend-code-input" placeholder="Enter Friend's Call Code (e.g. QPC-XYZ)" autocomplete="off" style="text-transform: uppercase;" />
+          </div>
+          <div class="input-group" style="margin-bottom:12px;">
+            <i class="fa-solid fa-signature" aria-hidden="true"></i>
+            <input type="text" id="add-friend-name-input" placeholder="Friend's Nickname" autocomplete="off" />
+          </div>
+          <button id="btn-add-friend-manual" class="btn primary-btn" type="button" style="width:100%; margin-bottom:16px;">
+            <i class="fa-solid fa-plus"></i> Add Friend
+          </button>
+
+          <!-- List of Added Friends -->
+          <div class="friends-list-wrapper" style="border-top:1px solid var(--border); padding-top:14px;">
+            <span style="font-size:12px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.04em; display:block; margin-bottom:10px; text-align:left;">My Friends</span>
+            <ul id="friends-list-ul" style="list-style:none; padding:0; margin:0; display:grid; gap:10px; max-height:220px; overflow-y:auto; text-align:left;">
+              <!-- Dynamically populated -->
+            </ul>
+          </div>
         </div>
 
         <div class="age-verification">

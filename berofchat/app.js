@@ -35,6 +35,14 @@
 
   const MAX_ROOM_MEMBERS = 4;
 
+  // Persistent Call Code Setup
+  let myPersonalId = localStorage.getItem("qpc_personal_id");
+  if (!myPersonalId) {
+    const randomPart = Math.random().toString(36).substring(2, 10).toUpperCase();
+    myPersonalId = "QPC-" + randomPart;
+    localStorage.setItem("qpc_personal_id", myPersonalId);
+  }
+
   /* ──── Existing DOM references ──── */
   const entryScreen = $("#entry-screen");
   const chatScreen = $("#chat-screen");
@@ -675,16 +683,68 @@
 
     members.forEach((info, peerId) => {
       const li = document.createElement("li");
+      li.style.display = "flex";
+      li.style.alignItems = "center";
+      li.style.justifyContent = "space-between";
+      li.style.gap = "8px";
+      
       const statusClass = getPresenceClass(peerId);
 
       const dot = document.createElement("span");
       dot.className = "member-status-dot " + statusClass;
       dot.setAttribute("aria-hidden", "true");
 
-      const text = document.createTextNode(" " + info.name + " — " + info.role);
+      const leftSide = document.createElement("div");
+      leftSide.style.display = "flex";
+      leftSide.style.alignItems = "center";
+      leftSide.style.gap = "6px";
+      leftSide.appendChild(dot);
+      
+      const nameSpan = document.createElement("span");
+      nameSpan.textContent = " " + info.name + " — " + info.role;
+      leftSide.appendChild(nameSpan);
 
-      li.appendChild(dot);
-      li.appendChild(text);
+      li.appendChild(leftSide);
+
+      // If it's another user, add an "Add Friend" button!
+      const targetPersonalId = info.personalId || peerId;
+      if (peerId !== myPeerId && targetPersonalId !== myPersonalId) {
+        const addBtn = document.createElement("button");
+        addBtn.className = "add-friend-btn-small";
+        addBtn.type = "button";
+        addBtn.title = "Add Friend";
+        addBtn.style.background = "rgba(0,168,255,0.12)";
+        addBtn.style.color = "var(--accent-color)";
+        addBtn.style.border = "none";
+        addBtn.style.borderRadius = "8px";
+        addBtn.style.width = "26px";
+        addBtn.style.height = "26px";
+        addBtn.style.display = "grid";
+        addBtn.style.placeItems = "center";
+        addBtn.style.cursor = "pointer";
+        addBtn.style.transition = "all 0.2s ease";
+        addBtn.innerHTML = '<i class="fa-solid fa-user-plus" style="font-size:11px;"></i>';
+
+        if (isFriendAdded(targetPersonalId)) {
+          addBtn.innerHTML = '<i class="fa-solid fa-user-check" style="font-size:11px;color:#10b981;"></i>';
+          addBtn.style.background = "rgba(16,185,129,0.12)";
+          addBtn.disabled = true;
+          addBtn.style.cursor = "default";
+        } else {
+          addBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            addFriend(targetPersonalId, info.name);
+            addBtn.innerHTML = '<i class="fa-solid fa-user-check" style="font-size:11px;color:#10b981;"></i>';
+            addBtn.style.background = "rgba(16,185,129,0.12)";
+            addBtn.disabled = true;
+            addBtn.style.cursor = "default";
+            addSystemMessage("Added " + info.name + " to your Friend List!");
+            renderFriendsList();
+          });
+        }
+        li.appendChild(addBtn);
+      }
+
       li.setAttribute("data-peer-id", peerId);
       membersList.appendChild(li);
     });
@@ -863,7 +923,8 @@
     const list = Array.from(members.entries()).map(([id, info]) => ({
       id,
       name: info.name,
-      role: info.role
+      role: info.role,
+      personalId: info.personalId || id
     }));
 
     conn.send({
@@ -877,7 +938,8 @@
     const list = Array.from(members.entries()).map(([id, info]) => ({
       id,
       name: info.name,
-      role: info.role
+      role: info.role,
+      personalId: info.personalId || id
     }));
 
     sendToAll({
@@ -986,6 +1048,7 @@
       conn.send({
         type: "hello",
         id: myPeerId,
+        personalId: myPersonalId,
         name: myName,
         role: isHost ? "Host" : "Member"
       });
@@ -1068,7 +1131,8 @@
 
       members.set(senderId, {
         name: memberName,
-        role: sanitize(data.role, 20) || "Member"
+        role: sanitize(data.role, 20) || "Member",
+        personalId: data.personalId || senderId
       });
 
       lastHeartbeats.set(senderId, Date.now());
@@ -1097,7 +1161,8 @@
       data.members.forEach((m) => {
         members.set(m.id, {
           name: sanitize(m.name, 20) || "Unknown",
-          role: sanitize(m.role, 20) || "Member"
+          role: sanitize(m.role, 20) || "Member",
+          personalId: m.personalId || m.id
         });
         if (!lastHeartbeats.has(m.id)) {
           lastHeartbeats.set(m.id, Date.now());
@@ -1360,7 +1425,8 @@
 
       members.set(myPeerId, {
         name: myName,
-        role: "Host"
+        role: "Host",
+        personalId: myPersonalId
       });
 
       updateMembersUI();
@@ -1400,7 +1466,7 @@
     setEntryStatus("Joining room...", "success");
 
     try {
-      const result = await createPeer(undefined);
+      const result = await createPeer(myPersonalId);
 
       peer = result.peerInstance;
       myPeerId = result.id;
@@ -1410,7 +1476,8 @@
 
       members.set(myPeerId, {
         name: myName,
-        role: "Member"
+        role: "Member",
+        personalId: myPersonalId
       });
 
       const conn = peer.connect(roomCode, {
@@ -1511,6 +1578,9 @@
     unreadCount = 0;
     updateTitleBadge();
     hideTypingIndicator();
+
+    // Reinitialize background personal listening peer
+    initPersonalPeer();
 
     setTimeout(() => { isUserLeaving = false; }, 500);
   }
@@ -2387,7 +2457,7 @@
         Math.min(MAX_ROOM_MEMBERS, Number(maxMembersInput.value || MAX_ROOM_MEMBERS))
       );
 
-      maxMembersInput.addEventListener("input", () => {
+      maxMembersInput.addEventListener("change", () => {
         const value = getSelectedMaxMembers();
         maxMembersInput.value = String(value);
       });
@@ -2533,6 +2603,296 @@
   }
 
   /* ============================================================
+     FRIEND SYSTEM & DIRECT P2P CALLS
+     ============================================================ */
+
+  async function initPersonalPeer() {
+    try {
+      destroyPeer();
+      
+      const result = await createPeer(myPersonalId);
+      peer = result.peerInstance;
+      myPeerId = result.id;
+
+      peer.on("connection", (conn) => {
+        setupConnection(conn);
+        conn.on("open", () => {
+          if (entryScreen?.classList.contains("active")) {
+            enterChatScreen("Direct");
+            
+            // Wait briefly for hello message name exchange
+            setTimeout(() => {
+              const friendInfo = members.get(conn.peer);
+              const displayName = friendInfo?.name || "Friend";
+              
+              if (chatHeaderTitle) chatHeaderTitle.textContent = "Chat with " + displayName;
+              addSystemMessage("Connected directly with " + displayName + "!");
+            }, 600);
+          }
+        });
+      });
+
+      peer.on("call", handleIncomingCall);
+    } catch (err) {
+      console.warn("Failed to initialize personal peer on load:", err);
+    }
+  }
+
+  function getFriendsList() {
+    try {
+      const list = localStorage.getItem("qpc_friends_list");
+      return list ? JSON.parse(list) : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function saveFriendsList(list) {
+    try {
+      localStorage.setItem("qpc_friends_list", JSON.stringify(list));
+    } catch (e) {}
+  }
+
+  function isFriendAdded(personalId) {
+    if (!personalId) return false;
+    const friends = getFriendsList();
+    return friends.some(f => f.personalId === personalId);
+  }
+
+  function addFriend(personalId, name) {
+    if (!personalId) return;
+    const cleanedCode = personalId.trim().toUpperCase();
+    const friends = getFriendsList();
+    if (!friends.some(f => f.personalId === cleanedCode)) {
+      friends.push({ personalId: cleanedCode, name: sanitize(name, 20) || "Friend" });
+      saveFriendsList(friends);
+    }
+  }
+
+  function removeFriend(personalId) {
+    if (!personalId) return;
+    const friends = getFriendsList().filter(f => f.personalId !== personalId);
+    saveFriendsList(friends);
+    renderFriendsList();
+  }
+
+  function renderFriendsList() {
+    const listUl = document.getElementById("friends-list-ul");
+    if (!listUl) return;
+
+    listUl.innerHTML = "";
+    const friends = getFriendsList();
+
+    if (friends.length === 0) {
+      const li = document.createElement("li");
+      li.style.color = "var(--text-muted)";
+      li.style.fontSize = "13px";
+      li.style.padding = "12px 6px";
+      li.style.textAlign = "center";
+      li.textContent = "No friends added yet. Share your Direct Call Code!";
+      listUl.appendChild(li);
+      return;
+    }
+
+    friends.forEach((friend) => {
+      const li = document.createElement("li");
+      li.style.background = "rgba(255, 255, 255, 0.64)";
+      li.style.border = "1px solid var(--border)";
+      li.style.borderRadius = "15px";
+      li.style.padding = "10px 14px";
+      li.style.display = "flex";
+      li.style.alignItems = "center";
+      li.style.justifyContent = "space-between";
+      li.style.gap = "8px";
+
+      const leftSide = document.createElement("div");
+      leftSide.style.display = "flex";
+      leftSide.style.flexDirection = "column";
+      leftSide.style.minWidth = "0";
+
+      const nameSpan = document.createElement("strong");
+      nameSpan.style.fontSize = "13.5px";
+      nameSpan.style.color = "var(--text-main)";
+      nameSpan.style.overflow = "hidden";
+      nameSpan.style.whiteSpace = "nowrap";
+      nameSpan.style.textOverflow = "ellipsis";
+      nameSpan.textContent = friend.name;
+
+      const codeSpan = document.createElement("span");
+      codeSpan.style.fontSize = "11px";
+      codeSpan.style.color = "var(--text-muted)";
+      codeSpan.style.fontWeight = "600";
+      codeSpan.textContent = friend.personalId;
+
+      leftSide.appendChild(nameSpan);
+      leftSide.appendChild(codeSpan);
+
+      const rightSide = document.createElement("div");
+      rightSide.style.display = "flex";
+      rightSide.style.alignItems = "center";
+      rightSide.style.gap = "6px";
+
+      // Direct Chat Button
+      const chatBtn = document.createElement("button");
+      chatBtn.className = "btn";
+      chatBtn.type = "button";
+      chatBtn.style.minHeight = "34px";
+      chatBtn.style.padding = "6px 12px";
+      chatBtn.style.borderRadius = "10px";
+      chatBtn.style.background = "linear-gradient(135deg, #00a8ff, #7c3aed)";
+      chatBtn.style.color = "#fff";
+      chatBtn.style.fontSize = "12px";
+      chatBtn.style.fontWeight = "800";
+      chatBtn.style.border = "none";
+      chatBtn.style.cursor = "pointer";
+      chatBtn.innerHTML = '<i class="fa-solid fa-message"></i> Chat';
+      chatBtn.addEventListener("click", () => {
+        connectToFriend(friend.personalId, friend.name);
+      });
+
+      // Delete Button
+      const delBtn = document.createElement("button");
+      delBtn.type = "button";
+      delBtn.style.background = "rgba(255, 71, 87, 0.08)";
+      delBtn.style.color = "var(--danger-color)";
+      delBtn.style.border = "none";
+      delBtn.style.borderRadius = "10px";
+      delBtn.style.width = "34px";
+      delBtn.style.height = "34px";
+      delBtn.style.display = "grid";
+      delBtn.style.placeItems = "center";
+      delBtn.style.cursor = "pointer";
+      delBtn.innerHTML = '<i class="fa-solid fa-trash-can" style="font-size:12px;"></i>';
+      delBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (confirm("Remove " + friend.name + " from Friend List?")) {
+          removeFriend(friend.personalId);
+        }
+      });
+
+      rightSide.appendChild(chatBtn);
+      rightSide.appendChild(delBtn);
+
+      li.appendChild(leftSide);
+      li.appendChild(rightSide);
+      listUl.appendChild(li);
+    });
+  }
+
+  async function connectToFriend(friendPersonalId, friendName) {
+    if (!validateEntry(false)) return;
+
+    myName = sanitize(guestNameInput.value, 20);
+    roomCode = ""; // No room code!
+    isHost = false;
+    roomClosedByHost = false;
+    isUserLeaving = false;
+
+    setEntryStatus("Connecting to " + friendName + "...", "success");
+
+    try {
+      // Ensure our peer is initialized with our persistent ID
+      if (!peer || peer.destroyed || peer.id !== myPersonalId) {
+        destroyPeer();
+        const result = await createPeer(myPersonalId);
+        peer = result.peerInstance;
+        myPeerId = result.id;
+        peer.on("connection", (conn) => setupConnection(conn));
+        peer.on("call", handleIncomingCall);
+      }
+
+      // Add friend as a member in our local map
+      members.set(myPersonalId, { name: myName, role: "Member", personalId: myPersonalId });
+      members.set(friendPersonalId, { name: friendName, role: "Member", personalId: friendPersonalId });
+      updateMembersUI();
+
+      // Connect to friend's persistent peer ID
+      const conn = peer.connect(friendPersonalId, { reliable: true });
+      setupConnection(conn);
+
+      conn.on("open", () => {
+        enterChatScreen("Direct");
+        if (chatHeaderTitle) chatHeaderTitle.textContent = "Chat with " + friendName;
+        addSystemMessage("Direct connection established with " + friendName + ".");
+        setEntryStatus("");
+      });
+
+      conn.on("error", (err) => {
+        console.error("Direct connection error:", err);
+        setEntryStatus("Could not connect to " + friendName + ". Are they online?", "warning");
+      });
+
+      setTimeout(() => {
+        if (!conn.open && entryScreen?.classList.contains("active")) {
+          setEntryStatus(friendName + " is offline or unavailable.", "warning");
+        }
+      }, 10000);
+
+    } catch (err) {
+      console.error(err);
+      setEntryStatus("Direct connection failed. Please refresh.", "warning");
+    }
+  }
+
+  function initFriendsUI() {
+    // Show personal code on the UI
+    const codeDisplay = document.getElementById("my-persistent-id-display");
+    if (codeDisplay) {
+      codeDisplay.textContent = myPersonalId;
+    }
+
+    // Copy call code listener
+    const copyBtn = document.getElementById("btn-copy-my-code");
+    copyBtn?.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(myPersonalId);
+        addSystemMessage("Your Direct Call Code copied!");
+      } catch (e) {
+        prompt("Copy call code:", myPersonalId);
+      }
+    });
+
+    // Manual Friend Adder listener
+    const addFriendBtn = document.getElementById("btn-add-friend-manual");
+    addFriendBtn?.addEventListener("click", () => {
+      const codeInput = document.getElementById("add-friend-code-input");
+      const nameInput = document.getElementById("add-friend-name-input");
+      if (!codeInput || !nameInput) return;
+
+      const codeVal = codeInput.value.trim().toUpperCase();
+      const nameVal = nameInput.value.trim();
+
+      if (!codeVal.startsWith("QPC-") || codeVal.length < 8) {
+        alert("Invalid Direct Call Code format. Must start with 'QPC-' (e.g. QPC-XYZ123)");
+        return;
+      }
+      if (!nameVal) {
+        alert("Please enter a nickname for your friend.");
+        return;
+      }
+
+      if (codeVal === myPersonalId) {
+        alert("You cannot add yourself as a friend.");
+        return;
+      }
+
+      if (isFriendAdded(codeVal)) {
+        alert("This friend is already in your Friend List!");
+        return;
+      }
+
+      addFriend(codeVal, nameVal);
+      codeInput.value = "";
+      nameInput.value = "";
+      alert("Added " + nameVal + " successfully!");
+      renderFriendsList();
+    });
+
+    // Initial Friends List Render
+    renderFriendsList();
+  }
+
+  /* ============================================================
      INITIALIZATION
      ============================================================ */
 
@@ -2550,7 +2910,10 @@
     initVisibilityChange();
     setConnectionStatus("Ready", "ready");
 
-    console.log("[QPC] app.js v8.0.0 loaded. Max 4 users. PeerJS-only mode ready. 15 new features active.");
+    initPersonalPeer();
+    initFriendsUI();
+
+    console.log("[QPC] app.js loaded. Max 12 users. Persistent P2P mode ready.");
   }
 
   init();
