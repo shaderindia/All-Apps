@@ -2691,105 +2691,172 @@
 
   function renderFriendsList() {
     const listUl = document.getElementById("friends-list-ul");
-    if (!listUl) return;
-
-    listUl.innerHTML = "";
+    const quickSection = document.getElementById("quick-friends-section");
+    const quickList = document.getElementById("quick-friends-list");
+    
     const friends = getFriendsList();
 
-    if (friends.length === 0) {
-      const li = document.createElement("li");
-      li.style.color = "var(--text-muted)";
-      li.style.fontSize = "13px";
-      li.style.padding = "12px 6px";
-      li.style.textAlign = "center";
-      li.textContent = "No friends added yet. Share your Direct Call Code!";
-      listUl.appendChild(li);
-      return;
+    // Populate main Friends tab
+    if (listUl) {
+      listUl.innerHTML = "";
+      if (friends.length === 0) {
+        const li = document.createElement("li");
+        li.style.color = "var(--text-muted)";
+        li.style.fontSize = "13px";
+        li.style.padding = "12px 6px";
+        li.style.textAlign = "center";
+        li.textContent = "No friends added yet. Share your Direct Call Code!";
+        listUl.appendChild(li);
+      } else {
+        friends.forEach((friend) => {
+          const li = document.createElement("li");
+          li.style.background = "rgba(255, 255, 255, 0.64)";
+          li.style.border = "1px solid var(--border)";
+          li.style.borderRadius = "15px";
+          li.style.padding = "10px 14px";
+          li.style.display = "flex";
+          li.style.alignItems = "center";
+          li.style.justifyContent = "space-between";
+          li.style.gap = "8px";
+
+          const leftSide = document.createElement("div");
+          leftSide.style.display = "flex";
+          leftSide.style.flexDirection = "column";
+          leftSide.style.minWidth = "0";
+
+          const nameSpan = document.createElement("strong");
+          nameSpan.style.fontSize = "13.5px";
+          nameSpan.style.color = "var(--text-main)";
+          nameSpan.style.overflow = "hidden";
+          nameSpan.style.whiteSpace = "nowrap";
+          nameSpan.style.textOverflow = "ellipsis";
+          nameSpan.textContent = friend.name;
+
+          const codeSpan = document.createElement("span");
+          codeSpan.style.fontSize = "11px";
+          codeSpan.style.color = "var(--text-muted)";
+          codeSpan.style.fontWeight = "600";
+          codeSpan.textContent = friend.personalId;
+
+          leftSide.appendChild(nameSpan);
+          leftSide.appendChild(codeSpan);
+
+          const rightSide = document.createElement("div");
+          rightSide.style.display = "flex";
+          rightSide.style.alignItems = "center";
+          rightSide.style.gap = "6px";
+
+          // Direct Chat Button
+          const chatBtn = document.createElement("button");
+          chatBtn.className = "btn";
+          chatBtn.type = "button";
+          chatBtn.style.minHeight = "34px";
+          chatBtn.style.padding = "6px 12px";
+          chatBtn.style.borderRadius = "10px";
+          chatBtn.style.background = "linear-gradient(135deg, #00a8ff, #7c3aed)";
+          chatBtn.style.color = "#fff";
+          chatBtn.style.fontSize = "12px";
+          chatBtn.style.fontWeight = "800";
+          chatBtn.style.border = "none";
+          chatBtn.style.cursor = "pointer";
+          chatBtn.innerHTML = '<i class="fa-solid fa-message"></i> Chat';
+          chatBtn.addEventListener("click", () => {
+            connectToFriend(friend.personalId, friend.name);
+          });
+
+          // Delete Button
+          const delBtn = document.createElement("button");
+          delBtn.type = "button";
+          delBtn.style.background = "rgba(255, 71, 87, 0.08)";
+          delBtn.style.color = "var(--danger-color)";
+          delBtn.style.border = "none";
+          delBtn.style.borderRadius = "10px";
+          delBtn.style.width = "34px";
+          delBtn.style.height = "34px";
+          delBtn.style.display = "grid";
+          delBtn.style.placeItems = "center";
+          delBtn.style.cursor = "pointer";
+          delBtn.innerHTML = '<i class="fa-solid fa-trash-can" style="font-size:12px;"></i>';
+          delBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            if (confirm("Remove " + friend.name + " from Friend List?")) {
+              removeFriend(friend.personalId);
+            }
+          });
+
+          rightSide.appendChild(chatBtn);
+          rightSide.appendChild(delBtn);
+
+          li.appendChild(leftSide);
+          li.appendChild(rightSide);
+          listUl.appendChild(li);
+        });
+      }
     }
 
-    friends.forEach((friend) => {
-      const li = document.createElement("li");
-      li.style.background = "rgba(255, 255, 255, 0.64)";
-      li.style.border = "1px solid var(--border)";
-      li.style.borderRadius = "15px";
-      li.style.padding = "10px 14px";
-      li.style.display = "flex";
-      li.style.alignItems = "center";
-      li.style.justifyContent = "space-between";
-      li.style.gap = "8px";
+    // Populate Quick Connect home list
+    if (quickList && quickSection) {
+      quickList.innerHTML = "";
+      if (friends.length === 0) {
+        quickSection.style.display = "none";
+      } else {
+        quickSection.style.display = "block";
+        friends.forEach((friend) => {
+          const li = document.createElement("li");
+          li.style.background = "rgba(255, 255, 255, 0.72)";
+          li.style.border = "1px solid var(--border)";
+          li.style.borderRadius = "14px";
+          li.style.padding = "8px 12px";
+          li.style.display = "flex";
+          li.style.alignItems = "center";
+          li.style.justifyContent = "space-between";
+          li.style.gap = "8px";
 
-      const leftSide = document.createElement("div");
-      leftSide.style.display = "flex";
-      leftSide.style.flexDirection = "column";
-      leftSide.style.minWidth = "0";
+          const left = document.createElement("div");
+          left.style.display = "flex";
+          left.style.flexDirection = "column";
+          left.style.minWidth = "0";
 
-      const nameSpan = document.createElement("strong");
-      nameSpan.style.fontSize = "13.5px";
-      nameSpan.style.color = "var(--text-main)";
-      nameSpan.style.overflow = "hidden";
-      nameSpan.style.whiteSpace = "nowrap";
-      nameSpan.style.textOverflow = "ellipsis";
-      nameSpan.textContent = friend.name;
+          const name = document.createElement("strong");
+          name.style.fontSize = "13px";
+          name.style.color = "var(--text-main)";
+          name.style.overflow = "hidden";
+          name.style.whiteSpace = "nowrap";
+          name.style.textOverflow = "ellipsis";
+          name.textContent = friend.name;
 
-      const codeSpan = document.createElement("span");
-      codeSpan.style.fontSize = "11px";
-      codeSpan.style.color = "var(--text-muted)";
-      codeSpan.style.fontWeight = "600";
-      codeSpan.textContent = friend.personalId;
+          const code = document.createElement("span");
+          code.style.fontSize = "10.5px";
+          code.style.color = "var(--text-muted)";
+          code.style.fontWeight = "600";
+          code.textContent = friend.personalId;
 
-      leftSide.appendChild(nameSpan);
-      leftSide.appendChild(codeSpan);
+          left.appendChild(name);
+          left.appendChild(code);
 
-      const rightSide = document.createElement("div");
-      rightSide.style.display = "flex";
-      rightSide.style.alignItems = "center";
-      rightSide.style.gap = "6px";
+          const callBtn = document.createElement("button");
+          callBtn.className = "btn";
+          callBtn.type = "button";
+          callBtn.style.minHeight = "30px";
+          callBtn.style.padding = "4px 10px";
+          callBtn.style.borderRadius = "9px";
+          callBtn.style.background = "linear-gradient(135deg, #00a8ff, #7c3aed)";
+          callBtn.style.color = "#fff";
+          callBtn.style.fontSize = "11.5px";
+          callBtn.style.fontWeight = "800";
+          callBtn.style.border = "none";
+          callBtn.style.cursor = "pointer";
+          callBtn.innerHTML = '<i class="fa-solid fa-phone"></i> Call';
+          callBtn.addEventListener("click", () => {
+            connectToFriend(friend.personalId, friend.name);
+          });
 
-      // Direct Chat Button
-      const chatBtn = document.createElement("button");
-      chatBtn.className = "btn";
-      chatBtn.type = "button";
-      chatBtn.style.minHeight = "34px";
-      chatBtn.style.padding = "6px 12px";
-      chatBtn.style.borderRadius = "10px";
-      chatBtn.style.background = "linear-gradient(135deg, #00a8ff, #7c3aed)";
-      chatBtn.style.color = "#fff";
-      chatBtn.style.fontSize = "12px";
-      chatBtn.style.fontWeight = "800";
-      chatBtn.style.border = "none";
-      chatBtn.style.cursor = "pointer";
-      chatBtn.innerHTML = '<i class="fa-solid fa-message"></i> Chat';
-      chatBtn.addEventListener("click", () => {
-        connectToFriend(friend.personalId, friend.name);
-      });
-
-      // Delete Button
-      const delBtn = document.createElement("button");
-      delBtn.type = "button";
-      delBtn.style.background = "rgba(255, 71, 87, 0.08)";
-      delBtn.style.color = "var(--danger-color)";
-      delBtn.style.border = "none";
-      delBtn.style.borderRadius = "10px";
-      delBtn.style.width = "34px";
-      delBtn.style.height = "34px";
-      delBtn.style.display = "grid";
-      delBtn.style.placeItems = "center";
-      delBtn.style.cursor = "pointer";
-      delBtn.innerHTML = '<i class="fa-solid fa-trash-can" style="font-size:12px;"></i>';
-      delBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        if (confirm("Remove " + friend.name + " from Friend List?")) {
-          removeFriend(friend.personalId);
-        }
-      });
-
-      rightSide.appendChild(chatBtn);
-      rightSide.appendChild(delBtn);
-
-      li.appendChild(leftSide);
-      li.appendChild(rightSide);
-      listUl.appendChild(li);
-    });
+          li.appendChild(left);
+          li.appendChild(callBtn);
+          quickList.appendChild(li);
+        });
+      }
+    }
   }
 
   async function connectToFriend(friendPersonalId, friendName) {
