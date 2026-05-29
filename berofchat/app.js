@@ -11,6 +11,21 @@
    - Group voice/video for up to 4 users
    - If already in call, extra mesh calls auto-answer
    - Call declined / call ended messages
+   - Message timestamps (HH:MM 12h)
+   - Typing indicator with debounce
+   - Delivery ticks (✓ sent, ✓✓ delivered)
+   - Sound notifications (Web Audio API)
+   - Browser notifications
+   - Scroll-to-bottom with unread badge
+   - Heartbeat / presence system
+   - Auto-reconnection with exponential backoff
+   - Search messages with highlight
+   - Keyboard shortcuts
+   - Title badge for unread count
+   - Attach button feedback
+   - Long-press / right-click copy
+   - Floating call controls bar
+   - Emoji category tabs with recent emojis
    ============================================================ */
 
 (function () {
@@ -20,6 +35,7 @@
 
   const MAX_ROOM_MEMBERS = 4;
 
+  /* ──── Existing DOM references ──── */
   const entryScreen = $("#entry-screen");
   const chatScreen = $("#chat-screen");
   const sidebar = $("#sidebar");
@@ -64,6 +80,22 @@
   const btnMuteCam = $("#btn-mute-cam");
   const btnEndCall = $("#btn-end-call");
 
+  /* ──── New DOM references (added by parallel HTML agent) ──── */
+  const typingIndicator = $("#typing-indicator");
+  const scrollToBottomBtn = $("#scroll-to-bottom");
+  const unreadBadge = $("#unread-badge");
+  const searchBar = $("#search-bar");
+  const searchInput = $("#search-input");
+  const btnCloseSearch = $("#btn-close-search");
+  const messageContextMenu = $("#message-context-menu");
+  const btnContextCopy = $("#btn-context-copy");
+  const callControlsBar = $("#call-controls-bar");
+  const ctrlMuteMic = $("#ctrl-mute-mic");
+  const ctrlMuteCam = $("#ctrl-mute-cam");
+  const ctrlEndCall = $("#ctrl-end-call");
+  const btnSearch = $("#btn-search");
+
+  /* ──── Existing state ──── */
   let peer = null;
   let myPeerId = "";
   let roomCode = "";
@@ -89,7 +121,36 @@
   let lastMessageTime = 0;
   let roomClosedByHost = false;
 
+  /* ──── New state for features ──── */
+  const messageElements = new Map();           // msgId → DOM element for delivery ticks
+  const lastHeartbeats = new Map();            // peerId → timestamp
+  let heartbeatInterval = null;
+
+  let typingTimeout = null;                     // timer to send typing:false
+  let typingDebounce = 0;                       // last time we sent typing:true
+  let typingClearTimers = new Map();            // peerId → timer to clear indicator
+
+  let unreadCount = 0;
+  let scrollUnreadCount = 0;
+  const originalTitle = document.title;
+
+  let audioCtx = null;
+  let notificationPermissionRequested = false;
+
+  let isUserLeaving = false;                    // flag to suppress reconnect on intentional leave
+  let reconnectAttempts = new Map();            // peerId → { count, timer }
+
+  let longPressTimer = null;
+  let longPressTouchStart = null;
+  let contextMenuTargetText = "";
+
+  let searchActive = false;
+
   window.__qpcCoreReady = true;
+
+  /* ============================================================
+     UTILITY FUNCTIONS
+     ============================================================ */
 
   function sanitize(value, max = 50) {
     return String(value || "")
@@ -139,6 +200,23 @@
     }
 
     return code;
+  }
+
+  function generateMsgId() {
+    return Date.now() + Math.random().toString(36).slice(2, 6);
+  }
+
+  function formatTime(date) {
+    if (!(date instanceof Date) || Number.isNaN(date.getTime())) {
+      date = new Date();
+    }
+    let hours = date.getHours();
+    const minutes = date.getMinutes();
+    const ampm = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12;
+    if (hours === 0) hours = 12;
+    const mm = minutes < 10 ? "0" + minutes : String(minutes);
+    return hours + ":" + mm + " " + ampm;
   }
 
   function getAgeFromDob(dobValue) {
@@ -206,6 +284,10 @@
     return true;
   }
 
+  /* ============================================================
+     FEATURE 1 & 3: MESSAGE DISPLAY (timestamps, ticks, msgId)
+     ============================================================ */
+
   function addSystemMessage(text) {
     if (!messagesContainer) return;
 
@@ -216,13 +298,18 @@
     content.className = "sys-content";
     content.textContent = text;
 
+    const timeSpan = document.createElement("span");
+    timeSpan.className = "msg-time";
+    timeSpan.textContent = " · " + formatTime(new Date());
+    content.appendChild(timeSpan);
+
     wrap.appendChild(content);
     messagesContainer.appendChild(wrap);
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    autoScrollOrTrackUnread();
   }
 
-  function addChatMessage(sender, text, isOwn) {
-    if (!messagesContainer) return;
+  function addChatMessage(sender, text, isOwn, msgId, timestamp) {
+    if (!messagesContainer) return null;
 
     const msg = document.createElement("div");
     msg.className = isOwn ? "message-bubble own" : "message-bubble other";
@@ -231,13 +318,355 @@
     nameEl.textContent = sender;
 
     const textEl = document.createElement("span");
+    textEl.className = "msg-text";
     textEl.textContent = text;
+
+    const metaRow = document.createElement("span");
+    metaRow.className = "msg-meta";
+
+    const timeSpan = document.createElement("span");
+    timeSpan.className = "msg-time";
+    const ts = timestamp ? new Date(timestamp) : new Date();
+    timeSpan.textContent = formatTime(ts);
+    metaRow.appendChild(timeSpan);
+
+    if (isOwn && msgId) {
+      const tickSpan = document.createElement("span");
+      tickSpan.className = "msg-ticks";
+      tickSpan.textContent = "✓";
+      metaRow.appendChild(tickSpan);
+      messageElements.set(String(msgId), tickSpan);
+    }
 
     msg.appendChild(nameEl);
     msg.appendChild(textEl);
+    msg.appendChild(metaRow);
     messagesContainer.appendChild(msg);
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    autoScrollOrTrackUnread();
+
+    return msg;
   }
+
+  function autoScrollOrTrackUnread() {
+    if (!messagesContainer) return;
+    const threshold = 200;
+    const distanceFromBottom = messagesContainer.scrollHeight - messagesContainer.scrollTop - messagesContainer.clientHeight;
+
+    if (distanceFromBottom <= threshold) {
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      scrollUnreadCount = 0;
+      updateUnreadBadge();
+    } else {
+      scrollUnreadCount++;
+      updateUnreadBadge();
+      showScrollToBottom(true);
+    }
+  }
+
+  /* ============================================================
+     FEATURE 6: SCROLL-TO-BOTTOM BUTTON
+     ============================================================ */
+
+  function showScrollToBottom(show) {
+    if (!scrollToBottomBtn) return;
+    if (show) {
+      scrollToBottomBtn.classList.remove("hidden");
+    } else {
+      scrollToBottomBtn.classList.add("hidden");
+    }
+  }
+
+  function updateUnreadBadge() {
+    if (!unreadBadge) return;
+    if (scrollUnreadCount > 0) {
+      unreadBadge.textContent = String(scrollUnreadCount);
+      unreadBadge.classList.remove("hidden");
+    } else {
+      unreadBadge.textContent = "";
+      unreadBadge.classList.add("hidden");
+    }
+  }
+
+  function initScrollToBottom() {
+    messagesContainer?.addEventListener("scroll", () => {
+      if (!messagesContainer) return;
+      const distanceFromBottom = messagesContainer.scrollHeight - messagesContainer.scrollTop - messagesContainer.clientHeight;
+      if (distanceFromBottom > 200) {
+        showScrollToBottom(true);
+      } else {
+        showScrollToBottom(false);
+        scrollUnreadCount = 0;
+        updateUnreadBadge();
+      }
+    });
+
+    scrollToBottomBtn?.addEventListener("click", () => {
+      if (!messagesContainer) return;
+      messagesContainer.scrollTo({ top: messagesContainer.scrollHeight, behavior: "smooth" });
+      scrollUnreadCount = 0;
+      updateUnreadBadge();
+      showScrollToBottom(false);
+    });
+  }
+
+  /* ============================================================
+     FEATURE 4: SOUND NOTIFICATIONS (Web Audio API)
+     ============================================================ */
+
+  function getAudioContext() {
+    if (!audioCtx) {
+      try {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      } catch (e) {
+        return null;
+      }
+    }
+    if (audioCtx.state === "suspended") {
+      audioCtx.resume().catch(() => {});
+    }
+    return audioCtx;
+  }
+
+  function playNotificationSound() {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+
+    try {
+      const now = ctx.currentTime;
+
+      const osc1 = ctx.createOscillator();
+      const gain1 = ctx.createGain();
+      osc1.type = "sine";
+      osc1.frequency.setValueAtTime(800, now);
+      gain1.gain.setValueAtTime(0.15, now);
+      gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+      osc1.connect(gain1);
+      gain1.connect(ctx.destination);
+      osc1.start(now);
+      osc1.stop(now + 0.1);
+
+      const osc2 = ctx.createOscillator();
+      const gain2 = ctx.createGain();
+      osc2.type = "sine";
+      osc2.frequency.setValueAtTime(1000, now + 0.1);
+      gain2.gain.setValueAtTime(0.15, now + 0.1);
+      gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+      osc2.connect(gain2);
+      gain2.connect(ctx.destination);
+      osc2.start(now + 0.1);
+      osc2.stop(now + 0.2);
+    } catch (e) {}
+  }
+
+  function playRingtoneSound() {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+
+    try {
+      const now = ctx.currentTime;
+      const tones = [600, 800, 1000];
+
+      tones.forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(freq, now + i * 0.15);
+        gain.gain.setValueAtTime(0.18, now + i * 0.15);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.15 + 0.14);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now + i * 0.15);
+        osc.stop(now + i * 0.15 + 0.14);
+      });
+    } catch (e) {}
+  }
+
+  function vibrateIfSupported() {
+    try {
+      if (navigator.vibrate) {
+        navigator.vibrate([100, 50, 100]);
+      }
+    } catch (e) {}
+  }
+
+  /* ============================================================
+     FEATURE 5: BROWSER NOTIFICATIONS
+     ============================================================ */
+
+  function requestNotificationPermission() {
+    if (notificationPermissionRequested) return;
+    notificationPermissionRequested = true;
+
+    if ("Notification" in window && Notification.permission === "default") {
+      Notification.requestPermission().catch(() => {});
+    }
+  }
+
+  function showBrowserNotification(senderName, messagePreview) {
+    if (!("Notification" in window)) return;
+    if (Notification.permission !== "granted") return;
+    if (!document.hidden) return;
+
+    try {
+      const notif = new Notification(senderName + " says:", {
+        body: messagePreview.slice(0, 100),
+        icon: undefined,
+        tag: "qpc-msg-" + Date.now()
+      });
+
+      notif.onclick = () => {
+        window.focus();
+        notif.close();
+      };
+
+      setTimeout(() => { try { notif.close(); } catch (e) {} }, 5000);
+    } catch (e) {}
+  }
+
+  /* ============================================================
+     FEATURE 11: TITLE BADGE
+     ============================================================ */
+
+  function updateTitleBadge() {
+    if (unreadCount > 0 && roomCode) {
+      document.title = "(" + unreadCount + ") Room " + roomCode + " — Quick Private Chat";
+    } else {
+      document.title = originalTitle;
+    }
+  }
+
+  function initVisibilityChange() {
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) {
+        unreadCount = 0;
+        updateTitleBadge();
+      }
+    });
+  }
+
+  /* ============================================================
+     FEATURE 2: TYPING INDICATOR
+     ============================================================ */
+
+  function broadcastTyping(isTyping) {
+    sendToAll({
+      type: "typing",
+      name: myName,
+      isTyping: isTyping
+    });
+  }
+
+  function handleTypingInput() {
+    const now = Date.now();
+
+    if (now - typingDebounce >= 2000) {
+      typingDebounce = now;
+      broadcastTyping(true);
+    }
+
+    if (typingTimeout) clearTimeout(typingTimeout);
+    typingTimeout = setTimeout(() => {
+      broadcastTyping(false);
+      typingTimeout = null;
+    }, 3000);
+  }
+
+  function showTypingIndicator(name) {
+    if (!typingIndicator) return;
+    typingIndicator.innerHTML = "<strong>" + sanitize(name, 20) + "</strong> is typing" +
+      '<span class="typing-dots"><span>.</span><span>.</span><span>.</span></span>';
+    typingIndicator.classList.remove("hidden");
+  }
+
+  function hideTypingIndicator() {
+    if (!typingIndicator) return;
+    typingIndicator.innerHTML = "";
+    typingIndicator.classList.add("hidden");
+  }
+
+  function handleTypingMessage(senderId, data) {
+    if (senderId === myPeerId) return;
+
+    const peerName = data.name || members.get(senderId)?.name || "Someone";
+
+    if (typingClearTimers.has(senderId)) {
+      clearTimeout(typingClearTimers.get(senderId));
+    }
+
+    if (data.isTyping) {
+      showTypingIndicator(peerName);
+
+      const timer = setTimeout(() => {
+        hideTypingIndicator();
+        typingClearTimers.delete(senderId);
+      }, 4000);
+      typingClearTimers.set(senderId, timer);
+    } else {
+      hideTypingIndicator();
+      typingClearTimers.delete(senderId);
+    }
+  }
+
+  /* ============================================================
+     FEATURE 3: DELIVERY TICKS (msg-ack)
+     ============================================================ */
+
+  function handleMsgAck(data) {
+    const id = String(data.msgId || "");
+    if (!id) return;
+
+    const tickEl = messageElements.get(id);
+    if (tickEl) {
+      tickEl.textContent = "✓✓";
+      tickEl.classList.add("delivered");
+    }
+  }
+
+  function sendMsgAck(senderId, msgId) {
+    if (!msgId) return;
+    sendToPeer(senderId, {
+      type: "msg-ack",
+      msgId: msgId
+    });
+  }
+
+  /* ============================================================
+     FEATURE 7: HEARTBEAT / PRESENCE
+     ============================================================ */
+
+  function startHeartbeat() {
+    stopHeartbeat();
+    heartbeatInterval = setInterval(() => {
+      if (!roomCode || !myPeerId) return;
+      sendToAll({
+        type: "heartbeat",
+        id: myPeerId,
+        time: Date.now()
+      });
+      lastHeartbeats.set(myPeerId, Date.now());
+    }, 8000);
+    lastHeartbeats.set(myPeerId, Date.now());
+  }
+
+  function stopHeartbeat() {
+    if (heartbeatInterval) {
+      clearInterval(heartbeatInterval);
+      heartbeatInterval = null;
+    }
+    lastHeartbeats.clear();
+  }
+
+  function getPresenceClass(peerId) {
+    const lastBeat = lastHeartbeats.get(peerId);
+    if (!lastBeat) return "status-offline";
+
+    const elapsed = Date.now() - lastBeat;
+    if (elapsed <= 10000) return "status-online";
+    if (elapsed <= 25000) return "status-away";
+    return "status-offline";
+  }
+
+  /* ──── Members UI (enhanced with heartbeat dots) ──── */
 
   function updateMembersUI() {
     if (!membersList || !memberCount) return;
@@ -246,13 +675,26 @@
 
     members.forEach((info, peerId) => {
       const li = document.createElement("li");
-      li.textContent = `${info.name} — ${info.role}`;
+      const statusClass = getPresenceClass(peerId);
+
+      const dot = document.createElement("span");
+      dot.className = "member-status-dot " + statusClass;
+      dot.setAttribute("aria-hidden", "true");
+
+      const text = document.createTextNode(" " + info.name + " — " + info.role);
+
+      li.appendChild(dot);
+      li.appendChild(text);
       li.setAttribute("data-peer-id", peerId);
       membersList.appendChild(li);
     });
 
     memberCount.textContent = String(members.size);
   }
+
+  /* ============================================================
+     SCREEN TRANSITIONS
+     ============================================================ */
 
   function enterChatScreen(role) {
     const initial = myName.charAt(0).toUpperCase() || "U";
@@ -273,6 +715,8 @@
       localStorage.setItem("qpc_last_name", myName);
       localStorage.setItem("qpc_last_room", roomCode);
     } catch (e) {}
+
+    startHeartbeat();
   }
 
   function destroyPeer() {
@@ -293,7 +737,12 @@
 
     peer = null;
     myPeerId = "";
+    stopHeartbeat();
   }
+
+  /* ============================================================
+     PEERJS CONNECTION
+     ============================================================ */
 
   function createPeer(id) {
     return new Promise((resolve, reject) => {
@@ -356,6 +805,10 @@
     });
   }
 
+  /* ============================================================
+     MESSAGING HELPERS
+     ============================================================ */
+
   function sendToPeer(peerId, data) {
     const conn = connections.get(peerId);
 
@@ -385,7 +838,8 @@
       "call-started",
       "call-declined",
       "call-ended",
-      "room-closed"
+      "room-closed",
+      "msg-ack"
     ]);
 
     if (!relayTypes.has(data.type)) return;
@@ -442,6 +896,7 @@
 
   function forceExitRoom(message) {
     roomClosedByHost = true;
+    isUserLeaving = true;
 
     addSystemMessage(message || "The host closed the room.");
     endCall(false, false);
@@ -459,10 +914,66 @@
       sidebar?.classList.remove("active");
       updateMembersUI();
       setEntryStatus("The host closed the room. Create or join another room.", "warning");
+      isUserLeaving = false;
     }, 800);
   }
 
-  function setupConnection(conn) {
+  /* ============================================================
+     FEATURE 8: AUTO-RECONNECTION
+     ============================================================ */
+
+  function attemptReconnect(peerId) {
+    if (!roomCode || isUserLeaving || roomClosedByHost) return;
+    if (!peer || peer.destroyed) return;
+
+    const memberName = members.get(peerId)?.name || "peer";
+
+    let attempt = reconnectAttempts.get(peerId);
+    if (!attempt) {
+      attempt = { count: 0, timer: null };
+      reconnectAttempts.set(peerId, attempt);
+    }
+
+    if (attempt.count >= 3) {
+      addSystemMessage("Lost connection to " + memberName + ".");
+      reconnectAttempts.delete(peerId);
+      return;
+    }
+
+    attempt.count++;
+    const delay = Math.pow(2, attempt.count) * 1000;
+
+    addSystemMessage("Reconnecting to " + memberName + "... (attempt " + attempt.count + "/3)");
+
+    attempt.timer = setTimeout(() => {
+      if (!peer || peer.destroyed || !roomCode) {
+        reconnectAttempts.delete(peerId);
+        return;
+      }
+
+      try {
+        const conn = peer.connect(peerId, { reliable: true });
+        setupConnection(conn, true);
+
+        conn.on("open", () => {
+          addSystemMessage("Reconnected to " + memberName + ".");
+          reconnectAttempts.delete(peerId);
+        });
+
+        conn.on("error", () => {
+          attemptReconnect(peerId);
+        });
+      } catch (e) {
+        attemptReconnect(peerId);
+      }
+    }, delay);
+  }
+
+  /* ============================================================
+     CONNECTION SETUP
+     ============================================================ */
+
+  function setupConnection(conn, isReconnectAttempt) {
     if (!conn) return;
 
     if (connections.has(conn.peer) && connections.get(conn.peer)?.open) {
@@ -491,14 +1002,28 @@
     });
 
     conn.on("close", () => {
+      const wasMember = members.has(conn.peer);
       handleMemberLeft(conn.peer);
+
+      if (wasMember && !isUserLeaving && !roomClosedByHost && roomCode) {
+        attemptReconnect(conn.peer);
+      }
     });
 
     conn.on("error", (err) => {
       console.warn("Connection error:", err);
+      const wasMember = members.has(conn.peer);
       handleMemberLeft(conn.peer);
+
+      if (wasMember && !isUserLeaving && !roomClosedByHost && roomCode && !isReconnectAttempt) {
+        attemptReconnect(conn.peer);
+      }
     });
   }
+
+  /* ============================================================
+     DATA HANDLER (main dispatch)
+     ============================================================ */
 
   function handleData(senderId, data) {
     if (!data || typeof data !== "object") return;
@@ -546,10 +1071,11 @@
         role: sanitize(data.role, 20) || "Member"
       });
 
+      lastHeartbeats.set(senderId, Date.now());
       updateMembersUI();
 
       if (isHost) {
-        addSystemMessage(`${memberName} joined the room.`);
+        addSystemMessage(memberName + " joined the room.");
         broadcastMemberList();
       }
 
@@ -573,6 +1099,9 @@
           name: sanitize(m.name, 20) || "Unknown",
           role: sanitize(m.role, 20) || "Member"
         });
+        if (!lastHeartbeats.has(m.id)) {
+          lastHeartbeats.set(m.id, Date.now());
+        }
       });
 
       updateMembersUI();
@@ -584,7 +1113,41 @@
     if (data.type === "message") {
       if (data.__originalSender && data.__originalSender === myPeerId) return;
 
-      addChatMessage(data.name || "Someone", data.text || "", false);
+      const effectiveSender = data.__originalSender || senderId;
+      addChatMessage(data.name || "Someone", data.text || "", false, null, data.time);
+
+      // Send ack back
+      if (data.msgId) {
+        sendMsgAck(effectiveSender, data.msgId);
+      }
+
+      // Request notification permission on first message
+      requestNotificationPermission();
+
+      // Sound & vibrate when tab hidden
+      if (document.hidden) {
+        playNotificationSound();
+        vibrateIfSupported();
+        unreadCount++;
+        updateTitleBadge();
+        showBrowserNotification(data.name || "Someone", data.text || "");
+      }
+
+      return;
+    }
+
+    if (data.type === "msg-ack") {
+      handleMsgAck(data);
+      return;
+    }
+
+    if (data.type === "typing") {
+      handleTypingMessage(senderId, data);
+      return;
+    }
+
+    if (data.type === "heartbeat") {
+      lastHeartbeats.set(data.id || senderId, data.time || Date.now());
       return;
     }
 
@@ -606,6 +1169,8 @@
           groupCallMediaType +
           " call. Accept the call if prompted."
       );
+
+      playRingtoneSound();
 
       connectToAllKnownMembers();
       repairGroupCallMesh("call-started-signal");
@@ -633,6 +1198,10 @@
       return;
     }
   }
+
+  /* ============================================================
+     MEMBER CONNECTIONS
+     ============================================================ */
 
   function connectToAllKnownMembers() {
     if (!peer || !myPeerId) return;
@@ -736,6 +1305,7 @@
 
     connections.delete(peerId);
     members.delete(peerId);
+    lastHeartbeats.delete(peerId);
 
     const call = activeCalls.get(peerId);
 
@@ -753,13 +1323,17 @@
     updateMembersUI();
 
     if (oldMember) {
-      addSystemMessage(`${oldMember.name} left the room.`);
+      addSystemMessage(oldMember.name + " left the room.");
     }
 
     if (isHost) {
       broadcastMemberList();
     }
   }
+
+  /* ============================================================
+     ROOM CREATION / JOINING
+     ============================================================ */
 
   async function hostRoom() {
     if (!validateEntry(false)) return;
@@ -770,6 +1344,7 @@
     roomCode = generateRoomCode(6);
     isHost = true;
     roomClosedByHost = false;
+    isUserLeaving = false;
     roomMaxMembers = getSelectedMaxMembers();
 
     setEntryStatus("Creating room...", "success");
@@ -780,7 +1355,7 @@
       peer = result.peerInstance;
       myPeerId = result.id;
 
-      peer.on("connection", setupConnection);
+      peer.on("connection", (conn) => setupConnection(conn));
       peer.on("call", handleIncomingCall);
 
       members.set(myPeerId, {
@@ -820,6 +1395,7 @@
     roomCode = sanitize(roomCodeInput.value, 8).toUpperCase();
     isHost = false;
     roomClosedByHost = false;
+    isUserLeaving = false;
 
     setEntryStatus("Joining room...", "success");
 
@@ -829,7 +1405,7 @@
       peer = result.peerInstance;
       myPeerId = result.id;
 
-      peer.on("connection", setupConnection);
+      peer.on("connection", (conn) => setupConnection(conn));
       peer.on("call", handleIncomingCall);
 
       members.set(myPeerId, {
@@ -866,6 +1442,10 @@
     }
   }
 
+  /* ============================================================
+     SEND MESSAGE (enhanced with msgId, timestamp, typing reset)
+     ============================================================ */
+
   function sendMessage() {
     const now = Date.now();
 
@@ -879,18 +1459,32 @@
     const text = sanitize(messageInput?.value, 1000);
     if (!text) return;
 
-    addChatMessage(myName || "You", text, true);
+    const msgId = generateMsgId();
+    const time = Date.now();
+
+    addChatMessage(myName || "You", text, true, msgId, time);
 
     sendToAll({
       type: "message",
       name: myName || "Someone",
-      text
+      text,
+      msgId: msgId,
+      time: time
     });
 
     messageInput.value = "";
+
+    // Stop typing indicator for self
+    if (typingTimeout) {
+      clearTimeout(typingTimeout);
+      typingTimeout = null;
+      broadcastTyping(false);
+    }
   }
 
   function leaveRoom() {
+    isUserLeaving = true;
+
     if (isHost) {
       sendRoomClosedToAll();
       addSystemMessage("You closed the room for everyone.");
@@ -913,7 +1507,17 @@
     sidebar?.classList.remove("active");
 
     setEntryStatus("");
+
+    unreadCount = 0;
+    updateTitleBadge();
+    hideTypingIndicator();
+
+    setTimeout(() => { isUserLeaving = false; }, 500);
   }
+
+  /* ============================================================
+     CALL SYSTEM (preserved exactly + floating bar integration)
+     ============================================================ */
 
   async function startCall(type) {
     try {
@@ -1010,6 +1614,7 @@
     }
 
     incomingCallModal?.classList.remove("hidden");
+    playRingtoneSound();
 
     btnAcceptCall.onclick = async () => {
       incomingCallModal?.classList.add("hidden");
@@ -1137,6 +1742,10 @@
     });
   }
 
+  /* ============================================================
+     FEATURE 14: CALL UI + FLOATING CALL CONTROLS BAR
+     ============================================================ */
+
   function showCallUI(hasVideo) {
     document.body.classList.add("qpc-call-active");
     document.body.classList.toggle("qpc-video-call", Boolean(hasVideo));
@@ -1154,6 +1763,10 @@
     } else {
       btnMuteCam?.classList.add("hidden");
     }
+
+    // Show floating call controls bar
+    callControlsBar?.classList.remove("hidden");
+    syncFloatingCallControls();
   }
 
   function addLocalVideo() {
@@ -1178,7 +1791,7 @@
   function addRemoteVideo(peerId, stream) {
     if (!videoGrid) return;
 
-    const old = videoGrid.querySelector(`[data-peer-id="${peerId}"]`);
+    const old = videoGrid.querySelector('[data-peer-id="' + peerId + '"]');
 
     if (old) {
       old.remove();
@@ -1196,7 +1809,7 @@
   function removeRemoteVideo(peerId) {
     if (!videoGrid) return;
 
-    const video = videoGrid.querySelector(`[data-peer-id="${peerId}"]`);
+    const video = videoGrid.querySelector('[data-peer-id="' + peerId + '"]');
 
     if (video) {
       video.remove();
@@ -1264,6 +1877,10 @@
       btnMuteCam.innerHTML = '<i class="fa-solid fa-video" aria-hidden="true"></i>';
     }
 
+    // Hide floating call controls bar
+    callControlsBar?.classList.add("hidden");
+    syncFloatingCallControls();
+
     if (showMessage) {
       addSystemMessage("Call ended.");
     }
@@ -1283,6 +1900,8 @@
         ? '<i class="fa-solid fa-microphone-slash" aria-hidden="true"></i>'
         : '<i class="fa-solid fa-microphone" aria-hidden="true"></i>';
     }
+
+    syncFloatingCallControls();
   }
 
   function toggleCam() {
@@ -1299,7 +1918,441 @@
         ? '<i class="fa-solid fa-video-slash" aria-hidden="true"></i>'
         : '<i class="fa-solid fa-video" aria-hidden="true"></i>';
     }
+
+    syncFloatingCallControls();
   }
+
+  function syncFloatingCallControls() {
+    if (ctrlMuteMic) {
+      ctrlMuteMic.innerHTML = isMicMuted
+        ? '<i class="fa-solid fa-microphone-slash" aria-hidden="true"></i>'
+        : '<i class="fa-solid fa-microphone" aria-hidden="true"></i>';
+    }
+
+    if (ctrlMuteCam) {
+      ctrlMuteCam.innerHTML = isCamOff
+        ? '<i class="fa-solid fa-video-slash" aria-hidden="true"></i>'
+        : '<i class="fa-solid fa-video" aria-hidden="true"></i>';
+    }
+
+    if (ctrlEndCall) {
+      ctrlEndCall.innerHTML = '<i class="fa-solid fa-phone-slash" aria-hidden="true"></i>';
+    }
+  }
+
+  function initFloatingCallControls() {
+    ctrlMuteMic?.addEventListener("click", toggleMic);
+    ctrlMuteCam?.addEventListener("click", toggleCam);
+    ctrlEndCall?.addEventListener("click", () => endCall(true, true));
+  }
+
+  /* ============================================================
+     FEATURE 9: SEARCH MESSAGES
+     ============================================================ */
+
+  function openSearch() {
+    searchBar?.classList.remove("hidden");
+    searchInput?.focus();
+    searchActive = true;
+  }
+
+  function closeSearch() {
+    searchBar?.classList.add("hidden");
+    searchActive = false;
+
+    if (searchInput) searchInput.value = "";
+
+    // Restore all messages
+    if (messagesContainer) {
+      const allMessages = messagesContainer.querySelectorAll(".message-bubble, .system-msg");
+      allMessages.forEach((el) => {
+        el.classList.remove("search-hidden");
+      });
+
+      // Remove all mark tags
+      const marks = messagesContainer.querySelectorAll("mark");
+      marks.forEach((mark) => {
+        const parent = mark.parentNode;
+        if (parent) {
+          parent.replaceChild(document.createTextNode(mark.textContent), mark);
+          parent.normalize();
+        }
+      });
+    }
+  }
+
+  function performSearch(query) {
+    if (!messagesContainer || !query) {
+      // Show all if query is empty
+      if (messagesContainer) {
+        const allMessages = messagesContainer.querySelectorAll(".message-bubble, .system-msg");
+        allMessages.forEach((el) => el.classList.remove("search-hidden"));
+
+        // Remove existing marks
+        const marks = messagesContainer.querySelectorAll("mark");
+        marks.forEach((mark) => {
+          const parent = mark.parentNode;
+          if (parent) {
+            parent.replaceChild(document.createTextNode(mark.textContent), mark);
+            parent.normalize();
+          }
+        });
+      }
+      return;
+    }
+
+    const lowerQuery = query.toLowerCase();
+    const allMessages = messagesContainer.querySelectorAll(".message-bubble, .system-msg");
+
+    allMessages.forEach((el) => {
+      // First remove old marks
+      const existingMarks = el.querySelectorAll("mark");
+      existingMarks.forEach((mark) => {
+        const parent = mark.parentNode;
+        if (parent) {
+          parent.replaceChild(document.createTextNode(mark.textContent), mark);
+          parent.normalize();
+        }
+      });
+
+      const textContent = el.textContent.toLowerCase();
+
+      if (textContent.includes(lowerQuery)) {
+        el.classList.remove("search-hidden");
+        highlightText(el, query);
+      } else {
+        el.classList.add("search-hidden");
+      }
+    });
+  }
+
+  function highlightText(element, query) {
+    const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null, false);
+    const textNodes = [];
+
+    while (walker.nextNode()) {
+      textNodes.push(walker.currentNode);
+    }
+
+    const lowerQuery = query.toLowerCase();
+
+    textNodes.forEach((node) => {
+      const text = node.textContent;
+      const lowerText = text.toLowerCase();
+      const idx = lowerText.indexOf(lowerQuery);
+
+      if (idx === -1) return;
+      // Skip nodes inside msg-time or msg-ticks
+      if (node.parentNode && (
+        node.parentNode.classList?.contains("msg-time") ||
+        node.parentNode.classList?.contains("msg-ticks") ||
+        node.parentNode.classList?.contains("msg-meta") ||
+        node.parentNode.tagName === "STRONG"
+      )) return;
+
+      const before = text.slice(0, idx);
+      const match = text.slice(idx, idx + query.length);
+      const after = text.slice(idx + query.length);
+
+      const frag = document.createDocumentFragment();
+      if (before) frag.appendChild(document.createTextNode(before));
+
+      const mark = document.createElement("mark");
+      mark.textContent = match;
+      frag.appendChild(mark);
+
+      if (after) frag.appendChild(document.createTextNode(after));
+
+      node.parentNode.replaceChild(frag, node);
+    });
+  }
+
+  function initSearch() {
+    btnSearch?.addEventListener("click", () => {
+      if (searchActive) {
+        closeSearch();
+      } else {
+        openSearch();
+      }
+    });
+
+    btnCloseSearch?.addEventListener("click", closeSearch);
+
+    searchInput?.addEventListener("input", () => {
+      performSearch(searchInput.value.trim());
+    });
+  }
+
+  /* ============================================================
+     FEATURE 10: KEYBOARD SHORTCUTS
+     ============================================================ */
+
+  function initKeyboardShortcuts() {
+    document.addEventListener("keydown", (e) => {
+      // Ctrl+F in chat screen — open search
+      if (e.ctrlKey && e.key === "f" && chatScreen?.classList.contains("active")) {
+        e.preventDefault();
+        openSearch();
+        return;
+      }
+
+      // Escape — close search
+      if (e.key === "Escape" && searchActive) {
+        closeSearch();
+        return;
+      }
+
+      // Call shortcuts (only when in call)
+      if (e.ctrlKey && e.shiftKey) {
+        if (e.key === "M" || e.key === "m") {
+          if (groupCallActive && localStream) {
+            e.preventDefault();
+            toggleMic();
+          }
+          return;
+        }
+
+        if (e.key === "V" || e.key === "v") {
+          if (groupCallActive && localStream) {
+            e.preventDefault();
+            toggleCam();
+          }
+          return;
+        }
+
+        if (e.key === "E" || e.key === "e") {
+          if (groupCallActive) {
+            e.preventDefault();
+            endCall(true, true);
+          }
+          return;
+        }
+      }
+    });
+  }
+
+  /* ============================================================
+     FEATURE 12: ATTACH BUTTON FEEDBACK
+     ============================================================ */
+
+  function initAttachButton() {
+    const attachBtn = $(".attach-btn");
+    attachBtn?.addEventListener("click", () => {
+      addSystemMessage("File sharing is disabled in this experimental version.");
+    });
+  }
+
+  /* ============================================================
+     FEATURE 13: LONG-PRESS COPY / RIGHT-CLICK CONTEXT MENU
+     ============================================================ */
+
+  function showContextMenu(x, y, text) {
+    contextMenuTargetText = text;
+    if (!messageContextMenu) return;
+
+    messageContextMenu.classList.remove("hidden");
+    messageContextMenu.style.position = "fixed";
+    messageContextMenu.style.zIndex = "9999";
+
+    // Position near click/touch
+    const menuW = 160;
+    const menuH = 48;
+    let px = x;
+    let py = y;
+
+    if (px + menuW > window.innerWidth) px = window.innerWidth - menuW - 8;
+    if (py + menuH > window.innerHeight) py = window.innerHeight - menuH - 8;
+    if (px < 8) px = 8;
+    if (py < 8) py = 8;
+
+    messageContextMenu.style.left = px + "px";
+    messageContextMenu.style.top = py + "px";
+  }
+
+  function hideContextMenu() {
+    messageContextMenu?.classList.add("hidden");
+    contextMenuTargetText = "";
+  }
+
+  function getMessageTextFromBubble(bubble) {
+    const textEl = bubble.querySelector(".msg-text");
+    if (textEl) return textEl.textContent || "";
+    // fallback for system messages
+    const sysContent = bubble.querySelector(".sys-content");
+    if (sysContent) return sysContent.textContent || "";
+    return bubble.textContent || "";
+  }
+
+  function initLongPressCopy() {
+    // Touch events for mobile
+    document.addEventListener("touchstart", (e) => {
+      const bubble = e.target.closest(".message-bubble");
+      if (!bubble) return;
+
+      const touch = e.touches[0];
+      longPressTouchStart = { x: touch.clientX, y: touch.clientY };
+
+      longPressTimer = setTimeout(() => {
+        const text = getMessageTextFromBubble(bubble);
+        showContextMenu(longPressTouchStart.x, longPressTouchStart.y - 40, text);
+        longPressTimer = null;
+      }, 600);
+    }, { passive: true });
+
+    document.addEventListener("touchmove", (e) => {
+      if (!longPressTimer || !longPressTouchStart) return;
+      const touch = e.touches[0];
+      const dx = Math.abs(touch.clientX - longPressTouchStart.x);
+      const dy = Math.abs(touch.clientY - longPressTouchStart.y);
+
+      if (dx > 10 || dy > 10) {
+        clearTimeout(longPressTimer);
+        longPressTimer = null;
+      }
+    }, { passive: true });
+
+    document.addEventListener("touchend", () => {
+      if (longPressTimer) {
+        clearTimeout(longPressTimer);
+        longPressTimer = null;
+      }
+    }, { passive: true });
+
+    // Right-click on PC
+    document.addEventListener("contextmenu", (e) => {
+      const bubble = e.target.closest(".message-bubble");
+      if (!bubble) return;
+
+      e.preventDefault();
+      const text = getMessageTextFromBubble(bubble);
+      showContextMenu(e.clientX, e.clientY, text);
+    });
+
+    // Copy button in context menu
+    btnContextCopy?.addEventListener("click", async () => {
+      if (contextMenuTargetText) {
+        try {
+          await navigator.clipboard.writeText(contextMenuTargetText);
+          addSystemMessage("Message copied to clipboard.");
+        } catch (err) {
+          // Fallback
+          try {
+            const textarea = document.createElement("textarea");
+            textarea.value = contextMenuTargetText;
+            textarea.style.position = "fixed";
+            textarea.style.opacity = "0";
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand("copy");
+            document.body.removeChild(textarea);
+            addSystemMessage("Message copied to clipboard.");
+          } catch (e2) {
+            addSystemMessage("Could not copy message.");
+          }
+        }
+      }
+      hideContextMenu();
+    });
+
+    // Click anywhere else hides context menu
+    document.addEventListener("click", (e) => {
+      if (messageContextMenu && !messageContextMenu.contains(e.target)) {
+        hideContextMenu();
+      }
+    });
+  }
+
+  /* ============================================================
+     FEATURE 15: EMOJI CATEGORY TABS + RECENT EMOJIS
+     ============================================================ */
+
+  function initEmojiCategoryTabs() {
+    const emojiPicker = $("#emoji-picker");
+    if (!emojiPicker) return;
+
+    const catTabs = emojiPicker.querySelectorAll("[data-emoji-cat]");
+    const emojiButtons = emojiPicker.querySelectorAll("button[data-category]");
+
+    if (catTabs.length === 0) return;
+
+    catTabs.forEach((tab) => {
+      tab.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const cat = tab.getAttribute("data-emoji-cat");
+
+        // Update active state
+        catTabs.forEach((t) => t.classList.remove("active"));
+        tab.classList.add("active");
+
+        if (cat === "all") {
+          emojiButtons.forEach((btn) => {
+            btn.style.display = "";
+          });
+          return;
+        }
+
+        if (cat === "recent") {
+          showRecentEmojis(emojiButtons);
+          return;
+        }
+
+        emojiButtons.forEach((btn) => {
+          const btnCat = btn.getAttribute("data-category");
+          if (btnCat === cat) {
+            btn.style.display = "";
+          } else {
+            btn.style.display = "none";
+          }
+        });
+      });
+    });
+
+    // Track recent emojis on click
+    emojiPicker.addEventListener("click", (e) => {
+      const button = e.target.closest("button[data-category]");
+      if (!button) return;
+      const emoji = button.textContent?.trim();
+      if (emoji) {
+        saveRecentEmoji(emoji);
+      }
+    });
+  }
+
+  function saveRecentEmoji(emoji) {
+    try {
+      let recent = JSON.parse(localStorage.getItem("qpc_recent_emojis") || "[]");
+      if (!Array.isArray(recent)) recent = [];
+
+      recent = recent.filter((e) => e !== emoji);
+      recent.unshift(emoji);
+      recent = recent.slice(0, 10);
+
+      localStorage.setItem("qpc_recent_emojis", JSON.stringify(recent));
+    } catch (e) {}
+  }
+
+  function showRecentEmojis(emojiButtons) {
+    let recent = [];
+    try {
+      recent = JSON.parse(localStorage.getItem("qpc_recent_emojis") || "[]");
+      if (!Array.isArray(recent)) recent = [];
+    } catch (e) {}
+
+    const recentSet = new Set(recent);
+
+    emojiButtons.forEach((btn) => {
+      const emoji = btn.textContent?.trim();
+      if (recentSet.has(emoji)) {
+        btn.style.display = "";
+      } else {
+        btn.style.display = "none";
+      }
+    });
+  }
+
+  /* ============================================================
+     INPUT INITIALIZATION (preserved + typing input)
+     ============================================================ */
 
   function initInputs() {
     if (roomCodeInput) {
@@ -1336,6 +2389,9 @@
         guestNameInput.value = guestNameInput.value.replace(/[<>]/g, "").slice(0, 20);
       });
     }
+
+    // Typing indicator input listener
+    messageInput?.addEventListener("input", handleTypingInput);
   }
 
   function initInviteFromUrl() {
@@ -1393,6 +2449,10 @@
     }
   }
 
+  /* ============================================================
+     EVENT BINDING (preserved + new features)
+     ============================================================ */
+
   function bindEvents() {
     btnCreate?.addEventListener("click", hostRoom);
     btnJoin?.addEventListener("click", joinRoom);
@@ -1436,6 +2496,8 @@
 
     window.addEventListener("beforeunload", () => {
       try {
+        isUserLeaving = true;
+
         if (isHost) {
           sendRoomClosedToAll();
         } else {
@@ -1453,13 +2515,25 @@
     });
   }
 
+  /* ============================================================
+     INITIALIZATION
+     ============================================================ */
+
   function init() {
     initInputs();
     initInviteFromUrl();
     bindEvents();
+    initScrollToBottom();
+    initSearch();
+    initKeyboardShortcuts();
+    initAttachButton();
+    initLongPressCopy();
+    initFloatingCallControls();
+    initEmojiCategoryTabs();
+    initVisibilityChange();
     setConnectionStatus("Ready", "ready");
 
-    console.log("[QPC] app.js loaded. Max 4 users. PeerJS-only mode ready.");
+    console.log("[QPC] app.js v8.0.0 loaded. Max 4 users. PeerJS-only mode ready. 15 new features active.");
   }
 
   init();

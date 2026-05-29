@@ -1283,101 +1283,11 @@
         border: 2px solid rgba(0, 168, 255, 0.85) !important;
       }
 
-      body.qpc-call-active .messages-container {
-        height: 54px !important;
-        min-height: 54px !important;
-        max-height: 54px !important;
-        overflow: hidden !important;
-        padding: 5px 7px !important;
-        gap: 0 !important;
-        background: rgba(248, 250, 252, 0.96) !important;
-        border-top: 1px solid var(--border) !important;
-      }
-
-      body.qpc-call-active .messages-container > div:not(:last-child) {
-        display: none !important;
-      }
-
-      body.qpc-call-active .sys-content {
-        max-width: 100% !important;
-        padding: 6px 9px !important;
-        font-size: 10.5px !important;
-        line-height: 1.25 !important;
-        border-radius: 12px !important;
-      }
-
-      body.qpc-call-active .chat-input-area {
-        height: 58px !important;
-        min-height: 58px !important;
-        max-height: 58px !important;
-        padding: 6px 8px !important;
-        padding-bottom: calc(6px + env(safe-area-inset-bottom)) !important;
-        overflow: visible !important;
-      }
-
-      body.qpc-call-active .attach-btn { display: none !important; }
-
-      body.qpc-call-active .input-wrapper {
-        min-height: 44px !important;
-        height: 44px !important;
-        border-radius: 14px !important;
-      }
-
-      body.qpc-call-active .input-wrapper input {
-        min-height: 42px !important;
-        height: 42px !important;
-        font-size: 14px !important;
-      }
-
-      body.qpc-call-active .send-btn {
-        width: 44px !important;
-        height: 44px !important;
-        border-radius: 14px !important;
-      }
-
-      body.qpc-call-active .header-actions {
-        position: fixed !important;
-        left: 50% !important;
-        bottom: calc(64px + env(safe-area-inset-bottom)) !important;
-        transform: translateX(-50%) !important;
-        z-index: 7000 !important;
-        padding: 7px !important;
-        border-radius: 999px !important;
-        background: rgba(15, 23, 42, 0.94) !important;
-        box-shadow: 0 16px 40px rgba(15, 23, 42, 0.35) !important;
-        backdrop-filter: blur(14px) !important;
-        -webkit-backdrop-filter: blur(14px) !important;
-        display: flex !important;
-        justify-content: center !important;
-        gap: 8px !important;
-      }
-
-      body.qpc-call-active .header-actions #btn-report,
-      body.qpc-call-active .header-actions #btn-search,
-      body.qpc-call-active .header-actions .divider,
-      body.qpc-call-active .header-actions #btn-voice-call,
-      body.qpc-call-active .header-actions #btn-video-call {
-        display: none !important;
-      }
-
+      /* Header actions hidden during call — replaced by floating call-controls-bar */
       body.qpc-call-active .header-actions #btn-mute-mic,
       body.qpc-call-active .header-actions #btn-mute-cam,
       body.qpc-call-active .header-actions #btn-end-call {
-        width: 44px !important;
-        height: 44px !important;
-        border-radius: 999px !important;
-        display: inline-grid !important;
-      }
-
-      body.qpc-call-active .header-actions #btn-mute-mic,
-      body.qpc-call-active .header-actions #btn-mute-cam {
-        color: #fff !important;
-        background: rgba(255, 255, 255, 0.14) !important;
-      }
-
-      body.qpc-call-active .header-actions #btn-end-call {
-        color: #fff !important;
-        background: var(--danger-color) !important;
+        display: none !important;
       }
     }
 
@@ -1422,6 +1332,377 @@
         transition-duration: 0.001ms !important;
       }
     }
+
+    /* ====== TYPING INDICATOR ====== */
+    .typing-indicator {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      color: var(--text-muted);
+      font-size: 12.5px;
+      font-weight: 600;
+      font-style: italic;
+      animation: qpcFadeUp 0.2s ease;
+    }
+    .typing-indicator.visible { display: flex; }
+    .typing-dots { display: inline-flex; gap: 3px; margin-left: 2px; }
+    .typing-dots span {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--accent-color);
+      animation: qpcTypingBounce 1.2s ease-in-out infinite;
+    }
+    .typing-dots span:nth-child(2) { animation-delay: 0.15s; }
+    .typing-dots span:nth-child(3) { animation-delay: 0.3s; }
+    @keyframes qpcTypingBounce {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+      30% { transform: translateY(-5px); opacity: 1; }
+    }
+
+    /* ====== MESSAGE TIMESTAMPS ====== */
+    .msg-time {
+      font-size: 10px;
+      opacity: 0.55;
+      font-weight: 500;
+      margin-top: 2px;
+      align-self: flex-end;
+      letter-spacing: 0.02em;
+    }
+    .message-bubble.own .msg-time { color: rgba(255,255,255,0.7); }
+    .message-bubble.other .msg-time { color: var(--text-muted); }
+
+    /* ====== DELIVERY TICKS ====== */
+    .msg-meta {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 5px;
+      margin-top: 2px;
+    }
+    .msg-ticks {
+      font-size: 12px;
+      font-weight: 700;
+      opacity: 0.55;
+      letter-spacing: -1px;
+    }
+    .msg-ticks.delivered { opacity: 0.85; color: #34d399; }
+    .message-bubble.own .msg-ticks { color: rgba(255,255,255,0.6); }
+    .message-bubble.own .msg-ticks.delivered { color: #a7f3d0; }
+
+    /* ====== SCROLL TO BOTTOM BUTTON ====== */
+    .scroll-to-bottom {
+      position: absolute;
+      right: 24px;
+      bottom: 90px;
+      z-index: 50;
+      width: 44px;
+      height: 44px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.95);
+      color: var(--text-main);
+      box-shadow: 0 6px 20px rgba(15,23,42,0.15);
+      display: none;
+      place-items: center;
+      cursor: pointer;
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+      font-size: 16px;
+    }
+    .scroll-to-bottom.visible { display: grid; }
+    .scroll-to-bottom:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(15,23,42,0.2); }
+    .unread-badge {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      min-width: 20px;
+      height: 20px;
+      padding: 0 5px;
+      border-radius: 999px;
+      background: var(--accent-color);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 900;
+      display: none;
+      place-items: center;
+      line-height: 20px;
+      text-align: center;
+    }
+    .unread-badge.visible { display: grid; }
+
+    /* ====== SEARCH BAR ====== */
+    .search-bar {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      animation: qpcFadeUp 0.15s ease;
+    }
+    .search-bar.visible { display: flex; }
+    .search-bar input {
+      flex: 1;
+      min-height: 38px;
+      padding: 0 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(248,250,252,0.9);
+      outline: none;
+      font-size: 14px;
+      color: var(--text-main);
+    }
+    .search-bar input:focus {
+      border-color: rgba(0,168,255,0.5);
+      box-shadow: 0 0 0 3px rgba(0,168,255,0.1);
+    }
+    .search-bar .close-search-btn {
+      width: 36px;
+      height: 36px;
+      border: none;
+      border-radius: 10px;
+      background: rgba(15,23,42,0.06);
+      color: var(--text-muted);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .search-hidden { display: none !important; }
+    .messages-container mark {
+      background: rgba(0,168,255,0.2);
+      color: inherit;
+      padding: 1px 2px;
+      border-radius: 3px;
+    }
+
+    /* ====== MEMBER STATUS DOTS (SIDEBAR) ====== */
+    #members-list li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .member-status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+    }
+    .member-status-dot.status-online {
+      background: var(--success-color);
+      box-shadow: 0 0 0 3px rgba(16,185,129,0.15);
+    }
+    .member-status-dot.status-away {
+      background: var(--warning-color);
+      box-shadow: 0 0 0 3px rgba(245,158,11,0.15);
+    }
+    .member-status-dot.status-offline {
+      background: var(--danger-color);
+      box-shadow: 0 0 0 3px rgba(255,71,87,0.15);
+    }
+
+    /* ====== ENHANCED EMOJI PICKER ====== */
+    .emoji-picker {
+      width: min(340px, calc(100vw - 28px));
+      max-height: 320px;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .emoji-picker.visible-picker { display: flex !important; }
+    .emoji-tabs {
+      display: flex;
+      gap: 2px;
+      padding: 4px 4px 6px;
+      border-bottom: 1px solid rgba(15,23,42,0.06);
+      overflow-x: auto;
+      flex-shrink: 0;
+    }
+    .emoji-tab-btn {
+      min-width: 34px;
+      height: 30px;
+      border: none;
+      border-radius: 8px;
+      background: transparent;
+      font-size: 14px;
+      cursor: pointer;
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+      transition: background 0.15s;
+    }
+    .emoji-tab-btn:hover { background: rgba(15,23,42,0.06); }
+    .emoji-tab-btn.active { background: rgba(0,168,255,0.12); }
+    .emoji-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+      padding: 8px;
+      overflow-y: auto;
+      flex: 1;
+      min-height: 0;
+    }
+    .emoji-grid button {
+      width: 100%;
+      aspect-ratio: 1;
+      min-height: 36px;
+      border: none;
+      border-radius: 10px;
+      background: rgba(15,23,42,0.04);
+      font-size: 20px;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: background 0.12s, transform 0.12s;
+    }
+    .emoji-grid button:hover { background: rgba(0,168,255,0.1); transform: scale(1.12); }
+    .emoji-grid button.emoji-hidden { display: none !important; }
+
+    /* ====== FLOATING CALL CONTROLS BAR ====== */
+    .call-controls-bar {
+      position: fixed;
+      left: 50%;
+      bottom: 28px;
+      transform: translateX(-50%);
+      z-index: 8000;
+      display: none;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 20px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.92);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      box-shadow: 0 20px 50px rgba(15,23,42,0.4);
+      animation: qpcSlideUp 0.3s ease;
+    }
+    .call-controls-bar.visible { display: flex; }
+    @keyframes qpcSlideUp {
+      from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+      to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+    .call-ctrl-btn {
+      width: 52px;
+      height: 52px;
+      border: none;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+      cursor: pointer;
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+    .call-ctrl-btn:hover { transform: scale(1.08); }
+    .call-ctrl-btn.ctrl-mute {
+      background: rgba(255,255,255,0.14);
+      color: #fff;
+    }
+    .call-ctrl-btn.ctrl-mute.muted {
+      background: rgba(245,158,11,0.25);
+      color: #fbbf24;
+    }
+    .call-ctrl-btn.ctrl-end {
+      width: 60px;
+      height: 60px;
+      background: var(--danger-color);
+      color: #fff;
+      box-shadow: 0 8px 24px rgba(255,71,87,0.35);
+    }
+    .call-ctrl-btn.ctrl-end:hover { background: #e5404f; }
+    .call-ctrl-label {
+      position: absolute;
+      bottom: -18px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 9px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.5);
+      white-space: nowrap;
+      pointer-events: none;
+    }
+    .call-ctrl-btn { position: relative; }
+
+    /* ====== MESSAGE CONTEXT MENU ====== */
+    .message-context-menu {
+      position: fixed;
+      z-index: 9000;
+      display: none;
+      min-width: 140px;
+      padding: 6px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.97);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--border);
+      box-shadow: 0 12px 36px rgba(15,23,42,0.18);
+      animation: qpcFadeUp 0.12s ease;
+    }
+    .message-context-menu.visible { display: block; }
+    .context-menu-item {
+      width: 100%;
+      padding: 10px 14px;
+      border: none;
+      border-radius: 10px;
+      background: transparent;
+      color: var(--text-main);
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      cursor: pointer;
+      transition: background 0.12s;
+    }
+    .context-menu-item:hover { background: rgba(0,168,255,0.08); }
+    .context-menu-item i { color: var(--text-muted); width: 16px; text-align: center; }
+
+    /* ====== CALL ACTIVE: UNIFIED BOTTOM BAR (OVERRIDE MOBILE) ====== */
+    @media (max-width: 840px) {
+      body.qpc-call-active .header-actions {
+        display: none !important;
+      }
+      body.qpc-call-active .call-controls-bar.visible {
+        bottom: calc(68px + env(safe-area-inset-bottom)) !important;
+      }
+      body.qpc-call-active .chat-area {
+        grid-template-rows: 56px minmax(0,1fr) auto 58px !important;
+      }
+      body.qpc-call-active .messages-container {
+        height: auto !important;
+        min-height: 42px !important;
+        max-height: 60px !important;
+      }
+    }
+
+    /* PC: also use floating bar instead of header buttons during call */
+    @media (min-width: 841px) {
+      body.qpc-call-active .header-actions #btn-mute-mic,
+      body.qpc-call-active .header-actions #btn-mute-cam,
+      body.qpc-call-active .header-actions #btn-end-call {
+        display: none !important;
+      }
+      body.qpc-call-active .call-controls-bar.visible {
+        bottom: 32px;
+      }
+    }
+
+    /* ====== MOBILE: KEYBOARD-AWARE ====== */
+    @media (max-width: 840px) {
+      .chat-area { position: relative; }
+      .scroll-to-bottom { right: 16px; bottom: 80px; }
+    }
+
+    @media (max-width: 600px) {
+      .call-controls-bar { gap: 10px; padding: 8px 16px; }
+      .call-ctrl-btn { width: 48px; height: 48px; font-size: 16px; }
+      .call-ctrl-btn.ctrl-end { width: 54px; height: 54px; }
+      .call-ctrl-label { font-size: 8px; bottom: -16px; }
+      .scroll-to-bottom { right: 14px; bottom: 74px; width: 40px; height: 40px; font-size: 14px; }
+    }
+
   </style>
 </head>
 
@@ -1830,6 +2111,14 @@
 
         <div id="video-grid" class="video-grid hidden" aria-label="Video call participants"></div>
 
+        <div id="search-bar" class="search-bar" role="search">
+          <i class="fa-solid fa-magnifying-glass" style="color:var(--text-muted);font-size:14px;" aria-hidden="true"></i>
+          <input type="text" id="search-input" placeholder="Search messages..." autocomplete="off" />
+          <button id="btn-close-search" class="close-search-btn" type="button" title="Close search" aria-label="Close search">
+            <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+          </button>
+        </div>
+
         <div class="messages-container" id="messages-container" aria-live="polite">
           <div class="system-msg">
             <div class="sys-content">
@@ -1838,6 +2127,16 @@
             </div>
           </div>
         </div>
+
+        <div id="typing-indicator" class="typing-indicator" aria-live="polite">
+          <span id="typing-text">Someone is typing</span>
+          <span class="typing-dots"><span></span><span></span><span></span></span>
+        </div>
+
+        <button id="scroll-to-bottom" class="scroll-to-bottom" type="button" title="Scroll to latest messages" aria-label="Scroll to bottom">
+          <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+          <span id="unread-badge" class="unread-badge">0</span>
+        </button>
 
         <footer class="chat-input-area">
           <button class="icon-btn attach-btn" type="button" title="Attach file disabled" aria-label="Attach file disabled">
@@ -1853,26 +2152,112 @@
             </button>
 
             <div id="emoji-picker" class="emoji-picker hidden" aria-label="Emoji picker">
-              <button type="button">😀</button>
-              <button type="button">😂</button>
-              <button type="button">😊</button>
-              <button type="button">😍</button>
-              <button type="button">😎</button>
-              <button type="button">🥲</button>
-              <button type="button">😢</button>
-              <button type="button">😡</button>
-              <button type="button">👍</button>
-              <button type="button">🙏</button>
-              <button type="button">❤️</button>
-              <button type="button">🔥</button>
-              <button type="button">🎉</button>
-              <button type="button">✅</button>
-              <button type="button">❌</button>
-              <button type="button">👋</button>
-              <button type="button">🤝</button>
-              <button type="button">💬</button>
-              <button type="button">🔒</button>
-              <button type="button">⚠️</button>
+              <div class="emoji-tabs">
+                <button type="button" class="emoji-tab-btn active" data-emoji-cat="all" title="All">🎯</button>
+                <button type="button" class="emoji-tab-btn" data-emoji-cat="recent" title="Recent">🕐</button>
+                <button type="button" class="emoji-tab-btn" data-emoji-cat="smileys" title="Smileys">😀</button>
+                <button type="button" class="emoji-tab-btn" data-emoji-cat="gestures" title="Gestures">👋</button>
+                <button type="button" class="emoji-tab-btn" data-emoji-cat="hearts" title="Hearts">❤️</button>
+                <button type="button" class="emoji-tab-btn" data-emoji-cat="activities" title="Activities">🎉</button>
+                <button type="button" class="emoji-tab-btn" data-emoji-cat="food" title="Food">🍕</button>
+                <button type="button" class="emoji-tab-btn" data-emoji-cat="travel" title="Travel">🌍</button>
+                <button type="button" class="emoji-tab-btn" data-emoji-cat="symbols" title="Symbols">⚡</button>
+              </div>
+              <div class="emoji-grid">
+                <!-- Smileys -->
+                <button type="button" data-category="smileys">😀</button>
+                <button type="button" data-category="smileys">😃</button>
+                <button type="button" data-category="smileys">😄</button>
+                <button type="button" data-category="smileys">😁</button>
+                <button type="button" data-category="smileys">😂</button>
+                <button type="button" data-category="smileys">🤣</button>
+                <button type="button" data-category="smileys">😊</button>
+                <button type="button" data-category="smileys">😇</button>
+                <button type="button" data-category="smileys">😍</button>
+                <button type="button" data-category="smileys">🥰</button>
+                <button type="button" data-category="smileys">😘</button>
+                <button type="button" data-category="smileys">😎</button>
+                <button type="button" data-category="smileys">🤩</button>
+                <button type="button" data-category="smileys">🥲</button>
+                <button type="button" data-category="smileys">😢</button>
+                <button type="button" data-category="smileys">😭</button>
+                <button type="button" data-category="smileys">😡</button>
+                <button type="button" data-category="smileys">🤬</button>
+                <button type="button" data-category="smileys">😱</button>
+                <button type="button" data-category="smileys">🤔</button>
+                <button type="button" data-category="smileys">🤫</button>
+                <button type="button" data-category="smileys">😴</button>
+                <button type="button" data-category="smileys">🥱</button>
+                <button type="button" data-category="smileys">😷</button>
+                <button type="button" data-category="smileys">🤒</button>
+                <button type="button" data-category="smileys">🤑</button>
+                <button type="button" data-category="smileys">🤠</button>
+                <button type="button" data-category="smileys">😈</button>
+                <!-- Gestures -->
+                <button type="button" data-category="gestures">👍</button>
+                <button type="button" data-category="gestures">👎</button>
+                <button type="button" data-category="gestures">👋</button>
+                <button type="button" data-category="gestures">🤝</button>
+                <button type="button" data-category="gestures">🙏</button>
+                <button type="button" data-category="gestures">👏</button>
+                <button type="button" data-category="gestures">🤞</button>
+                <button type="button" data-category="gestures">✌️</button>
+                <button type="button" data-category="gestures">🤙</button>
+                <button type="button" data-category="gestures">💪</button>
+                <button type="button" data-category="gestures">🫡</button>
+                <button type="button" data-category="gestures">🫶</button>
+                <!-- Hearts -->
+                <button type="button" data-category="hearts">❤️</button>
+                <button type="button" data-category="hearts">🧡</button>
+                <button type="button" data-category="hearts">💛</button>
+                <button type="button" data-category="hearts">💚</button>
+                <button type="button" data-category="hearts">💙</button>
+                <button type="button" data-category="hearts">💜</button>
+                <button type="button" data-category="hearts">🖤</button>
+                <button type="button" data-category="hearts">🤍</button>
+                <button type="button" data-category="hearts">💔</button>
+                <button type="button" data-category="hearts">💕</button>
+                <!-- Activities -->
+                <button type="button" data-category="activities">🎉</button>
+                <button type="button" data-category="activities">🎊</button>
+                <button type="button" data-category="activities">🎂</button>
+                <button type="button" data-category="activities">🎮</button>
+                <button type="button" data-category="activities">🏆</button>
+                <button type="button" data-category="activities">⚽</button>
+                <button type="button" data-category="activities">🎸</button>
+                <button type="button" data-category="activities">🎬</button>
+                <!-- Food -->
+                <button type="button" data-category="food">🍕</button>
+                <button type="button" data-category="food">🍔</button>
+                <button type="button" data-category="food">🍟</button>
+                <button type="button" data-category="food">☕</button>
+                <button type="button" data-category="food">🍺</button>
+                <button type="button" data-category="food">🍰</button>
+                <button type="button" data-category="food">🍿</button>
+                <button type="button" data-category="food">🥤</button>
+                <!-- Travel -->
+                <button type="button" data-category="travel">🌍</button>
+                <button type="button" data-category="travel">✈️</button>
+                <button type="button" data-category="travel">🚗</button>
+                <button type="button" data-category="travel">🏠</button>
+                <button type="button" data-category="travel">🌅</button>
+                <button type="button" data-category="travel">🏖️</button>
+                <button type="button" data-category="travel">⛰️</button>
+                <button type="button" data-category="travel">🌙</button>
+                <!-- Symbols -->
+                <button type="button" data-category="symbols">✅</button>
+                <button type="button" data-category="symbols">❌</button>
+                <button type="button" data-category="symbols">⚡</button>
+                <button type="button" data-category="symbols">🔥</button>
+                <button type="button" data-category="symbols">💬</button>
+                <button type="button" data-category="symbols">🔒</button>
+                <button type="button" data-category="symbols">⚠️</button>
+                <button type="button" data-category="symbols">💡</button>
+                <button type="button" data-category="symbols">🔔</button>
+                <button type="button" data-category="symbols">📌</button>
+                <button type="button" data-category="symbols">🎯</button>
+                <button type="button" data-category="symbols">💯</button>
+              </div>
             </div>
           </div>
 
@@ -1882,6 +2267,30 @@
         </footer>
       </main>
     </div>
+  </div>
+
+  <!-- Floating Call Controls Bar (PC + Mobile) -->
+  <div id="call-controls-bar" class="call-controls-bar" aria-label="Call controls">
+    <button id="ctrl-mute-mic" class="call-ctrl-btn ctrl-mute" type="button" title="Toggle Microphone" aria-label="Toggle microphone">
+      <i class="fa-solid fa-microphone" aria-hidden="true"></i>
+      <span class="call-ctrl-label">Mic</span>
+    </button>
+    <button id="ctrl-mute-cam" class="call-ctrl-btn ctrl-mute hidden" type="button" title="Toggle Camera" aria-label="Toggle camera">
+      <i class="fa-solid fa-video" aria-hidden="true"></i>
+      <span class="call-ctrl-label">Camera</span>
+    </button>
+    <button id="ctrl-end-call" class="call-ctrl-btn ctrl-end" type="button" title="End Call" aria-label="End call">
+      <i class="fa-solid fa-phone-slash" aria-hidden="true"></i>
+      <span class="call-ctrl-label">End</span>
+    </button>
+  </div>
+
+  <!-- Message Context Menu (long-press / right-click) -->
+  <div id="message-context-menu" class="message-context-menu" role="menu">
+    <button id="btn-context-copy" class="context-menu-item" type="button" role="menuitem">
+      <i class="fa-regular fa-copy" aria-hidden="true"></i>
+      Copy Text
+    </button>
   </div>
 
   <div id="incoming-call-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="caller-name-display">
@@ -2179,36 +2588,91 @@
             reportModal?.classList.add("hidden");
             legalGuideModal?.classList.add("hidden");
             document.querySelector("#install-help-modal")?.classList.add("hidden");
-            document.querySelector("#emoji-picker")?.classList.add("hidden");
+            const ep = document.querySelector("#emoji-picker");
+            ep?.classList.add("hidden");
+            ep?.classList.remove("visible-picker");
+            document.querySelector("#search-bar")?.classList.remove("visible");
+            document.querySelector("#message-context-menu")?.classList.remove("visible");
           }
         });
 
         const emojiBtn = $("#btn-emoji");
         const emojiPicker = $("#emoji-picker");
         const messageInput = $("#message-input");
+        const emojiGrid = emojiPicker?.querySelector(".emoji-grid");
 
         emojiBtn?.addEventListener("click", (event) => {
           event.stopPropagation();
           emojiPicker?.classList.toggle("hidden");
+          emojiPicker?.classList.toggle("visible-picker");
         });
 
-        emojiPicker?.addEventListener("click", (event) => {
+        /* Emoji category tabs */
+        emojiPicker?.querySelectorAll(".emoji-tab-btn").forEach((tabBtn) => {
+          tabBtn.addEventListener("click", (event) => {
+            event.stopPropagation();
+            const cat = tabBtn.getAttribute("data-emoji-cat");
+            emojiPicker.querySelectorAll(".emoji-tab-btn").forEach((t) => t.classList.remove("active"));
+            tabBtn.classList.add("active");
+
+            if (!emojiGrid) return;
+            const emojiButtons = emojiGrid.querySelectorAll("button[data-category]");
+
+            if (cat === "all") {
+              emojiButtons.forEach((b) => b.classList.remove("emoji-hidden"));
+            } else if (cat === "recent") {
+              const recent = getRecentEmojis();
+              emojiButtons.forEach((b) => {
+                b.classList.toggle("emoji-hidden", !recent.includes(b.textContent.trim()));
+              });
+            } else {
+              emojiButtons.forEach((b) => {
+                b.classList.toggle("emoji-hidden", b.getAttribute("data-category") !== cat);
+              });
+            }
+          });
+        });
+
+        function getRecentEmojis() {
+          try {
+            return JSON.parse(localStorage.getItem("qpc_recent_emojis") || "[]");
+          } catch (e) { return []; }
+        }
+
+        function saveRecentEmoji(emoji) {
+          try {
+            let recent = getRecentEmojis();
+            recent = recent.filter((e) => e !== emoji);
+            recent.unshift(emoji);
+            if (recent.length > 10) recent = recent.slice(0, 10);
+            localStorage.setItem("qpc_recent_emojis", JSON.stringify(recent));
+          } catch (e) {}
+        }
+
+        /* Emoji selection */
+        emojiGrid?.addEventListener("click", (event) => {
           const button = event.target.closest("button");
           if (!button || !messageInput) return;
-          const emoji = button.textContent || "";
+          const emoji = button.textContent?.trim() || "";
+          if (!emoji) return;
           const start = messageInput.selectionStart ?? messageInput.value.length;
           const end = messageInput.selectionEnd ?? messageInput.value.length;
           messageInput.value = messageInput.value.slice(0, start) + emoji + messageInput.value.slice(end);
           messageInput.focus();
           messageInput.selectionStart = messageInput.selectionEnd = start + emoji.length;
+          saveRecentEmoji(emoji);
           emojiPicker.classList.add("hidden");
+          emojiPicker.classList.remove("visible-picker");
         });
 
         document.addEventListener("click", (event) => {
           if (!emojiPicker || emojiPicker.classList.contains("hidden")) return;
           const clickedEmoji = emojiPicker.contains(event.target);
           const clickedEmojiBtn = emojiBtn && emojiBtn.contains(event.target);
-          if (!clickedEmoji && !clickedEmojiBtn) emojiPicker.classList.add("hidden");
+          if (!clickedEmoji && !clickedEmojiBtn) {
+            emojiPicker.classList.add("hidden");
+            emojiPicker.classList.remove("visible-picker");
+          }
         });
 
         $("#btn-report")?.addEventListener("click", () => reportModal?.classList.remove("hidden"));
@@ -2370,6 +2834,6 @@
 
   <!-- Supabase removed. This version uses PeerJS only. -->
   <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
-  <script src="app.js?v=7.0.0"></script>
+  <script src="app.js?v=8.0.0"></script>
 </body>
 </html>
