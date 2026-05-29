@@ -1455,8 +1455,6 @@
   async function joinRoom() {
     if (!validateEntry(true)) return;
 
-    destroyPeer();
-
     myName = sanitize(guestNameInput.value, 20);
     roomCode = sanitize(roomCodeInput.value, 8).toUpperCase();
     isHost = false;
@@ -1466,13 +1464,21 @@
     setEntryStatus("Joining room...", "success");
 
     try {
-      const result = await createPeer(myPersonalId);
-
-      peer = result.peerInstance;
-      myPeerId = result.id;
-
-      peer.on("connection", (conn) => setupConnection(conn));
-      peer.on("call", handleIncomingCall);
+      if (!peer || peer.destroyed || peer.id !== myPersonalId) {
+        destroyPeer();
+        const result = await createPeer(myPersonalId);
+        peer = result.peerInstance;
+        myPeerId = result.id;
+        peer.on("connection", (conn) => setupConnection(conn));
+        peer.on("call", handleIncomingCall);
+      } else {
+        // Reuse existing peer: just clear maps from any previous direct chats
+        connections.forEach((c) => {
+          try { c.close(); } catch(e) {}
+        });
+        connections.clear();
+        members.clear();
+      }
 
       members.set(myPeerId, {
         name: myName,
