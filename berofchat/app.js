@@ -774,6 +774,9 @@
     try {
       localStorage.setItem("qpc_last_name", myName);
       localStorage.setItem("qpc_last_room", roomCode);
+      if (dobInput && dobInput.value) {
+        localStorage.setItem("qpc_last_dob", dobInput.value);
+      }
     } catch (e) {}
 
     startHeartbeat();
@@ -2472,9 +2475,13 @@
     if (guestNameInput) {
       try {
         const savedName = localStorage.getItem("qpc_last_name");
+        const savedDob = localStorage.getItem("qpc_last_dob");
 
         if (savedName && !guestNameInput.value) {
           guestNameInput.value = savedName;
+        }
+        if (savedDob && dobInput && !dobInput.value) {
+          dobInput.value = savedDob;
         }
       } catch (e) {}
 
