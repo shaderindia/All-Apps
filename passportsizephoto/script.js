@@ -284,7 +284,9 @@ document.addEventListener('DOMContentLoaded', function () {
         e.touches[0].clientX - e.touches[1].clientX,
         e.touches[0].clientY - e.touches[1].clientY
       );
-      let scale = dist / pinchStart.dist;
+      let rawScale = dist / pinchStart.dist;
+      // Snappy pinch-to-zoom multiplier (2.0x speed)
+      let scale = 1 + (rawScale - 1) * 2.0;
       let newZoom = Math.max(0.1, Math.min(pinchStart.zoom * scale, 8));
       let mid = {
         x: (e.touches[0].clientX + e.touches[1].clientX) / 2,
