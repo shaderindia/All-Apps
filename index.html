@@ -490,6 +490,16 @@
                 </span>
               </div>
             </a>
+            <!-- Button C (waiting on the left initially) -->
+            <a href="/berofchat/" id="carousel-btn-c" class="carousel-btn state-exit hero-button border-2 border-teal-400 bg-teal-950/40 text-teal-100 hover:bg-teal-950/70 transition duration-300">
+              <img src="/screenshots/p2p-chat-app.png" alt="Private Chat Preview" class="w-12 h-12 rounded-full object-cover border-2 border-white/50 mr-4 shadow-sm" style="width: 48px; height: 48px; min-width: 48px;">
+              <div class="flex flex-col text-left">
+                <span style="font-size: 10px; opacity: 0.8; font-weight: 600; text-transform: uppercase; tracking-wider; color: #99f6e4; margin-bottom: 2px;">P2P Messaging</span>
+                <span class="text-sm font-bold text-white flex items-center">
+                  <i class="fa-solid fa-comments fa-beat-fade mr-2"></i> Open Private Chat
+                </span>
+              </div>
+            </a>
           </div>
 
           <!-- Next Arrow Button -->
@@ -1255,9 +1265,11 @@
     let activeIndex = 0;
     const btnA = document.getElementById("carousel-btn-a");
     const btnB = document.getElementById("carousel-btn-b");
+    const btnC = document.getElementById("carousel-btn-c");
     
-    let activeBtn = btnA;
-    let waitingBtn = btnB;
+    let centerBtn = btnA;
+    let rightBtn = btnB;
+    let leftBtn = btnC;
     let transitionInProgress = false;
     let autoRotateInterval;
     
@@ -1289,90 +1301,79 @@
       if (transitionInProgress) return;
       transitionInProgress = true;
 
-      const nextTool = toolsList[nextIndex];
-      const nextCatColor = getCategoryColor(nextTool);
-
-      const currentActive = activeBtn;
-      const currentWaiting = waitingBtn;
-
       if (direction === "next") {
-        // Forward Transition (Next): Slide current leftwards (state-exit), slide waiting in from right (state-enter)
-        currentWaiting.style.transition = "none";
-        currentWaiting.classList.remove("state-center", "state-exit");
-        currentWaiting.classList.add("state-enter");
-        currentWaiting.href = nextTool.url;
-        currentWaiting.className = "carousel-btn state-enter hero-button border-2 font-bold transition " + nextTool.style;
-        currentWaiting.innerHTML = createButtonHTML(nextTool, nextCatColor);
-        currentWaiting.offsetHeight; // force browser reflow
-        currentWaiting.style.transition = "";
+        // Forward Transition (Next):
+        // 1. Calculate the tool that will appear instantly on the right: (nextIndex + 1) % toolsList.length
+        const rightToolIndex = (nextIndex + 1) % toolsList.length;
+        const rightTool = toolsList[rightToolIndex];
+        const rightCatColor = getCategoryColor(rightTool);
 
-        // Trigger CSS transition animation
-        currentActive.classList.remove("state-center");
-        currentActive.classList.add("state-exit");
+        // 2. Teleport the current leftBtn to the right (state-enter) instantly (0 seconds)
+        leftBtn.style.transition = "none";
+        leftBtn.classList.remove("state-exit", "state-center");
+        leftBtn.classList.add("state-enter");
+        leftBtn.href = rightTool.url;
+        leftBtn.className = "carousel-btn state-enter hero-button border-2 font-bold transition " + rightTool.style;
+        leftBtn.innerHTML = createButtonHTML(rightTool, rightCatColor);
+        leftBtn.offsetHeight; // force browser reflow
+        leftBtn.style.transition = "";
 
-        currentWaiting.classList.remove("state-enter");
-        currentWaiting.classList.add("state-center");
+        // 3. Trigger 3D slide transitions
+        centerBtn.classList.remove("state-center");
+        centerBtn.classList.add("state-exit"); // slides left
 
-        // Wait 4 seconds for slow majestic slide to complete, then teleport exiting button
-        setTimeout(function() {
-          currentActive.style.transition = "none";
-          currentActive.classList.remove("state-exit");
-          currentActive.classList.add("state-enter");
-          currentActive.offsetHeight; // force browser reflow
-          currentActive.style.transition = "";
+        rightBtn.classList.remove("state-enter");
+        rightBtn.classList.add("state-center"); // slides center
 
-          // Pre-populate with the next-next tool for seamless auto-slide planning
-          const nextNextIndex = (nextIndex + 1) % toolsList.length;
-          const nextNextTool = toolsList[nextNextIndex];
-          const nextNextCatColor = getCategoryColor(nextNextTool);
-          currentActive.href = nextNextTool.url;
-          currentActive.className = "carousel-btn state-enter hero-button border-2 font-bold transition " + nextNextTool.style;
-          currentActive.innerHTML = createButtonHTML(nextNextTool, nextNextCatColor);
+        // 4. Update references
+        const oldLeft = leftBtn;
+        const oldCenter = centerBtn;
+        const oldRight = rightBtn;
 
-          transitionInProgress = false;
-        }, 4000);
+        leftBtn = oldCenter;   // old center is now on the left
+        centerBtn = oldRight;  // old right is now in the center
+        rightBtn = oldLeft;    // old left (teleported) is now on the right
 
       } else {
-        // Backward Transition (Prev): Slide current rightwards (state-enter), slide waiting in from left (state-exit)
-        currentWaiting.style.transition = "none";
-        currentWaiting.classList.remove("state-center", "state-enter");
-        currentWaiting.classList.add("state-exit");
-        currentWaiting.href = nextTool.url;
-        currentWaiting.className = "carousel-btn state-exit hero-button border-2 font-bold transition " + nextTool.style;
-        currentWaiting.innerHTML = createButtonHTML(nextTool, nextCatColor);
-        currentWaiting.offsetHeight; // force browser reflow
-        currentWaiting.style.transition = "";
+        // Backward Transition (Prev):
+        // 1. Calculate the tool that will appear instantly on the left: (nextIndex - 1 + toolsList.length) % toolsList.length
+        const leftToolIndex = (nextIndex - 1 + toolsList.length) % toolsList.length;
+        const leftTool = toolsList[leftToolIndex];
+        const leftCatColor = getCategoryColor(leftTool);
 
-        // Trigger CSS transition animation
-        currentActive.classList.remove("state-center");
-        currentActive.classList.add("state-enter");
+        // 2. Teleport the current rightBtn to the left (state-exit) instantly (0 seconds)
+        rightBtn.style.transition = "none";
+        rightBtn.classList.remove("state-enter", "state-center");
+        rightBtn.classList.add("state-exit");
+        rightBtn.href = leftTool.url;
+        rightBtn.className = "carousel-btn state-exit hero-button border-2 font-bold transition " + leftTool.style;
+        rightBtn.innerHTML = createButtonHTML(leftTool, leftCatColor);
+        rightBtn.offsetHeight; // force browser reflow
+        rightBtn.style.transition = "";
 
-        currentWaiting.classList.remove("state-exit");
-        currentWaiting.classList.add("state-center");
+        // 3. Trigger 3D slide transitions
+        centerBtn.classList.remove("state-center");
+        centerBtn.classList.add("state-enter"); // slides right
 
-        // Wait 4 seconds for slow majestic slide to complete, then configure waiting button
-        setTimeout(function() {
-          const nextNextIndex = (nextIndex + 1) % toolsList.length;
-          const nextNextTool = toolsList[nextNextIndex];
-          const nextNextCatColor = getCategoryColor(nextNextTool);
+        leftBtn.classList.remove("state-exit");
+        leftBtn.classList.add("state-center"); // slides center
 
-          currentActive.style.transition = "none";
-          currentActive.classList.remove("state-center", "state-exit");
-          currentActive.classList.add("state-enter");
-          currentActive.href = nextNextTool.url;
-          currentActive.className = "carousel-btn state-enter hero-button border-2 font-bold transition " + nextNextTool.style;
-          currentActive.innerHTML = createButtonHTML(nextNextTool, nextNextCatColor);
-          currentActive.offsetHeight; // force browser reflow
-          currentActive.style.transition = "";
+        // 4. Update references
+        const oldLeft = leftBtn;
+        const oldCenter = centerBtn;
+        const oldRight = rightBtn;
 
-          transitionInProgress = false;
-        }, 4000);
+        rightBtn = oldCenter;  // old center is now on the right
+        centerBtn = oldLeft;   // old left is now in the center
+        leftBtn = oldRight;    // old right (teleported) is now on the left
       }
 
-      // Swap references
-      activeBtn = currentWaiting;
-      waitingBtn = currentActive;
       activeIndex = nextIndex;
+
+      // Unlock after transition finishes (4 seconds)
+      setTimeout(function() {
+        transitionInProgress = false;
+      }, 4000);
     }
 
     function startAutoRotate() {
@@ -1385,12 +1386,12 @@
       }, 14000); // 10s stay + 4s transition = 14s total cycle
     }
 
-    if (btnA && btnB) {
-      // Initialize waiting button with Passport Photo PRO preview
-      const firstWaitingTool = toolsList[1];
-      waitingBtn.href = firstWaitingTool.url;
-      waitingBtn.className = "carousel-btn state-enter hero-button border-2 font-bold transition " + firstWaitingTool.style;
-      waitingBtn.innerHTML = createButtonHTML(firstWaitingTool, "#b4c6fc");
+    if (btnA && btnB && btnC) {
+      // Initialize waiting button C (left side) with Private Chat (index 6, which is last)
+      const lastTool = toolsList[toolsList.length - 1];
+      leftBtn.href = lastTool.url;
+      leftBtn.className = "carousel-btn state-exit hero-button border-2 font-bold transition " + lastTool.style;
+      leftBtn.innerHTML = createButtonHTML(lastTool, "#99f6e4");
 
       // Set up button event listeners
       const prevBtn = document.getElementById("carousel-prev-btn");
