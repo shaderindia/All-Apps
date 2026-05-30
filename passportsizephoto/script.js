@@ -766,12 +766,20 @@ document.addEventListener('DOMContentLoaded', function () {
     // Only do auto margin if user requests and it FITS
     if (autocenterCheck.checked && np <= maxCols * maxRows) {
       let usedW = cols * dims.width + (cols - 1) * spacing.h;
-      let usedH = rows * dims.height + (rows - 1) * spacing.v;
       let freeW = Math.max(0, pageDims.width - usedW);
-      let freeH = Math.max(0, pageDims.height - usedH);
       margins.left = margins.right = Math.floor(freeW / 2);
-      margins.top = margins.bottom = Math.floor(freeH / 2);
-      marginTopInput.value = marginBottomInput.value = (unit === 'px') ? margins.top : (unit === 'mm' ? (margins.top*25.4/dpi).toFixed(2) : (margins.top/dpi).toFixed(2));
+      
+      // Top and bottom margins are set to exactly 15 in the active unit
+      let targetMarginVal = 15;
+      marginTopInput.value = marginBottomInput.value = targetMarginVal;
+      
+      function conv(x) {
+        if (unit === 'mm') return mmToPx(x, dpi);
+        if (unit === 'inch') return inchToPx(x, dpi);
+        return x;
+      }
+      margins.top = margins.bottom = conv(targetMarginVal);
+
       marginLeftInput.value = marginRightInput.value = (unit === 'px') ? margins.left : (unit === 'mm' ? (margins.left*25.4/dpi).toFixed(2) : (margins.left/dpi).toFixed(2));
     }
 
