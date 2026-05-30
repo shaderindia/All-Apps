@@ -318,7 +318,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (e.touches.length === 0) isImgPanning = false;
   }, { passive: false });
   photoPreviewWrapper.addEventListener('pointerdown', (e) => {
-    if (!imgLoaded || (cropActive && e.target === cropBox)) return;
+    if (!imgLoaded || cropActive) return;
     isImgPanning = true;
     lastPan = { x: e.clientX, y: e.clientY };
     e.preventDefault();
@@ -407,6 +407,26 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   function updateCropBox() {
     if (!cropRect) return;
+    let pvW = photoPreviewWrapper.clientWidth;
+    let pvH = photoPreviewWrapper.clientHeight;
+    let dims = getPhotoDimsPx();
+    let asp = dims.width / dims.height;
+
+    // Clamp width to wrapper size
+    cropRect.w = clamp(cropRect.w, 36, pvW);
+    // Maintain aspect ratio
+    cropRect.h = cropRect.w / asp;
+
+    // If height exceeds wrapper height, clamp height and recalculate width
+    if (cropRect.h > pvH) {
+      cropRect.h = pvH;
+      cropRect.w = cropRect.h * asp;
+    }
+
+    // Clamp coordinates to stay within viewport
+    cropRect.x = clamp(cropRect.x, 0, pvW - cropRect.w);
+    cropRect.y = clamp(cropRect.y, 0, pvH - cropRect.h);
+
     cropBox.style.left = cropRect.x + 'px';
     cropBox.style.top = cropRect.y + 'px';
     cropBox.style.width = cropRect.w + 'px';
@@ -436,56 +456,130 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!cropActive || !cropDragMode) return;
     e.preventDefault();
     const pointer = getPointer(e);
-    let dx = pointer.x - cropStartMouse.x;
-    let dy = pointer.y - cropStartMouse.y;
     let pvW = photoPreviewWrapper.clientWidth;
     let pvH = photoPreviewWrapper.clientHeight;
     let dims = getPhotoDimsPx();
     let asp = dims.width / dims.height;
     let minW = 36, minH = minW / asp;
+
+    let rectWrapper = photoPreviewWrapper.getBoundingClientRect();
+    let mouseX = pointer.x - rectWrapper.left;
+    let mouseY = pointer.y - rectWrapper.top;
+
     let r = { ...cropStartRect };
+
     if (cropDragMode === 'move') {
+      let dx = pointer.x - cropStartMouse.x;
+      let dy = pointer.y - cropStartMouse.y;
       r.x = clamp(cropStartRect.x + dx, 0, pvW - r.w);
       r.y = clamp(cropStartRect.y + dy, 0, pvH - r.h);
-      cropRect.x = r.x;
-      cropRect.y = r.y;
+      cropRect = r;
     } else {
-      switch (cropDragMode) {
-        case 'nw': r.x += dx; r.y += dy; r.w -= dx; r.h -= dy; break;
-        case 'n':  r.y += dy; r.h -= dy; break;
-        case 'ne': r.y += dy; r.w += dx; r.h -= dy; break;
-        case 'e':  r.w += dx; break;
-        case 'se': r.w += dx; r.h += dy; break;
-        case 's':  r.h += dy; break;
-        case 'sw': r.x += dx; r.w -= dx; r.h += dy; break;
-        case 'w':  r.x += dx; r.w -= dx; break;
+      if (cropDragMode === 'se') {
+        let anchorX = cropStartRect.x;
+        let anchorY = cropStartRect.y;
+        let maxW = pvW - anchorX;
+        let maxH = pvH - anchorY;
+        let w = mouseX - anchorX;
+        w = Math.min(w, maxW, maxH * asp);
+        let h = w / asp;
+        r.x = anchorX;
+        r.y = anchorY;
+        r.w = Math.max(minW, w);
+        r.h = Math.max(minH, h);
+      } else if (cropDragMode === 'nw') {
+        let anchorX = cropStartRect.x + cropStartRect.w;
+        let anchorY = cropStartRect.y + cropStartRect.h;
+        let maxW = anchorX;
+        let maxH = anchorY;
+        let w = anchorX - mouseX;
+        w = Math.min(w, maxW, maxH * asp);
+        let h = w / asp;
+        r.x = anchorX - w;
+        r.y = anchorY - h;
+        r.w = Math.max(minW, w);
+        r.h = Math.max(minH, h);
+      } else if (cropDragMode === 'ne') {
+        let anchorX = cropStartRect.x;
+        let anchorY = cropStartRect.y + cropStartRect.h;
+        let maxW = pvW - anchorX;
+        let maxH = anchorY;
+        let w = mouseX - anchorX;
+        w = Math.min(w, maxW, maxH * asp);
+        let h = w / asp;
+        r.x = anchorX;
+        r.y = anchorY - h;
+        r.w = Math.max(minW, w);
+        r.h = Math.max(minH, h);
+      } else if (cropDragMode === 'sw') {
+        let anchorX = cropStartRect.x + cropStartRect.w;
+        let anchorY = cropStartRect.y;
+        let maxW = anchorX;
+        let maxH = pvH - anchorY;
+        let w = anchorX - mouseX;
+        w = Math.min(w, maxW, maxH * asp);
+        let h = w / asp;
+        r.x = anchorX - w;
+        r.y = anchorY;
+        r.w = Math.max(minW, w);
+        r.h = Math.max(minH, h);
+      } else if (cropDragMode === 'e') {
+        let anchorX = cropStartRect.x;
+        let maxW = pvW - anchorX;
+        let spaceAbove = cropStartRect.y;
+        let spaceBelow = pvH - (cropStartRect.y + cropStartRect.h);
+        let maxHExtra = Math.min(spaceAbove, spaceBelow) * 2;
+        let maxH = cropStartRect.h + maxHExtra;
+        let w = mouseX - anchorX;
+        w = Math.min(w, maxW, maxH * asp);
+        let h = w / asp;
+        r.w = Math.max(minW, w);
+        r.h = Math.max(minH, h);
+        r.x = anchorX;
+        r.y = cropStartRect.y - (r.h - cropStartRect.h) / 2;
+      } else if (cropDragMode === 'w') {
+        let anchorX = cropStartRect.x + cropStartRect.w;
+        let spaceAbove = cropStartRect.y;
+        let spaceBelow = pvH - (cropStartRect.y + cropStartRect.h);
+        let maxHExtra = Math.min(spaceAbove, spaceBelow) * 2;
+        let maxH = cropStartRect.h + maxHExtra;
+        let maxW = anchorX;
+        let w = anchorX - mouseX;
+        w = Math.min(w, maxW, maxH * asp);
+        let h = w / asp;
+        r.w = Math.max(minW, w);
+        r.h = Math.max(minH, h);
+        r.x = anchorX - r.w;
+        r.y = cropStartRect.y - (r.h - cropStartRect.h) / 2;
+      } else if (cropDragMode === 'n') {
+        let anchorY = cropStartRect.y + cropStartRect.h;
+        let spaceLeft = cropStartRect.x;
+        let spaceRight = pvW - (cropStartRect.x + cropStartRect.w);
+        let maxWExtra = Math.min(spaceLeft, spaceRight) * 2;
+        let maxW = cropStartRect.w + maxWExtra;
+        let maxH = anchorY;
+        let h = anchorY - mouseY;
+        h = Math.min(h, maxH, maxW / asp);
+        let w = h * asp;
+        r.h = Math.max(minH, h);
+        r.w = Math.max(minW, w);
+        r.y = anchorY - r.h;
+        r.x = cropStartRect.x - (r.w - cropStartRect.w) / 2;
+      } else if (cropDragMode === 's') {
+        let anchorY = cropStartRect.y;
+        let spaceLeft = cropStartRect.x;
+        let spaceRight = pvW - (cropStartRect.x + cropStartRect.w);
+        let maxWExtra = Math.min(spaceLeft, spaceRight) * 2;
+        let maxW = cropStartRect.w + maxWExtra;
+        let maxH = pvH - anchorY;
+        let h = mouseY - anchorY;
+        h = Math.min(h, maxH, maxW / asp);
+        let w = h * asp;
+        r.h = Math.max(minH, h);
+        r.w = Math.max(minW, w);
+        r.y = anchorY;
+        r.x = cropStartRect.x - (r.w - cropStartRect.w) / 2;
       }
-      // Maintain aspect ratio (resize along the dominant axis)
-      let newAsp = r.w / r.h;
-      if (Math.abs(newAsp - asp) > 0.01) {
-        if (['n','s'].includes(cropDragMode)) {
-          r.w = r.h * asp;
-          if (cropDragMode === 'n') r.x = cropStartRect.x + cropStartRect.w - r.w;
-        } else if (['e','w'].includes(cropDragMode)) {
-          r.h = r.w / asp;
-          if (cropDragMode === 'w') r.y = cropStartRect.y + cropStartRect.h - r.h;
-        } else {
-          let dw = r.w - cropStartRect.w, dh = r.h - cropStartRect.h;
-          if (Math.abs(dw) > Math.abs(dh)) {
-            r.h = r.w / asp;
-            if (cropDragMode.endsWith('n')) r.y = cropStartRect.y + cropStartRect.h - r.h;
-          } else {
-            r.w = r.h * asp;
-            if (cropDragMode.endsWith('w')) r.x = cropStartRect.x + cropStartRect.w - r.w;
-          }
-        }
-      }
-      r.w = Math.max(minW, r.w);
-      r.h = Math.max(minH, r.h);
-      if (r.x < 0) { r.w += r.x; r.x = 0;}
-      if (r.y < 0) { r.h += r.y; r.y = 0;}
-      if (r.x + r.w > pvW) r.w = pvW - r.x;
-      if (r.y + r.h > pvH) r.h = pvH - r.y;
       cropRect = r;
     }
     updateCropBox();
@@ -650,6 +744,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // ==== Render Output Sheet (with all required fixes) ====
   function renderCanvas() {
+    if (cropActive && cropRect) {
+      updateCropBox();
+    }
     let dims = getPhotoDimsPx();
     let pageDims = getPageDimsPx();
     let spacing = getSpacingPx();
