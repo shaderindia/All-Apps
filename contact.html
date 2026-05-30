@@ -214,12 +214,11 @@ nav {
 
 .card {
   width: 100%;
-  max-width: 620px;
+  max-width: 960px; /* Increased from 620px to support split PC view */
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: 28px;
-  padding: 2.3rem;
-  text-align: center;
+  padding: 2.5rem;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   position: relative;
@@ -236,6 +235,92 @@ nav {
   height: 2px;
   background: linear-gradient(90deg, transparent, var(--indigo), var(--violet), transparent);
   border-radius: 999px;
+}
+
+/* Dual-column split layout for PC/Tablet */
+.card-content {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+  align-items: center;
+}
+
+@media (min-width: 768px) {
+  .card-content {
+    grid-template-columns: 1fr 1.15fr;
+  }
+  
+  .card-info-col {
+    text-align: left;
+  }
+  
+  .icon-ring {
+    margin-left: 0 !important;
+    margin-right: auto !important;
+  }
+  
+  .float-badges {
+    justify-content: flex-start !important;
+  }
+  
+  .signal-row {
+    justify-content: flex-start !important;
+  }
+}
+
+/* Neon glow frame container matching the orange/blue photo background */
+.neon-glow-container {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 
+    -10px 0 25px -8px rgba(249, 115, 22, 0.45), /* Vibrant orange glow on left */
+    10px 0 25px -8px rgba(56, 189, 248, 0.45);   /* Vibrant blue glow on right */
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  background: rgba(10, 12, 30, 0.6);
+}
+
+.neon-glow-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  padding: 1.5px; /* Border thickness */
+  background: linear-gradient(90deg, #f97316 0%, #38bdf8 100%);
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0.85;
+}
+
+.neon-glow-container img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 19px;
+  transition: transform 0.5s ease;
+}
+
+.neon-glow-container:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 
+    -16px 0 35px -6px rgba(249, 115, 22, 0.65), 
+    16px 0 35px -6px rgba(56, 189, 248, 0.65);
+}
+
+.neon-glow-container:hover img {
+  transform: scale(1.02);
+}
+
+.card-photo-col {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
 }
 
 .icon-ring {
@@ -659,64 +744,74 @@ nav {
   </section>
 
   <section class="card" aria-label="Contact details">
+    <div class="card-content">
+      <!-- Left Column: Portrait and Glowing Neon Frame -->
+      <div class="card-photo-col">
+        <div class="neon-glow-container">
+          <img src="nishikant-contact.jpg" alt="Nishikant Xalxo" class="w-full h-auto object-cover rounded-2xl block">
+        </div>
+      </div>
+      
+      <!-- Right Column: Contact Information -->
+      <div class="card-info-col">
+        <div class="icon-ring">
+          <div class="icon-core">📬</div>
+        </div>
 
-    <div class="icon-ring">
-      <div class="icon-core">📬</div>
+        <h2>Get in Touch</h2>
+
+        <p class="card-text">
+          Use email for support, bug reports, privacy requests, abuse reports, tool suggestions,
+          or sponsorship inquiries.
+        </p>
+
+        <div class="float-badges">
+          <span class="fbadge b1">BUG REPORT</span>
+          <span class="fbadge b2">FEEDBACK</span>
+          <span class="fbadge b3">SPONSORSHIP</span>
+        </div>
+
+        <div class="contact-buttons">
+          <a href="https://mail.google.com/mail/?view=cm&fs=1&to=nxdecore@gmail.com&su=Shader7%20Contact%20Request" target="_blank" rel="noopener noreferrer" class="btn btn-email">
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+              <path d="m22 4-10 9L2 4"></path>
+            </svg>
+            nxdecore@gmail.com
+          </a>
+
+          <a href="https://instagram.com/nishix_vamp" target="_blank" rel="noopener noreferrer" class="btn btn-insta">
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <rect x="2" y="2" width="20" height="20" rx="5"></rect>
+              <circle cx="12" cy="12" r="5"></circle>
+              <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"></circle>
+            </svg>
+            Message on Instagram
+          </a>
+        </div>
+
+        <div class="grievance-info">
+          <strong>Resident Grievance / Privacy Contact</strong><br>
+          Name: Nishikant Xalxo<br>
+          Email: <a href="https://mail.google.com/mail/?view=cm&fs=1&to=nxdecore@gmail.com" target="_blank" rel="noopener noreferrer" style="color:#c7d2fe;text-decoration:none;font-weight:700;">nxdecore@gmail.com</a><br>
+          <span style="font-size:0.78rem;color:rgba(226,232,240,0.55);">
+            For privacy requests, abuse reports, tool issues, or communication-related complaints.
+            Responses are handled as soon as reasonably possible.
+          </span>
+        </div>
+
+        <div class="signal-row" aria-hidden="true">
+          <div class="signal-dot"></div>
+          <div class="signal-dot"></div>
+          <div class="signal-dot"></div>
+          <div class="signal-dot"></div>
+        </div>
+
+        <p style="font-size:0.75rem;color:rgba(226,232,240,0.38);margin-bottom:0;">
+          Message received — response usually follows when available.
+        </p>
+      </div>
     </div>
-
-    <h2>Get in Touch</h2>
-
-    <p class="card-text">
-      Use email for support, bug reports, privacy requests, abuse reports, tool suggestions,
-      or sponsorship inquiries.
-    </p>
-
-    <div class="float-badges">
-      <span class="fbadge b1">BUG REPORT</span>
-      <span class="fbadge b2">FEEDBACK</span>
-      <span class="fbadge b3">SPONSORSHIP</span>
-    </div>
-
-    <div class="contact-buttons">
-      <a href="https://mail.google.com/mail/?view=cm&fs=1&to=nxdecore@gmail.com&su=Shader7%20Contact%20Request" target="_blank" rel="noopener noreferrer" class="btn btn-email">
-        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <rect x="2" y="4" width="20" height="16" rx="2"></rect>
-          <path d="m22 4-10 9L2 4"></path>
-        </svg>
-        nxdecore@gmail.com
-      </a>
-
-      <a href="https://instagram.com/nishix_vamp" target="_blank" rel="noopener noreferrer" class="btn btn-insta">
-        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <rect x="2" y="2" width="20" height="20" rx="5"></rect>
-          <circle cx="12" cy="12" r="5"></circle>
-          <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"></circle>
-        </svg>
-        Message on Instagram
-      </a>
-    </div>
-
-    <div class="grievance-info">
-      <strong>Resident Grievance / Privacy Contact</strong><br>
-      Name: Nishikant Xalxo<br>
-      Email: <a href="https://mail.google.com/mail/?view=cm&fs=1&to=nxdecore@gmail.com" target="_blank" rel="noopener noreferrer" style="color:#c7d2fe;text-decoration:none;font-weight:700;">nxdecore@gmail.com</a><br>
-      <span style="font-size:0.78rem;color:rgba(226,232,240,0.55);">
-        For privacy requests, abuse reports, tool issues, or communication-related complaints.
-        Responses are handled as soon as reasonably possible.
-      </span>
-    </div>
-
-    <div class="signal-row" aria-hidden="true">
-      <div class="signal-dot"></div>
-      <div class="signal-dot"></div>
-      <div class="signal-dot"></div>
-      <div class="signal-dot"></div>
-    </div>
-
-    <p style="font-size:0.75rem;color:rgba(226,232,240,0.38);margin-bottom:0;">
-      Message received — response usually follows when available.
-    </p>
-
   </section>
 
   <section class="info-grid" aria-label="Contact reasons">
