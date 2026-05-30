@@ -47,10 +47,20 @@ This project is built to be incredibly fast, lightweight, and heavily optimized 
 
 ---
 
+## ⚙️ Salary Calculator Improvements Package
+The **Hourly Salary Calculator** features a comprehensive improvements package. The technical reference documentation is split across the following documents:
+*   [Technical Improvements Documentation](IMPROVEMENTS_DOCUMENTATION.md): Deep-dive into calculations, PDF/JPG resolution metrics (scaled 2x to 4x), data validation, and browser compatibility.
+*   [User Reference Guide](QUICK_REFERENCE.md): Detailed instruction guide, troubleshooting steps, and tips.
+*   [Before/After Quality Matrix](BEFORE_AFTER_COMPARISON.md): Core visual and feature quality comparisons.
+*   [Salary Calculator Changelog](CHANGELOG.md): Technical version history and roadmap.
+
+---
+
 ## 💻 Local Setup & Development
 
 Since Shader7 relies purely on client-side technologies, running it locally is incredibly simple:
 
 1. Clone the repository:
    ```bash
-   git clone [https://github.com/YOUR_GITHUB_USERNAME/shaderindia.git](https://github.com/YOUR_GITHUB_USERNAME/shaderindia.git)
+   git clone https://github.com/shaderindia/All-Apps.git
+   ```
