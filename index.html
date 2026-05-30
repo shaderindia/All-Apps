@@ -95,6 +95,9 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" />
   </noscript>
 
+  <!-- FontAwesome CDN for premium category icons & micro-animations -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
   <script src="https://cdn.tailwindcss.com"></script>
 
   <link
@@ -220,10 +223,10 @@
       transform-style: preserve-3d;
       border-radius: 9999px; /* Premium pill-shaped design */
       
-      /* Smooth 3-second transition for 3D trajectory and blur filter */
-      transition: transform 3s cubic-bezier(0.25, 1, 0.5, 1), 
-                  opacity 3s cubic-bezier(0.25, 1, 0.5, 1), 
-                  filter 3s cubic-bezier(0.25, 1, 0.5, 1), 
+      /* Smooth 4-second transition for 3D trajectory and blur filter */
+      transition: transform 4s cubic-bezier(0.25, 1, 0.5, 1), 
+                  opacity 4s cubic-bezier(0.25, 1, 0.5, 1), 
+                  filter 4s cubic-bezier(0.25, 1, 0.5, 1), 
                   border-color 0.3s, 
                   background 0.3s;
     }
@@ -231,8 +234,8 @@
     /* 3D Entry State (Right) - blurred, scaled, faded, unclickable */
     .carousel-btn.state-enter {
       transform: translateX(125%) translateZ(-400px) rotateY(-50deg) scale(0.85);
-      opacity: 0.15; /* partially visible for cinematic depth, but faint */
-      filter: blur(5px); /* soft out-of-focus background effect */
+      opacity: 0.45; /* clear visibility, but beautiful depth */
+      filter: blur(2.5px); /* gentle, visible out-of-focus background effect */
       pointer-events: none;
       cursor: default;
     }
@@ -250,11 +253,30 @@
     /* 3D Exit State (Left) - blurred, scaled, faded, unclickable */
     .carousel-btn.state-exit {
       transform: translateX(-125%) translateZ(-400px) rotateY(50deg) scale(0.85);
-      opacity: 0.15;
-      filter: blur(5px); /* soft out-of-focus background effect */
+      opacity: 0.45; /* clear visibility, but beautiful depth */
+      filter: blur(2.5px); /* gentle, visible out-of-focus background effect */
       pointer-events: none;
       cursor: default;
       z-index: 1;
+    }
+
+    /* Responsive layout scaling for navigation arrows and margins */
+    @media (max-width: 640px) {
+      #carousel-prev-btn, #carousel-next-btn {
+        width: 40px !important;
+        height: 40px !important;
+        margin-left: 0.25rem !important;
+        margin-right: 0.25rem !important;
+      }
+      #carousel-prev-btn svg, #carousel-next-btn svg {
+        width: 16px !important;
+        height: 16px !important;
+        stroke-width: 3.5;
+      }
+      .hero-button-container {
+        margin-left: 0.5rem !important;
+        margin-right: 0.5rem !important;
+      }
     }
 
     /* Mobile responsiveness for the dynamic button to prevent screen overflow */
@@ -437,28 +459,45 @@
           Enter CNC Machinist Section
         </a>
 
-        <!-- Premium 3D Sliding Carousel Button Container -->
-        <div class="hero-button-container">
-          <!-- Button A (active initially in the center) -->
-          <a href="/photocompressor/" id="carousel-btn-a" class="carousel-btn state-center hero-button border-2 border-white/40 text-white font-bold hover:bg-white/10 transition duration-300">
-            <img src="/screenshots/photo-compressor-app.png" alt="Photo Compressor Preview" class="w-12 h-12 rounded-full object-cover border-2 border-white/50 mr-4 shadow-sm" style="width: 48px; height: 48px; min-width: 48px;">
-            <div class="flex flex-col text-left">
-              <span style="font-size: 10px; opacity: 0.8; font-weight: 600; text-transform: uppercase; tracking-wider; color: #e2e8f0; margin-bottom: 2px;">Photo & Image</span>
-              <span class="text-sm font-bold text-white flex items-center">
-                <i class="fa-solid fa-compress fa-beat mr-2"></i> Open Photo Compressor
-              </span>
-            </div>
-          </a>
-          <!-- Button B (waiting on the right initially) -->
-          <a href="/photopassportsizepro/" id="carousel-btn-b" class="carousel-btn state-enter hero-button border-2 border-indigo-400 bg-indigo-950/40 text-indigo-100 hover:bg-indigo-950/70 transition duration-300">
-            <img src="/screenshots/passport-photo-app.png" alt="Passport Photo PRO Preview" class="w-12 h-12 rounded-full object-cover border-2 border-white/50 mr-4 shadow-sm" style="width: 48px; height: 48px; min-width: 48px;">
-            <div class="flex flex-col text-left">
-              <span style="font-size: 10px; opacity: 0.8; font-weight: 600; text-transform: uppercase; tracking-wider; color: #b4c6fc; margin-bottom: 2px;">Biometric ID</span>
-              <span class="text-sm font-bold text-white flex items-center">
-                <i class="fa-solid fa-camera-retro fa-bounce mr-2"></i> Open Passport Photo PRO
-              </span>
-            </div>
-          </a>
+        <!-- Sleek Interactive Carousel Wrapper with Manual Controls -->
+        <div class="relative flex items-center justify-center w-full max-w-2xl mx-auto mt-4 px-4">
+          <!-- Prev Arrow Button -->
+          <button id="carousel-prev-btn" class="flex-shrink-0 z-10 flex items-center justify-center w-12 h-12 rounded-full glass hover:bg-white/20 text-white transition-all duration-300 transform hover:scale-110 active:scale-95 shadow-lg border border-white/20 focus:outline-none" aria-label="Previous tool">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3.5" stroke="currentColor" class="w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+            </svg>
+          </button>
+
+          <!-- Premium 3D Sliding Carousel Button Container -->
+          <div class="hero-button-container mx-4">
+            <!-- Button A (active initially in the center) -->
+            <a href="/photocompressor/" id="carousel-btn-a" class="carousel-btn state-center hero-button border-2 border-white/40 text-white font-bold hover:bg-white/10 transition duration-300">
+              <img src="/screenshots/photo-compressor-app.png" alt="Photo Compressor Preview" class="w-12 h-12 rounded-full object-cover border-2 border-white/50 mr-4 shadow-sm" style="width: 48px; height: 48px; min-width: 48px;">
+              <div class="flex flex-col text-left">
+                <span style="font-size: 10px; opacity: 0.8; font-weight: 600; text-transform: uppercase; tracking-wider; color: #e2e8f0; margin-bottom: 2px;">Photo & Image</span>
+                <span class="text-sm font-bold text-white flex items-center">
+                  <i class="fa-solid fa-compress fa-beat mr-2"></i> Open Photo Compressor
+                </span>
+              </div>
+            </a>
+            <!-- Button B (waiting on the right initially) -->
+            <a href="/photopassportsizepro/" id="carousel-btn-b" class="carousel-btn state-enter hero-button border-2 border-indigo-400 bg-indigo-950/40 text-indigo-100 hover:bg-indigo-950/70 transition duration-300">
+              <img src="/screenshots/passport-photo-app.png" alt="Passport Photo PRO Preview" class="w-12 h-12 rounded-full object-cover border-2 border-white/50 mr-4 shadow-sm" style="width: 48px; height: 48px; min-width: 48px;">
+              <div class="flex flex-col text-left">
+                <span style="font-size: 10px; opacity: 0.8; font-weight: 600; text-transform: uppercase; tracking-wider; color: #b4c6fc; margin-bottom: 2px;">Biometric ID</span>
+                <span class="text-sm font-bold text-white flex items-center">
+                  <i class="fa-solid fa-camera-retro fa-bounce mr-2"></i> Open Passport Photo PRO
+                </span>
+              </div>
+            </a>
+          </div>
+
+          <!-- Next Arrow Button -->
+          <button id="carousel-next-btn" class="flex-shrink-0 z-10 flex items-center justify-center w-12 h-12 rounded-full glass hover:bg-white/20 text-white transition-all duration-300 transform hover:scale-110 active:scale-95 shadow-lg border border-white/20 focus:outline-none" aria-label="Next tool">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3.5" stroke="currentColor" class="w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+            </svg>
+          </button>
         </div>
       </div>
 
@@ -1219,6 +1258,8 @@
     
     let activeBtn = btnA;
     let waitingBtn = btnB;
+    let transitionInProgress = false;
+    let autoRotateInterval;
     
     // Function to generate the premium inner HTML for the button
     function createButtonHTML(tool, categoryColor) {
@@ -1233,57 +1274,150 @@
       `;
     }
 
+    // Helper to determine the custom premium category tag color based on URL path
+    function getCategoryColor(tool) {
+      if (tool.url.includes("passport")) return "#b4c6fc"; // indigo
+      if (tool.url.includes("cvbanao")) return "#fbcfe8"; // pink
+      if (tool.url.includes("salary")) return "#a7f3d0"; // emerald
+      if (tool.url.includes("receipt")) return "#e9d5ff"; // purple
+      if (tool.url.includes("fairshare")) return "#bfdbfe"; // blue
+      if (tool.url.includes("chat")) return "#99f6e4"; // teal
+      return "#e2e8f0"; // default / grey (photo compressor)
+    }
+
+    function performTransition(nextIndex, direction) {
+      if (transitionInProgress) return;
+      transitionInProgress = true;
+
+      const nextTool = toolsList[nextIndex];
+      const nextCatColor = getCategoryColor(nextTool);
+
+      const currentActive = activeBtn;
+      const currentWaiting = waitingBtn;
+
+      if (direction === "next") {
+        // Forward Transition (Next): Slide current leftwards (state-exit), slide waiting in from right (state-enter)
+        currentWaiting.style.transition = "none";
+        currentWaiting.classList.remove("state-center", "state-exit");
+        currentWaiting.classList.add("state-enter");
+        currentWaiting.href = nextTool.url;
+        currentWaiting.className = "carousel-btn state-enter hero-button border-2 font-bold transition " + nextTool.style;
+        currentWaiting.innerHTML = createButtonHTML(nextTool, nextCatColor);
+        currentWaiting.offsetHeight; // force browser reflow
+        currentWaiting.style.transition = "";
+
+        // Trigger CSS transition animation
+        currentActive.classList.remove("state-center");
+        currentActive.classList.add("state-exit");
+
+        currentWaiting.classList.remove("state-enter");
+        currentWaiting.classList.add("state-center");
+
+        // Wait 4 seconds for slow majestic slide to complete, then teleport exiting button
+        setTimeout(function() {
+          currentActive.style.transition = "none";
+          currentActive.classList.remove("state-exit");
+          currentActive.classList.add("state-enter");
+          currentActive.offsetHeight; // force browser reflow
+          currentActive.style.transition = "";
+
+          // Pre-populate with the next-next tool for seamless auto-slide planning
+          const nextNextIndex = (nextIndex + 1) % toolsList.length;
+          const nextNextTool = toolsList[nextNextIndex];
+          const nextNextCatColor = getCategoryColor(nextNextTool);
+          currentActive.href = nextNextTool.url;
+          currentActive.className = "carousel-btn state-enter hero-button border-2 font-bold transition " + nextNextTool.style;
+          currentActive.innerHTML = createButtonHTML(nextNextTool, nextNextCatColor);
+
+          transitionInProgress = false;
+        }, 4000);
+
+      } else {
+        // Backward Transition (Prev): Slide current rightwards (state-enter), slide waiting in from left (state-exit)
+        currentWaiting.style.transition = "none";
+        currentWaiting.classList.remove("state-center", "state-enter");
+        currentWaiting.classList.add("state-exit");
+        currentWaiting.href = nextTool.url;
+        currentWaiting.className = "carousel-btn state-exit hero-button border-2 font-bold transition " + nextTool.style;
+        currentWaiting.innerHTML = createButtonHTML(nextTool, nextCatColor);
+        currentWaiting.offsetHeight; // force browser reflow
+        currentWaiting.style.transition = "";
+
+        // Trigger CSS transition animation
+        currentActive.classList.remove("state-center");
+        currentActive.classList.add("state-enter");
+
+        currentWaiting.classList.remove("state-exit");
+        currentWaiting.classList.add("state-center");
+
+        // Wait 4 seconds for slow majestic slide to complete, then configure waiting button
+        setTimeout(function() {
+          const nextNextIndex = (nextIndex + 1) % toolsList.length;
+          const nextNextTool = toolsList[nextNextIndex];
+          const nextNextCatColor = getCategoryColor(nextNextTool);
+
+          currentActive.style.transition = "none";
+          currentActive.classList.remove("state-center", "state-exit");
+          currentActive.classList.add("state-enter");
+          currentActive.href = nextNextTool.url;
+          currentActive.className = "carousel-btn state-enter hero-button border-2 font-bold transition " + nextNextTool.style;
+          currentActive.innerHTML = createButtonHTML(nextNextTool, nextNextCatColor);
+          currentActive.offsetHeight; // force browser reflow
+          currentActive.style.transition = "";
+
+          transitionInProgress = false;
+        }, 4000);
+      }
+
+      // Swap references
+      activeBtn = currentWaiting;
+      waitingBtn = currentActive;
+      activeIndex = nextIndex;
+    }
+
+    function startAutoRotate() {
+      if (autoRotateInterval) {
+        clearInterval(autoRotateInterval);
+      }
+      autoRotateInterval = setInterval(function() {
+        const nextIndex = (activeIndex + 1) % toolsList.length;
+        performTransition(nextIndex, "next");
+      }, 14000); // 10s stay + 4s transition = 14s total cycle
+    }
+
     if (btnA && btnB) {
-      // Set initial waiting button content for Passport Photo PRO
+      // Initialize waiting button with Passport Photo PRO preview
       const firstWaitingTool = toolsList[1];
       waitingBtn.href = firstWaitingTool.url;
       waitingBtn.className = "carousel-btn state-enter hero-button border-2 font-bold transition " + firstWaitingTool.style;
       waitingBtn.innerHTML = createButtonHTML(firstWaitingTool, "#b4c6fc");
 
-      setInterval(function() {
-        const nextIndex = (activeIndex + 1) % toolsList.length;
-        const nextNextIndex = (nextIndex + 1) % toolsList.length;
-        const nextTool = toolsList[nextIndex];
-        const nextNextTool = toolsList[nextNextIndex];
+      // Set up button event listeners
+      const prevBtn = document.getElementById("carousel-prev-btn");
+      const nextBtn = document.getElementById("carousel-next-btn");
 
-        // Trigger simultaneous slide (takes 3 seconds)
-        activeBtn.classList.remove("state-center");
-        activeBtn.classList.add("state-exit");
-        
-        waitingBtn.classList.remove("state-enter");
-        waitingBtn.classList.add("state-center");
-        
-        const oldActiveBtn = activeBtn;
-        const oldWaitingBtn = waitingBtn;
-        
-        // Wait 3 seconds for the slide animation to complete, then teleport old active to the right
-        setTimeout(function() {
-          oldActiveBtn.style.transition = "none";
-          oldActiveBtn.classList.remove("state-exit");
-          oldActiveBtn.classList.add("state-enter");
-          oldActiveBtn.offsetHeight; // force reflow
-          oldActiveBtn.style.transition = "";
-          
-          // Determine a premium category color for the next-next tool
-          let catColor = "#e2e8f0"; // default Photo Compressor (white/gray)
-          if (nextNextTool.url.includes("passport")) catColor = "#b4c6fc"; // indigo
-          else if (nextNextTool.url.includes("cvbanao")) catColor = "#fbcfe8"; // pink
-          else if (nextNextTool.url.includes("salary")) catColor = "#a7f3d0"; // emerald
-          else if (nextNextTool.url.includes("receipt")) catColor = "#e9d5ff"; // purple
-          else if (nextNextTool.url.includes("fairshare")) catColor = "#bfdbfe"; // blue
-          else if (nextNextTool.url.includes("chat")) catColor = "#99f6e4"; // teal
+      if (prevBtn) {
+        prevBtn.addEventListener("click", function(e) {
+          e.preventDefault();
+          if (transitionInProgress) return;
+          const prevIndex = (activeIndex - 1 + toolsList.length) % toolsList.length;
+          performTransition(prevIndex, "prev");
+          startAutoRotate(); // restart interval timer on manual click
+        });
+      }
 
-          // Pre-load next-next tool data on the teleported button (hidden on the right)
-          oldActiveBtn.href = nextNextTool.url;
-          oldActiveBtn.className = "carousel-btn state-enter hero-button border-2 font-bold transition " + nextNextTool.style;
-          oldActiveBtn.innerHTML = createButtonHTML(nextNextTool, catColor);
-        }, 3000);
+      if (nextBtn) {
+        nextBtn.addEventListener("click", function(e) {
+          e.preventDefault();
+          if (transitionInProgress) return;
+          const nextIndex = (activeIndex + 1) % toolsList.length;
+          performTransition(nextIndex, "next");
+          startAutoRotate(); // restart interval timer on manual click
+        });
+      }
 
-        // Swap references for next transition
-        activeBtn = oldWaitingBtn;
-        waitingBtn = oldActiveBtn;
-        activeIndex = nextIndex;
-      }, 13000); // 10s stay + 3s transition = 13s total cycle
+      // Begin automatic rotation loop
+      startAutoRotate();
     }
 
     document.addEventListener("keydown", function (event) {
