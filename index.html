@@ -1297,9 +1297,12 @@
       return "#e2e8f0"; // default / grey (photo compressor)
     }
 
-    function performTransition(nextIndex, direction) {
+    function performTransition(nextIndex, direction, isManual) {
       if (transitionInProgress) return;
       transitionInProgress = true;
+
+      const duration = isManual ? "0.4s" : "4s";
+      const ms = isManual ? 400 : 4000;
 
       if (direction === "next") {
         // Forward Transition (Next):
@@ -1313,19 +1316,23 @@
         leftBtn.classList.remove("state-exit", "state-center");
         leftBtn.classList.add("state-enter");
         leftBtn.href = rightTool.url;
-        leftBtn.className = "carousel-btn state-enter hero-button border-2 font-bold transition " + rightTool.style;
+        leftBtn.className = "carousel-btn state-enter hero-button border-2 font-bold " + rightTool.style;
         leftBtn.innerHTML = createButtonHTML(rightTool, rightCatColor);
         leftBtn.offsetHeight; // force browser reflow
-        leftBtn.style.transition = "";
 
-        // 3. Trigger 3D slide transitions
+        // 3. Set transition duration dynamically for snappy manual or majestic auto speeds
+        centerBtn.style.transition = `transform ${duration} cubic-bezier(0.25, 1, 0.5, 1), opacity ${duration} cubic-bezier(0.25, 1, 0.5, 1), filter ${duration} cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s, background 0.3s`;
+        rightBtn.style.transition = `transform ${duration} cubic-bezier(0.25, 1, 0.5, 1), opacity ${duration} cubic-bezier(0.25, 1, 0.5, 1), filter ${duration} cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s, background 0.3s`;
+        leftBtn.style.transition = `transform ${duration} cubic-bezier(0.25, 1, 0.5, 1), opacity ${duration} cubic-bezier(0.25, 1, 0.5, 1), filter ${duration} cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s, background 0.3s`;
+
+        // 4. Trigger 3D slide transitions
         centerBtn.classList.remove("state-center");
         centerBtn.classList.add("state-exit"); // slides left
 
         rightBtn.classList.remove("state-enter");
         rightBtn.classList.add("state-center"); // slides center
 
-        // 4. Update references
+        // 5. Update references
         const oldLeft = leftBtn;
         const oldCenter = centerBtn;
         const oldRight = rightBtn;
@@ -1346,19 +1353,23 @@
         rightBtn.classList.remove("state-enter", "state-center");
         rightBtn.classList.add("state-exit");
         rightBtn.href = leftTool.url;
-        rightBtn.className = "carousel-btn state-exit hero-button border-2 font-bold transition " + leftTool.style;
+        rightBtn.className = "carousel-btn state-exit hero-button border-2 font-bold " + leftTool.style;
         rightBtn.innerHTML = createButtonHTML(leftTool, leftCatColor);
         rightBtn.offsetHeight; // force browser reflow
-        rightBtn.style.transition = "";
 
-        // 3. Trigger 3D slide transitions
+        // 3. Set transition duration dynamically for snappy manual or majestic auto speeds
+        centerBtn.style.transition = `transform ${duration} cubic-bezier(0.25, 1, 0.5, 1), opacity ${duration} cubic-bezier(0.25, 1, 0.5, 1), filter ${duration} cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s, background 0.3s`;
+        rightBtn.style.transition = `transform ${duration} cubic-bezier(0.25, 1, 0.5, 1), opacity ${duration} cubic-bezier(0.25, 1, 0.5, 1), filter ${duration} cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s, background 0.3s`;
+        leftBtn.style.transition = `transform ${duration} cubic-bezier(0.25, 1, 0.5, 1), opacity ${duration} cubic-bezier(0.25, 1, 0.5, 1), filter ${duration} cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s, background 0.3s`;
+
+        // 4. Trigger 3D slide transitions
         centerBtn.classList.remove("state-center");
         centerBtn.classList.add("state-enter"); // slides right
 
         leftBtn.classList.remove("state-exit");
         leftBtn.classList.add("state-center"); // slides center
 
-        // 4. Update references
+        // 5. Update references
         const oldLeft = leftBtn;
         const oldCenter = centerBtn;
         const oldRight = rightBtn;
@@ -1370,10 +1381,10 @@
 
       activeIndex = nextIndex;
 
-      // Unlock after transition finishes (4 seconds)
+      // Unlock after transition finishes (400ms for manual snaps, 4s for auto glides)
       setTimeout(function() {
         transitionInProgress = false;
-      }, 4000);
+      }, ms);
     }
 
     function startAutoRotate() {
@@ -1382,7 +1393,7 @@
       }
       autoRotateInterval = setInterval(function() {
         const nextIndex = (activeIndex + 1) % toolsList.length;
-        performTransition(nextIndex, "next");
+        performTransition(nextIndex, "next", false);
       }, 14000); // 10s stay + 4s transition = 14s total cycle
     }
 
@@ -1402,7 +1413,7 @@
           e.preventDefault();
           if (transitionInProgress) return;
           const prevIndex = (activeIndex - 1 + toolsList.length) % toolsList.length;
-          performTransition(prevIndex, "prev");
+          performTransition(prevIndex, "prev", true);
           startAutoRotate(); // restart interval timer on manual click
         });
       }
@@ -1412,7 +1423,7 @@
           e.preventDefault();
           if (transitionInProgress) return;
           const nextIndex = (activeIndex + 1) % toolsList.length;
-          performTransition(nextIndex, "next");
+          performTransition(nextIndex, "next", true);
           startAutoRotate(); // restart interval timer on manual click
         });
       }
