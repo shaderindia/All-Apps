@@ -195,8 +195,9 @@
     /* Premium 3D Sliding Carousel Button Container */
     .hero-button-container {
       perspective: 1200px;
-      min-width: 320px;
-      height: 52px;
+      width: 440px;
+      max-width: 100%;
+      height: 76px; /* Bigger button height */
       position: relative;
       display: inline-block;
       vertical-align: middle;
@@ -209,39 +210,80 @@
       height: 100%;
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start; /* Arrange preview image and text cleanly */
+      padding: 0 1.5rem;
       white-space: nowrap;
       text-decoration: none;
-      box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 20px 45px -8px rgba(0, 0, 0, 0.45);
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
       transform-style: preserve-3d;
+      border-radius: 9999px; /* Premium pill-shaped design */
       
-      /* Smooth 3-second transition for enter/exit sliding */
-      transition: transform 3s cubic-bezier(0.25, 1, 0.5, 1), opacity 3s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s, background 0.3s;
+      /* Smooth 3-second transition for 3D trajectory and blur filter */
+      transition: transform 3s cubic-bezier(0.25, 1, 0.5, 1), 
+                  opacity 3s cubic-bezier(0.25, 1, 0.5, 1), 
+                  filter 3s cubic-bezier(0.25, 1, 0.5, 1), 
+                  border-color 0.3s, 
+                  background 0.3s;
     }
     
-    /* 3D Entry State (Right) */
+    /* 3D Entry State (Right) - blurred, scaled, faded, unclickable */
     .carousel-btn.state-enter {
-      transform: translateX(150%) translateZ(-300px) rotateY(-45deg);
-      opacity: 0;
+      transform: translateX(125%) translateZ(-400px) rotateY(-50deg) scale(0.85);
+      opacity: 0.15; /* partially visible for cinematic depth, but faint */
+      filter: blur(5px); /* soft out-of-focus background effect */
       pointer-events: none;
+      cursor: default;
     }
     
-    /* 3D Center State (Active) */
+    /* 3D Center State (Active) - sharp, in-focus, fully clickable */
     .carousel-btn.state-center {
-      transform: translateX(0) translateZ(0) rotateY(0deg);
+      transform: translateX(0) translateZ(0) rotateY(0deg) scale(1);
       opacity: 1;
+      filter: blur(0); /* sharp in-focus active center state */
       pointer-events: auto;
+      cursor: pointer;
       z-index: 2;
     }
     
-    /* 3D Exit State (Left) */
+    /* 3D Exit State (Left) - blurred, scaled, faded, unclickable */
     .carousel-btn.state-exit {
-      transform: translateX(-150%) translateZ(-300px) rotateY(45deg);
-      opacity: 0;
+      transform: translateX(-125%) translateZ(-400px) rotateY(50deg) scale(0.85);
+      opacity: 0.15;
+      filter: blur(5px); /* soft out-of-focus background effect */
       pointer-events: none;
+      cursor: default;
       z-index: 1;
+    }
+
+    /* Mobile responsiveness for the dynamic button to prevent screen overflow */
+    @media (max-width: 480px) {
+      .hero-button-container {
+        width: 320px;
+        height: 64px;
+      }
+      .carousel-btn {
+        padding: 0 1rem;
+      }
+      .carousel-btn img {
+        width: 36px !important;
+        height: 36px !important;
+        margin-right: 0.65rem !important;
+      }
+      .carousel-btn span[style*="font-size: 10px"] {
+        font-size: 8px !important;
+      }
+      .carousel-btn span.text-sm {
+        font-size: 11px !important;
+      }
+      /* Reduce translation on mobile to keep entry/exit previews visible inside bounds */
+      .carousel-btn.state-enter {
+        transform: translateX(110%) translateZ(-300px) rotateY(-45deg) scale(0.8);
+      }
+      .carousel-btn.state-exit {
+        transform: translateX(-110%) translateZ(-300px) rotateY(45deg) scale(0.8);
+      }
     }
   </style>
 </head>
@@ -398,12 +440,24 @@
         <!-- Premium 3D Sliding Carousel Button Container -->
         <div class="hero-button-container">
           <!-- Button A (active initially in the center) -->
-          <a href="/photocompressor/" id="carousel-btn-a" class="carousel-btn state-center hero-button px-8 py-3 rounded-full border-2 border-white/40 text-white font-bold hover:bg-white/10 transition duration-300">
-            <i class="fa-solid fa-compress fa-beat mr-3"></i> Open Photo Compressor
+          <a href="/photocompressor/" id="carousel-btn-a" class="carousel-btn state-center hero-button border-2 border-white/40 text-white font-bold hover:bg-white/10 transition duration-300">
+            <img src="/screenshots/photo-compressor-app.png" alt="Photo Compressor Preview" class="w-12 h-12 rounded-full object-cover border-2 border-white/50 mr-4 shadow-sm" style="width: 48px; height: 48px; min-width: 48px;">
+            <div class="flex flex-col text-left">
+              <span style="font-size: 10px; opacity: 0.8; font-weight: 600; text-transform: uppercase; tracking-wider; color: #e2e8f0; margin-bottom: 2px;">Photo & Image</span>
+              <span class="text-sm font-bold text-white flex items-center">
+                <i class="fa-solid fa-compress fa-beat mr-2"></i> Open Photo Compressor
+              </span>
+            </div>
           </a>
           <!-- Button B (waiting on the right initially) -->
-          <a href="/photopassportsizepro/" id="carousel-btn-b" class="carousel-btn state-enter hero-button px-8 py-3 rounded-full border-2 border-indigo-400 bg-indigo-950/40 text-indigo-100 hover:bg-indigo-950/70 transition duration-300">
-            <i class="fa-solid fa-camera-retro fa-bounce mr-3"></i> Open Passport Photo PRO
+          <a href="/photopassportsizepro/" id="carousel-btn-b" class="carousel-btn state-enter hero-button border-2 border-indigo-400 bg-indigo-950/40 text-indigo-100 hover:bg-indigo-950/70 transition duration-300">
+            <img src="/screenshots/passport-photo-app.png" alt="Passport Photo PRO Preview" class="w-12 h-12 rounded-full object-cover border-2 border-white/50 mr-4 shadow-sm" style="width: 48px; height: 48px; min-width: 48px;">
+            <div class="flex flex-col text-left">
+              <span style="font-size: 10px; opacity: 0.8; font-weight: 600; text-transform: uppercase; tracking-wider; color: #b4c6fc; margin-bottom: 2px;">Biometric ID</span>
+              <span class="text-sm font-bold text-white flex items-center">
+                <i class="fa-solid fa-camera-retro fa-bounce mr-2"></i> Open Passport Photo PRO
+              </span>
+            </div>
           </a>
         </div>
       </div>
@@ -1101,13 +1155,62 @@
 
     // Premium 3D Sliding Carousel Button Script
     const toolsList = [
-      { name: "Photo Compressor", url: "/photocompressor/", icon: "fa-solid fa-compress fa-beat mr-3", style: "border-white/40 bg-transparent text-white hover:bg-white/10" },
-      { name: "Passport Photo PRO", url: "/photopassportsizepro/", icon: "fa-solid fa-camera-retro fa-bounce mr-3", style: "border-indigo-400/80 bg-indigo-950/40 text-indigo-100 hover:bg-indigo-950/70" },
-      { name: "Resume Builder", url: "/cvbanao/", icon: "fa-solid fa-file-invoice fa-shake mr-3", style: "border-pink-400/80 bg-pink-950/40 text-pink-100 hover:bg-pink-950/70" },
-      { name: "Salary Calculator", url: "/hourlysalarycalculator/", icon: "fa-solid fa-calculator fa-flip mr-3", style: "border-emerald-400/80 bg-emerald-950/40 text-emerald-100 hover:bg-emerald-950/70" },
-      { name: "Receipt Maker", url: "/receiptpro/", icon: "fa-solid fa-receipt fa-bounce mr-3", style: "border-purple-400/80 bg-purple-950/40 text-purple-100 hover:bg-purple-950/70" },
-      { name: "FairShare Splitter", url: "/fairshare/", icon: "fa-solid fa-scale-balanced fa-shake mr-3", style: "border-blue-400/80 bg-blue-950/40 text-blue-100 hover:bg-blue-950/70" },
-      { name: "Private Chat", url: "/berofchat/", icon: "fa-solid fa-comments fa-beat-fade mr-3", style: "border-teal-400/80 bg-teal-950/40 text-teal-100 hover:bg-teal-950/70" }
+      { 
+        name: "Photo Compressor", 
+        url: "/photocompressor/", 
+        category: "Photo & Image",
+        img: "/screenshots/photo-compressor-app.png",
+        icon: "fa-solid fa-compress fa-beat mr-2", 
+        style: "border-white/40 bg-transparent text-white hover:bg-white/10" 
+      },
+      { 
+        name: "Passport Photo PRO", 
+        url: "/photopassportsizepro/", 
+        category: "Biometric ID",
+        img: "/screenshots/passport-photo-app.png",
+        icon: "fa-solid fa-camera-retro fa-bounce mr-2", 
+        style: "border-indigo-400/80 bg-indigo-950/40 text-indigo-100 hover:bg-indigo-950/70" 
+      },
+      { 
+        name: "Resume Builder", 
+        url: "/cvbanao/", 
+        category: "Resume & Career",
+        img: "/screenshots/resume-builder-app.png",
+        icon: "fa-solid fa-file-invoice fa-shake mr-2", 
+        style: "border-pink-400/80 bg-pink-950/40 text-pink-100 hover:bg-pink-950/70" 
+      },
+      { 
+        name: "Salary Calculator", 
+        url: "/hourlysalarycalculator/", 
+        category: "Finance & Income",
+        img: "/screenshots/salary-calculator-app.png",
+        icon: "fa-solid fa-calculator fa-flip mr-2", 
+        style: "border-emerald-400/80 bg-emerald-950/40 text-emerald-100 hover:bg-emerald-950/70" 
+      },
+      { 
+        name: "Receipt Maker", 
+        url: "/receiptpro/", 
+        category: "Business Invoice",
+        img: "/screenshots/receipt-maker-app.png",
+        icon: "fa-solid fa-receipt fa-bounce mr-2", 
+        style: "border-purple-400/80 bg-purple-950/40 text-purple-100 hover:bg-purple-950/70" 
+      },
+      { 
+        name: "FairShare Splitter", 
+        url: "/fairshare/", 
+        category: "Expense Split",
+        img: "/screenshots/expense-splitter-app.png",
+        icon: "fa-solid fa-scale-balanced fa-shake mr-2", 
+        style: "border-blue-400/80 bg-blue-950/40 text-blue-100 hover:bg-blue-950/70" 
+      },
+      { 
+        name: "Private Chat", 
+        url: "/berofchat/", 
+        category: "P2P Messaging",
+        img: "/screenshots/p2p-chat-app.png",
+        icon: "fa-solid fa-comments fa-beat-fade mr-2", 
+        style: "border-teal-400/80 bg-teal-950/40 text-teal-100 hover:bg-teal-950/70" 
+      }
     ];
 
     let activeIndex = 0;
@@ -1117,11 +1220,25 @@
     let activeBtn = btnA;
     let waitingBtn = btnB;
     
+    // Function to generate the premium inner HTML for the button
+    function createButtonHTML(tool, categoryColor) {
+      return `
+        <img src="${tool.img}" alt="${tool.name} Preview" class="w-12 h-12 rounded-full object-cover border-2 border-white/50 mr-4 shadow-sm" style="width: 48px; height: 48px; min-width: 48px;">
+        <div class="flex flex-col text-left">
+          <span style="font-size: 10px; opacity: 0.8; font-weight: 600; text-transform: uppercase; tracking-wider; color: ${categoryColor}; margin-bottom: 2px;">${tool.category}</span>
+          <span class="text-sm font-bold text-white flex items-center">
+            <i class="${tool.icon}"></i> Open ${tool.name}
+          </span>
+        </div>
+      `;
+    }
+
     if (btnA && btnB) {
       // Set initial waiting button content for Passport Photo PRO
-      waitingBtn.href = toolsList[1].url;
-      waitingBtn.className = "carousel-btn state-enter hero-button px-8 py-3 rounded-full border-2 font-bold transition " + toolsList[1].style;
-      waitingBtn.innerHTML = `<i class="${toolsList[1].icon}"></i> Open ${toolsList[1].name}`;
+      const firstWaitingTool = toolsList[1];
+      waitingBtn.href = firstWaitingTool.url;
+      waitingBtn.className = "carousel-btn state-enter hero-button border-2 font-bold transition " + firstWaitingTool.style;
+      waitingBtn.innerHTML = createButtonHTML(firstWaitingTool, "#b4c6fc");
 
       setInterval(function() {
         const nextIndex = (activeIndex + 1) % toolsList.length;
@@ -1147,10 +1264,19 @@
           oldActiveBtn.offsetHeight; // force reflow
           oldActiveBtn.style.transition = "";
           
+          // Determine a premium category color for the next-next tool
+          let catColor = "#e2e8f0"; // default Photo Compressor (white/gray)
+          if (nextNextTool.url.includes("passport")) catColor = "#b4c6fc"; // indigo
+          else if (nextNextTool.url.includes("cvbanao")) catColor = "#fbcfe8"; // pink
+          else if (nextNextTool.url.includes("salary")) catColor = "#a7f3d0"; // emerald
+          else if (nextNextTool.url.includes("receipt")) catColor = "#e9d5ff"; // purple
+          else if (nextNextTool.url.includes("fairshare")) catColor = "#bfdbfe"; // blue
+          else if (nextNextTool.url.includes("chat")) catColor = "#99f6e4"; // teal
+
           // Pre-load next-next tool data on the teleported button (hidden on the right)
           oldActiveBtn.href = nextNextTool.url;
-          oldActiveBtn.className = "carousel-btn state-enter hero-button px-8 py-3 rounded-full border-2 font-bold transition " + nextNextTool.style;
-          oldActiveBtn.innerHTML = `<i class="${nextNextTool.icon}"></i> Open ${nextNextTool.name}`;
+          oldActiveBtn.className = "carousel-btn state-enter hero-button border-2 font-bold transition " + nextNextTool.style;
+          oldActiveBtn.innerHTML = createButtonHTML(nextNextTool, catColor);
         }, 3000);
 
         // Swap references for next transition
