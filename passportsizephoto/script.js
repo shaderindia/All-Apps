@@ -346,7 +346,7 @@ document.addEventListener('DOMContentLoaded', function () {
   photoPreviewWrapper.addEventListener('wheel', (e) => {
     if (!imgLoaded) return;
     e.preventDefault();
-    let scale = Math.exp(-e.deltaY / 240000);
+    let scale = Math.exp(-e.deltaY / 1000);
     let prevZoom = zoomTarget;
     zoomTarget = Math.max(0.1, Math.min(zoomTarget * scale, 8));
     let rect = photoPreview.getBoundingClientRect();
@@ -792,18 +792,31 @@ document.addEventListener('DOMContentLoaded', function () {
       // Verticals (between columns)
       for (let c = 1; c < cols; c++) {
         let x = margins.left + c * dims.width + (c - 1) * spacing.h + spacing.h / 2;
-        ctx.beginPath();
-        ctx.moveTo(x, margins.top);
-        ctx.lineTo(x, pageDims.height - margins.bottom);
-        ctx.stroke();
+        let rowsActive = 0;
+        for (let r = 0; r < rows; r++) {
+          if (r * cols + c < np) {
+            rowsActive++;
+          }
+        }
+        if (rowsActive > 0) {
+          let yEnd = margins.top + rowsActive * dims.height + (rowsActive - 1) * spacing.v;
+          ctx.beginPath();
+          ctx.moveTo(x, margins.top);
+          ctx.lineTo(x, yEnd);
+          ctx.stroke();
+        }
       }
       // Horizontals (between rows)
       for (let r = 1; r < rows; r++) {
         let y = margins.top + r * dims.height + (r - 1) * spacing.v + spacing.v / 2;
-        ctx.beginPath();
-        ctx.moveTo(margins.left, y);
-        ctx.lineTo(pageDims.width - margins.right, y);
-        ctx.stroke();
+        let colsActive = Math.min(cols, np - r * cols);
+        if (colsActive > 0) {
+          let xEnd = margins.left + colsActive * dims.width + (colsActive - 1) * spacing.h;
+          ctx.beginPath();
+          ctx.moveTo(margins.left, y);
+          ctx.lineTo(xEnd, y);
+          ctx.stroke();
+        }
       }
       ctx.restore();
     }
