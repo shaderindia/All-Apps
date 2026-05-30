@@ -191,6 +191,42 @@
     .hidden-tool {
       display: none;
     }
+
+    /* Premium 3D Rotating Dynamic Button styles */
+    .hero-button-container {
+      perspective: 1000px;
+      min-width: 280px;
+      height: 50px;
+      position: relative;
+      display: inline-block;
+    }
+    .dynamic-tool-card {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      transform-style: preserve-3d;
+      transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .dynamic-tool-card.flipped {
+      transform: rotateX(180deg);
+    }
+    .face-btn {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      transform-style: preserve-3d;
+      white-space: nowrap;
+      box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.25);
+    }
+    .face-btn.back {
+      transform: rotateX(180deg);
+    }
   </style>
 </head>
 
@@ -343,9 +379,19 @@
           Enter CNC Machinist Section
         </a>
 
-        <a href="/photocompressor/" class="hero-button px-8 py-3 rounded-full border-2 border-white/40 text-white font-bold hover:bg-white/10 transition">
-          Open Photo Compressor
-        </a>
+        <!-- Premium 3D Rotating Dynamic Tool Button Container -->
+        <div class="hero-button-container">
+          <div id="dynamic-tool-btn" class="dynamic-tool-card">
+            <!-- Front Face (active by default) -->
+            <a href="/photocompressor/" id="front-tool-btn" class="face-btn front hero-button px-8 py-3 rounded-full border-2 border-white/40 text-white font-bold hover:bg-white/10 transition duration-300">
+              Open Photo Compressor
+            </a>
+            <!-- Back Face (hidden by default, pre-rotated) -->
+            <a href="/photopassportsizepro/" id="back-tool-btn" class="face-btn back hero-button px-8 py-3 rounded-full border-2 border-indigo-400 bg-indigo-950/40 text-indigo-100 hover:bg-indigo-950/70 transition duration-300">
+              Open Passport Photo PRO
+            </a>
+          </div>
+        </div>
       </div>
 
       <div class="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto">
@@ -1037,6 +1083,55 @@
           closeIosModal();
         }
       });
+    }
+
+    // Premium 3D Rotating Dynamic Button Script
+    const toolsList = [
+      { name: "Open Photo Compressor", url: "/photocompressor/", style: "border-white/40 bg-transparent text-white hover:bg-white/10" },
+      { name: "Open Passport Photo PRO", url: "/photopassportsizepro/", style: "border-indigo-400/80 bg-indigo-950/40 text-indigo-100 hover:bg-indigo-950/70" },
+      { name: "Open Resume Builder", url: "/cvbanao/", style: "border-pink-400/80 bg-pink-950/40 text-pink-100 hover:bg-pink-950/70" },
+      { name: "Open Salary Calculator", url: "/hourlysalarycalculator/", style: "border-emerald-400/80 bg-emerald-950/40 text-emerald-100 hover:bg-emerald-950/70" },
+      { name: "Open Receipt Maker", url: "/receiptpro/", style: "border-purple-400/80 bg-purple-950/40 text-purple-100 hover:bg-purple-950/70" },
+      { name: "Open FairShare Splitter", url: "/fairshare/", style: "border-blue-400/80 bg-blue-950/40 text-blue-100 hover:bg-blue-950/70" },
+      { name: "Open Private Chat", url: "/berofchat/", style: "border-teal-400/80 bg-teal-950/40 text-teal-100 hover:bg-teal-950/70" }
+    ];
+
+    let currentToolIdx = 0;
+    let buttonFlipped = false;
+    const dynamicToolBtn = document.getElementById("dynamic-tool-btn");
+    const frontToolBtn = document.getElementById("front-tool-btn");
+    const backToolBtn = document.getElementById("back-tool-btn");
+
+    if (dynamicToolBtn && frontToolBtn && backToolBtn) {
+      setInterval(function() {
+        const nextIdx = (currentToolIdx + 1) % toolsList.length;
+        const nextTool = toolsList[nextIdx];
+
+        if (!buttonFlipped) {
+          // Prepare the back button face with next tool data
+          backToolBtn.href = nextTool.url;
+          backToolBtn.textContent = nextTool.name;
+          
+          // Reset style classes and apply new styles
+          backToolBtn.className = "face-btn back hero-button px-8 py-3 rounded-full border-2 font-bold transition duration-300 " + nextTool.style;
+          
+          // Trigger the 3D flip rotation
+          dynamicToolBtn.classList.add("flipped");
+          buttonFlipped = true;
+        } else {
+          // Prepare the front button face with next tool data
+          frontToolBtn.href = nextTool.url;
+          frontToolBtn.textContent = nextTool.name;
+          
+          // Reset style classes and apply new styles
+          frontToolBtn.className = "face-btn front hero-button px-8 py-3 rounded-full border-2 font-bold transition duration-300 " + nextTool.style;
+          
+          // Trigger the 3D flip rotation back
+          dynamicToolBtn.classList.remove("flipped");
+          buttonFlipped = false;
+        }
+        currentToolIdx = nextIdx;
+      }, 3000);
     }
 
     document.addEventListener("keydown", function (event) {
