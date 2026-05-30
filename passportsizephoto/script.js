@@ -35,6 +35,9 @@ document.addEventListener('DOMContentLoaded', function () {
   const infoModal = document.getElementById('info-modal');
   const closeInfo = document.getElementById('close-info');
   const themeBtn = document.getElementById('theme-btn');
+  const dropZone = document.getElementById('drop-zone');
+  const dragDropOverlay = document.getElementById('drag-drop-overlay');
+  const changePhotoBtn = document.getElementById('change-photo-btn');
 
   // ==== Add "Reset Margins" Button Next to Auto-Center Switch ====
   const resetMarginsBtn = document.createElement('button');
@@ -191,6 +194,7 @@ document.addEventListener('DOMContentLoaded', function () {
       imgObj = new window.Image();
       imgObj.onload = function () {
         imgLoaded = true;
+        if (dropZone) dropZone.classList.add('hidden');
         photoPreviewContainer.classList.remove('hidden');
         const outputSection = document.getElementById('output-section');
         if (outputSection) outputSection.classList.remove('hidden');
@@ -761,7 +765,6 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // ==== Drag and Drop Upload Support ====
-  const dropZone = document.getElementById('drop-zone');
   if (dropZone) {
     ['dragenter', 'dragover'].forEach(eventName => {
       dropZone.addEventListener(eventName, (e) => {
@@ -778,10 +781,61 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
       const dt = e.dataTransfer;
       const files = dt.files;
       if (files && files[0]) {
-        photoUploadInput.files = files;
+        if (!files[0].type.startsWith('image/')) {
+          alert('Please upload an image file!');
+          return;
+        }
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(files[0]);
+        photoUploadInput.files = dataTransfer.files;
+        // Trigger the change handler
+        const event = new Event('change');
+        photoUploadInput.dispatchEvent(event);
+      }
+    });
+  }
+
+  // ==== Drag and Drop to Change Photo on Preview Wrapper ====
+  if (photoPreviewWrapper && dragDropOverlay) {
+    let dragCounter = 0;
+
+    photoPreviewWrapper.addEventListener('dragenter', (e) => {
+      e.preventDefault();
+      dragCounter++;
+      dragDropOverlay.classList.remove('hidden');
+    });
+
+    photoPreviewWrapper.addEventListener('dragover', (e) => {
+      e.preventDefault();
+    });
+
+    photoPreviewWrapper.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      dragCounter--;
+      if (dragCounter === 0) {
+        dragDropOverlay.classList.add('hidden');
+      }
+    });
+
+    photoPreviewWrapper.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dragCounter = 0;
+      dragDropOverlay.classList.add('hidden');
+
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      if (files && files[0]) {
+        if (!files[0].type.startsWith('image/')) {
+          alert('Please upload an image file!');
+          return;
+        }
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(files[0]);
+        photoUploadInput.files = dataTransfer.files;
         // Trigger the change handler
         const event = new Event('change');
         photoUploadInput.dispatchEvent(event);
@@ -790,7 +844,6 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // ==== Change Photo Button Action ====
-  const changePhotoBtn = document.getElementById('change-photo-btn');
   if (changePhotoBtn) {
     changePhotoBtn.addEventListener('click', () => {
       photoUploadInput.click();
