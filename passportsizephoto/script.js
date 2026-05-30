@@ -142,13 +142,6 @@ document.addEventListener('DOMContentLoaded', function () {
   unitSelect.addEventListener('change', () => {
     let oldUnit = unit;
     unit = unitSelect.value;
-    if (unit === "px") {
-      photoWidthInput.value = 300;
-      photoHeightInput.value = 400;
-    } else {
-      photoWidthInput.value = 35;
-      photoHeightInput.value = 45;
-    }
     updateFieldsForUnitChange(oldUnit, unit);
     renderCanvas();
   });
@@ -302,9 +295,9 @@ document.addEventListener('DOMContentLoaded', function () {
       let dy = e.touches[0].clientY - lastPan.y;
       panTarget.x += dx;
       panTarget.y += dy;
-      // Clamp panTarget to keep image within bounds
-      const maxPanX = Math.max(0, (photoPreview.clientWidth * zoomTarget - photoPreviewWrapper.clientWidth) / 2);
-      const maxPanY = Math.max(0, (photoPreview.clientHeight * zoomTarget - photoPreviewWrapper.clientHeight) / 2);
+      // Clamp panTarget to keep image within generous bounds
+      const maxPanX = Math.max(photoPreviewWrapper.clientWidth, photoPreview.clientWidth * zoomTarget);
+      const maxPanY = Math.max(photoPreviewWrapper.clientHeight, photoPreview.clientHeight * zoomTarget);
       panTarget.x = clamp(panTarget.x, -maxPanX, maxPanX);
       panTarget.y = clamp(panTarget.y, -maxPanY, maxPanY);
 
@@ -329,9 +322,9 @@ document.addEventListener('DOMContentLoaded', function () {
       let dx = e.clientX - lastPan.x, dy = e.clientY - lastPan.y;
       panTarget.x += dx;
       panTarget.y += dy;      
-      // Clamp panTarget to keep image within bounds
-      const maxPanX = Math.max(0, (photoPreview.clientWidth * zoomTarget - photoPreviewWrapper.clientWidth) / 2);
-      const maxPanY = Math.max(0, (photoPreview.clientHeight * zoomTarget - photoPreviewWrapper.clientHeight) / 2);
+      // Clamp panTarget to keep image within generous bounds
+      const maxPanX = Math.max(photoPreviewWrapper.clientWidth, photoPreview.clientWidth * zoomTarget);
+      const maxPanY = Math.max(photoPreviewWrapper.clientHeight, photoPreview.clientHeight * zoomTarget);
       panTarget.x = clamp(panTarget.x, -maxPanX, maxPanX);
       panTarget.y = clamp(panTarget.y, -maxPanY, maxPanY);
       lastPan = { x: e.clientX, y: e.clientY };
@@ -354,9 +347,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // Update panTarget based on zoom point
     panTarget.x = (panTarget.x - cx) * (zoomTarget / prevZoom) + cx;
     panTarget.y = (panTarget.y - cy) * (zoomTarget / prevZoom) + cy;
-    // Clamp panTarget after zoom
-    const maxPanX = Math.max(0, (photoPreview.clientWidth * zoomTarget - photoPreviewWrapper.clientWidth) / 2);
-    const maxPanY = Math.max(0, (photoPreview.clientHeight * zoomTarget - photoPreviewWrapper.clientHeight) / 2);
+    // Clamp panTarget after zoom with generous boundaries
+    const maxPanX = Math.max(photoPreviewWrapper.clientWidth, photoPreview.clientWidth * zoomTarget);
+    const maxPanY = Math.max(photoPreviewWrapper.clientHeight, photoPreview.clientHeight * zoomTarget);
     panTarget.x = clamp(panTarget.x, -maxPanX, maxPanX);
     panTarget.y = clamp(panTarget.y, -maxPanY, maxPanY);
     updatePreviewTransform();
@@ -713,25 +706,47 @@ document.addEventListener('DOMContentLoaded', function () {
     // Draw photos with thin black border on all four sides
     if (imgLoaded) {
       let imgW = imgObj.naturalWidth, imgH = imgObj.naturalHeight;
-      let cropParams = getCropParams(imgW, imgH);
+      let pvW = photoPreviewWrapper.clientWidth;
+      let pvH = photoPreviewWrapper.clientHeight;
+      let rect = (cropActive && cropRect) ? cropRect : { x: 0, y: 0, w: pvW, h: pvH };
       let drawn = 0;
       for (let r = 0; r < rows && drawn < np; r++) {
         for (let c = 0; c < cols && drawn < np; c++, drawn++) {
           let x = margins.left + c * (dims.width + spacing.h);
           let y = margins.top + r * (dims.height + spacing.v);
+          
           ctx.save();
-          ctx.drawImage(
-            imgObj,
-            cropParams.sx, cropParams.sy, cropParams.sw, cropParams.sh,
-            x, y, dims.width, dims.height
-          );
+          // Create clipping region for the photo box to prevent overlap
+          ctx.beginPath();
+          ctx.rect(x, y, dims.width, dims.height);
+          ctx.clip();
+          
+          // Apply transformation to match the preview viewport layout exactly
+          ctx.translate(x + dims.width / 2, y + dims.height / 2);
+          let s = dims.width / rect.w;
+          ctx.scale(s, s);
+          ctx.translate(pvW / 2 - (rect.x + rect.w / 2), pvH / 2 - (rect.y + rect.h / 2));
+          
+          ctx.translate(panTarget.x, panTarget.y);
+          ctx.rotate(rotate * Math.PI / 180);
+          
+          // Image zoom
+          ctx.scale(zoomTarget, zoomTarget);
+          
+          // Fit scale for object-fit: contain
+          let fitScale = Math.min(pvW / imgW, pvH / imgH);
+          ctx.scale(fitScale, fitScale);
+          
+          // Draw centered image
+          ctx.drawImage(imgObj, -imgW / 2, -imgH / 2, imgW, imgH);
+          ctx.restore();
+
           // Thin black border (all four sides)
           ctx.save();
           ctx.strokeStyle = "#111";
           ctx.lineWidth = 1.5;
           ctx.setLineDash([]);
           ctx.strokeRect(x, y, dims.width, dims.height);
-          ctx.restore();
           ctx.restore();
         }
       }
