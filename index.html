@@ -192,25 +192,17 @@
       display: none;
     }
 
-    /* Premium 3D Rotating Dynamic Button styles */
+    /* Premium 3D Sliding Carousel Button Container */
     .hero-button-container {
-      perspective: 1000px;
-      min-width: 280px;
-      height: 50px;
+      perspective: 1200px;
+      min-width: 320px;
+      height: 52px;
       position: relative;
       display: inline-block;
+      vertical-align: middle;
+      overflow: visible; /* preserve 3D perspective without clipping */
     }
-    .dynamic-tool-card {
-      width: 100%;
-      height: 100%;
-      position: absolute;
-      transform-style: preserve-3d;
-      transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-    .dynamic-tool-card.flipped {
-      transform: rotateX(180deg);
-    }
-    .face-btn {
+    .carousel-btn {
       position: absolute;
       inset: 0;
       width: 100%;
@@ -218,14 +210,38 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      white-space: nowrap;
+      text-decoration: none;
+      box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.3);
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
       transform-style: preserve-3d;
-      white-space: nowrap;
-      box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.25);
+      
+      /* Smooth 3-second transition for enter/exit sliding */
+      transition: transform 3s cubic-bezier(0.25, 1, 0.5, 1), opacity 3s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s, background 0.3s;
     }
-    .face-btn.back {
-      transform: rotateX(180deg);
+    
+    /* 3D Entry State (Right) */
+    .carousel-btn.state-enter {
+      transform: translateX(150%) translateZ(-300px) rotateY(-45deg);
+      opacity: 0;
+      pointer-events: none;
+    }
+    
+    /* 3D Center State (Active) */
+    .carousel-btn.state-center {
+      transform: translateX(0) translateZ(0) rotateY(0deg);
+      opacity: 1;
+      pointer-events: auto;
+      z-index: 2;
+    }
+    
+    /* 3D Exit State (Left) */
+    .carousel-btn.state-exit {
+      transform: translateX(-150%) translateZ(-300px) rotateY(45deg);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 1;
     }
   </style>
 </head>
@@ -379,18 +395,16 @@
           Enter CNC Machinist Section
         </a>
 
-        <!-- Premium 3D Rotating Dynamic Tool Button Container -->
+        <!-- Premium 3D Sliding Carousel Button Container -->
         <div class="hero-button-container">
-          <div id="dynamic-tool-btn" class="dynamic-tool-card">
-            <!-- Front Face (active by default) -->
-            <a href="/photocompressor/" id="front-tool-btn" class="face-btn front hero-button px-8 py-3 rounded-full border-2 border-white/40 text-white font-bold hover:bg-white/10 transition duration-300">
-              Open Photo Compressor
-            </a>
-            <!-- Back Face (hidden by default, pre-rotated) -->
-            <a href="/photopassportsizepro/" id="back-tool-btn" class="face-btn back hero-button px-8 py-3 rounded-full border-2 border-indigo-400 bg-indigo-950/40 text-indigo-100 hover:bg-indigo-950/70 transition duration-300">
-              Open Passport Photo PRO
-            </a>
-          </div>
+          <!-- Button A (active initially in the center) -->
+          <a href="/photocompressor/" id="carousel-btn-a" class="carousel-btn state-center hero-button px-8 py-3 rounded-full border-2 border-white/40 text-white font-bold hover:bg-white/10 transition duration-300">
+            <i class="fa-solid fa-compress fa-beat mr-3"></i> Open Photo Compressor
+          </a>
+          <!-- Button B (waiting on the right initially) -->
+          <a href="/photopassportsizepro/" id="carousel-btn-b" class="carousel-btn state-enter hero-button px-8 py-3 rounded-full border-2 border-indigo-400 bg-indigo-950/40 text-indigo-100 hover:bg-indigo-950/70 transition duration-300">
+            <i class="fa-solid fa-camera-retro fa-bounce mr-3"></i> Open Passport Photo PRO
+          </a>
         </div>
       </div>
 
@@ -1085,53 +1099,65 @@
       });
     }
 
-    // Premium 3D Rotating Dynamic Button Script
+    // Premium 3D Sliding Carousel Button Script
     const toolsList = [
-      { name: "Open Photo Compressor", url: "/photocompressor/", style: "border-white/40 bg-transparent text-white hover:bg-white/10" },
-      { name: "Open Passport Photo PRO", url: "/photopassportsizepro/", style: "border-indigo-400/80 bg-indigo-950/40 text-indigo-100 hover:bg-indigo-950/70" },
-      { name: "Open Resume Builder", url: "/cvbanao/", style: "border-pink-400/80 bg-pink-950/40 text-pink-100 hover:bg-pink-950/70" },
-      { name: "Open Salary Calculator", url: "/hourlysalarycalculator/", style: "border-emerald-400/80 bg-emerald-950/40 text-emerald-100 hover:bg-emerald-950/70" },
-      { name: "Open Receipt Maker", url: "/receiptpro/", style: "border-purple-400/80 bg-purple-950/40 text-purple-100 hover:bg-purple-950/70" },
-      { name: "Open FairShare Splitter", url: "/fairshare/", style: "border-blue-400/80 bg-blue-950/40 text-blue-100 hover:bg-blue-950/70" },
-      { name: "Open Private Chat", url: "/berofchat/", style: "border-teal-400/80 bg-teal-950/40 text-teal-100 hover:bg-teal-950/70" }
+      { name: "Photo Compressor", url: "/photocompressor/", icon: "fa-solid fa-compress fa-beat mr-3", style: "border-white/40 bg-transparent text-white hover:bg-white/10" },
+      { name: "Passport Photo PRO", url: "/photopassportsizepro/", icon: "fa-solid fa-camera-retro fa-bounce mr-3", style: "border-indigo-400/80 bg-indigo-950/40 text-indigo-100 hover:bg-indigo-950/70" },
+      { name: "Resume Builder", url: "/cvbanao/", icon: "fa-solid fa-file-invoice fa-shake mr-3", style: "border-pink-400/80 bg-pink-950/40 text-pink-100 hover:bg-pink-950/70" },
+      { name: "Salary Calculator", url: "/hourlysalarycalculator/", icon: "fa-solid fa-calculator fa-flip mr-3", style: "border-emerald-400/80 bg-emerald-950/40 text-emerald-100 hover:bg-emerald-950/70" },
+      { name: "Receipt Maker", url: "/receiptpro/", icon: "fa-solid fa-receipt fa-bounce mr-3", style: "border-purple-400/80 bg-purple-950/40 text-purple-100 hover:bg-purple-950/70" },
+      { name: "FairShare Splitter", url: "/fairshare/", icon: "fa-solid fa-scale-balanced fa-shake mr-3", style: "border-blue-400/80 bg-blue-950/40 text-blue-100 hover:bg-blue-950/70" },
+      { name: "Private Chat", url: "/berofchat/", icon: "fa-solid fa-comments fa-beat-fade mr-3", style: "border-teal-400/80 bg-teal-950/40 text-teal-100 hover:bg-teal-950/70" }
     ];
 
-    let currentToolIdx = 0;
-    let buttonFlipped = false;
-    const dynamicToolBtn = document.getElementById("dynamic-tool-btn");
-    const frontToolBtn = document.getElementById("front-tool-btn");
-    const backToolBtn = document.getElementById("back-tool-btn");
+    let activeIndex = 0;
+    const btnA = document.getElementById("carousel-btn-a");
+    const btnB = document.getElementById("carousel-btn-b");
+    
+    let activeBtn = btnA;
+    let waitingBtn = btnB;
+    
+    if (btnA && btnB) {
+      // Set initial waiting button content for Passport Photo PRO
+      waitingBtn.href = toolsList[1].url;
+      waitingBtn.className = "carousel-btn state-enter hero-button px-8 py-3 rounded-full border-2 font-bold transition " + toolsList[1].style;
+      waitingBtn.innerHTML = `<i class="${toolsList[1].icon}"></i> Open ${toolsList[1].name}`;
 
-    if (dynamicToolBtn && frontToolBtn && backToolBtn) {
       setInterval(function() {
-        const nextIdx = (currentToolIdx + 1) % toolsList.length;
-        const nextTool = toolsList[nextIdx];
+        const nextIndex = (activeIndex + 1) % toolsList.length;
+        const nextNextIndex = (nextIndex + 1) % toolsList.length;
+        const nextTool = toolsList[nextIndex];
+        const nextNextTool = toolsList[nextNextIndex];
 
-        if (!buttonFlipped) {
-          // Prepare the back button face with next tool data
-          backToolBtn.href = nextTool.url;
-          backToolBtn.textContent = nextTool.name;
+        // Trigger simultaneous slide (takes 3 seconds)
+        activeBtn.classList.remove("state-center");
+        activeBtn.classList.add("state-exit");
+        
+        waitingBtn.classList.remove("state-enter");
+        waitingBtn.classList.add("state-center");
+        
+        const oldActiveBtn = activeBtn;
+        const oldWaitingBtn = waitingBtn;
+        
+        // Wait 3 seconds for the slide animation to complete, then teleport old active to the right
+        setTimeout(function() {
+          oldActiveBtn.style.transition = "none";
+          oldActiveBtn.classList.remove("state-exit");
+          oldActiveBtn.classList.add("state-enter");
+          oldActiveBtn.offsetHeight; // force reflow
+          oldActiveBtn.style.transition = "";
           
-          // Reset style classes and apply new styles
-          backToolBtn.className = "face-btn back hero-button px-8 py-3 rounded-full border-2 font-bold transition duration-300 " + nextTool.style;
-          
-          // Trigger the 3D flip rotation
-          dynamicToolBtn.classList.add("flipped");
-          buttonFlipped = true;
-        } else {
-          // Prepare the front button face with next tool data
-          frontToolBtn.href = nextTool.url;
-          frontToolBtn.textContent = nextTool.name;
-          
-          // Reset style classes and apply new styles
-          frontToolBtn.className = "face-btn front hero-button px-8 py-3 rounded-full border-2 font-bold transition duration-300 " + nextTool.style;
-          
-          // Trigger the 3D flip rotation back
-          dynamicToolBtn.classList.remove("flipped");
-          buttonFlipped = false;
-        }
-        currentToolIdx = nextIdx;
-      }, 3000);
+          // Pre-load next-next tool data on the teleported button (hidden on the right)
+          oldActiveBtn.href = nextNextTool.url;
+          oldActiveBtn.className = "carousel-btn state-enter hero-button px-8 py-3 rounded-full border-2 font-bold transition " + nextNextTool.style;
+          oldActiveBtn.innerHTML = `<i class="${nextNextTool.icon}"></i> Open ${nextNextTool.name}`;
+        }, 3000);
+
+        // Swap references for next transition
+        activeBtn = oldWaitingBtn;
+        waitingBtn = oldActiveBtn;
+        activeIndex = nextIndex;
+      }, 13000); // 10s stay + 3s transition = 13s total cycle
     }
 
     document.addEventListener("keydown", function (event) {
