@@ -192,6 +192,8 @@ document.addEventListener('DOMContentLoaded', function () {
       imgObj.onload = function () {
         imgLoaded = true;
         photoPreviewContainer.classList.remove('hidden');
+        const outputSection = document.getElementById('output-section');
+        if (outputSection) outputSection.classList.remove('hidden');
         photoPreview.src = imgURL;
         zoomTarget = 1.0;
         panTarget = { x: 0, y: 0 };
@@ -756,5 +758,42 @@ document.addEventListener('DOMContentLoaded', function () {
     ctx.lineWidth = 2;
     ctx.strokeRect(0, 0, pageDims.width, pageDims.height);
     ctx.restore();
+  }
+
+  // ==== Drag and Drop Upload Support ====
+  const dropZone = document.getElementById('drop-zone');
+  if (dropZone) {
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropZone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
+      }, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropZone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+      }, false);
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      if (files && files[0]) {
+        photoUploadInput.files = files;
+        // Trigger the change handler
+        const event = new Event('change');
+        photoUploadInput.dispatchEvent(event);
+      }
+    });
+  }
+
+  // ==== Change Photo Button Action ====
+  const changePhotoBtn = document.getElementById('change-photo-btn');
+  if (changePhotoBtn) {
+    changePhotoBtn.addEventListener('click', () => {
+      photoUploadInput.click();
+    });
   }
 });

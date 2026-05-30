@@ -389,8 +389,11 @@
         <section class="card card-glass shadow-lg">
           <h2><i class="fa fa-image"></i> Upload & Crop</h2>
 
-          <div class="upload-area">
-            <input type="file" id="photo-upload" accept="image/*" aria-label="Upload your photo">
+          <div class="upload-area" id="drop-zone">
+            <i class="fa fa-cloud-upload-alt upload-icon" style="font-size: 2.4rem; color: var(--primary); margin-bottom: 10px; display: block;"></i>
+            <p class="upload-text" style="margin: 0; font-weight: 600; font-size: 1rem;">Drag & drop your photo here or <span style="color: var(--primary); text-decoration: underline; cursor: pointer;">Browse</span></p>
+            <p class="upload-hint" style="margin: 6px 0 0 0; font-size: 0.82rem; color: var(--text-subtle);">Supports JPEG, JPG, PNG (Max 15MB)</p>
+            <input type="file" id="photo-upload" accept="image/*" aria-label="Upload your photo" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 5;">
           </div>
 
           <div id="preview-section" class="photo-preview-container hidden">
@@ -407,19 +410,22 @@
               </button>
             </div>
 
-            <div class="adjust-tools">
-              <button id="rotate-left" title="Rotate left">
-                <i class="fa fa-undo"></i>
+            <div class="adjust-tools" style="margin-top: 15px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+              <button id="rotate-left" title="Rotate left" style="display: inline-flex; align-items: center; gap: 6px;">
+                <i class="fa fa-undo"></i> Rotate Left
               </button>
-              <button id="rotate-right" title="Rotate right">
-                <i class="fa fa-redo"></i>
+              <button id="rotate-right" title="Rotate right" style="display: inline-flex; align-items: center; gap: 6px;">
+                <i class="fa fa-redo"></i> Rotate Right
+              </button>
+              <button class="btn-main" id="change-photo-btn" style="padding: 0.5em 1.2em; font-size: 1rem; border-radius: 1.2em; margin: 0; display: inline-flex; align-items: center; gap: 6px;">
+                <i class="fa fa-sync-alt"></i> Change Photo
               </button>
             </div>
           </div>
         </section>
       </div>
 
-      <div class="app-right-column">
+      <div class="app-right-column hidden" id="output-section">
         <section class="card card-glass shadow-lg">
           <h2><i class="fa fa-print"></i> Output & Download</h2>
 
