@@ -113,20 +113,24 @@
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
   <style>
         /* Premium Info Section for AdSense and SEO */
         .app-info-section {
             margin-top: 40px;
             background: #1e293b !important;
             border: 1px solid #334155 !important;
-            border-radius: 12px;
-            padding: 30px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
+            border-radius: var(--radius);
+            padding: clamp(20px, 4vw, 36px);
+            box-shadow: var(--shadow-lg);
             text-align: left !important;
             color: #e2e8f0 !important;
         }
         .app-info-section h3 {
-            color: #3b82f6 !important;
+            color: #6366f1 !important;
             font-size: 1.35rem !important;
             margin-top: 25px !important;
             margin-bottom: 12px !important;
@@ -142,7 +146,7 @@
         .app-info-section p {
             color: #cbd5e1 !important;
             font-size: 0.95rem !important;
-            line-height: 1.7 !important;
+            line-height: 1.75 !important;
             margin-bottom: 15px !important;
             text-align: left !important;
         }
@@ -162,20 +166,20 @@
             padding: 2px 6px !important;
             border-radius: 4px !important;
             font-family: monospace !important;
-            color: #3b82f6 !important;
+            color: #818cf8 !important;
             font-size: 0.9rem !important;
         }
         .app-info-section .guide-promo-box {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(168, 85, 247, 0.08)) !important;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(168, 85, 247, 0.08)) !important;
             border: 1px dashed rgba(139, 92, 246, 0.3) !important;
-            border-radius: 8px;
-            padding: 20px;
+            border-radius: 12px;
+            padding: 24px;
             margin-top: 30px;
             text-align: center !important;
         }
         .app-info-section .guide-promo-box p {
             text-align: center !important;
-            margin-bottom: 12px !important;
+            margin-bottom: 14px !important;
             font-weight: 600 !important;
             color: #ffffff !important;
         }
@@ -183,37 +187,39 @@
             display: inline-block !important;
             background: #6366f1 !important;
             color: #ffffff !important;
-            padding: 10px 20px !important;
-            border-radius: 6px !important;
+            padding: 12px 24px !important;
+            border-radius: 10px !important;
             text-decoration: none !important;
             font-weight: 700 !important;
-            transition: background 0.2s !important;
+            transition: all 0.2s !important;
             font-size: 0.9rem !important;
             border: none !important;
             cursor: pointer !important;
         }
         .app-info-section .promo-btn:hover {
             background: #4f46e5 !important;
+            transform: translateY(-1px);
         }
 
     :root {
-      --primary: #2563eb;
-      --primary-dark: #1d4ed8;
+      --primary: #4f46e5;
+      --primary-dark: #4338ca;
       --secondary: #0f172a;
-      --success: #16a34a;
-      --danger: #dc2626;
+      --success: #10b981;
+      --danger: #ef4444;
       --warning: #f59e0b;
       --surface: #ffffff;
       --surface-soft: #f8fafc;
-      --surface-alt: #eef2ff;
-      --border: #dbe3ef;
+      --surface-alt: #f5f3ff;
+      --border: #e2e8f0;
       --text: #0f172a;
       --muted: #64748b;
-      --shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
-      --shadow-soft: 0 8px 24px rgba(15, 23, 42, 0.08);
-      --radius: 20px;
-      --radius-sm: 13px;
-      --focus: 0 0 0 4px rgba(37, 99, 235, 0.18);
+      --shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.04);
+      --shadow-lg: 0 20px 40px -4px rgba(15, 23, 42, 0.08);
+      --shadow-soft: 0 8px 24px rgba(15, 23, 42, 0.04);
+      --radius: 24px;
+      --radius-sm: 16px;
+      --focus: 0 0 0 4px rgba(79, 70, 229, 0.15);
     }
 
     * {
@@ -227,11 +233,11 @@
     }
 
     body {
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      font-family: "Plus Jakarta Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
       background:
-        radial-gradient(circle at top left, rgba(37, 99, 235, 0.14), transparent 32rem),
-        radial-gradient(circle at bottom right, rgba(124, 58, 237, 0.1), transparent 30rem),
-        linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+        radial-gradient(circle at top left, rgba(79, 70, 229, 0.08), transparent 36rem),
+        radial-gradient(circle at bottom right, rgba(139, 92, 246, 0.06), transparent 32rem),
+        #f8fafc;
       color: var(--text);
       line-height: 1.6;
       min-height: 100vh;
@@ -254,7 +260,7 @@
     }
 
     .container {
-      width: min(1220px, calc(100% - 32px));
+      width: min(1200px, calc(100% - 32px));
       margin-inline: auto;
     }
 
@@ -277,9 +283,10 @@
       position: sticky;
       top: 0;
       z-index: 30;
-      backdrop-filter: blur(18px);
-      background: rgba(255, 255, 255, 0.84);
-      border-bottom: 1px solid rgba(219, 227, 239, 0.9);
+      backdrop-filter: blur(20px);
+      background: rgba(255, 255, 255, 0.85);
+      border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+      box-shadow: 0 4px 20px -12px rgba(15, 23, 42, 0.03);
     }
 
     .header-content {
@@ -295,22 +302,30 @@
       align-items: center;
       gap: 12px;
       text-decoration: none;
-      font-weight: 900;
-      letter-spacing: -0.04em;
-      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      font-size: 1.3rem;
+      color: var(--secondary);
     }
 
     .brand-mark {
-      width: 44px;
-      height: 44px;
-      border-radius: 15px;
-      background: linear-gradient(135deg, var(--primary), #7c3aed);
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary), #8b5cf6);
       color: #fff;
       display: grid;
       place-items: center;
-      box-shadow: var(--shadow-soft);
+      box-shadow: 0 8px 16px -4px rgba(79, 70, 229, 0.4);
       font-weight: 900;
-      letter-spacing: -0.06em;
+      letter-spacing: -0.05em;
+      font-size: 1.15rem;
+      transition: all 0.2s;
+    }
+    
+    .brand:hover .brand-mark {
+      transform: rotate(-6deg) scale(1.05);
+      box-shadow: 0 10px 20px -4px rgba(79, 70, 229, 0.5);
     }
 
     .header-actions {
@@ -322,17 +337,17 @@
     }
 
     .hero {
-      padding: 34px 0 22px;
+      padding: 40px 0 20px;
     }
 
     .hero-card {
       background:
-        radial-gradient(circle at top right, rgba(255,255,255,0.2), transparent 22rem),
-        linear-gradient(135deg, rgba(37, 99, 235, 0.98), rgba(124, 58, 237, 0.94));
+        radial-gradient(circle at top right, rgba(255,255,255,0.18), transparent 24rem),
+        linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
       color: white;
-      border-radius: 30px;
-      padding: clamp(24px, 4vw, 48px);
-      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+      padding: clamp(24px, 5vw, 44px);
+      box-shadow: var(--shadow-lg);
       position: relative;
       overflow: hidden;
     }
@@ -347,66 +362,71 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 8px 12px;
+      padding: 6px 14px;
       border-radius: 999px;
-      background: rgba(255,255,255,0.15);
-      font-weight: 800;
-      font-size: 0.84rem;
-      margin-bottom: 14px;
-      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(255,255,255,0.16);
+      font-weight: 700;
+      font-size: 0.82rem;
+      margin-bottom: 16px;
+      border: 1px solid rgba(255,255,255,0.12);
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
     }
 
     h1 {
-      font-size: clamp(2rem, 6vw, 4.15rem);
-      line-height: 1.04;
-      letter-spacing: -0.07em;
-      margin-bottom: 14px;
+      font-size: clamp(2.2rem, 5.5vw, 3.8rem);
+      line-height: 1.08;
+      letter-spacing: -0.05em;
+      margin-bottom: 16px;
+      font-weight: 800;
     }
 
     .hero p {
-      max-width: 720px;
-      color: rgba(255,255,255,0.92);
-      font-size: clamp(1rem, 2vw, 1.15rem);
+      max-width: 680px;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: clamp(1rem, 1.8vw, 1.12rem);
+      font-weight: 500;
+      line-height: 1.6;
     }
 
     .hero-badges {
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
-      margin-top: 20px;
+      margin-top: 24px;
     }
 
     .hero-badge {
       background: rgba(255,255,255,0.15);
-      border: 1px solid rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.15);
       border-radius: 999px;
-      padding: 8px 12px;
-      font-weight: 800;
-      font-size: 0.9rem;
+      padding: 6px 14px;
+      font-weight: 600;
+      font-size: 0.85rem;
     }
 
     .main-content {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 430px;
-      gap: 24px;
+      grid-template-columns: minmax(0, 1.25fr) 1fr;
+      gap: 32px;
       align-items: start;
-      padding: 4px 0 44px;
+      padding: 8px 0 44px;
     }
 
     .panel {
-      background: rgba(255, 255, 255, 0.94);
-      border: 1px solid rgba(219, 227, 239, 0.95);
-      box-shadow: var(--shadow);
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      box-shadow: var(--shadow-lg);
       border-radius: var(--radius);
       overflow: hidden;
     }
 
     .panel-inner {
-      padding: clamp(18px, 3vw, 28px);
+      padding: clamp(20px, 4vw, 32px);
     }
 
     .section {
-      padding: 22px 0;
+      padding: 24px 0;
       border-top: 1px solid var(--border);
     }
 
@@ -420,43 +440,47 @@
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      margin-bottom: 14px;
+      margin-bottom: 16px;
     }
 
     h2 {
       font-size: 1.35rem;
-      letter-spacing: -0.03em;
+      letter-spacing: -0.02em;
+      font-weight: 800;
+      color: var(--secondary);
     }
 
     h3 {
       font-size: 1.1rem;
-      letter-spacing: -0.02em;
+      letter-spacing: -0.01em;
       margin-bottom: 12px;
+      font-weight: 700;
+      color: var(--secondary);
     }
 
     .helper {
       color: var(--muted);
-      font-size: 0.92rem;
+      font-size: 0.88rem;
       margin-top: -6px;
-      margin-bottom: 16px;
+      margin-bottom: 18px;
     }
 
     .grid-2 {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
+      gap: 16px;
     }
 
     .form-group {
       display: flex;
       flex-direction: column;
-      gap: 7px;
-      margin-bottom: 14px;
+      gap: 8px;
+      margin-bottom: 16px;
     }
 
     label {
-      font-weight: 850;
-      font-size: 0.9rem;
+      font-weight: 700;
+      font-size: 0.86rem;
       color: #334155;
     }
 
@@ -464,13 +488,13 @@
     textarea,
     select {
       width: 100%;
-      min-height: 46px;
+      min-height: 48px;
       border: 1px solid var(--border);
-      border-radius: 13px;
-      padding: 11px 13px;
+      border-radius: 12px;
+      padding: 11px 15px;
       background: #fff;
       color: var(--text);
-      transition: border-color 0.18s, box-shadow 0.18s, transform 0.18s;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     textarea {
@@ -488,20 +512,20 @@
 
     input.invalid {
       border-color: var(--danger);
-      box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.13);
-      background: #fff7f7;
+      box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.12);
+      background: #fef2f2;
     }
 
     .error-text {
       color: var(--danger);
-      font-size: 0.82rem;
-      font-weight: 800;
+      font-size: 0.8rem;
+      font-weight: 600;
       min-height: 18px;
     }
 
     .muted-line {
       color: var(--muted);
-      font-weight: 600;
+      font-weight: 500;
     }
 
     .template-selector {
@@ -513,50 +537,171 @@
     .template-box {
       border: 2px solid var(--border);
       background: var(--surface);
-      border-radius: 16px;
-      padding: 10px;
+      border-radius: 14px;
+      padding: 8px;
       cursor: pointer;
-      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
       text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     .template-box:hover {
       transform: translateY(-2px);
-      border-color: var(--primary);
+      border-color: rgba(79, 70, 229, 0.4);
+      box-shadow: 0 8px 16px -4px rgba(15, 23, 42, 0.05);
     }
 
     .template-box.active {
       border-color: var(--primary);
-      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+      box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12);
+      background: var(--surface-soft);
     }
 
     .template-thumb {
-      height: 86px;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      margin-bottom: 9px;
+      height: 84px;
+      width: 100%;
+      border-radius: 8px;
+      border: 1px dashed var(--border);
+      margin-bottom: 8px;
       display: grid;
       place-items: center;
       overflow: hidden;
       white-space: pre-line;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
+      background: white;
+    }
+    
+    .template-box.active .template-thumb {
+      border-style: solid;
+      border-color: rgba(79, 70, 229, 0.25);
     }
 
     .template-name {
-      font-weight: 900;
-      font-size: 0.82rem;
+      font-weight: 700;
+      font-size: 0.8rem;
+    }
+
+    /* Logo Drag & Drop Zone Styling */
+    .logo-drop-zone {
+      position: relative;
+      border: 2px dashed var(--border);
+      border-radius: var(--radius-sm);
+      padding: 20px;
+      text-align: center;
+      background: var(--surface-soft);
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 110px;
+    }
+    
+    .logo-drop-zone.dragover {
+      border-color: var(--primary);
+      background: rgba(79, 70, 229, 0.03);
+      transform: scale(1.015);
+      box-shadow: var(--shadow);
+    }
+    
+    .logo-drop-zone-icon {
+      color: var(--muted);
+      transition: color 0.2s;
+    }
+    
+    .logo-drop-zone:hover .logo-drop-zone-icon,
+    .logo-drop-zone.dragover .logo-drop-zone-icon {
+      color: var(--primary);
+    }
+    
+    .logo-drop-zone p {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    
+    .logo-drop-zone .highlight {
+      color: var(--primary);
+      font-weight: 700;
+    }
+    
+    .logo-preview-thumb-wrap {
+      position: relative;
+      width: 120px;
+      height: 70px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: white;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    
+    .logo-preview-thumb-wrap img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+    
+    .logo-preview-thumb-wrap .btn-clear-logo-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.75);
+      color: white;
+      display: grid;
+      place-items: center;
+      opacity: 0;
+      transition: opacity 0.2s;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 700;
+      border: 0;
+    }
+    
+    .logo-preview-thumb-wrap:hover .btn-clear-logo-overlay {
+      opacity: 1;
+    }
+
+    /* Custom Currency Box Styling */
+    .custom-currency-box {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 12px;
+      background: var(--surface-alt);
+      border: 1px solid rgba(79, 70, 229, 0.15);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      margin-top: -6px;
+      margin-bottom: 16px;
+      animation: slideDown 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .item-entry {
       background: var(--surface-soft);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 14px;
+      border-radius: var(--radius-sm);
+      padding: 16px;
       margin-bottom: 12px;
       display: grid;
-      grid-template-columns: minmax(0, 1.7fr) 86px 120px 48px;
-      gap: 10px;
+      grid-template-columns: minmax(0, 1.8fr) 75px 110px 48px;
+      gap: 12px;
       align-items: end;
+      position: relative;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    
+    .item-entry:hover {
+      border-color: rgba(79, 70, 229, 0.2);
+      box-shadow: var(--shadow);
     }
 
     .btn-row {
@@ -568,14 +713,14 @@
 
     .btn {
       border: 0;
-      border-radius: 13px;
-      min-height: 46px;
+      border-radius: 12px;
+      min-height: 48px;
       padding: 11px 14px;
       cursor: pointer;
-      font-weight: 900;
+      font-weight: 700;
       color: white;
       background: var(--primary);
-      transition: transform 0.2s, filter 0.2s, box-shadow 0.2s;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -586,8 +731,8 @@
 
     .btn:hover {
       transform: translateY(-1px);
-      filter: brightness(0.98);
-      box-shadow: var(--shadow-soft);
+      background: var(--primary-dark);
+      box-shadow: 0 8px 20px -6px rgba(79, 70, 229, 0.4);
     }
 
     .btn:active {
@@ -598,20 +743,36 @@
     .btn-secondary {
       background: #334155;
     }
+    .btn-secondary:hover {
+      background: #1e293b;
+      box-shadow: 0 8px 20px -6px rgba(51, 65, 85, 0.4);
+    }
 
     .btn-success {
       background: var(--success);
     }
+    .btn-success:hover {
+      background: #059669;
+      box-shadow: 0 8px 20px -6px rgba(16, 185, 129, 0.4);
+    }
 
     .btn-danger {
       background: var(--danger);
-      min-width: 42px;
+      min-width: 44px;
       padding-inline: 10px;
+    }
+    .btn-danger:hover {
+      background: #dc2626;
+      box-shadow: 0 8px 20px -6px rgba(239, 68, 68, 0.4);
     }
 
     .btn-ghost {
       background: #e2e8f0;
       color: #0f172a;
+    }
+    .btn-ghost:hover {
+      background: #cbd5e1;
+      box-shadow: none;
     }
 
     .btn-warning {
@@ -622,14 +783,15 @@
     .btn-small {
       width: auto;
       min-height: 40px;
-      padding: 9px 12px;
-      font-size: 0.92rem;
+      padding: 9px 16px;
+      font-size: 0.9rem;
     }
 
     .btn[disabled] {
       opacity: 0.65;
       cursor: not-allowed;
       transform: none;
+      box-shadow: none !important;
     }
 
     .preview-wrap {
@@ -637,24 +799,32 @@
       top: 96px;
     }
 
-    .preview-toolbar {
+    .preview-card-header {
+      background: var(--secondary);
+      color: white;
+      padding: 14px 20px;
+      border-radius: var(--radius) var(--radius) 0 0;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 12px;
+    }
+    
+    .preview-card-header h2 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
     }
 
     .preview-scale-note {
-      color: var(--muted);
-      font-size: 0.84rem;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.8rem;
     }
 
     #receiptPreview {
       background: rgba(255, 255, 255, 0.96);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 22px;
+      padding: 24px;
       box-shadow: var(--shadow);
       overflow: auto;
     }
@@ -862,27 +1032,32 @@
 
     .toast {
       position: fixed;
-      left: 50%;
-      bottom: 22px;
-      transform: translateX(-50%) translateY(20px);
+      right: 24px;
+      bottom: 24px;
+      left: auto;
+      transform: translateY(20px) scale(0.95);
       opacity: 0;
       pointer-events: none;
-      background: #0f172a;
+      background: rgba(15, 23, 42, 0.96);
+      backdrop-filter: blur(8px);
       color: #fff;
-      padding: 12px 16px;
-      border-radius: 999px;
-      box-shadow: var(--shadow);
-      z-index: 80;
-      transition: opacity 0.2s, transform 0.2s;
-      font-weight: 850;
-      font-size: 0.92rem;
-      text-align: center;
-      max-width: calc(100% - 24px);
+      padding: 12px 18px;
+      border-radius: 12px;
+      box-shadow: var(--shadow-lg);
+      z-index: 9999;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      font-weight: 600;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      max-width: 350px;
+      border: 1px solid rgba(255,255,255,0.08);
     }
 
     .toast.show {
       opacity: 1;
-      transform: translateX(-50%) translateY(0);
+      transform: translateY(0) scale(1);
     }
 
     .page-footer {
@@ -895,7 +1070,7 @@
 
     .page-footer a {
       color: #93c5fd;
-      font-weight: 900;
+      font-weight: 700;
       text-decoration: none;
     }
 
@@ -915,7 +1090,7 @@
 
     @media (max-width: 760px) {
       .container {
-        width: min(100% - 20px, 1220px);
+        width: min(100% - 20px, 1200px);
       }
 
       .header-content {
@@ -936,11 +1111,11 @@
       }
 
       .hero-card {
-        border-radius: 22px;
+        border-radius: 20px;
       }
 
       .panel-inner {
-        padding: 16px;
+        padding: 20px;
       }
 
       .grid-2 {
@@ -953,6 +1128,8 @@
 
       .item-entry {
         grid-template-columns: 1fr 1fr;
+        padding: 14px;
+        gap: 10px;
       }
 
       .item-entry .item-name-wrap {
@@ -960,7 +1137,25 @@
       }
 
       .item-entry .remove-wrap {
-        grid-column: 1 / -1;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        margin-bottom: 0;
+      }
+      
+      .item-entry .remove-wrap label {
+        display: none;
+      }
+      
+      .item-entry .remove-item {
+        min-height: 28px;
+        height: 28px;
+        width: 28px;
+        border-radius: 50%;
+        padding: 0;
+        display: grid;
+        place-items: center;
+        font-size: 1.1rem;
       }
 
       .btn-row {
@@ -968,12 +1163,21 @@
       }
 
       #receiptPreview {
-        padding: 12px;
+        padding: 16px;
         border-radius: 16px;
       }
 
       .receipt {
         max-width: 100%;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .toast {
+        right: 16px;
+        left: 16px;
+        bottom: 16px;
+        max-width: none;
       }
     }
 
@@ -988,6 +1192,18 @@
 
       .item-entry {
         grid-template-columns: 1fr;
+      }
+      
+      .item-entry .remove-wrap {
+        position: static;
+        grid-column: 1 / -1;
+      }
+      
+      .item-entry .remove-item {
+        width: 100%;
+        border-radius: 8px;
+        height: 38px;
+        font-size: 0.95rem;
       }
     }
 
@@ -1046,7 +1262,7 @@
       border: 1px solid #e2e8f0;
       border-radius: 16px;
       padding: 24px;
-      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.025);
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
     }
     .edu-card h3 {
       font-size: 1.15rem;
@@ -1115,7 +1331,7 @@
     .resource-card:hover {
       transform: translateY(-2px);
       box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
-      border-color: #0284c7;
+      border-color: #4f46e5;
     }
     .resource-card h4 {
       margin: 0 0 6px;
@@ -1129,7 +1345,7 @@
       line-height: 1.5;
     }
     .resource-card .link-btn {
-      color: #0284c7;
+      color: #4f46e5;
       font-size: 0.85rem;
       font-weight: 700;
       text-decoration: none;
@@ -1140,7 +1356,7 @@
     .resource-card .link-btn:hover {
       text-decoration: underline;
     }
-  </style>
+</style>
 </head>
 
 <body>
@@ -1226,10 +1442,20 @@
             <h2 id="companyHeading">Company Information</h2>
 
             <div class="form-group">
-              <label for="companyLogo">Company Logo <span class="muted-line">optional, below 2MB</span></label>
-              <input type="file" id="companyLogo" accept="image/png,image/jpeg,image/webp,image/svg+xml" />
+              <label>Company Logo <span class="muted-line">optional, below 2MB</span></label>
+              <div class="logo-drop-zone" id="logoDropZone">
+                <input type="file" id="companyLogo" accept="image/png,image/jpeg,image/webp,image/svg+xml" style="display: none;" />
+                <div class="logo-preview-thumb-wrap" id="logoPreviewThumbWrap">
+                  <img id="logoPreviewThumb" src="" alt="Logo Thumbnail" />
+                  <button type="button" class="btn-clear-logo-overlay" id="clearLogoOverlayBtn">Remove Logo</button>
+                </div>
+                <div class="logo-drop-zone-prompt" id="logoDropZonePrompt">
+                  <svg class="logo-drop-zone-icon" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                  <p><span class="highlight">Click to upload</span> or drag & drop</p>
+                  <p class="muted-line" style="font-size: 0.75rem;">PNG, JPG, SVG or WEBP (Max 2MB)</p>
+                </div>
+              </div>
               <div class="error-text" id="logoError" aria-live="polite"></div>
-              <button class="btn btn-ghost btn-small" type="button" id="clearLogoBtn">Clear Logo</button>
             </div>
 
             <div class="form-group">
@@ -1298,13 +1524,34 @@
               <div class="form-group">
                 <label for="currency">Currency</label>
                 <select id="currency">
-                  <option value="₹|INR">₹ INR - Indian Rupee</option>
                   <option value="$|USD">$ USD - US Dollar</option>
+                  <option value="₹|INR">₹ INR - Indian Rupee</option>
                   <option value="€|EUR">€ EUR - Euro</option>
-                  <option value="lei |RON">lei RON - Romanian Leu</option>
                   <option value="£|GBP">£ GBP - British Pound</option>
                   <option value="¥|JPY">¥ JPY - Japanese Yen</option>
+                  <option value="C$|CAD">C$ CAD - Canadian Dollar</option>
+                  <option value="A$|AUD">A$ AUD - Australian Dollar</option>
+                  <option value="CHF|CHF">CHF - Swiss Franc</option>
+                  <option value="kr|SEK">kr SEK - Swedish Krona</option>
+                  <option value="NZ$|NZD">NZ$ NZD - New Zealand Dollar</option>
+                  <option value="lei|RON">lei RON - Romanian Leu</option>
+                  <option value="custom">Custom Currency...</option>
                 </select>
+              </div>
+              
+              <!-- Dynamic Custom Currency Options -->
+              <div id="customCurrencyBox" class="custom-currency-box" style="display: none;">
+                <div class="form-group">
+                  <label for="customCurrencySymbol">Symbol / Text</label>
+                  <input type="text" id="customCurrencySymbol" placeholder="e.g. AED, R$" maxlength="10" />
+                </div>
+                <div class="form-group">
+                  <label for="customCurrencyPosition">Position</label>
+                  <select id="customCurrencyPosition">
+                    <option value="before">Before Amount ($100.00)</option>
+                    <option value="after">After Amount (100.00 lei)</option>
+                  </select>
+                </div>
               </div>
 
               <div class="form-group">
@@ -1344,25 +1591,39 @@
             </p>
 
             <div class="btn-row">
-              <button type="button" class="btn btn-success" id="printBtn">Print</button>
-              <button type="button" class="btn btn-secondary" id="downloadJpgBtn">Download JPG</button>
-              <button type="button" class="btn btn-secondary" id="downloadPdfBtn">Download PDF</button>
-              <button type="button" class="btn btn-ghost" id="copySummaryBtn">Copy Summary</button>
+              <button type="button" class="btn btn-success" id="printBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 9V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>
+                <span>Print</span>
+              </button>
+              <button type="button" class="btn btn-secondary" id="downloadJpgBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                <span>Download JPG</span>
+              </button>
+              <button type="button" class="btn btn-secondary" id="downloadPdfBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="12" x2="12" y1="18" y2="12"/><line x1="9" x2="15" y1="15" y2="15"/></svg>
+                <span>Download PDF</span>
+              </button>
+              <button type="button" class="btn btn-ghost" id="copySummaryBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                <span>Copy Summary</span>
+              </button>
             </div>
           </section>
 
         </div>
       </form>
 
-      <aside class="preview-wrap" aria-labelledby="previewHeading">
-        <div class="preview-toolbar">
-          <div>
-            <h2 id="previewHeading">Live Preview</h2>
-            <p class="preview-scale-note">Receipt updates while you type.</p>
+      <aside class="preview-wrap">
+        <div class="panel" style="border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-lg); border-color: rgba(226, 232, 240, 0.8);">
+          <div class="preview-card-header">
+            <div>
+              <h2 id="previewHeading" style="font-size: 1.1rem; font-weight: 700; color: white;">Live Preview</h2>
+              <p class="preview-scale-note" style="color: rgba(255,255,255,0.7); font-size: 0.8rem; margin-top: 4px;">Receipt updates while you type.</p>
+            </div>
+            <span class="eyebrow" style="margin-bottom: 0; background: rgba(16, 185, 129, 0.2); border-color: rgba(16, 185, 129, 0.4); color: #10b981; font-size: 0.72rem; padding: 4px 12px; font-weight: 700;">Autosave Active</span>
           </div>
-        </div>
-
-        <div id="receiptPreview" class="template-1">
+          <div class="preview-card-body" style="padding: 20px; background: var(--surface-soft);">
+            <div id="receiptPreview" class="template-1">
           <article class="receipt" aria-label="Receipt preview">
             <header class="receipt-header">
               <strong>RECEIPT</strong>
@@ -1406,6 +1667,8 @@
               <div id="previewFooter">Thank you for your business!</div>
             </footer>
           </article>
+        </div>
+          </div>
         </div>
       </aside>
     </section>
@@ -1509,6 +1772,48 @@
         </div>
       </div>
     </section>
+    <!-- Static Educational Info & Transaction Bookkeeping Section -->
+    <section class="container" aria-label="Bookkeeping standards guide" style="margin-top: 30px; margin-bottom: 40px;">
+      <div class="app-info-section">
+        <h3>Transaction Auditing Standards & IRS Bookkeeping Rules</h3>
+        <p>For small business owners, freelancers, and remote workers, generating structured receipts is essential for business expense validation and tax deduction audits. Under IRS guidelines, a valid proof of purchase must provide specific details to confirm the business nature of the transaction. Our Receipt Maker PRO utility allows you to generate high-definition PDF invoices locally in your browser.</p>
+        
+        <p>To satisfy the strict standards of financial auditors, every receipt must include these five elements:</p>
+        <ul>
+          <li><strong>Transaction Date:</strong> The exact calendar day the transaction was settled, ensuring it aligns with the correct tax year.</li>
+          <li><strong>Vendor Identity:</strong> The legal name, business address, and contact information of the service provider or merchant.</li>
+          <li><strong>Itemized Details:</strong> A clear list of the specific goods or services purchased, including individual quantities and prices.</li>
+          <li><strong>Total Amount Paid:</strong> The final transaction total, including tax, shipping, and discount adjustments.</li>
+          <li><strong>Payment Method:</strong> Confirmation of how the transaction was settled (e.g. credit card transaction, bank transfer, or cash).</li>
+        </ul>
+
+        <h3>Step-by-Step Receipt & Invoice Generation</h3>
+        <ol>
+          <li><strong>Enter Header Details:</strong> Input company names, addresses, tax IDs (EIN/VAT), and custom invoice numbers.</li>
+          <li><strong>Add Line Items:</strong> Enter product descriptions, unit costs, and quantities. The builder automatically calculates subtotals, tax rates, and final totals.</li>
+          <li><strong>Choose Print Layout:</strong> Select a standard receipt style (such as compact thermal receipt or professional A4 invoice layout).</li>
+          <li><strong>Download PDF:</strong> The tool compiles the layout and generates a crisp vector PDF, perfect for direct printing or archiving.</li>
+        </ol>
+
+        <h3>Double-Entry Bookkeeping Ledger Integration</h3>
+        <p>Every receipt you generate should correspond to a matching entry in your general ledger. Under double-entry accounting principles, every financial transaction must affect at least two accounts in the balance sheet equation: <code>Assets = Liabilities + Equity</code>. For instance, paying a software subscription invoice represents a debit to your Expense account and a credit to your Cash asset account.</p>
+
+        <h3>Receipt Maker PRO Frequently Asked Questions (FAQ)</h3>
+        <p><strong>Q: What is the difference between a receipt and an invoice?</strong><br>
+        A: An invoice represents a request for payment, issued *before* the transaction is completed. A receipt is issued *after* payment is made, serving as legal proof of the completed transaction.</p>
+        
+        <p><strong>Q: How long must business owners keep receipts for tax audits?</strong><br>
+        A: The IRS recommends retaining business receipts, invoices, and bank statements for a minimum of 3 to 7 years, depending on the complexity of your tax filings and deductions.</p>
+
+        <p><strong>Q: Does this online tool store my financial transactions?</strong><br>
+        A: No. Receipt Maker PRO processes all text fields and line items locally inside your browser memory. Your receipt layout is compiled using HTML5 canvas and jsPDF libraries, ensuring that sensitive pricing and client details never leave your local device.</p>
+
+        <div class="guide-promo-box">
+          <p>Want to master tax bookkeeping standards, double-entry ledgers, and professional invoice design?</p>
+          <a href="/professional-receipt-maker-guide.html" class="promo-btn">Read the Ultimate Receipt Invoicing Guide (5,000+ Words) →</a>
+        </div>
+      </div>
+    </section>
   </main>
 
   <footer class="page-footer">
@@ -1522,47 +1827,7 @@
     </div>
   </footer>
 
-  <div class="toast" id="toast" role="status" aria-live="polite">
-        <div class="app-info-section">
-            <h3>Transaction Auditing Standards & IRS Bookkeeping Rules</h3>
-            <p>For small business owners, freelancers, and remote workers, generating structured receipts is essential for business expense validation and tax deduction audits. Under IRS guidelines, a valid proof of purchase must provide specific details to confirm the business nature of the transaction. Our Receipt Maker PRO utility allows you to generate high-definition PDF invoices locally in your browser.</p>
-            
-            <p>To satisfy the strict standards of financial auditors, every receipt must include these five elements:</p>
-            <ul>
-                <li><strong>Transaction Date:</strong> The exact calendar day the transaction was settled, ensuring it aligns with the correct tax year.</li>
-                <li><strong>Vendor Identity:</strong> The legal name, business address, and contact information of the service provider or merchant.</li>
-                <li><strong>Itemized Details:</strong> A clear list of the specific goods or services purchased, including individual quantities and prices.</li>
-                <li><strong>Total Amount Paid:</strong> The final transaction total, including tax, shipping, and discount adjustments.</li>
-                <li><strong>Payment Method:</strong> Confirmation of how the transaction was settled (e.g. credit card transaction, bank transfer, or cash).</li>
-            </ul>
-
-            <h3>Step-by-Step Receipt & Invoice Generation</h3>
-            <ol>
-                <li><strong>Enter Header Details:</strong> Input company names, addresses, tax IDs (EIN/VAT), and custom invoice numbers.</li>
-                <li><strong>Add Line Items:</strong> Enter product descriptions, unit costs, and quantities. The builder automatically calculates subtotals, tax rates, and final totals.</li>
-                <li><strong>Choose Print Layout:</strong> Select a standard receipt style (such as compact thermal receipt or professional A4 invoice layout).</li>
-                <li><strong>Download PDF:</strong> The tool compiles the layout and generates a crisp vector PDF, perfect for direct printing or archiving.</li>
-            </ol>
-
-            <h3>Double-Entry Bookkeeping Ledger Integration</h3>
-            <p>Every receipt you generate should correspond to a matching entry in your general ledger. Under double-entry accounting principles, every financial transaction must affect at least two accounts in the balance sheet equation: <code>Assets = Liabilities + Equity</code>. For instance, paying a software subscription invoice represents a debit to your Expense account and a credit to your Cash asset account.</p>
-
-            <h3>Receipt Maker PRO Frequently Asked Questions (FAQ)</h3>
-            <p><strong>Q: What is the difference between a receipt and an invoice?</strong><br>
-            A: An invoice represents a request for payment, issued *before* the transaction is completed. A receipt is issued *after* payment is made, serving as legal proof of the completed transaction.</p>
-            
-            <p><strong>Q: How long must business owners keep receipts for tax audits?</strong><br>
-            A: The IRS recommends retaining business receipts, invoices, and bank statements for a minimum of 3 to 7 years, depending on the complexity of your tax filings and deductions.</p>
-
-            <p><strong>Q: Does this online tool store my financial transactions?</strong><br>
-            A: No. Receipt Maker PRO processes all text fields and line items locally inside your browser memory. Your receipt layout is compiled using HTML5 canvas and jsPDF libraries, ensuring that sensitive pricing and client details never leave your local device.</p>
-
-            <div class="guide-promo-box">
-                <p>Want to master tax bookkeeping standards, double-entry ledgers, and professional invoice design?</p>
-                <a href="/professional-receipt-maker-guide.html" class="promo-btn">Read the Ultimate Receipt Invoicing Guide (5,000+ Words) →</a>
-            </div>
-        </div>
-    </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
     "use strict";
@@ -1571,6 +1836,8 @@
     let activeTemplate = "template-1";
     let logoDataUrl = "";
     let saveTimer = null;
+    let customCurrencySymbolVal = "";
+    let customCurrencyPositionVal = "before";
 
     const $ = (id) => document.getElementById(id);
 
@@ -1582,15 +1849,36 @@
     }
 
     function getCurrencySymbol() {
-      const value = $("currency").value || "₹|INR";
-      const [symbol] = value.split("|");
-      return symbol || "₹";
+      const val = $("currency").value;
+      if (val === "custom") {
+        return $("customCurrencySymbol").value.trim() || "";
+      }
+      const [symbol] = val.split("|");
+      return symbol || "";
+    }
+
+    function getCurrencyPosition() {
+      const val = $("currency").value;
+      if (val === "custom") {
+        return $("customCurrencyPosition").value || "before";
+      }
+      if (val === "lei|RON") {
+        return "after";
+      }
+      return "before";
     }
 
     function formatMoney(amount) {
       const symbol = getCurrencySymbol();
+      const pos = getCurrencyPosition();
       const number = Number.isFinite(amount) ? amount : 0;
-      return `${symbol}${number.toFixed(2)}`;
+      const formatted = number.toFixed(2);
+      
+      if (pos === "after") {
+        return `${formatted} ${symbol}`;
+      } else {
+        return `${symbol}${formatted}`;
+      }
     }
 
     function setText(id, value) {
@@ -1600,10 +1888,13 @@
 
     function showToast(message) {
       const toast = $("toast");
-      toast.textContent = message;
+      toast.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        <span>${message}</span>
+      `;
       toast.classList.add("show");
       window.clearTimeout(showToast.timer);
-      showToast.timer = window.setTimeout(() => toast.classList.remove("show"), 2400);
+      showToast.timer = window.setTimeout(() => toast.classList.remove("show"), 2800);
     }
 
     function todayISO() {
@@ -1777,6 +2068,8 @@
         taxRate: $("taxRate").value,
         discountRate: $("discountRate").value,
         footerText: $("footerText").value,
+        customCurrencySymbol: $("customCurrencySymbol").value,
+        customCurrencyPosition: $("customCurrencyPosition").value,
         items: Array.from(document.querySelectorAll(".item-entry")).map((entry) => ({
           name: entry.querySelector(".item-name").value,
           qty: entry.querySelector(".item-qty").value,
@@ -1821,7 +2114,9 @@
           "paymentMethod",
           "taxRate",
           "discountRate",
-          "footerText"
+          "footerText",
+          "customCurrencySymbol",
+          "customCurrencyPosition"
         ].forEach((id) => {
           if (data[id] !== undefined && $(id)) $(id).value = data[id];
         });
@@ -1837,6 +2132,9 @@
         if (logoDataUrl) {
           $("previewLogo").src = logoDataUrl;
           $("previewLogoContainer").style.display = "block";
+          $("logoPreviewThumb").src = logoDataUrl;
+          $("logoPreviewThumbWrap").style.display = "flex";
+          $("logoDropZonePrompt").style.display = "none";
         }
 
         applyTemplate(activeTemplate, false);
@@ -1874,6 +2172,11 @@
       $("previewLogo").removeAttribute("src");
       $("previewLogoContainer").style.display = "none";
       $("logoError").textContent = "";
+      
+      $("logoPreviewThumb").removeAttribute("src");
+      $("logoPreviewThumbWrap").style.display = "none";
+      $("logoDropZonePrompt").style.display = "flex";
+      
       saveDraft();
       showToast("Logo removed.");
     }
@@ -1889,6 +2192,10 @@
       $("previewLogo").removeAttribute("src");
       $("previewLogoContainer").style.display = "none";
       $("logoError").textContent = "";
+      $("logoPreviewThumb").removeAttribute("src");
+      $("logoPreviewThumbWrap").style.display = "none";
+      $("logoDropZonePrompt").style.display = "flex";
+      $("customCurrencyBox").style.display = "none";
 
       $("invoiceDate").value = todayISO();
       $("invoiceNumber").value = randomReceiptNumber();
@@ -1991,41 +2298,81 @@
       }
     }
 
+    function handleLogoFile(file) {
+      $("logoError").textContent = "";
+      if (!file) return;
+
+      if (!file.type.startsWith("image/")) {
+        $("logoError").textContent = "Please upload an image file.";
+        return;
+      }
+
+      if (file.size > 2 * 1024 * 1024) {
+        $("logoError").textContent = "Logo is too large. Please use an image below 2MB.";
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        logoDataUrl = e.target.result;
+        $("previewLogo").src = logoDataUrl;
+        $("previewLogo").alt = `${$("companyName").value || "Company"} logo`;
+        $("previewLogoContainer").style.display = "block";
+        
+        $("logoPreviewThumb").src = logoDataUrl;
+        $("logoPreviewThumbWrap").style.display = "flex";
+        $("logoDropZonePrompt").style.display = "none";
+        
+        saveDraft();
+        showToast("Logo added.");
+      };
+      reader.onerror = () => {
+        $("logoError").textContent = "Could not read this image file.";
+      };
+      reader.readAsDataURL(file);
+    }
+
     function setupLogoUpload() {
-      $("companyLogo").addEventListener("change", (event) => {
-        const file = event.target.files && event.target.files[0];
-        $("logoError").textContent = "";
+      const dropZone = $("logoDropZone");
+      const fileInput = $("companyLogo");
 
-        if (!file) return;
+      dropZone.addEventListener("click", (e) => {
+        if (e.target.closest("#clearLogoOverlayBtn")) return; // Don't trigger input on clear click
+        fileInput.click();
+      });
 
-        if (!file.type.startsWith("image/")) {
-          $("logoError").textContent = "Please upload an image file.";
-          event.target.value = "";
-          return;
+      fileInput.addEventListener("change", (e) => {
+        if (e.target.files && e.target.files[0]) {
+          handleLogoFile(e.target.files[0]);
         }
+      });
 
-        if (file.size > 2 * 1024 * 1024) {
-          $("logoError").textContent = "Logo is too large. Please use an image below 2MB.";
-          event.target.value = "";
-          return;
+      ["dragenter", "dragover"].forEach((eventName) => {
+        dropZone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropZone.classList.add("dragover");
+        }, false);
+      });
+
+      ["dragleave", "drop"].forEach((eventName) => {
+        dropZone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropZone.classList.remove("dragover");
+        }, false);
+      });
+
+      dropZone.addEventListener("drop", (e) => {
+        const dt = e.dataTransfer;
+        if (dt && dt.files && dt.files[0]) {
+          handleLogoFile(dt.files[0]);
         }
-
-        const reader = new FileReader();
-
-        reader.onload = (e) => {
-          logoDataUrl = e.target.result;
-          $("previewLogo").src = logoDataUrl;
-          $("previewLogo").alt = `${$("companyName").value || "Company"} logo`;
-          $("previewLogoContainer").style.display = "block";
-          saveDraft();
-          showToast("Logo added.");
-        };
-
-        reader.onerror = () => {
-          $("logoError").textContent = "Could not read this image file.";
-        };
-
-        reader.readAsDataURL(file);
+      }, false);
+      
+      $("clearLogoOverlayBtn").addEventListener("click", (e) => {
+        e.stopPropagation();
+        clearLogo();
       });
     }
 
@@ -2069,6 +2416,21 @@
       $("copySummaryBtn").addEventListener("click", copySummary);
 
       setupLogoUpload();
+
+      // Custom currency panel sliding toggle
+      const handleCurrencyChange = () => {
+        const isCustom = $("currency").value === "custom";
+        $("customCurrencyBox").style.display = isCustom ? "grid" : "none";
+        updateReceipt();
+      };
+      $("currency").addEventListener("change", handleCurrencyChange);
+      $("customCurrencySymbol").addEventListener("input", updateReceipt);
+      $("customCurrencyPosition").addEventListener("change", updateReceipt);
+      
+      // Initial check for restored currency value
+      if ($("currency").value === "custom") {
+        $("customCurrencyBox").style.display = "grid";
+      }
 
       setText("currentDate", new Date().toLocaleDateString("en-US", {
         weekday: "long",
