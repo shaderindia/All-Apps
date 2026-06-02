@@ -2392,14 +2392,15 @@ function updateSim(dt) {
     simTime += dt;
     
     // Spindle spinning speeds relative to calculated RPM
-    const spinFactor = Math.min(20, simRpm / 150); // visual spin rate caps
+    // 7.2 degrees per second per 1 RPM (matches rigid geared tapping speed exactly)
+    const visualRpmSpeed = simRpm * 7.2;
     
     // Default spindle angle change (for non-sync states or drilling)
     let angleChange = 0;
     if (simDirection === 'CW') {
-        angleChange = spinFactor * dt * 15;
+        angleChange = visualRpmSpeed * dt;
     } else {
-        angleChange = -spinFactor * dt * 22.5; // retract spin CCW is usually faster
+        angleChange = -visualRpmSpeed * dt * 1.5; // retract spin CCW is usually 1.5x faster
     }
     
     // Apply default spin only if not performing geared rigid tapping cuts and spindle is not stopped (e.g. G86 retract)
