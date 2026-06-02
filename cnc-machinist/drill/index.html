@@ -2392,15 +2392,14 @@ function updateSim(dt) {
     simTime += dt;
     
     // Spindle spinning speeds relative to calculated RPM
-    // 1.35 degrees per second per 1 RPM (provides visually smooth scaling without aliasing)
-    const visualRpmSpeed = simRpm * 1.35;
+    const spinFactor = Math.min(20, simRpm / 150); // visual spin rate caps
     
     // Default spindle angle change (for non-sync states or drilling)
     let angleChange = 0;
     if (simDirection === 'CW') {
-        angleChange = visualRpmSpeed * dt;
+        angleChange = spinFactor * dt * 15;
     } else {
-        angleChange = -visualRpmSpeed * dt * 1.5; // retract spin CCW is usually 1.5x faster
+        angleChange = -spinFactor * dt * 22.5; // retract spin CCW is usually faster
     }
     
     // Apply default spin only if not performing geared rigid tapping cuts and spindle is not stopped (e.g. G86 retract)
@@ -2413,8 +2412,8 @@ function updateSim(dt) {
     const approachSpeed = 35.0; // mm equivalent per visual sec
     const retractSpeed = 50.0;
     
-    // Visual feed velocity scales proportionally to calculated Feed Rate (0.225 multiplier)
-    const feedScale = (simFeed / 60) * 0.225;
+    // Feeds scale relative to standard feed
+    const feedScale = Math.min(15.0, Math.max(2.0, simFeed / 60)); // scaled feeding down speed
     
     const workpieceTop = 0; // Z coordinate top of metal is Z0
     
@@ -2459,8 +2458,8 @@ function updateSim(dt) {
             // Cut downward Z
             if (simOp === 'tap') {
                 // RIGID SYNCHRONIZED FEEDING: Z rate is locked to real feed rate (mm/sec)
-                // We use a 0.225 visual scale factor so visual feed and rotation are perfectly synchronized at simRpm * 1.35
-                const realFeedPerSec = (simFeed / 60) * 0.225;
+                // We add a visual multiplier (1.2x) so the animation is responsive and has perfect visual pacing
+                const realFeedPerSec = (simFeed / 60) * 1.2;
                 simZ += realFeedPerSec * dt;
                 
                 // Spindle Gearing: Angle is perfectly locked to visual depth and thread pitch
@@ -2575,7 +2574,7 @@ function updateSim(dt) {
             // Back to initial plane
             if (simOp === 'tap') {
                 // RIGID SYNCHRONIZED RETRACTING: Z retract is locked to 1.5x real feed rate (CCW)
-                const realRetractPerSec = (simFeed * 1.5 / 60) * 0.225;
+                const realRetractPerSec = (simFeed * 1.5 / 60) * 1.2;
                 simZ -= realRetractPerSec * dt;
                 
                 // Spindle Gearing: Angle is perfectly locked to visual depth and thread pitch (automatically CCW!)
