@@ -194,7 +194,7 @@
                     <h2 class="text-lg font-semibold text-gray-300 border-b border-gray-600 pb-2">Hole Pattern</h2>
                     <div>
                         <label for="pcd" class="block text-sm font-medium text-gray-300 mb-1">Pitch Circle Diameter (PCD)</label>
-                        <div class="input-group"><input type="number" id="pcd" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3" placeholder="e.g., 100"><span class="input-unit">mm</span></div>
+                        <div class="input-group"><input type="number" id="pcd" value="100" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3" placeholder="e.g., 100"><span class="input-unit">mm</span></div>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
@@ -208,31 +208,52 @@
                     </div>
                     <div>
                         <label for="num-holes" class="block text-sm font-medium text-gray-300 mb-1">Number of Holes</label>
-                        <input type="number" id="num-holes" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3" placeholder="e.g., 8">
+                        <input type="number" id="num-holes" value="8" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3" placeholder="e.g., 8">
                     </div>
                 </div>
 
                 <div class="space-y-4">
                      <h2 class="text-lg font-semibold text-gray-300 border-b border-gray-600 pb-2">G-Code Parameters (Fanuc)</h2>
-                    <div>
-                        <label for="program-num" class="block text-sm font-medium text-gray-300 mb-1">Program Number</label>
-                        <input type="number" id="program-num" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3" placeholder="e.g., 1001">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="program-num" class="block text-sm font-medium text-gray-300 mb-1">Program Number</label>
+                            <input type="number" id="program-num" value="1001" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3" placeholder="e.g., 1001">
+                        </div>
+                        <div>
+                            <label for="drill-dia" class="block text-sm font-medium text-gray-300 mb-1">Drill Diameter</label>
+                            <div class="input-group"><input type="number" id="drill-dia" value="6" step="0.1" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3" placeholder="e.g., 6"><span class="input-unit">mm</span></div>
+                        </div>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                          <div>
                             <label for="retract-plane" class="block text-sm font-medium text-gray-300 mb-1">Retract Plane (R)</label>
-                             <div class="input-group"><input type="number" id="retract-plane" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3" placeholder="e.g., 2"><span class="input-unit">mm</span></div>
+                             <div class="input-group"><input type="number" id="retract-plane" value="5" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3" placeholder="e.g., 5"><span class="input-unit">mm</span></div>
                         </div>
                         <div>
                             <label for="drill-depth" class="block text-sm font-medium text-gray-300 mb-1">Drill Depth (Z)</label>
-                             <div class="input-group"><input type="number" id="drill-depth" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3" placeholder="e.g., -10"><span class="input-unit">mm</span></div>
+                             <div class="input-group"><input type="number" id="drill-depth" value="-10" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3" placeholder="e.g., -10"><span class="input-unit">mm</span></div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="tool-material" class="block text-sm font-medium text-gray-300 mb-1">Tool Material</label>
+                            <select id="tool-material" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3">
+                                <option value="hss">HSS</option>
+                                <option value="hssco">Cobalt (HSS-Co)</option>
+                                <option value="carbide">Carbide</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="work-material" class="block text-sm font-medium text-gray-300 mb-1">Work Material</label>
+                            <select id="work-material" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3">
+                                <option value="mild">Mild Steel</option>
+                                <option value="alloy">Alloy Steel</option>
+                                <option value="stainless">Stainless</option>
+                                <option value="aluminum">Aluminum</option>
+                            </select>
                         </div>
                     </div>
                     <div>
-                        <label for="feed-rate" class="block text-sm font-medium text-gray-300 mb-1">Feed Rate (F)</label>
-                        <div class="input-group"><input type="number" id="feed-rate" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3" placeholder="e.g., 150"><span class="input-unit">mm/min</span></div>
-                    </div>
-                     <div>
                         <label for="plane-select" class="block text-sm font-medium text-gray-300 mb-1">Axis for Coordinates</label>
                         <select id="plane-select" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3">
                             <option value="G17">G17 (X,Y)</option>
@@ -240,6 +261,25 @@
                             <option value="G19">G19 (Y,Z)</option>
                         </select>
                     </div>
+                    <div class="p-3 bg-gray-900 border border-gray-700 rounded-lg flex items-center justify-around text-center mt-2 shadow-inner">
+                        <div>
+                            <div class="text-xxs uppercase tracking-wider text-gray-400 font-semibold mb-0.5" style="font-size: 0.65rem;">RPM</div>
+                            <div id="calc-rpm-display" class="text-lg font-bold text-teal-400">0</div>
+                        </div>
+                        <div class="h-6 w-px bg-gray-700"></div>
+                        <div>
+                            <div class="text-xxs uppercase tracking-wider text-gray-400 font-semibold mb-0.5" style="font-size: 0.65rem;">Feed Rate</div>
+                            <div id="calc-feed-display" class="text-lg font-bold text-sky-400">0 <span class="text-xxs font-normal text-gray-400" style="font-size: 0.65rem;">mm/min</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-6 flex flex-col items-center justify-center border border-gray-700 bg-gray-900 rounded-xl p-4 shadow-inner">
+                <h3 class="text-sm font-semibold text-gray-350 mb-2 uppercase tracking-wider">Live Pattern Preview</h3>
+                <canvas id="pcd-canvas" class="bg-gray-950 border border-gray-850 rounded-lg shadow-2xl" width="260" height="260"></canvas>
+                <div class="text-xxs text-gray-500 mt-2 text-center" style="font-size: 0.65rem;">
+                    Axes represent CNC coordinate origin G54 (X0, Y0). Positive Y (+Y) is UP, positive X (+X) is RIGHT.
                 </div>
             </div>
             
@@ -313,7 +353,9 @@
         const programNumInput = document.getElementById('program-num');
         const retractPlaneInput = document.getElementById('retract-plane');
         const drillDepthInput = document.getElementById('drill-depth');
-        const feedRateInput = document.getElementById('feed-rate');
+        const drillDiaInput = document.getElementById('drill-dia');
+        const toolMaterialSelect = document.getElementById('tool-material');
+        const workMaterialSelect = document.getElementById('work-material');
         
         const generateCoordsBtn = document.getElementById('generate-coords-btn');
         const generateProgramBtn = document.getElementById('generate-program-btn');
@@ -324,6 +366,196 @@
         const coordinatesOutput = document.getElementById('coordinates-output');
         const gcodeOutput = document.getElementById('gcode-output');
         const errorMessage = document.getElementById('error-message');
+
+        const calcRpmDisplay = document.getElementById('calc-rpm-display');
+        const calcFeedDisplay = document.getElementById('calc-feed-display');
+
+        // 2D visualizer canvas setup
+        const canvas = document.getElementById('pcd-canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Speeds and Feeds Calculation Logic (from drill app)
+        const drillV = {
+            mild: { hss: 22, hssco: 28, carbide: 80 },
+            alloy: { hss: 18, hssco: 24, carbide: 70 },
+            stainless: { hss: 14, hssco: 20, carbide: 60 },
+            aluminum: { hss: 60, hssco: 80, carbide: 200 }
+        };
+
+        function drillFeedPerRev(d) {
+            if (d <= 5) return 0.07;
+            if (d <= 8) return 0.10;
+            if (d <= 12) return 0.14;
+            if (d <= 20) return 0.18;
+            return 0.25;
+        }
+
+        function calculateCurrentFeedsAndSpeeds() {
+            const drillDia = parseFloat(drillDiaInput.value);
+            const toolMat = toolMaterialSelect.value;
+            const workMat = workMaterialSelect.value;
+            
+            if (isNaN(drillDia) || drillDia <= 0) {
+                return { rpm: 0, feed: 0 };
+            }
+            
+            const V = drillV[workMat][toolMat];
+            const rpmRaw = (1000 * V) / (Math.PI * drillDia);
+            const rpm = Math.round(rpmRaw);
+            const f_rev = drillFeedPerRev(drillDia);
+            const feed = Math.round(rpm * f_rev);
+            
+            return { rpm, feed };
+        }
+
+        function updateFeedsAndSpeedsDisplay() {
+            const { rpm, feed } = calculateCurrentFeedsAndSpeeds();
+            calcRpmDisplay.textContent = rpm;
+            calcFeedDisplay.innerHTML = `${feed} <span class="text-xxs font-normal text-gray-400" style="font-size: 0.65rem;">mm/min</span>`;
+        }
+
+        // 2D Pattern drawing logic
+        function drawPattern() {
+            const pcd = parseFloat(pcdInput.value);
+            const startAngle = parseFloat(startAngleInput.value);
+            const lastAngle = parseFloat(lastAngleInput.value);
+            const numHoles = parseInt(numHolesInput.value);
+            const drillDia = parseFloat(drillDiaInput.value);
+
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (isNaN(pcd) || isNaN(startAngle) || isNaN(lastAngle) || isNaN(numHoles) || pcd <= 0 || numHoles < 1) {
+                ctx.fillStyle = '#64748b';
+                ctx.font = '13px Inter, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('Enter valid pattern values to preview', canvas.width / 2, canvas.height / 2);
+                return;
+            }
+
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            
+            // Draw axis line style
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([4, 4]);
+
+            // Draw X-axis
+            ctx.beginPath();
+            ctx.moveTo(15, cy);
+            ctx.lineTo(canvas.width - 15, cy);
+            ctx.stroke();
+
+            // Draw Y-axis
+            ctx.beginPath();
+            ctx.moveTo(cx, 15);
+            ctx.lineTo(cx, canvas.height - 15);
+            ctx.stroke();
+
+            // Axis labels (G54 coordinate directions)
+            ctx.setLineDash([]);
+            ctx.fillStyle = '#475569';
+            ctx.font = '9px monospace';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('+X', canvas.width - 8, cy);
+            ctx.fillText('-X', 8, cy);
+            ctx.fillText('+Y', cx, 8);
+            ctx.fillText('-Y', cx, canvas.height - 8);
+
+            // Pitch Circle drawn size is constant on canvas (diameter = 170px, radius = 85px)
+            const rPcd = 85;
+
+            // Draw Pitch Circle
+            ctx.strokeStyle = '#0d9488'; // teal-600
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([6, 3]);
+            ctx.beginPath();
+            ctx.arc(cx, cy, rPcd, 0, 2 * Math.PI);
+            ctx.stroke();
+
+            // Center mark crosshair
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 1.0;
+            ctx.setLineDash([]);
+            ctx.beginPath();
+            ctx.moveTo(cx - 5, cy);
+            ctx.lineTo(cx + 5, cy);
+            ctx.moveTo(cx, cy - 5);
+            ctx.lineTo(cx, cy + 5);
+            ctx.stroke();
+
+            // Draw PCD and Drill Dia text labels in the top-left corner (safe from circles)
+            ctx.fillStyle = '#0d9488'; // teal
+            ctx.font = '10px Inter, sans-serif';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'top';
+            ctx.fillText(`PCD: ${pcd} mm`, 10, 10);
+            ctx.fillStyle = '#38bdf8'; // sky
+            ctx.fillText(`Dia: ${drillDia} mm`, 10, 22);
+
+            // Proportional drill hole size (drawn_drill_radius = 85 * (drillDia / PCD))
+            // Clamp drawn radius to [3, 20] to stay visible and avoid visual clutter
+            let rDrill = 5;
+            if (!isNaN(drillDia) && drillDia > 0) {
+                rDrill = Math.max(3, Math.min(20, rPcd * (drillDia / pcd)));
+            }
+
+            const totalAngle = lastAngle - startAngle;
+            const isFullCircle = Math.abs(totalAngle) % 360 === 0 && numHoles > 1;
+            const angleStep = numHoles > 1 ? (isFullCircle ? totalAngle / numHoles : totalAngle / (numHoles - 1)) : 0;
+
+            // Draw holes
+            for (let i = 0; i < numHoles; i++) {
+                const angle = startAngle + (i * angleStep);
+                const rad = angle * (Math.PI / 180);
+                
+                // standard trigonometry maps positive Y going up (negative in standard canvas Y)
+                const x = cx + rPcd * Math.cos(rad);
+                const y = cy - rPcd * Math.sin(rad);
+
+                // Draw hole fill
+                ctx.fillStyle = '#38bdf8'; // sky-400
+                ctx.beginPath();
+                ctx.arc(x, y, rDrill, 0, 2 * Math.PI);
+                ctx.fill();
+
+                // Draw hole outline
+                ctx.strokeStyle = '#0284c7'; // sky-600
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.arc(x, y, rDrill, 0, 2 * Math.PI);
+                ctx.stroke();
+
+                // Draw center point inside hole
+                ctx.fillStyle = '#0284c7';
+                ctx.beginPath();
+                ctx.arc(x, y, 1.5, 0, 2 * Math.PI);
+                ctx.fill();
+
+                // Draw number label next to hole (offset away from circle center)
+                const labelOffset = rDrill + 8;
+                const lx = cx + (rPcd + labelOffset) * Math.cos(rad);
+                const ly = cy - (rPcd + labelOffset) * Math.sin(rad);
+
+                ctx.fillStyle = '#cbd5e1'; // slate-300
+                ctx.font = '10px Inter, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText((i + 1).toString(), lx, ly);
+            }
+        }
+
+        // Hook up real-time event listeners
+        [drillDiaInput, toolMaterialSelect, workMaterialSelect].forEach(el => {
+            el.addEventListener('input', updateFeedsAndSpeedsDisplay);
+            el.addEventListener('change', updateFeedsAndSpeedsDisplay);
+        });
+
+        // Initialize displays and drawing
+        updateFeedsAndSpeedsDisplay();
+        drawPattern();
 
         // Event Listeners
         generateCoordsBtn.addEventListener('click', () => {
@@ -337,8 +569,8 @@
         generateProgramBtn.addEventListener('click', () => {
             const data = getPcdData();
             if (data.coords) {
-                 if (isNaN(data.programNum) || isNaN(data.retractPlane) || isNaN(data.drillDepth) || isNaN(data.feedRate)) {
-                    showError('Please fill all G-Code fields with valid numbers.');
+                 if (isNaN(data.programNum) || isNaN(data.retractPlane) || isNaN(data.drillDepth) || isNaN(data.drillDia) || data.drillDia <= 0) {
+                    showError('Please fill all fields with valid numbers.');
                     return;
                 }
                 const gcode = generateFanucGCode(data);
@@ -366,13 +598,17 @@
             const programNum = parseInt(programNumInput.value);
             const retractPlane = parseFloat(retractPlaneInput.value);
             const drillDepth = parseFloat(drillDepthInput.value);
-            const feedRate = parseFloat(feedRateInput.value);
+            const drillDia = parseFloat(drillDiaInput.value);
+            const toolMaterial = toolMaterialSelect.value;
+            const workMaterial = workMaterialSelect.value;
             
             if (isNaN(pcd) || isNaN(startAngle) || isNaN(lastAngle) || isNaN(numHoles) || pcd <= 0 || numHoles < 1) {
                 showError('Please fill all Hole Pattern fields with valid positive numbers.');
                 return {};
             }
             hideError();
+
+            const { rpm, feed } = calculateCurrentFeedsAndSpeeds();
 
             const plane = planeSelect.value;
             const labels = plane === 'G17' ? ['X', 'Y'] : plane === 'G18' ? ['X', 'Z'] : ['Y', 'Z'];
@@ -390,7 +626,7 @@
                 const c2 = radius * Math.sin(rad);
                 coords.push({ c1: c1.toFixed(4), c2: c2.toFixed(4) });
             }
-            return { coords, labels, pcd, startAngle, lastAngle, numHoles, plane, programNum, retractPlane, drillDepth, feedRate };
+            return { coords, labels, pcd, startAngle, lastAngle, numHoles, plane, programNum, retractPlane, drillDepth, drillDia, toolMaterial, workMaterial, rpm, feedRate: feed };
         }
 
         function displayCoordinates(coords, labels) {
@@ -409,11 +645,14 @@
         }
 
         function generateFanucGCode(data) {
-            const { coords, labels, programNum, retractPlane, drillDepth, feedRate } = data;
-            let gcode = `O${programNum.toString().padStart(4, '0')} (PCD DRILLING)\n`;
+            const { coords, labels, programNum, retractPlane, drillDepth, drillDia, toolMaterial, workMaterial, rpm, feedRate } = data;
+            
+            let gcode = `O${programNum.toString().padStart(4, '0')} (PCD DRILLING - DIA: ${drillDia}MM)\n`;
+            gcode += `(TOOL: ${toolMaterial.toUpperCase()}, WORK: ${workMaterial.toUpperCase()})\n`;
+            gcode += `(SPEED: ${rpm} RPM, FEED: ${feedRate} MM/MIN)\n`;
             gcode += `G21 G90 G17 G54 G40 G80\n`;
             gcode += `(ADD TOOL CHANGE HERE, e.g., T01 M06)\n`;
-            gcode += `S800 M03\n`;
+            gcode += `S${rpm} M03\n`;
             
             if (coords && coords.length > 0) {
                 const firstCoord = coords[0];
@@ -456,6 +695,11 @@
             doc.text(`Number of Holes: ${data.numHoles}`, 14, 50);
             doc.text(`Angle Range: ${data.startAngle}° to ${data.lastAngle}°`, 14, 55);
             doc.text(`G-Code Plane: ${data.plane}`, 14, 60);
+            
+            doc.text(`Drill Diameter: ${data.drillDia} mm`, 110, 45);
+            doc.text(`Material: ${data.workMaterial.toUpperCase()} (${data.toolMaterial.toUpperCase()})`, 110, 50);
+            doc.text(`Calculated Speed: ${data.rpm} RPM`, 110, 55);
+            doc.text(`Calculated Feed: ${data.feedRate} mm/min`, 110, 60);
 
             doc.setFontSize(12);
             doc.text('Coordinates:', 14, 75);
@@ -488,6 +732,19 @@
             errorMessage.classList.remove('hidden');
         }
         
+        // Clear results when user changes inputs to prevent stale data
+        document.querySelectorAll('input, select').forEach(el => {
+            el.addEventListener('input', () => {
+                pcdResultsDiv.classList.add('hidden');
+                gcodeResultsDiv.classList.add('hidden');
+                hideError();
+                drawPattern();
+            });
+            el.addEventListener('change', () => {
+                drawPattern();
+            });
+        });
+
         function hideError() {
             errorMessage.classList.add('hidden');
         }
