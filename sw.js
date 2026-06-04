@@ -17,7 +17,13 @@ const CORE_ASSETS = [
   "/receiptpro/",
   "/fairshare/",
   "/berofchat/",
-  "/cnc-machinist/"
+  "/cnc-machinist/",
+  "/css/tailwind.min.css",
+  "/css/font-awesome.min.css",
+  "/fonts/Inter-Variable.woff2",
+  "/cubes.png",
+  "/black-linen.png",
+  "/passport-logo.jpg"
 ];
 
 self.addEventListener("install", (event) => {
