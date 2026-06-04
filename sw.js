@@ -1,4 +1,4 @@
-const CACHE_NAME = "shader7-v10";
+const CACHE_NAME = "shader7-v11";
 
 const CORE_ASSETS = [
   "/",
