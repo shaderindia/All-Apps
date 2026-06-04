@@ -1,4 +1,4 @@
-const CACHE_NAME = "shader7-v5";
+const CACHE_NAME = "shader7-v6";
 
 const CORE_ASSETS = [
   "/",
@@ -27,7 +27,8 @@ const CORE_ASSETS = [
   "/photopassportsizepro/banner.jpg",
   "/cvbanao/banner.png",
   "/berofchat/banner.jpg",
-  "/cnc-machinist/banner.jpg"
+  "/cnc-machinist/banner.jpg",
+  "/photocompressor/banner.jpg"
 ];
 
 self.addEventListener("install", (event) => {
