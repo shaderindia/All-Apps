@@ -315,6 +315,7 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="/css/tailwind.min.css" />
 </head>
 
 <body class="bg-gray-50 text-gray-800 antialiased">
@@ -1485,19 +1486,25 @@
     }
 
     // Ticking live location timezone clock (24h format) & date calendar
+    let lastDateString = "";
     function updateClock() {
       const now = new Date();
-      const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-      const formattedDate = now.toLocaleDateString(undefined, dateOptions);
+      
+      const dateKey = now.toDateString();
+      if (dateKey !== lastDateString) {
+        lastDateString = dateKey;
+        const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        const formattedDate = now.toLocaleDateString(undefined, dateOptions);
+        const hDate = document.getElementById("hero-date-text");
+        if (hDate) hDate.textContent = formattedDate;
+      }
       
       const hours = String(now.getHours()).padStart(2, '0');
       const minutes = String(now.getMinutes()).padStart(2, '0');
       const seconds = String(now.getSeconds()).padStart(2, '0');
       const formattedTime = `${hours}:${minutes}:${seconds}`;
 
-      const hDate = document.getElementById("hero-date-text");
       const hTime = document.getElementById("hero-time-text");
-      if (hDate) hDate.textContent = formattedDate;
       if (hTime) hTime.textContent = formattedTime;
     }
     setInterval(updateClock, 1000);
@@ -1512,6 +1519,6 @@
   </script>
 
   <!-- Tailwind CSS loaded with defer at the bottom of body to ensure non-blocking page load -->
-  <script src="https://cdn.tailwindcss.com" defer></script>
+  
 </body>
 </html>
