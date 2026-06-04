@@ -1,4 +1,4 @@
-const CACHE_NAME = "shader7-v3";
+const CACHE_NAME = "shader7-v4";
 
 const CORE_ASSETS = [
   "/",
@@ -23,7 +23,10 @@ const CORE_ASSETS = [
   "/fonts/Inter-Variable.woff2",
   "/cubes.png",
   "/black-linen.png",
-  "/passport-logo.jpg"
+  "/passport-logo.jpg",
+  "/photopassportsizepro/banner.jpg",
+  "/cvbanao/banner.png",
+  "/berofchat/banner.jpg"
 ];
 
 self.addEventListener("install", (event) => {
