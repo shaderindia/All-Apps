@@ -1337,28 +1337,41 @@
         const rightTool = toolsList[rightToolIndex];
         const rightCatColor = getCategoryColor(rightTool);
 
-        // 2. Teleport the current leftBtn to the right (state-enter) instantly (0 seconds)
+        // 2. Teleport the current leftBtn to the right (state-enter) instantly (0s)
+        // Set transition to none and opacity to 0 to prevent visual flashing during the layout change frame
         leftBtn.style.transition = "none";
+        leftBtn.style.opacity = "0";
         leftBtn.classList.remove("state-exit", "state-center");
         leftBtn.classList.add("state-enter");
         leftBtn.href = rightTool.url;
         leftBtn.className = "carousel-btn state-enter hero-button border-2 font-bold " + rightTool.style;
         leftBtn.innerHTML = createButtonHTML(rightTool, rightCatColor);
-        leftBtn.offsetHeight; // force browser reflow
 
-        // 3. Set transition duration dynamically for snappy manual or majestic auto speeds
-        centerBtn.style.transition = `transform ${duration} cubic-bezier(0.25, 1, 0.5, 1), opacity ${duration} cubic-bezier(0.25, 1, 0.5, 1), filter ${duration} cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s, background 0.3s`;
-        rightBtn.style.transition = `transform ${duration} cubic-bezier(0.25, 1, 0.5, 1), opacity ${duration} cubic-bezier(0.25, 1, 0.5, 1), filter ${duration} cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s, background 0.3s`;
-        leftBtn.style.transition = `transform ${duration} cubic-bezier(0.25, 1, 0.5, 1), opacity ${duration} cubic-bezier(0.25, 1, 0.5, 1), filter ${duration} cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s, background 0.3s`;
+        // Capture local variables for asynchronous rAF execution closure
+        const animCenter = centerBtn;
+        const animRight = rightBtn;
+        const animLeft = leftBtn;
 
-        // 4. Trigger 3D slide transitions
-        centerBtn.classList.remove("state-center");
-        centerBtn.classList.add("state-exit"); // slides left
+        // 3. Set transition duration and trigger transitions asynchronously in the next animation frames
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            animCenter.style.transition = `transform ${duration} cubic-bezier(0.25, 1, 0.5, 1), opacity ${duration} cubic-bezier(0.25, 1, 0.5, 1), filter ${duration} cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s, background 0.3s`;
+            animRight.style.transition = `transform ${duration} cubic-bezier(0.25, 1, 0.5, 1), opacity ${duration} cubic-bezier(0.25, 1, 0.5, 1), filter ${duration} cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s, background 0.3s`;
+            animLeft.style.transition = `transform ${duration} cubic-bezier(0.25, 1, 0.5, 1), opacity ${duration} cubic-bezier(0.25, 1, 0.5, 1), filter ${duration} cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s, background 0.3s`;
 
-        rightBtn.classList.remove("state-enter");
-        rightBtn.classList.add("state-center"); // slides center
+            // 4. Trigger 3D slide transitions
+            animCenter.classList.remove("state-center");
+            animCenter.classList.add("state-exit"); // slides left
 
-        // 5. Update references
+            animRight.classList.remove("state-enter");
+            animRight.classList.add("state-center"); // slides center
+
+            // Restore the opacity to let the style sheet's state-enter rules apply and transition smoothly
+            animLeft.style.opacity = "";
+          });
+        });
+
+        // 5. Update references immediately (synchronously)
         const oldLeft = leftBtn;
         const oldCenter = centerBtn;
         const oldRight = rightBtn;
@@ -1374,26 +1387,39 @@
         const leftTool = toolsList[leftToolIndex];
         const leftCatColor = getCategoryColor(leftTool);
 
-        // 2. Teleport the current rightBtn to the left (state-exit) instantly (0 seconds)
+        // 2. Teleport the current rightBtn to the left (state-exit) instantly (0s)
+        // Set transition to none and opacity to 0 to prevent visual flashing during the layout change frame
         rightBtn.style.transition = "none";
+        rightBtn.style.opacity = "0";
         rightBtn.classList.remove("state-enter", "state-center");
         rightBtn.classList.add("state-exit");
         rightBtn.href = leftTool.url;
         rightBtn.className = "carousel-btn state-exit hero-button border-2 font-bold " + leftTool.style;
         rightBtn.innerHTML = createButtonHTML(leftTool, leftCatColor);
-        rightBtn.offsetHeight; // force browser reflow
 
-        // 3. Set transition duration dynamically for snappy manual or majestic auto speeds
-        centerBtn.style.transition = `transform ${duration} cubic-bezier(0.25, 1, 0.5, 1), opacity ${duration} cubic-bezier(0.25, 1, 0.5, 1), filter ${duration} cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s, background 0.3s`;
-        rightBtn.style.transition = `transform ${duration} cubic-bezier(0.25, 1, 0.5, 1), opacity ${duration} cubic-bezier(0.25, 1, 0.5, 1), filter ${duration} cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s, background 0.3s`;
-        leftBtn.style.transition = `transform ${duration} cubic-bezier(0.25, 1, 0.5, 1), opacity ${duration} cubic-bezier(0.25, 1, 0.5, 1), filter ${duration} cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s, background 0.3s`;
+        // Capture local variables for asynchronous rAF execution closure
+        const animCenter = centerBtn;
+        const animLeft = leftBtn;
+        const animRight = rightBtn;
 
-        // 4. Trigger 3D slide transitions
-        centerBtn.classList.remove("state-center");
-        centerBtn.classList.add("state-enter"); // slides right
+        // 3. Set transition duration and trigger transitions asynchronously in the next animation frames
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            animCenter.style.transition = `transform ${duration} cubic-bezier(0.25, 1, 0.5, 1), opacity ${duration} cubic-bezier(0.25, 1, 0.5, 1), filter ${duration} cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s, background 0.3s`;
+            animLeft.style.transition = `transform ${duration} cubic-bezier(0.25, 1, 0.5, 1), opacity ${duration} cubic-bezier(0.25, 1, 0.5, 1), filter ${duration} cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s, background 0.3s`;
+            animRight.style.transition = `transform ${duration} cubic-bezier(0.25, 1, 0.5, 1), opacity ${duration} cubic-bezier(0.25, 1, 0.5, 1), filter ${duration} cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s, background 0.3s`;
 
-        leftBtn.classList.remove("state-exit");
-        leftBtn.classList.add("state-center"); // slides center
+            // 4. Trigger 3D slide transitions
+            animCenter.classList.remove("state-center");
+            animCenter.classList.add("state-enter"); // slides right
+
+            animLeft.classList.remove("state-exit");
+            animLeft.classList.add("state-center"); // slides center
+
+            // Restore the opacity to let the style sheet's state-exit rules apply and transition smoothly
+            animRight.style.opacity = "";
+          });
+        });
 
         // 5. Update references
         const oldLeft = leftBtn;
