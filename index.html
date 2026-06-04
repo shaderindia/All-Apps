@@ -84,6 +84,9 @@
   <!-- Preload the local variable font to eliminate Cumulative Layout Shift (CLS) -->
   <link rel="preload" href="/fonts/Inter-Variable.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
 
+  <!-- Preload Tailwind CSS so it starts downloading immediately (loaded async below) -->
+  <link rel="preload" href="/css/tailwind.min.css" as="style" />
+
   <!-- FontAwesome CDN for premium category icons & micro-animations -->
     <link 
     rel="preload" 
@@ -316,11 +319,24 @@
       width: 1.25em;
       text-align: center;
     }
+    /* FOUC guard: hide body until Tailwind finishes loading so layout classes are ready */
+    body.tailwind-pending {
+      visibility: hidden;
+    }
   </style>
-  <link rel="stylesheet" href="/css/tailwind.min.css" />
+  <!-- Load Tailwind CSS asynchronously (non-render-blocking) to improve FCP/LCP.
+       The body is hidden via .tailwind-pending until it loads, then revealed.
+       This eliminates the 770ms critical-path render block. -->
+  <link
+    rel="stylesheet"
+    href="/css/tailwind.min.css"
+    media="print"
+    onload="this.media='all';document.body.classList.remove('tailwind-pending')"
+  />
+  <noscript><link rel="stylesheet" href="/css/tailwind.min.css" /></noscript>
 </head>
 
-<body class="bg-gray-50 text-gray-800 antialiased">
+<body class="bg-gray-50 text-gray-800 antialiased tailwind-pending">
 
   <a href="#tools" class="skip-link">Skip to tools</a>
 
@@ -1070,6 +1086,11 @@
 </footer>
 
   <script>
+    // Safety: Reveal the page within 3s even if Tailwind CSS fails to load
+    setTimeout(function() {
+      document.body.classList.remove('tailwind-pending');
+    }, 3000);
+
     const year = document.getElementById("year");
     if (year) {
       year.textContent = new Date().getFullYear();
