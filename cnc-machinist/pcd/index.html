@@ -184,120 +184,147 @@
     </header>
     
     <main class="flex-1 w-full flex items-center justify-center p-4">
-        <div class="w-full max-w-2xl bg-gray-800 p-6 sm:p-8 rounded-2xl shadow-2xl border border-gray-700">
+        <div class="w-full max-w-6xl bg-gray-800 p-6 sm:p-8 rounded-2xl shadow-2xl border border-gray-700">
             
-            <h1 class="text-2xl sm:text-3xl font-bold text-center mb-6 text-teal-400">PCD Coordinate & G-Code Generator</h1>
+            <h1 class="text-2xl sm:text-3xl font-bold text-center mb-8 text-teal-400">PCD Coordinate & G-Code Generator</h1>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-                <div class="space-y-4">
-                    <h2 class="text-lg font-semibold text-gray-300 border-b border-gray-600 pb-2">Hole Pattern</h2>
-                    <div>
-                        <label for="pcd" class="block text-sm font-medium text-gray-300 mb-1">Pitch Circle Diameter (PCD)</label>
-                        <div class="input-group"><input type="number" id="pcd" value="100" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3" placeholder="e.g., 100"><span class="input-unit">mm</span></div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label for="start-angle" class="block text-sm font-medium text-gray-300 mb-1">Start Angle</label>
-                            <div class="input-group"><input type="number" id="start-angle" value="0" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3"><span class="input-unit">°</span></div>
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                
+                <!-- Left Column: Inputs (Hole Pattern & G-Code parameters side-by-side on desktop/tablets) -->
+                <div class="lg:col-span-7 space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        
+                        <!-- Hole Pattern Column -->
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between border-b border-gray-600 pb-2 mb-2">
+                                <h2 class="text-lg font-semibold text-gray-300">Hole Pattern</h2>
+                                <label class="flex items-center space-x-2 cursor-pointer" title="Automatically calculates a full 360° pattern from the start angle">
+                                    <input type="checkbox" id="full-circle-toggle" checked class="form-checkbox h-4 w-4 text-teal-500 rounded border-gray-600 bg-gray-700 focus:ring-teal-500 focus:ring-offset-gray-800 transition duration-150 ease-in-out">
+                                    <span class="text-sm font-medium text-teal-400">Full Circle</span>
+                                </label>
+                            </div>
+                            <div>
+                                <label for="pcd" class="block text-sm font-medium text-gray-300 mb-1">Pitch Circle Diameter (PCD)</label>
+                                <div class="input-group"><input type="number" id="pcd" value="100" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3 pr-12" placeholder="e.g., 100"><span class="input-unit">mm</span></div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label for="start-angle" class="block text-sm font-medium text-gray-300 mb-1">Start Angle</label>
+                                    <div class="input-group"><input type="number" id="start-angle" value="0" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3 pr-8"><span class="input-unit">°</span></div>
+                                </div>
+                                <div>
+                                    <label for="last-angle" class="block text-sm font-medium text-gray-300 mb-1">Last Angle</label>
+                                    <div class="input-group"><input type="number" id="last-angle" value="360" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3 pr-8"><span class="input-unit">°</span></div>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="num-holes" class="block text-sm font-medium text-gray-300 mb-1">Number of Holes</label>
+                                <input type="number" id="num-holes" value="8" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3" placeholder="e.g., 8">
+                            </div>
                         </div>
-                        <div>
-                            <label for="last-angle" class="block text-sm font-medium text-gray-300 mb-1">Last Angle</label>
-                            <div class="input-group"><input type="number" id="last-angle" value="360" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3"><span class="input-unit">°</span></div>
+
+                        <!-- G-Code Parameters Column -->
+                        <div class="space-y-4">
+                            <h2 class="text-lg font-semibold text-gray-300 border-b border-gray-600 pb-2">G-Code Parameters (Fanuc)</h2>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label for="program-num" class="block text-sm font-medium text-gray-300 mb-1">Program Number</label>
+                                    <input type="number" id="program-num" value="1001" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3" placeholder="e.g., 1001">
+                                </div>
+                                <div>
+                                    <label for="drill-dia" class="block text-sm font-medium text-gray-300 mb-1">Drill Diameter</label>
+                                    <div class="input-group"><input type="number" id="drill-dia" value="6" step="0.1" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3 pr-12" placeholder="e.g., 6"><span class="input-unit">mm</span></div>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                 <div>
+                                    <label for="retract-plane" class="block text-sm font-medium text-gray-300 mb-1">Retract Plane (R)</label>
+                                     <div class="input-group"><input type="number" id="retract-plane" value="5" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3 pr-12" placeholder="e.g., 5"><span class="input-unit">mm</span></div>
+                                </div>
+                                <div>
+                                    <label for="drill-depth" class="block text-sm font-medium text-gray-300 mb-1">Drill Depth (Z)</label>
+                                     <div class="input-group"><input type="number" id="drill-depth" value="-10" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3 pr-12" placeholder="e.g., -10"><span class="input-unit">mm</span></div>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label for="tool-material" class="block text-sm font-medium text-gray-300 mb-1">Tool Material</label>
+                                    <select id="tool-material" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3">
+                                        <option value="hss">HSS</option>
+                                        <option value="hssco">Cobalt (HSS-Co)</option>
+                                        <option value="carbide">Carbide</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="work-material" class="block text-sm font-medium text-gray-300 mb-1">Work Material</label>
+                                    <select id="work-material" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3">
+                                        <option value="mild">Mild Steel</option>
+                                        <option value="alloy">Alloy Steel</option>
+                                        <option value="stainless">Stainless</option>
+                                        <option value="aluminum">Aluminum</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="plane-select" class="block text-sm font-medium text-gray-300 mb-1">Axis for Coordinates</label>
+                                <select id="plane-select" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3">
+                                    <option value="G17">G17 (X,Y)</option>
+                                    <option value="G18">G18 (X,Z)</option>
+                                    <option value="G19">G19 (Y,Z)</option>
+                                </select>
+                            </div>
+                            <div class="p-3 bg-gray-900 border border-gray-700 rounded-lg flex items-center justify-around text-center mt-2 shadow-inner">
+                                <div>
+                                    <div class="text-xxs uppercase tracking-wider text-gray-400 font-semibold mb-0.5" style="font-size: 0.65rem;">RPM</div>
+                                    <div id="calc-rpm-display" class="text-lg font-bold text-teal-400">0</div>
+                                </div>
+                                <div class="h-6 w-px bg-gray-700"></div>
+                                <div>
+                                    <div class="text-xxs uppercase tracking-wider text-gray-400 font-semibold mb-0.5" style="font-size: 0.65rem;">Feed Rate</div>
+                                    <div id="calc-feed-display" class="text-lg font-bold text-sky-400">0 <span class="text-xxs font-normal text-gray-400" style="font-size: 0.65rem;">mm/min</span></div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div>
-                        <label for="num-holes" class="block text-sm font-medium text-gray-300 mb-1">Number of Holes</label>
-                        <input type="number" id="num-holes" value="8" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3" placeholder="e.g., 8">
+
                     </div>
                 </div>
 
-                <div class="space-y-4">
-                     <h2 class="text-lg font-semibold text-gray-300 border-b border-gray-600 pb-2">G-Code Parameters (Fanuc)</h2>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label for="program-num" class="block text-sm font-medium text-gray-300 mb-1">Program Number</label>
-                            <input type="number" id="program-num" value="1001" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3" placeholder="e.g., 1001">
-                        </div>
-                        <div>
-                            <label for="drill-dia" class="block text-sm font-medium text-gray-300 mb-1">Drill Diameter</label>
-                            <div class="input-group"><input type="number" id="drill-dia" value="6" step="0.1" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3" placeholder="e.g., 6"><span class="input-unit">mm</span></div>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                         <div>
-                            <label for="retract-plane" class="block text-sm font-medium text-gray-300 mb-1">Retract Plane (R)</label>
-                             <div class="input-group"><input type="number" id="retract-plane" value="5" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3" placeholder="e.g., 5"><span class="input-unit">mm</span></div>
-                        </div>
-                        <div>
-                            <label for="drill-depth" class="block text-sm font-medium text-gray-300 mb-1">Drill Depth (Z)</label>
-                             <div class="input-group"><input type="number" id="drill-depth" value="-10" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3" placeholder="e.g., -10"><span class="input-unit">mm</span></div>
+                <!-- Right Column: Visualizer, Buttons & Output Results -->
+                <div class="lg:col-span-5 space-y-6">
+                    
+                    <!-- Live Preview Canvas -->
+                    <div class="flex flex-col items-center justify-center border border-gray-700 bg-gray-900 rounded-xl p-4 shadow-inner">
+                        <h3 class="text-sm font-semibold text-gray-300 mb-2 uppercase tracking-wider">Live Pattern Preview</h3>
+                        <canvas id="pcd-canvas" class="bg-gray-950 border border-gray-800 rounded-lg shadow-2xl max-w-full" width="260" height="260"></canvas>
+                        <div id="axes-legend" class="text-xxs text-gray-500 mt-2 text-center" style="font-size: 0.65rem;">
+                            Axes represent CNC coordinate origin G54 (X0, Y0). Positive Y (+Y) is UP, positive X (+X) is RIGHT.
                         </div>
                     </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label for="tool-material" class="block text-sm font-medium text-gray-300 mb-1">Tool Material</label>
-                            <select id="tool-material" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3">
-                                <option value="hss">HSS</option>
-                                <option value="hssco">Cobalt (HSS-Co)</option>
-                                <option value="carbide">Carbide</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label for="work-material" class="block text-sm font-medium text-gray-300 mb-1">Work Material</label>
-                            <select id="work-material" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3">
-                                <option value="mild">Mild Steel</option>
-                                <option value="alloy">Alloy Steel</option>
-                                <option value="stainless">Stainless</option>
-                                <option value="aluminum">Aluminum</option>
-                            </select>
-                        </div>
+                    
+                    <!-- Actions Buttons -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <button id="generate-coords-btn" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-2 rounded-lg transition text-sm sm:text-base">Coordinates</button>
+                        <button id="generate-program-btn" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 px-2 rounded-lg transition text-sm sm:text-base">G-Code</button>
+                        <button id="download-pdf-btn" class="w-full bg-gray-600 hover:bg-gray-500 text-white font-bold py-3 px-2 rounded-lg transition text-sm sm:text-base">Export PDF</button>
                     </div>
-                    <div>
-                        <label for="plane-select" class="block text-sm font-medium text-gray-300 mb-1">Axis for Coordinates</label>
-                        <select id="plane-select" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3">
-                            <option value="G17">G17 (X,Y)</option>
-                            <option value="G18">G18 (X,Z)</option>
-                            <option value="G19">G19 (Y,Z)</option>
-                        </select>
-                    </div>
-                    <div class="p-3 bg-gray-900 border border-gray-700 rounded-lg flex items-center justify-around text-center mt-2 shadow-inner">
-                        <div>
-                            <div class="text-xxs uppercase tracking-wider text-gray-400 font-semibold mb-0.5" style="font-size: 0.65rem;">RPM</div>
-                            <div id="calc-rpm-display" class="text-lg font-bold text-teal-400">0</div>
-                        </div>
-                        <div class="h-6 w-px bg-gray-700"></div>
-                        <div>
-                            <div class="text-xxs uppercase tracking-wider text-gray-400 font-semibold mb-0.5" style="font-size: 0.65rem;">Feed Rate</div>
-                            <div id="calc-feed-display" class="text-lg font-bold text-sky-400">0 <span class="text-xxs font-normal text-gray-400" style="font-size: 0.65rem;">mm/min</span></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="mt-6 flex flex-col items-center justify-center border border-gray-700 bg-gray-900 rounded-xl p-4 shadow-inner">
-                <h3 class="text-sm font-semibold text-gray-350 mb-2 uppercase tracking-wider">Live Pattern Preview</h3>
-                <canvas id="pcd-canvas" class="bg-gray-950 border border-gray-850 rounded-lg shadow-2xl" width="260" height="260"></canvas>
-                <div class="text-xxs text-gray-500 mt-2 text-center" style="font-size: 0.65rem;">
-                    Axes represent CNC coordinate origin G54 (X0, Y0). Positive Y (+Y) is UP, positive X (+X) is RIGHT.
-                </div>
-            </div>
-            
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
-                <button id="generate-coords-btn" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-4 rounded-lg transition">Coordinates</button>
-                <button id="generate-program-btn" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 px-4 rounded-lg transition">Generate Program</button>
-                <button id="download-pdf-btn" class="w-full bg-gray-600 hover:bg-gray-500 text-white font-bold py-3 px-4 rounded-lg transition">Download PDF</button>
-            </div>
-            
-            <div id="error-message" class="mt-4 text-center text-red-400 font-medium hidden"></div>
+                    
+                    <!-- Error Message Indicator -->
+                    <div id="error-message" class="text-center text-red-400 font-medium hidden"></div>
 
-            <div id="pcd-results" class="mt-8 pt-6 border-t border-gray-700 hidden">
-                <h2 class="text-xl font-semibold text-center text-teal-400 mb-4">Generated Coordinates</h2>
-                <pre id="coordinates-output" class="bg-gray-900 text-white p-4 rounded-lg text-sm whitespace-pre-wrap max-h-60 overflow-auto"></pre>
-            </div>
+                    <!-- Coordinates Output -->
+                    <div id="pcd-results" class="pt-4 border-t border-gray-700 hidden">
+                        <h2 class="text-lg font-semibold text-center text-teal-400 mb-2">Generated Coordinates</h2>
+                        <pre id="coordinates-output" class="bg-gray-900 text-white p-4 rounded-lg text-xs font-mono whitespace-pre-wrap max-h-60 overflow-auto border border-gray-750"></pre>
+                    </div>
 
-            <div id="gcode-results" class="mt-8 pt-6 border-t border-gray-700 hidden">
-                <h2 class="text-xl font-semibold text-center text-sky-400 mb-4">Generated G-Code (Fanuc)</h2>
-                <pre id="gcode-output" class="bg-gray-900 text-white p-4 rounded-lg text-sm whitespace-pre-wrap max-h-60 overflow-auto"></pre>
+                    <!-- G-Code Output -->
+                    <div id="gcode-results" class="pt-4 border-t border-gray-700 hidden">
+                        <h2 class="text-lg font-semibold text-center text-sky-400 mb-2">Generated G-Code (Fanuc)</h2>
+                        <pre id="gcode-output" class="bg-gray-900 text-white p-4 rounded-lg text-xs font-mono whitespace-pre-wrap max-h-60 overflow-auto border border-gray-750"></pre>
+                    </div>
+
+                </div>
+
             </div>
 
         
@@ -347,6 +374,7 @@
         const pcdInput = document.getElementById('pcd');
         const startAngleInput = document.getElementById('start-angle');
         const lastAngleInput = document.getElementById('last-angle');
+        const fullCircleToggle = document.getElementById('full-circle-toggle');
         const numHolesInput = document.getElementById('num-holes');
         const planeSelect = document.getElementById('plane-select');
         const programNumInput = document.getElementById('program-num');
@@ -417,7 +445,10 @@
         function drawPattern() {
             const pcd = parseFloat(pcdInput.value);
             const startAngle = parseFloat(startAngleInput.value);
-            const lastAngle = parseFloat(lastAngleInput.value);
+            let lastAngle = parseFloat(lastAngleInput.value);
+            if (fullCircleToggle && fullCircleToggle.checked) {
+                lastAngle = startAngle + 360;
+            }
             const numHoles = parseInt(numHolesInput.value);
             const drillDia = parseFloat(drillDiaInput.value);
 
@@ -434,78 +465,99 @@
 
             const cx = canvas.width / 2;
             const cy = canvas.height / 2;
+            const plane = planeSelect.value;
+            const labels = plane === 'G17' ? ['X', 'Y'] : plane === 'G18' ? ['X', 'Z'] : ['Y', 'Z'];
             
-            // Draw axis line style
-            ctx.strokeStyle = '#334155';
-            ctx.lineWidth = 1.5;
-            ctx.setLineDash([4, 4]);
+            // 1. Draw Subtle Grid Background
+            ctx.strokeStyle = 'rgba(51, 65, 85, 0.4)'; // slate-700 with opacity
+            ctx.lineWidth = 1;
+            ctx.setLineDash([]);
+            const gridSize = 20;
+            for (let x = cx % gridSize; x <= canvas.width; x += gridSize) {
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+            }
+            for (let y = cy % gridSize; y <= canvas.height; y += gridSize) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+            }
 
-            // Draw X-axis
+            // 2. Draw axes (X and Y)
+            ctx.strokeStyle = '#475569'; // slate-600
+            ctx.lineWidth = 1;
+            ctx.setLineDash([5, 5]);
             ctx.beginPath();
-            ctx.moveTo(15, cy);
-            ctx.lineTo(canvas.width - 15, cy);
-            ctx.stroke();
-
-            // Draw Y-axis
-            ctx.beginPath();
-            ctx.moveTo(cx, 15);
-            ctx.lineTo(cx, canvas.height - 15);
+            ctx.moveTo(0, cy); ctx.lineTo(canvas.width, cy); // X
+            ctx.moveTo(cx, 0); ctx.lineTo(cx, canvas.height); // Y
             ctx.stroke();
 
             // Axis labels (G54 coordinate directions)
             ctx.setLineDash([]);
-            ctx.fillStyle = '#475569';
-            ctx.font = '9px monospace';
+            ctx.font = 'bold 10px monospace';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText('+X', canvas.width - 8, cy);
-            ctx.fillText('-X', 8, cy);
-            ctx.fillText('+Y', cx, 8);
-            ctx.fillText('-Y', cx, canvas.height - 8);
+            const drawAxisLabel = (text, x, y) => {
+                ctx.fillStyle = '#020617'; // bg-slate-950
+                ctx.fillRect(x - 9, y - 9, 18, 18);
+                ctx.fillStyle = '#94a3b8'; // slate-400
+                ctx.fillText(text, x, y);
+            };
+            drawAxisLabel('+' + labels[0], canvas.width - 12, cy);
+            drawAxisLabel('-' + labels[0], 12, cy);
+            drawAxisLabel('+' + labels[1], cx, 12);
+            drawAxisLabel('-' + labels[1], cx, canvas.height - 12);
 
             // Pitch Circle drawn size is constant on canvas (diameter = 170px, radius = 85px)
             const rPcd = 85;
 
-            // Draw Pitch Circle
-            ctx.strokeStyle = '#0d9488'; // teal-600
+            // 3. Draw Pitch Circle with glow effect
+            ctx.save();
+            ctx.strokeStyle = '#14b8a6'; // teal-500
             ctx.lineWidth = 1.5;
-            ctx.setLineDash([6, 3]);
+            ctx.setLineDash([8, 6, 2, 6]); // Centerline dash pattern
+            ctx.shadowColor = '#0f766e'; // teal-700
+            ctx.shadowBlur = 6;
             ctx.beginPath();
             ctx.arc(cx, cy, rPcd, 0, 2 * Math.PI);
             ctx.stroke();
+            ctx.restore();
 
-            // Center mark crosshair
-            ctx.strokeStyle = '#94a3b8';
-            ctx.lineWidth = 1.0;
+            // 4. Center mark crosshair (G54 Origin)
+            ctx.strokeStyle = '#f59e0b'; // amber-500
+            ctx.lineWidth = 1.5;
             ctx.setLineDash([]);
             ctx.beginPath();
-            ctx.moveTo(cx - 5, cy);
-            ctx.lineTo(cx + 5, cy);
-            ctx.moveTo(cx, cy - 5);
-            ctx.lineTo(cx, cy + 5);
+            ctx.arc(cx, cy, 4, 0, 2 * Math.PI);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(cx - 10, cy); ctx.lineTo(cx + 10, cy);
+            ctx.moveTo(cx, cy - 10); ctx.lineTo(cx, cy + 10);
             ctx.stroke();
 
-            // Draw PCD and Drill Dia text labels in the top-left corner (safe from circles)
-            ctx.fillStyle = '#0d9488'; // teal
-            ctx.font = '10px Inter, sans-serif';
+            // 5. Draw Info Labels (Top-Left)
+            ctx.fillStyle = 'rgba(2, 6, 23, 0.75)'; // slate-950 with opacity
+            ctx.fillRect(8, 8, 85, 36);
+            ctx.strokeStyle = 'rgba(51, 65, 85, 0.8)'; // slate-700
+            ctx.lineWidth = 1;
+            ctx.strokeRect(8, 8, 85, 36);
+            
+            ctx.fillStyle = '#2dd4bf'; // teal-400
+            ctx.font = 'bold 11px Inter, sans-serif';
             ctx.textAlign = 'left';
             ctx.textBaseline = 'top';
-            ctx.fillText(`PCD: ${pcd} mm`, 10, 10);
-            ctx.fillStyle = '#38bdf8'; // sky
-            ctx.fillText(`Dia: ${drillDia} mm`, 10, 22);
+            ctx.fillText(`PCD: ${pcd}`, 14, 13);
+            ctx.fillStyle = '#38bdf8'; // sky-400
+            ctx.fillText(`DIA: ${drillDia}`, 14, 27);
 
-            // Proportional drill hole size (drawn_drill_radius = 85 * (drillDia / PCD))
-            // Clamp drawn radius to [3, 20] to stay visible and avoid visual clutter
+            // Proportional drill hole size
             let rDrill = 5;
             if (!isNaN(drillDia) && drillDia > 0) {
-                rDrill = Math.max(3, Math.min(20, rPcd * (drillDia / pcd)));
+                rDrill = Math.max(3.5, Math.min(16, rPcd * (drillDia / pcd)));
             }
 
             const totalAngle = lastAngle - startAngle;
             const isFullCircle = Math.abs(totalAngle) % 360 === 0 && numHoles > 1;
             const angleStep = numHoles > 1 ? (isFullCircle ? totalAngle / numHoles : totalAngle / (numHoles - 1)) : 0;
 
-            // Draw holes
+            // 6. Draw Holes
             for (let i = 0; i < numHoles; i++) {
                 const angle = startAngle + (i * angleStep);
                 const rad = angle * (Math.PI / 180);
@@ -514,35 +566,52 @@
                 const x = cx + rPcd * Math.cos(rad);
                 const y = cy - rPcd * Math.sin(rad);
 
-                // Draw hole fill
-                ctx.fillStyle = '#38bdf8'; // sky-400
+                // Hole fill with 3D radial gradient
+                const gradient = ctx.createRadialGradient(x - rDrill*0.25, y - rDrill*0.25, rDrill*0.1, x, y, rDrill);
+                gradient.addColorStop(0, '#38bdf8'); // sky-400
+                gradient.addColorStop(0.6, '#0284c7'); // sky-600
+                gradient.addColorStop(1, '#0c4a6e'); // sky-900
+                
+                ctx.fillStyle = gradient;
                 ctx.beginPath();
                 ctx.arc(x, y, rDrill, 0, 2 * Math.PI);
                 ctx.fill();
 
-                // Draw hole outline
-                ctx.strokeStyle = '#0284c7'; // sky-600
+                // Hole outline (chrome-like rim)
+                ctx.strokeStyle = '#bae6fd'; // sky-200
                 ctx.lineWidth = 1.5;
                 ctx.beginPath();
                 ctx.arc(x, y, rDrill, 0, 2 * Math.PI);
                 ctx.stroke();
 
-                // Draw center point inside hole
-                ctx.fillStyle = '#0284c7';
+                // Hole center mark
+                ctx.strokeStyle = '#e0f2fe'; // sky-100
+                ctx.lineWidth = 1;
                 ctx.beginPath();
-                ctx.arc(x, y, 1.5, 0, 2 * Math.PI);
-                ctx.fill();
+                ctx.moveTo(x - 4, y); ctx.lineTo(x + 4, y);
+                ctx.moveTo(x, y - 4); ctx.lineTo(x, y + 4);
+                ctx.stroke();
 
-                // Draw number label next to hole (offset away from circle center)
-                const labelOffset = rDrill + 8;
+                // Hole Number Label
+                const labelOffset = rDrill + 12;
                 const lx = cx + (rPcd + labelOffset) * Math.cos(rad);
                 const ly = cy - (rPcd + labelOffset) * Math.sin(rad);
 
-                ctx.fillStyle = '#cbd5e1'; // slate-300
-                ctx.font = '10px Inter, sans-serif';
+                // Label background pill/circle
+                ctx.fillStyle = 'rgba(15, 23, 42, 0.85)'; // slate-900
+                ctx.beginPath();
+                ctx.arc(lx, ly, 8, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.strokeStyle = '#475569'; // slate-600
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                // Label text
+                ctx.fillStyle = '#f8fafc'; // slate-50
+                ctx.font = 'bold 10px Inter, sans-serif';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.fillText((i + 1).toString(), lx, ly);
+                ctx.fillText((i + 1).toString(), lx, ly + 0.5); // +0.5 for vertical alignment tweak
             }
         }
 
@@ -581,6 +650,14 @@
         downloadPdfBtn.addEventListener('click', () => {
             const data = getPcdData();
             if (data.coords) {
+                if (typeof window.jspdf === 'undefined') {
+                    showError('PDF library is still loading. Please try again in a moment.');
+                    return;
+                }
+                if (isNaN(data.programNum) || isNaN(data.retractPlane) || isNaN(data.drillDepth) || isNaN(data.drillDia) || data.drillDia <= 0) {
+                    showError('Please fill all fields with valid numbers before exporting PDF.');
+                    return;
+                }
                 generateAndDownloadPdf(data);
             }
         });
@@ -590,7 +667,10 @@
             // PCD Inputs
             const pcd = parseFloat(pcdInput.value);
             const startAngle = parseFloat(startAngleInput.value);
-            const lastAngle = parseFloat(lastAngleInput.value);
+            let lastAngle = parseFloat(lastAngleInput.value);
+            if (fullCircleToggle && fullCircleToggle.checked) {
+                lastAngle = startAngle + 360;
+            }
             const numHoles = parseInt(numHolesInput.value);
             
             // G-Code Inputs
@@ -644,12 +724,17 @@
         }
 
         function generateFanucGCode(data) {
-            const { coords, labels, programNum, retractPlane, drillDepth, drillDia, toolMaterial, workMaterial, rpm, feedRate } = data;
+            const { coords, labels, plane, programNum, retractPlane, drillDepth, drillDia, toolMaterial, workMaterial, rpm, feedRate } = data;
+            
+            // Determine depth axis based on active plane
+            let depthAxis = 'Z';
+            if (plane === 'G18') depthAxis = 'Y';
+            if (plane === 'G19') depthAxis = 'X';
             
             let gcode = `O${programNum.toString().padStart(4, '0')} (PCD DRILLING - DIA: ${drillDia}MM)\n`;
             gcode += `(TOOL: ${toolMaterial.toUpperCase()}, WORK: ${workMaterial.toUpperCase()})\n`;
             gcode += `(SPEED: ${rpm} RPM, FEED: ${feedRate} MM/MIN)\n`;
-            gcode += `G21 G90 G17 G54 G40 G80\n`;
+            gcode += `G21 G90 ${plane} G54 G40 G80\n`;
             gcode += `(ADD TOOL CHANGE HERE, e.g., T01 M06)\n`;
             gcode += `S${rpm} M03\n`;
             
@@ -659,11 +744,11 @@
                 // Rapid to first hole location
                 gcode += `G00 ${labels[0]}${firstCoord.c1} ${labels[1]}${firstCoord.c2}\n`;
                 
-                // Apply tool length offset
-                gcode += `G43 Z50.0 H01\n`;
+                // Apply tool length offset along the depth axis
+                gcode += `G43 ${depthAxis}50.0 H01\n`;
 
-                // Start drilling cycle
-                gcode += `G81 Z${drillDepth.toFixed(3)} R${retractPlane.toFixed(3)} F${feedRate.toFixed(1)}\n`;
+                // Start drilling cycle along the depth axis
+                gcode += `G81 ${depthAxis}${drillDepth.toFixed(3)} R${retractPlane.toFixed(3)} F${feedRate.toFixed(1)}\n`;
 
                 // Process remaining holes
                 const remainingCoords = coords.slice(1);
@@ -674,7 +759,7 @@
 
             gcode += `G80\n`;
             gcode += `G49\n`;
-            gcode += `G00 Z100.0 M05\n`;
+            gcode += `G00 ${depthAxis}100.0 M05\n`;
             gcode += `M30\n`;
 
             return gcode;
@@ -731,6 +816,43 @@
             errorMessage.classList.remove('hidden');
         }
         
+        function toggleFullCircle() {
+            if (fullCircleToggle.checked) {
+                lastAngleInput.disabled = true;
+                lastAngleInput.classList.add('opacity-50', 'cursor-not-allowed');
+                lastAngleInput.value = parseFloat(startAngleInput.value || 0) + 360;
+            } else {
+                lastAngleInput.disabled = false;
+                lastAngleInput.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        }
+
+        fullCircleToggle.addEventListener('change', () => {
+            toggleFullCircle();
+            pcdResultsDiv.classList.add('hidden');
+            gcodeResultsDiv.classList.add('hidden');
+            drawPattern();
+        });
+
+        startAngleInput.addEventListener('input', () => {
+            if (fullCircleToggle.checked) {
+                lastAngleInput.value = parseFloat(startAngleInput.value || 0) + 360;
+            }
+        });
+
+        function updateAxesLegend() {
+            const plane = planeSelect.value;
+            const labels = plane === 'G17' ? ['X', 'Y'] : plane === 'G18' ? ['X', 'Z'] : ['Y', 'Z'];
+            const legendEl = document.getElementById('axes-legend');
+            if (legendEl) {
+                legendEl.textContent = `Axes represent CNC coordinate origin G54 (${labels[0]}0, ${labels[1]}0). Positive ${labels[1]} (+${labels[1]}) is UP, positive ${labels[0]} (+${labels[0]}) is RIGHT.`;
+            }
+        }
+
+        // Initialize toggle state & legend
+        toggleFullCircle();
+        updateAxesLegend();
+
         // Clear results when user changes inputs to prevent stale data
         document.querySelectorAll('input, select').forEach(el => {
             el.addEventListener('input', () => {
@@ -738,9 +860,11 @@
                 gcodeResultsDiv.classList.add('hidden');
                 hideError();
                 drawPattern();
+                updateAxesLegend();
             });
             el.addEventListener('change', () => {
                 drawPattern();
+                updateAxesLegend();
             });
         });
 
