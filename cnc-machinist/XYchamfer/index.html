@@ -177,7 +177,7 @@
         </div>
     </header>
 
-    <div class="w-full max-w-5xl bg-gray-800 p-6 sm:p-8 rounded-2xl shadow-2xl border border-gray-700">
+    <div class="w-full max-w-6xl bg-gray-800 p-6 sm:p-8 rounded-2xl shadow-2xl border border-gray-700">
         <h1 class="text-3xl font-bold text-center mb-2 text-indigo-400">Chamfer Generator (90° Entry/Exit)</h1>
         <p class="text-gray-400 text-center text-sm mb-8">
             <b>Strategy:</b> Inside-Out Motion.
@@ -186,183 +186,213 @@
             <b>Logic:</b> Opposite sides finish one full side at a time. Single direction retracts every pass. Double direction stays linked on the same connected chain.
         </p>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div class="space-y-6">
-                <div class="bg-gray-750 border border-gray-600 p-5 rounded-xl">
-                    <h3 class="text-indigo-300 font-semibold mb-4 border-b border-gray-600 pb-2">1. Part Geometry & Origin</h3>
-                    <div class="space-y-4">
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium mb-1">Length (X)</label>
-                                <div class="input-group">
-                                    <input type="number" id="part-x" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2.5 text-white" value="200">
-                                    <span class="input-unit">mm</span>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            
+            <!-- Left Column: Inputs -->
+            <div class="lg:col-span-7 space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-6">
+                        
+                        <!-- 1. Part Geometry & Origin -->
+                        <div class="bg-gray-750 border border-gray-600 p-5 rounded-xl">
+                            <h3 class="text-indigo-300 font-semibold mb-4 border-b border-gray-600 pb-2">1. Part Geometry & Origin</h3>
+                            <div class="space-y-4">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">Length (X)</label>
+                                        <div class="input-group">
+                                            <input type="number" id="part-x" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2.5 pr-12 text-white" value="200">
+                                            <span class="input-unit">mm</span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">Width (Y)</label>
+                                        <div class="input-group">
+                                            <input type="number" id="part-y" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2.5 pr-12 text-white" value="400">
+                                            <span class="input-unit">mm</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">Origin Location (G54 X0 Y0)</label>
+                                    <select id="origin-pos" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2.5 text-white">
+                                        <option value="br">+X -Y (Bottom Right Corner)</option>
+                                        <option value="center" selected>X0 Y0 (Center)</option>
+                                        <option value="bl">-X -Y (Bottom Left Corner)</option>
+                                        <option value="tl">-X +Y (Top Left Corner)</option>
+                                        <option value="tr">+X +Y (Top Right Corner)</option>
+                                    </select>
                                 </div>
                             </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-1">Width (Y)</label>
-                                <div class="input-group">
-                                    <input type="number" id="part-y" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2.5 text-white" value="400">
-                                    <span class="input-unit">mm</span>
+                        </div>
+
+                        <!-- 2. Machining Sides -->
+                        <div class="bg-gray-750 border border-gray-600 p-5 rounded-xl">
+                            <h3 class="text-indigo-300 font-semibold mb-4 border-b border-gray-600 pb-2">2. Machining Sides</h3>
+                            <div class="grid grid-cols-3 gap-2 text-center">
+                                <div></div>
+                                <div>
+                                    <input type="checkbox" id="side-top" class="side-cb hidden" checked>
+                                    <label for="side-top" class="block p-2 rounded border border-gray-600 bg-gray-900 cursor-pointer hover:bg-gray-700 select-none">+Y (Top)</label>
+                                </div>
+                                <div></div>
+
+                                <div>
+                                    <input type="checkbox" id="side-left" class="side-cb hidden" checked>
+                                    <label for="side-left" class="block p-2 rounded border border-gray-600 bg-gray-900 cursor-pointer hover:bg-gray-700 select-none">-X (Left)</label>
+                                </div>
+                                <div class="flex items-center justify-center">
+                                    <div class="w-8 h-8 rounded-full bg-indigo-900 border border-indigo-500 flex items-center justify-center text-xs">Zero</div>
+                                </div>
+                                <div>
+                                    <input type="checkbox" id="side-right" class="side-cb hidden">
+                                    <label for="side-right" class="block p-2 rounded border border-gray-600 bg-gray-900 cursor-pointer hover:bg-gray-700 select-none">+X (Right)</label>
+                                </div>
+
+                                <div></div>
+                                <div>
+                                    <input type="checkbox" id="side-bottom" class="side-cb hidden">
+                                    <label for="side-bottom" class="block p-2 rounded border border-gray-600 bg-gray-900 cursor-pointer hover:bg-gray-700 select-none">-Y (Bottom)</label>
+                                </div>
+                                <div></div>
+                            </div>
+                            <div class="mt-3 text-center flex justify-center gap-4">
+                                <button id="select-all-btn" class="text-xs text-indigo-400 hover:text-indigo-300 underline" type="button">Select All</button>
+                                <button id="clear-all-btn" class="text-xs text-red-400 hover:text-red-300 underline" type="button">Clear All</button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="space-y-6">
+                        
+                        <!-- 3. Macro Variables -->
+                        <div class="bg-gray-750 border border-gray-600 p-5 rounded-xl">
+                            <h3 class="text-indigo-300 font-semibold mb-4 border-b border-gray-600 pb-2">3. Macro Variables (#)</h3>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium mb-1"><span class="var-badge">#1</span>Start Z</label>
+                                    <div class="input-group">
+                                        <input type="number" id="start-z" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2 pr-12 text-white" value="0">
+                                        <span class="input-unit">mm</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-1"><span class="var-badge">#2</span>Final Z</label>
+                                    <div class="input-group">
+                                        <input type="number" id="final-z" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2 pr-12 text-white" value="-14.0">
+                                        <span class="input-unit">mm</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-1"><span class="var-badge">#3</span>DOC</label>
+                                    <div class="input-group">
+                                        <input type="number" id="doc" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2 pr-12 text-white" value="2.0">
+                                        <span class="input-unit">mm</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-1"><span class="var-badge">#4</span>Angle</label>
+                                    <div class="input-group">
+                                        <input type="number" id="angle" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2 pr-12 text-white" value="45">
+                                        <span class="input-unit">deg</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-1"><span class="var-badge">#5</span>Tool Dia</label>
+                                    <div class="input-group">
+                                        <input type="number" id="tool-dia" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2 pr-12 text-white" value="50">
+                                        <span class="input-unit">mm</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-1"><span class="var-badge">#6</span>XY Safety</label>
+                                    <div class="input-group">
+                                        <input type="number" id="safety" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2 pr-12 text-white" value="5">
+                                        <span class="input-unit">mm</span>
+                                    </div>
+                                </div>
+                                <div class="col-span-2">
+                                    <label class="block text-sm font-medium mb-1"><span class="var-badge">#9</span>Z Retract / Safe Z</label>
+                                    <div class="input-group">
+                                        <input type="number" id="z-retract" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2 pr-12 text-white" value="50">
+                                        <span class="input-unit">mm</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-1">Origin Location (G54 X0 Y0)</label>
-                            <select id="origin-pos" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2.5 text-white">
-                                <option value="br">+X -Y (Bottom Right Corner)</option>
-                                <option value="center">X0 Y0 (Center)</option>
-                                <option value="bl">-X -Y (Bottom Left Corner)</option>
-                                <option value="tl">-X +Y (Top Left Corner)</option>
-                                <option value="tr">+X +Y (Top Right Corner)</option>
-                            </select>
+
+                        <!-- 4. Tool, Feed & Direction -->
+                        <div class="bg-gray-750 border border-gray-600 p-5 rounded-xl">
+                            <h3 class="text-indigo-300 font-semibold mb-4 border-b border-gray-600 pb-2">4. Tool, Feed & Direction</h3>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">Tool No.</label>
+                                    <input type="number" id="tool-num" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2 text-white" value="1">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">Offset D</label>
+                                    <input type="number" id="tool-offset-d" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2 text-white" value="1">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">Feed</label>
+                                    <input type="number" id="feed" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2 text-white" value="800">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">RPM</label>
+                                    <input type="number" id="rpm" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2 text-white" value="3000">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">Spindle / Head M-Code</label>
+                                    <select id="spindle-mode" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2.5 text-white">
+                                        <option value="M03" selected>M03</option>
+                                        <option value="M141_M103">M141 / M103</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">Cut Direction Mode</label>
+                                    <select id="cut-mode" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2.5 text-white">
+                                        <option value="single">Single Direction</option>
+                                        <option value="double" selected>Double Direction</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
+
                     </div>
                 </div>
-
-                <div class="bg-gray-750 border border-gray-600 p-5 rounded-xl">
-                    <h3 class="text-indigo-300 font-semibold mb-4 border-b border-gray-600 pb-2">2. Machining Sides</h3>
-                    <div class="grid grid-cols-3 gap-2 text-center">
-                        <div></div>
-                        <div>
-                            <input type="checkbox" id="side-top" class="side-cb hidden" checked>
-                            <label for="side-top" class="block p-2 rounded border border-gray-600 bg-gray-900 cursor-pointer hover:bg-gray-700 select-none">+Y (Top)</label>
-                        </div>
-                        <div></div>
-
-                        <div>
-                            <input type="checkbox" id="side-left" class="side-cb hidden">
-                            <label for="side-left" class="block p-2 rounded border border-gray-600 bg-gray-900 cursor-pointer hover:bg-gray-700 select-none">-X (Left)</label>
-                        </div>
-                        <div class="flex items-center justify-center">
-                            <div class="w-8 h-8 rounded-full bg-indigo-900 border border-indigo-500 flex items-center justify-center text-xs">Zero</div>
-                        </div>
-                        <div>
-                            <input type="checkbox" id="side-right" class="side-cb hidden">
-                            <label for="side-right" class="block p-2 rounded border border-gray-600 bg-gray-900 cursor-pointer hover:bg-gray-700 select-none">+X (Right)</label>
-                        </div>
-
-                        <div></div>
-                        <div>
-                            <input type="checkbox" id="side-bottom" class="side-cb hidden">
-                            <label for="side-bottom" class="block p-2 rounded border border-gray-600 bg-gray-900 cursor-pointer hover:bg-gray-700 select-none">-Y (Bottom)</label>
-                        </div>
-                        <div></div>
-                    </div>
-                    <div class="mt-3 text-center flex justify-center gap-4">
-                        <button id="select-all-btn" class="text-xs text-indigo-400 hover:text-indigo-300 underline" type="button">Select All</button>
-                        <button id="clear-all-btn" class="text-xs text-red-400 hover:text-red-300 underline" type="button">Clear All</button>
-                    </div>
+                <div class="flex mt-6">
+                    <button id="generate-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 px-4 rounded-lg transition shadow-lg text-lg" type="button">Generate G-Code</button>
                 </div>
             </div>
 
-            <div class="space-y-6">
-                <div class="bg-gray-750 border border-gray-600 p-5 rounded-xl">
-                    <h3 class="text-indigo-300 font-semibold mb-4 border-b border-gray-600 pb-2">3. Macro Variables (#)</h3>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium mb-1"><span class="var-badge">#1</span>Start Z</label>
-                            <div class="input-group">
-                                <input type="number" id="start-z" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2 text-white" value="0">
-                                <span class="input-unit">mm</span>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-1"><span class="var-badge">#2</span>Final Z</label>
-                            <div class="input-group">
-                                <input type="number" id="final-z" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2 text-white" value="-14.0">
-                                <span class="input-unit">mm</span>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-1"><span class="var-badge">#3</span>DOC</label>
-                            <div class="input-group">
-                                <input type="number" id="doc" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2 text-white" value="2.0">
-                                <span class="input-unit">mm</span>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-1"><span class="var-badge">#4</span>Angle</label>
-                            <div class="input-group">
-                                <input type="number" id="angle" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2 text-white" value="45">
-                                <span class="input-unit">deg</span>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-1"><span class="var-badge">#5</span>Tool Dia</label>
-                            <div class="input-group">
-                                <input type="number" id="tool-dia" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2 text-white" value="50">
-                                <span class="input-unit">mm</span>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-1"><span class="var-badge">#6</span>XY Safety</label>
-                            <div class="input-group">
-                                <input type="number" id="safety" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2 text-white" value="5">
-                                <span class="input-unit">mm</span>
-                            </div>
-                        </div>
-                        <div class="col-span-2">
-                            <label class="block text-sm font-medium mb-1"><span class="var-badge">#9</span>Z Retract / Safe Z</label>
-                            <div class="input-group">
-                                <input type="number" id="z-retract" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2 text-white" value="50">
-                                <span class="input-unit">mm</span>
-                            </div>
-                        </div>
+            <!-- Right Column: Visualizer Preview & G-Code output results -->
+            <div class="lg:col-span-5 space-y-6">
+                
+                <!-- Live Geometry Canvas -->
+                <div class="flex flex-col items-center justify-center border border-gray-700 bg-gray-900 rounded-xl p-4 shadow-inner">
+                    <h3 class="text-sm font-semibold text-gray-300 mb-2 uppercase tracking-wider">Live Part & Sides Preview</h3>
+                    <canvas id="xy-canvas" class="bg-gray-950 border border-gray-800 rounded-lg shadow-2xl max-w-full" width="260" height="260"></canvas>
+                    <div id="axes-legend" class="text-xxs text-gray-500 mt-2 text-center" style="font-size: 0.65rem;">
+                        Amber crosshair represents coordinate origin G54 (X0, Y0). Teal borders indicate active cutting sides.
                     </div>
                 </div>
 
-                <div class="bg-gray-750 border border-gray-600 p-5 rounded-xl">
-                    <h3 class="text-indigo-300 font-semibold mb-4 border-b border-gray-600 pb-2">4. Tool, Feed & Direction</h3>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium mb-1">Tool No.</label>
-                            <input type="number" id="tool-num" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2 text-white" value="1">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-1">Offset D</label>
-                            <input type="number" id="tool-offset-d" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2 text-white" value="1">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-1">Feed</label>
-                            <input type="number" id="feed" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2 text-white" value="800">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-1">RPM</label>
-                            <input type="number" id="rpm" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2 text-white" value="3000">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-1">Spindle / Head M-Code</label>
-                            <select id="spindle-mode" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2.5 text-white">
-                                <option value="M03" selected>M03</option>
-                                <option value="M141_M103">M141 / M103</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-1">Cut Direction Mode</label>
-                            <select id="cut-mode" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-2.5 text-white">
-                                <option value="single">Single Direction</option>
-                                <option value="double" selected>Double Direction</option>
-                            </select>
-                        </div>
+                <!-- G-Code results -->
+                <div id="results-section" class="hidden">
+                    <div class="flex justify-between items-center mb-2">
+                        <h2 class="text-base font-semibold text-gray-300">G-Code Program</h2>
+                        <button id="copy-btn" class="text-xs bg-gray-700 hover:bg-gray-600 text-white py-1 px-3 rounded transition" type="button">Copy Code</button>
                     </div>
+                    <pre id="gcode-output" class="bg-black text-green-400 p-4 rounded-lg text-xs font-mono border border-gray-700 max-h-[30rem] overflow-y-auto shadow-inner"></pre>
                 </div>
+
+                <!-- Error Indicator -->
+                <div id="error-message" class="text-center text-red-400 font-medium hidden"></div>
+
             </div>
-        </div>
 
-        <div class="flex mt-8">
-            <button id="generate-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition shadow-lg text-lg" type="button">Generate G-Code</button>
         </div>
-
-        <div id="results-section" class="mt-8 hidden">
-            <div class="flex justify-between items-center mb-2">
-                <h2 class="text-lg font-semibold text-gray-300">G-Code Program</h2>
-                <button id="copy-btn" class="text-xs bg-gray-700 hover:bg-gray-600 text-white py-1 px-3 rounded transition" type="button">Copy Code</button>
-            </div>
-            <pre id="gcode-output" class="bg-black text-green-400 p-4 rounded-lg text-sm whitespace-pre-wrap font-mono border border-gray-700 max-h-[34rem] overflow-y-auto shadow-inner"></pre>
-        </div>
-
-        <div id="error-message" class="mt-4 text-center text-red-400 font-medium hidden"></div>
 
         <div class="text-center mt-8 pt-4 border-t border-gray-700 text-gray-500 text-sm">
             &copy; <script>document.write(new Date().getFullYear())</script> SHADER7 • Developed by <a href="https://instagram.com/nishix_vamp" target="_blank" rel="noopener noreferrer" class="text-indigo-400 hover:underline">@nishix_vamp</a>
@@ -421,12 +451,14 @@
                 ['side-top', 'side-bottom', 'side-left', 'side-right'].forEach(id => {
                     document.getElementById(id).checked = true;
                 });
+                updatePreview();
             });
 
             clearAllBtn.addEventListener('click', () => {
                 ['side-top', 'side-bottom', 'side-left', 'side-right'].forEach(id => {
                     document.getElementById(id).checked = false;
                 });
+                updatePreview();
             });
 
             generateBtn.addEventListener('click', () => {
@@ -829,6 +861,324 @@
 
                 return code;
             }
+
+            function updatePreview() {
+                try {
+                    const p = getInputs();
+                    drawPartGeometry(p);
+                } catch (e) {
+                    // Quietly fail or draw empty if inputs are invalid during typing
+                }
+            }
+
+            function drawPartGeometry(p) {
+                const canvas = document.getElementById('xy-canvas');
+                if (!canvas) return;
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                let xMin, xMax, yMin, yMax;
+                switch (p.origin) {
+                    case 'center':
+                        xMin = -p.x / 2; xMax = p.x / 2; yMin = -p.y / 2; yMax = p.y / 2;
+                        break;
+                    case 'bl':
+                        xMin = 0; xMax = p.x; yMin = 0; yMax = p.y;
+                        break;
+                    case 'tr':
+                        xMin = -p.x; xMax = 0; yMin = -p.y; yMax = 0;
+                        break;
+                    case 'tl':
+                        xMin = 0; xMax = p.x; yMin = -p.y; yMax = 0;
+                        break;
+                    case 'br':
+                    default:
+                        xMin = -p.x; xMax = 0; yMin = 0; yMax = p.y;
+                        break;
+                }
+
+                const padding = 35;
+                const scaleX = (canvas.width - padding * 2) / p.x;
+                const scaleY = (canvas.height - padding * 2) / p.y;
+                const scale = Math.min(scaleX, scaleY);
+
+                const wcx = (xMin + xMax) / 2;
+                const wcy = (yMin + yMax) / 2;
+
+                const toCanvasX = (wx) => canvas.width / 2 + (wx - wcx) * scale;
+                const toCanvasY = (wy) => canvas.height / 2 - (wy - wcy) * scale;
+
+                // Draw background grid
+                ctx.strokeStyle = '#1e293b';
+                ctx.lineWidth = 1;
+                for (let x = 0; x <= canvas.width; x += 20) {
+                    ctx.beginPath();
+                    ctx.moveTo(x, 0);
+                    ctx.lineTo(x, canvas.height);
+                    ctx.stroke();
+                }
+                for (let y = 0; y <= canvas.height; y += 20) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(canvas.width, y);
+                    ctx.stroke();
+                }
+
+                // Draw raw stock fill
+                const cxMin = toCanvasX(xMin);
+                const cxMax = toCanvasX(xMax);
+                const cyMin = toCanvasY(yMin);
+                const cyMax = toCanvasY(yMax);
+                
+                ctx.fillStyle = 'rgba(30, 41, 59, 0.4)';
+                ctx.fillRect(cxMin, cyMax, cxMax - cxMin, cyMin - cyMax);
+
+                // Draw raw stock borders
+                const sides = [
+                    { start: [xMin, yMin], end: [xMax, yMin], active: p.sides.bottom },
+                    { start: [xMax, yMin], end: [xMax, yMax], active: p.sides.right },
+                    { start: [xMax, yMax], end: [xMin, yMax], active: p.sides.top },
+                    { start: [xMin, yMax], end: [xMin, yMin], active: p.sides.left }
+                ];
+
+                ctx.setLineDash([]);
+                sides.forEach(s => {
+                    ctx.beginPath();
+                    ctx.moveTo(toCanvasX(s.start[0]), toCanvasY(s.start[1]));
+                    ctx.lineTo(toCanvasX(s.end[0]), toCanvasY(s.end[1]));
+                    if (s.active) {
+                        ctx.strokeStyle = '#06b6d4'; // teal-500
+                        ctx.lineWidth = 3;
+                    } else {
+                        ctx.strokeStyle = '#4b5563'; // gray-600
+                        ctx.lineWidth = 1.5;
+                    }
+                    ctx.stroke();
+                });
+
+                // Draw chamfer inner dashed border (the bevel limit)
+                const finalOffset = (Math.abs(p.finalZ) - Math.abs(p.startZ)) / Math.tan(p.angle * Math.PI / 180);
+                if (finalOffset > 0 && finalOffset < Math.min(p.x, p.y) / 2) {
+                    ctx.strokeStyle = 'rgba(245, 158, 11, 0.5)'; // amber-500
+                    ctx.lineWidth = 1.5;
+                    ctx.setLineDash([4, 4]);
+                    
+                    const ixMin = xMin + (p.sides.left ? finalOffset : 0);
+                    const ixMax = xMax - (p.sides.right ? finalOffset : 0);
+                    const iyMin = yMin + (p.sides.bottom ? finalOffset : 0);
+                    const iyMax = yMax - (p.sides.top ? finalOffset : 0);
+                    
+                    ctx.beginPath();
+                    ctx.strokeRect(toCanvasX(ixMin), toCanvasY(iyMax), toCanvasX(ixMax) - toCanvasX(ixMin), toCanvasY(iyMin) - toCanvasY(iyMax));
+                }
+                ctx.setLineDash([]);
+
+                // Draw coordinate origin (G54)
+                const cx0 = toCanvasX(0);
+                const cy0 = toCanvasY(0);
+                ctx.strokeStyle = '#f59e0b'; // amber-500
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.moveTo(cx0 - 12, cy0);
+                ctx.lineTo(cx0 + 12, cy0);
+                ctx.moveTo(cx0, cy0 - 12);
+                ctx.lineTo(cx0, cy0 + 12);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.arc(cx0, cy0, 3, 0, 2 * Math.PI);
+                ctx.fillStyle = '#f59e0b';
+                ctx.fill();
+
+                // Trace toolpaths
+                const selectedSides = [p.sides.bottom, p.sides.right, p.sides.top, p.sides.left];
+                
+                function buildChainsLocal(sideState) {
+                    const active = [];
+                    for (let i = 0; i < 4; i++) {
+                        if (sideState[i]) active.push(i);
+                    }
+                    if (active.length === 0) return [];
+                    if (active.length === 4) return [[0, 1, 2, 3]];
+                    if (sideState[2] && sideState[0] && !sideState[1] && !sideState[3]) return [[2], [0]];
+                    if (sideState[1] && sideState[3] && !sideState[0] && !sideState[2]) return [[1], [3]];
+                    const chains = [];
+                    const visited = [false, false, false, false];
+                    for (let i = 0; i < 4; i++) {
+                        if (!sideState[i] || visited[i]) continue;
+                        const prev = sideState[(i + 3) % 4];
+                        if (prev) continue;
+                        const chain = [i];
+                        visited[i] = true;
+                        let idx = (i + 1) % 4;
+                        while (sideState[idx] && !visited[idx]) {
+                            chain.push(idx);
+                            visited[idx] = true;
+                            idx = (idx + 1) % 4;
+                        }
+                        chains.push(chain);
+                    }
+                    for (let i = 0; i < 4; i++) {
+                        if (sideState[i] && !visited[i]) {
+                            chains.push([i]);
+                            visited[i] = true;
+                        }
+                    }
+                    return chains;
+                }
+
+                const chains = buildChainsLocal(selectedSides);
+                if (!chains.length) return;
+
+                const passes = [];
+                let z = p.startZ;
+                while (z > p.finalZ) {
+                    z -= p.doc;
+                    if (z < p.finalZ) z = p.finalZ;
+                    passes.push(z);
+                }
+
+                const toolRadius = p.toolDia / 2;
+                const totalSafety = toolRadius + p.safety;
+
+                passes.forEach((passZ, passIndex) => {
+                    const opacity = 0.3 + (passIndex / passes.length) * 0.7;
+                    ctx.strokeStyle = `rgba(16, 185, 129, ${opacity})`;
+                    ctx.lineWidth = 2;
+
+                    chains.forEach((baseChain, chainIndex) => {
+                        const reversePass = (p.cutMode === 'double') ? (passIndex % 2 === 1) : false;
+                        const chain = reversePass ? [...baseChain].reverse() : [...baseChain];
+                        
+                        const oVal = (Math.abs(p.finalZ) - Math.abs(passZ)) / Math.tan(p.angle * Math.PI / 180);
+                        const x1 = xMin + oVal;
+                        const x2 = xMax - oVal;
+                        const y1 = yMin + oVal;
+                        const y2 = yMax - oVal;
+
+                        const startSide = chain[0];
+                        const lastSide = chain[chain.length - 1];
+
+                        let points = [];
+                        let appX, appY;
+                        if (startSide === 0) {
+                            appX = reversePass ? xMax : xMin; appY = y1 - totalSafety;
+                        } else if (startSide === 1) {
+                            appX = x2 + totalSafety; appY = reversePass ? yMax : yMin;
+                        } else if (startSide === 2) {
+                            appX = reversePass ? xMin : xMax; appY = y2 + totalSafety;
+                        } else {
+                            appX = x1 - totalSafety; appY = reversePass ? yMin : yMax;
+                        }
+                        points.push([appX, appY, 'approach']);
+
+                        let engX, engY;
+                        if (startSide === 0) {
+                            engX = reversePass ? xMax : xMin; engY = y1 - toolRadius;
+                        } else if (startSide === 1) {
+                            engX = x2 + toolRadius; engY = reversePass ? yMax : yMin;
+                        } else if (startSide === 2) {
+                            engX = reversePass ? xMin : xMax; engY = y2 + toolRadius;
+                        } else {
+                            engX = x1 - toolRadius; engY = reversePass ? yMin : yMax;
+                        }
+                        points.push([engX, engY, 'feed']);
+
+                        chain.forEach((side, idx) => {
+                            const isLast = idx === chain.length - 1;
+                            let targetX, targetY;
+                            if (side === 0) {
+                                targetY = y1 - toolRadius;
+                                if (isLast) {
+                                    targetX = reversePass ? xMin : xMax;
+                                } else {
+                                    targetX = reversePass ? (x1 - toolRadius) : (x2 + toolRadius);
+                                }
+                            } else if (side === 1) {
+                                targetX = x2 + toolRadius;
+                                if (isLast) {
+                                    targetY = reversePass ? yMin : yMax;
+                                } else {
+                                    targetY = reversePass ? (y1 - toolRadius) : (y2 + toolRadius);
+                                }
+                            } else if (side === 2) {
+                                targetY = y2 + toolRadius;
+                                if (isLast) {
+                                    targetX = reversePass ? xMax : xMin;
+                                } else {
+                                    targetX = reversePass ? (x2 + toolRadius) : (x1 - toolRadius);
+                                }
+                            } else if (side === 3) {
+                                targetX = x1 - toolRadius;
+                                if (isLast) {
+                                    targetY = reversePass ? yMax : yMin;
+                                } else {
+                                    targetY = reversePass ? (y2 + toolRadius) : (y1 - toolRadius);
+                                }
+                            }
+                            points.push([targetX, targetY, 'feed']);
+                        });
+
+                        const lastPt = points[points.length - 1];
+                        let disX = lastPt[0];
+                        let disY = lastPt[1];
+                        if (lastSide === 0) disY = y1 - totalSafety;
+                        else if (lastSide === 1) disX = x2 + totalSafety;
+                        else if (lastSide === 2) disY = y2 + totalSafety;
+                        else if (lastSide === 3) disX = x1 - totalSafety;
+                        points.push([disX, disY, 'rapid']);
+
+                        ctx.beginPath();
+                        ctx.moveTo(toCanvasX(points[0][0]), toCanvasY(points[0][1]));
+                        for (let i = 1; i < points.length; i++) {
+                            ctx.lineTo(toCanvasX(points[i][0]), toCanvasY(points[i][1]));
+                        }
+                        ctx.stroke();
+
+                        if (points.length >= 3) {
+                            const pt1 = points[1];
+                            const pt2 = points[points.length - 2];
+                            const mx = (pt1[0] + pt2[0]) / 2;
+                            const my = (pt1[1] + pt2[1]) / 2;
+                            const cxm = toCanvasX(mx);
+                            const cym = toCanvasY(my);
+
+                            const dx = pt2[0] - pt1[0];
+                            const dy = pt2[1] - pt1[1];
+                            const len = Math.sqrt(dx*dx + dy*dy);
+                            if (len > 5) {
+                                const ux = dx / len;
+                                const uy = dy / len;
+                                ctx.fillStyle = `rgba(16, 185, 129, ${opacity})`;
+                                ctx.beginPath();
+                                ctx.moveTo(cxm + ux * 6, cym - uy * 6);
+                                ctx.lineTo(cxm - ux * 4 - uy * 4, cym + uy * 4 - ux * 4);
+                                ctx.lineTo(cxm - ux * 4 + uy * 4, cym + uy * 4 + ux * 4);
+                                ctx.closePath();
+                                ctx.fill();
+                            }
+                        }
+                    });
+                });
+            }
+
+            // Hook up live updates to all inputs
+            const inputIds = [
+                'part-x', 'part-y', 'origin-pos', 'start-z', 'final-z', 'doc',
+                'angle', 'tool-dia', 'safety', 'z-retract', 'tool-num',
+                'tool-offset-d', 'feed', 'rpm', 'spindle-mode', 'cut-mode',
+                'side-top', 'side-bottom', 'side-left', 'side-right'
+            ];
+            inputIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('input', updatePreview);
+                    el.addEventListener('change', updatePreview);
+                }
+            });
+
+            // Initial preview on load
+            updatePreview();
         });
     </script>
   <!-- Tailwind CSS loaded with defer at the bottom of body to ensure non-blocking page load -->

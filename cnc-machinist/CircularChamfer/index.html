@@ -301,6 +301,30 @@ input, select{
   transition: border-color 0.2s;
 }
 
+.input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.input-unit {
+  position: absolute;
+  right: 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--muted);
+  font-size: 11px;
+  font-family: monospace;
+  pointer-events: none;
+}
+
+input[type="number"] {
+  padding-right: 54px;
+}
+
 input:focus, select:focus{
   border-color:#6366f1;
 }
@@ -452,52 +476,82 @@ pre{
       <div class="form-grid">
         <div class="field">
           <label for="start-depth">Start Depth (#1)</label>
-          <input id="start-depth" type="number" step="any" value="1">
+          <div class="input-group">
+            <input id="start-depth" type="number" step="any" value="1">
+            <span class="input-unit">mm</span>
+          </div>
         </div>
 
         <div class="field">
           <label for="final-depth">Final Depth (#2)</label>
-          <input id="final-depth" type="number" step="any" value="-15">
+          <div class="input-group">
+            <input id="final-depth" type="number" step="any" value="-15">
+            <span class="input-unit">mm</span>
+          </div>
         </div>
 
         <div class="field">
           <label for="diameter">Base Diameter (#3)</label>
-          <input id="diameter" type="number" step="any" value="51">
+          <div class="input-group">
+            <input id="diameter" type="number" step="any" value="51">
+            <span class="input-unit">mm</span>
+          </div>
         </div>
 
         <div class="field">
           <label for="angle">Chamfer Angle (#4)</label>
-          <input id="angle" type="number" step="any" value="45">
+          <div class="input-group">
+            <input id="angle" type="number" step="any" value="45">
+            <span class="input-unit">°</span>
+          </div>
         </div>
 
         <div class="field">
           <label for="z-step">Z Step (#6)</label>
-          <input id="z-step" type="number" step="any" value="0.5">
+          <div class="input-group">
+            <input id="z-step" type="number" step="any" value="0.5">
+            <span class="input-unit">mm</span>
+          </div>
         </div>
 
         <div class="field">
           <label for="d-reg">Tool Offset Register D (#7)</label>
-          <input id="d-reg" type="number" step="1" value="11">
+          <div class="input-group">
+            <input id="d-reg" type="number" step="1" value="11">
+            <span class="input-unit">reg</span>
+          </div>
         </div>
 
         <div class="field">
           <label for="f-cut">Cut Feedrate (F)</label>
-          <input id="f-cut" type="number" step="any" value="500">
+          <div class="input-group">
+            <input id="f-cut" type="number" step="any" value="500">
+            <span class="input-unit">mm/m</span>
+          </div>
         </div>
 
         <div class="field">
           <label for="f-retract">Retract Feedrate (F)</label>
-          <input id="f-retract" type="number" step="any" value="1000">
+          <div class="input-group">
+            <input id="f-retract" type="number" step="any" value="1000">
+            <span class="input-unit">mm/m</span>
+          </div>
         </div>
 
         <div class="field">
           <label for="safe-z">Safe Z Retract</label>
-          <input id="safe-z" type="number" step="any" value="200">
+          <div class="input-group">
+            <input id="safe-z" type="number" step="any" value="200">
+            <span class="input-unit">mm</span>
+          </div>
         </div>
 
         <div class="field">
           <label for="prog-num">Program Number (O)</label>
-          <input id="prog-num" type="number" step="1" value="6999">
+          <div class="input-group">
+            <input id="prog-num" type="number" step="1" value="6999">
+            <span class="input-unit">num</span>
+          </div>
         </div>
 
         <div class="field full">
@@ -523,6 +577,16 @@ pre{
     </div>
 
     <div class="panel">
+      <div class="output-header">
+        <h2>Live Toolpath Preview</h2>
+      </div>
+      <div style="display: flex; justify-content: center; align-items: center; background: #020617; border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 20px; flex-direction: column;">
+        <canvas id="chamfer-canvas" width="260" height="260" style="background: #020617; border-radius: 8px; max-width: 100%;"></canvas>
+        <div id="canvas-legend" style="color: var(--muted); font-size: 11px; margin-top: 8px; text-align: center;">
+          Blue circle: Base Diameter. Dashed green circle: Chamfer outer diameter. Orange circles: Pass stepdowns.
+        </div>
+      </div>
+
       <div class="output-header">
         <h2>Generated Code</h2>
         <div class="status" id="status">Ready</div>
@@ -697,18 +761,117 @@ function downloadFile(){
   setTimeout(() => setStatus("Ready"), 2000);
 }
 
+// Canvas visualizer
+const canvas = document.getElementById('chamfer-canvas');
+const ctx = canvas.getContext('2d');
+
+function drawChamferPattern() {
+  const dia = val("diameter");
+  const ang = val("angle");
+  const z1 = val("start-depth");
+  const z2 = val("final-depth");
+  
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+  if (dia <= 0 || ang <= 0 || ang >= 90 || z1 <= z2) {
+    ctx.fillStyle = '#64748b';
+    ctx.font = '13px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Enter valid parameters to preview', canvas.width / 2, canvas.height / 2);
+    return;
+  }
+  
+  const cx = canvas.width / 2;
+  const cy = canvas.height / 2;
+  
+  // Draw axis line style
+  ctx.strokeStyle = '#334155';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4, 4]);
+  ctx.beginPath();
+  ctx.moveTo(10, cy); ctx.lineTo(canvas.width - 10, cy);
+  ctx.moveTo(cx, 10); ctx.lineTo(cx, canvas.height - 10);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  
+  // draw center mark
+  ctx.strokeStyle = '#f59e0b';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.arc(cx, cy, 3, 0, 2 * Math.PI);
+  ctx.stroke();
+  
+  // Base circle drawn radius = 70px
+  const baseR = 70;
+  
+  // Draw base circle (representing the hole diameter #3)
+  ctx.strokeStyle = '#38bdf8'; // sky blue
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(cx, cy, baseR, 0, 2 * Math.PI);
+  ctx.stroke();
+  
+  // Calculate outer chamfer circle radius based on depth and angle
+  const depthDiff = Math.abs(z1 - z2);
+  const chamferW = depthDiff * Math.tan(ang * Math.PI / 180);
+  
+  // scale it visually
+  const visChamferW = Math.max(5, Math.min(25, baseR * (chamferW / (dia / 2))));
+  const outerR = baseR + visChamferW;
+  
+  // Draw chamfer outer circle (dashed)
+  ctx.strokeStyle = '#10b981'; // emerald green
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([6, 3]);
+  ctx.beginPath();
+  ctx.arc(cx, cy, outerR, 0, 2 * Math.PI);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  
+  // Draw tool path stepdowns
+  ctx.strokeStyle = 'rgba(245, 158, 11, 0.45)'; // orange with opacity
+  ctx.lineWidth = 1.2;
+  ctx.setLineDash([2, 2]);
+  
+  const zStep = val("z-step");
+  if (zStep > 0) {
+    let currentZ = z1;
+    let passesCount = 0;
+    while (currentZ > z2 && passesCount < 30) {
+      const distToBase = Math.abs(currentZ - z2);
+      const radAtZ = (dia / 2) + (distToBase * Math.tan(ang * Math.PI / 180));
+      const scaledR = baseR * (radAtZ / (dia / 2));
+      
+      ctx.beginPath();
+      ctx.arc(cx, cy, scaledR, 0, 2 * Math.PI);
+      ctx.stroke();
+      
+      currentZ -= zStep;
+      passesCount++;
+    }
+  }
+  ctx.setLineDash([]);
+}
+
 function enableLiveUpdate(){
   const inputs = document.querySelectorAll("input, select");
 
   inputs.forEach(el => {
-    el.addEventListener("input", generate);
-    el.addEventListener("change", generate);
+    el.addEventListener("input", () => {
+      generate();
+      drawChamferPattern();
+    });
+    el.addEventListener("change", () => {
+      generate();
+      drawChamferPattern();
+    });
   });
 }
 
 window.addEventListener("load", () => {
   enableLiveUpdate();
   generate();
+  drawChamferPattern();
 });
 </script>
 

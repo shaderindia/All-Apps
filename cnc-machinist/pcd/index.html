@@ -313,13 +313,19 @@
 
                     <!-- Coordinates Output -->
                     <div id="pcd-results" class="pt-4 border-t border-gray-700 hidden">
-                        <h2 class="text-lg font-semibold text-center text-teal-400 mb-2">Generated Coordinates</h2>
+                        <div class="flex justify-between items-center mb-2">
+                            <h2 class="text-lg font-semibold text-teal-400">Generated Coordinates</h2>
+                            <button id="copy-coords-btn" class="text-xs bg-gray-700 hover:bg-gray-600 text-white py-1 px-3 rounded transition" type="button">Copy Code</button>
+                        </div>
                         <pre id="coordinates-output" class="bg-gray-900 text-white p-4 rounded-lg text-xs font-mono whitespace-pre-wrap max-h-60 overflow-auto border border-gray-750"></pre>
                     </div>
 
                     <!-- G-Code Output -->
                     <div id="gcode-results" class="pt-4 border-t border-gray-700 hidden">
-                        <h2 class="text-lg font-semibold text-center text-sky-400 mb-2">Generated G-Code (Fanuc)</h2>
+                        <div class="flex justify-between items-center mb-2">
+                            <h2 class="text-lg font-semibold text-sky-400">Generated G-Code (Fanuc)</h2>
+                            <button id="copy-gcode-btn" class="text-xs bg-gray-700 hover:bg-gray-600 text-white py-1 px-3 rounded transition" type="button">Copy Code</button>
+                        </div>
                         <pre id="gcode-output" class="bg-gray-900 text-white p-4 rounded-lg text-xs font-mono whitespace-pre-wrap max-h-60 overflow-auto border border-gray-750"></pre>
                     </div>
 
@@ -393,6 +399,8 @@
         const coordinatesOutput = document.getElementById('coordinates-output');
         const gcodeOutput = document.getElementById('gcode-output');
         const errorMessage = document.getElementById('error-message');
+        const copyCoordsBtn = document.getElementById('copy-coords-btn');
+        const copyGcodeBtn = document.getElementById('copy-gcode-btn');
 
         const calcRpmDisplay = document.getElementById('calc-rpm-display');
         const calcFeedDisplay = document.getElementById('calc-feed-display');
@@ -660,6 +668,38 @@
                 }
                 generateAndDownloadPdf(data);
             }
+        });
+
+        copyCoordsBtn.addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(coordinatesOutput.textContent);
+            } catch {
+                const ta = document.createElement('textarea');
+                ta.value = coordinatesOutput.textContent;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+            }
+            const oldText = copyCoordsBtn.textContent;
+            copyCoordsBtn.textContent = 'Copied!';
+            setTimeout(() => copyCoordsBtn.textContent = oldText, 1500);
+        });
+
+        copyGcodeBtn.addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(gcodeOutput.textContent);
+            } catch {
+                const ta = document.createElement('textarea');
+                ta.value = gcodeOutput.textContent;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+            }
+            const oldText = copyGcodeBtn.textContent;
+            copyGcodeBtn.textContent = 'Copied!';
+            setTimeout(() => copyGcodeBtn.textContent = oldText, 1500);
         });
 
         // Functions
