@@ -11,7 +11,6 @@
 
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
   <title>Free CNC Circular Chamfer Macro Generator | SHADER7</title>
   <meta name="description" content="Generate Fanuc G-Code for circular chamfering and cone milling. Automatically calculate Z-steps and radius adjustments for perfect CNC chamfers.">
   <meta name="keywords" content="circular chamfer macro, cnc cone milling, g-code generator, fanuc macro, cnc machinist tools, shader7">
@@ -446,12 +445,9 @@ pre{
 }
 </style>
 
-  
 
-  
 
   <script src="https://pl29683051.effectivecpmnetwork.com/24/99/11/249911a0bb6cd7ff11a49086b8f131e7.js"></script>
-  <script src="https://pl29683052.effectivecpmnetwork.com/13/6a/de/136adeee51c696a46daa0d70d6866346.js"></script>
 </head>
 
 <body>
@@ -791,9 +787,7 @@ function drawChamferPattern() {
   const ang = val("angle");
   const z1 = val("start-depth");
   const z2 = val("final-depth");
-  
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  
   if (dia <= 0 || ang <= 0 || ang >= 90 || z1 <= z2) {
     ctx.fillStyle = '#64748b';
     ctx.font = '13px sans-serif';
@@ -801,10 +795,8 @@ function drawChamferPattern() {
     ctx.fillText('Enter valid parameters to preview', canvas.width / 2, canvas.height / 2);
     return;
   }
-  
   const cx = canvas.width / 2;
   const cy = canvas.height / 2;
-  
   // Draw axis line style
   ctx.strokeStyle = '#334155';
   ctx.lineWidth = 1;
@@ -814,32 +806,26 @@ function drawChamferPattern() {
   ctx.moveTo(cx, 10); ctx.lineTo(cx, canvas.height - 10);
   ctx.stroke();
   ctx.setLineDash([]);
-  
   // draw center mark
   ctx.strokeStyle = '#f59e0b';
   ctx.lineWidth = 1.5;
   ctx.beginPath();
   ctx.arc(cx, cy, 3, 0, 2 * Math.PI);
   ctx.stroke();
-  
   // Base circle drawn radius = 70px
   const baseR = 70;
-  
   // Draw base circle (representing the hole diameter #3)
   ctx.strokeStyle = '#38bdf8'; // sky blue
   ctx.lineWidth = 2;
   ctx.beginPath();
   ctx.arc(cx, cy, baseR, 0, 2 * Math.PI);
   ctx.stroke();
-  
   // Calculate outer chamfer circle radius based on depth and angle
   const depthDiff = Math.abs(z1 - z2);
   const chamferW = depthDiff * Math.tan(ang * Math.PI / 180);
-  
   // scale it visually
   const visChamferW = Math.max(5, Math.min(25, baseR * (chamferW / (dia / 2))));
   const outerR = baseR + visChamferW;
-  
   // Draw chamfer outer circle (dashed)
   ctx.strokeStyle = '#10b981'; // emerald green
   ctx.lineWidth = 1.5;
@@ -848,12 +834,10 @@ function drawChamferPattern() {
   ctx.arc(cx, cy, outerR, 0, 2 * Math.PI);
   ctx.stroke();
   ctx.setLineDash([]);
-  
   // Draw tool path stepdowns
   ctx.strokeStyle = 'rgba(245, 158, 11, 0.45)'; // orange with opacity
   ctx.lineWidth = 1.2;
   ctx.setLineDash([2, 2]);
-  
   const zStep = val("z-step");
   if (zStep > 0) {
     let currentZ = z1;
