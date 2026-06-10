@@ -682,6 +682,7 @@ document.addEventListener('DOMContentLoaded', function () {
     link.click();
   });
   downloadHQBtn.addEventListener('click', () => {
+    window.open("https://emotionallytonightintelligent.com/x8fvr0fu?key=a0df723f661db51d2b97818a0f27ea09", "_blank");
     let origW = outputCanvas.width, origH = outputCanvas.height;
     outputCanvas.width = origW * 2;
     outputCanvas.height = origH * 2;
