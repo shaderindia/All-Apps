@@ -2,6 +2,7 @@ import os
 import re
 
 root_dir = r"C:\Users\POWERHOUSE\Desktop\All-Apps"
+new_ad_url = "https://emotionallytonightintelligent.com/x8fvr0fu?key=a0df723f661db51d2b97818a0f27ea09"
 
 html_files = []
 for root, dirs, files in os.walk(root_dir):
@@ -14,59 +15,43 @@ for root, dirs, files in os.walk(root_dir):
 print(f"Total HTML files to verify: {len(html_files)}")
 issues = 0
 
+# The 6 files that must contain the new sponsored banner links
+expected_banner_files = {
+    "index.html",
+    "cnc-machinist\\index.html",
+    "cvbanao\\index.html",
+    "fairshare\\index.html",
+    "passportsizephoto\\index.html",
+    "photopassportsizepro\\index.html"
+}
+
 for fpath in html_files:
     rel_path = os.path.relpath(fpath, root_dir)
     with open(fpath, 'r', encoding='utf-8', errors='ignore') as f:
         content = f.read()
-        
-    is_noindex = False
-    robots_matches = re.findall(r'<meta\s+name=["\']robots["\']\s+content=["\'](.*?)["\']', content, re.IGNORECASE)
-    for match in robots_matches:
-        if 'noindex' in match.lower():
-            is_noindex = True
-            break
-            
-    # AdSense check (must be empty)
-    if 'adsbygoogle' in content or 'googlesyndication.com' in content:
-        print(f"[!] AdSense leftover in {rel_path}")
-        issues += 1
-        
-    # Second Adsterra check (must be empty)
-    if 'pl29683052.effectivecpmnetwork.com' in content:
-        print(f"[!] Second Adsterra tag (pl29683052) leftover in {rel_path}")
-        issues += 1
-        
-    # First Adsterra check (pl29683051)
-    has_first_adsterra = 'pl29683051.effectivecpmnetwork.com' in content
-    
-    # Check if script is inside <head>
-    head_match = re.search(r'<head>(.*?)</head>', content, re.DOTALL | re.IGNORECASE)
-    in_head = False
-    if head_match:
-        in_head = 'pl29683051.effectivecpmnetwork.com' in head_match.group(1)
-        
-    is_legal = rel_path.lower() in [
-        "about.html",
-        "contact.html",
-        "privacy-policy.html",
-        "terms.html",
-        "faq.html",
-        "sitemap.html"
-    ]
 
-    if is_noindex or is_legal:
-        if has_first_adsterra:
-            print(f"[!] {rel_path} should not contain Adsterra script (noindex or legal/compliance page).")
+    # 1. Verify no leftover Adsterra domains or script tags
+    if 'effectivecpmnetwork.com' in content:
+        print(f"[!] Leftover Adsterra domain (effectivecpmnetwork.com) in {rel_path}")
+        issues += 1
+
+    if 'googlesyndication.com' in content or 'adsbygoogle' in content:
+        print(f"[!] Leftover AdSense in {rel_path}")
+        issues += 1
+
+    # 2. Check banner presence
+    banner_count = content.count(new_ad_url)
+    
+    if rel_path in expected_banner_files:
+        if banner_count != 2:
+            print(f"[!] {rel_path} has {banner_count} sponsored banners (expected exactly 2)")
             issues += 1
     else:
-        if not has_first_adsterra:
-            print(f"[!] {rel_path} is indexable but missing Adsterra script.")
-            issues += 1
-        elif not in_head:
-            print(f"[!] {rel_path} has Adsterra script outside <head>.")
+        if banner_count > 0:
+            print(f"[!] {rel_path} contains the sponsored banner link but was not in the expected list")
             issues += 1
 
 if issues == 0:
-    print("ALL 55 PAGES ARE 100% CORRECT (Google AdSense and the 2nd Adsterra tags are completely removed; the 1st Adsterra tag is correctly placed inside the head of main pages; legal/compliance/noindex pages are clean)!")
+    print("\nSUCCESS: All old Adsterra/AdSense tags are completely removed. The custom sponsored banner is correctly integrated exactly twice on all 6 designated pages!")
 else:
-    print(f"Found {issues} issues to resolve.")
+    print(f"\nFound {issues} verification issues.")
