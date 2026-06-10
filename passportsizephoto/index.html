@@ -810,65 +810,328 @@
   <script src="script.js?v=1.0.2"></script>
 
   <!-- ═══════════════ PRO LAUNCH OVERLAY ═══════════════ -->
-  <div id="pro-launch-overlay" style="display:none; position:fixed; inset:0; z-index:99999; background:#000; overflow:hidden;" aria-modal="true" role="dialog" aria-label="Pro Version Loading">
-    <canvas id="pro-sparkle-canvas" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;"></canvas>
+  <div id="pro-launch-overlay" aria-modal="true" role="dialog" aria-label="Pro Version Loading">
+    <canvas id="pro-sparkle-canvas"></canvas>
 
     <!-- Phase 1: Countdown -->
-    <div id="pro-countdown-phase" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;">
-      <p style="color:rgba(255,255,255,0.5);font-family:system-ui,sans-serif;font-size:1rem;letter-spacing:2px;text-transform:uppercase;margin-bottom:28px;">Pro Version is Loading</p>
-      <div id="pro-countdown-num" style="font-family:system-ui,sans-serif;font-size:clamp(8rem,22vw,18rem);font-weight:900;color:#fff;line-height:1;text-align:center;text-shadow:0 0 60px rgba(99,102,241,0.9),0 0 120px rgba(99,102,241,0.5);transform:scale(1);opacity:1;transition:transform 0.25s cubic-bezier(.34,1.56,.64,1),opacity 0.2s;">3</div>
+    <div id="pro-countdown-phase">
+      <p class="pro-loading-text">Pro Version is Loading</p>
+      <div id="pro-countdown-num">3</div>
     </div>
 
     <!-- Phase 2: Welcome Screen -->
-    <div id="pro-welcome-phase" style="display:none;position:absolute;inset:0;align-items:center;justify-content:center;flex-direction:column;padding:24px;">
-      <div style="max-width:520px;width:100%;text-align:center;">
+    <div id="pro-welcome-phase">
+      <div class="pro-welcome-inner">
         <!-- Crown icon -->
-        <div style="font-size:3.5rem;margin-bottom:12px;filter:drop-shadow(0 0 20px gold);">✨👑✨</div>
-        <h1 id="pro-welcome-title" style="font-family:system-ui,sans-serif;font-size:clamp(1.6rem,5vw,2.8rem);font-weight:900;color:#fff;margin:0 0 6px;letter-spacing:-1px;opacity:0;transform:translateY(20px);transition:opacity 0.5s,transform 0.5s;">Welcome to Passport Size Photo PRO</h1>
-        <p style="color:rgba(255,255,255,0.55);font-family:system-ui,sans-serif;font-size:0.9rem;margin-bottom:28px;opacity:0;transform:translateY(15px);transition:opacity 0.5s 0.15s,transform 0.5s 0.15s;" id="pro-welcome-sub">Everything Unlocked. Zero Cost. Forever Free.</p>
+        <div class="pro-crown">✨👑✨</div>
+        <h1 id="pro-welcome-title" class="pro-title">Welcome to Passport Size Photo PRO</h1>
+        <p id="pro-welcome-sub" class="pro-sub">Everything Unlocked. Zero Cost. Forever Free.</p>
 
         <!-- Feature cards -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px;">
+        <div class="pro-feat-grid">
           <div class="pro-feat-card" style="--d:0s">🪄<br><strong>Remove Background</strong><br><small>AI-powered instant BG removal</small></div>
           <div class="pro-feat-card" style="--d:0.08s">🎨<br><strong>Change BG Colour</strong><br><small>Any color — official or custom</small></div>
           <div class="pro-feat-card" style="--d:0.16s">🔓<br><strong>No Login • No Registration</strong><br><small>Jump straight in, no account needed</small></div>
           <div class="pro-feat-card" style="--d:0.24s">⬇️<br><strong>HD Quality Download</strong><br><small>Full-resolution prints, every time</small></div>
         </div>
 
-        <div style="background:linear-gradient(135deg,rgba(99,102,241,0.25),rgba(139,92,246,0.25));border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:10px 16px;margin-bottom:24px;opacity:0;transform:translateY(10px);transition:opacity 0.5s 0.4s,transform 0.5s 0.4s;" id="pro-free-badge">
-          <span style="color:#a5f3fc;font-family:system-ui,sans-serif;font-size:0.85rem;font-weight:700;">🌟 ALL FREE ACCESS · FOREVER · NO STRINGS ATTACHED 🌟</span>
+        <div id="pro-free-badge" class="pro-badge">
+          <span>🌟 ALL FREE ACCESS · FOREVER · NO STRINGS ATTACHED 🌟</span>
         </div>
 
-        <button onclick="window.location.href='/photopassportsizepro/'" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;cursor:pointer;padding:15px 40px;border-radius:999px;font-weight:800;font-size:1.05rem;box-shadow:0 0 30px rgba(139,92,246,0.6);letter-spacing:0.5px;opacity:0;transform:scale(0.9);transition:opacity 0.4s 0.55s,transform 0.4s 0.55s;" id="pro-enter-btn">🚀 Enter Pro Version Now</button>
+        <button id="pro-enter-btn" class="pro-btn" onclick="window.location.href='/photopassportsizepro/'">🚀 Enter Pro Version Now</button>
       </div>
     </div>
   </div>
 
   <style>
-    .pro-feat-card {
-      background: rgba(255,255,255,0.07);
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 14px;
-      padding: 14px 10px;
+    /* Base Overlay & Canvas */
+    #pro-launch-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      background: #000;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      box-sizing: border-box;
+    }
+    #pro-sparkle-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    /* Phase 1: Countdown */
+    #pro-countdown-phase {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      pointer-events: none;
+    }
+    .pro-loading-text {
+      color: rgba(255, 255, 255, 0.5);
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: clamp(0.85rem, 2.5vw, 1.1rem);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+    #pro-countdown-num {
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: clamp(7rem, 25vw, 16rem);
+      font-weight: 900;
       color: #fff;
-      font-family: system-ui, sans-serif;
-      font-size: 0.82rem;
-      line-height: 1.5;
+      line-height: 1;
+      text-align: center;
+      text-shadow: 0 0 60px rgba(99,102,241,0.9), 0 0 120px rgba(99,102,241,0.5);
+      transform: scale(1);
+      opacity: 1;
+      transition: transform 0.25s cubic-bezier(.34,1.56,.64,1), opacity 0.2s;
+    }
+
+    /* Phase 2: Welcome Screen Layout */
+    #pro-welcome-phase {
+      display: none;
+      box-sizing: border-box;
+      min-height: 100%;
+      width: 100%;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding: 32px 24px;
+      position: relative;
+    }
+    .pro-welcome-inner {
+      max-width: 520px;
+      width: 100%;
+      text-align: center;
+      margin: auto;
+      box-sizing: border-box;
+    }
+    .pro-crown {
+      font-size: clamp(2.5rem, 8vw, 3.5rem);
+      margin-bottom: 12px;
+      filter: drop-shadow(0 0 20px gold);
+      animation: pro-float 3s ease-in-out infinite;
+    }
+    @keyframes pro-float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    .pro-title {
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: clamp(1.6rem, 5.5vw, 2.6rem);
+      font-weight: 900;
+      color: #fff;
+      margin: 0 0 8px;
+      letter-spacing: -1px;
+      line-height: 1.2;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .pro-sub {
+      color: rgba(255, 255, 255, 0.6);
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: clamp(0.8rem, 2.5vw, 0.95rem);
+      margin: 0 auto 24px;
+      opacity: 0;
+      transform: translateY(15px);
+      transition: opacity 0.5s 0.15s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+      line-height: 1.4;
+    }
+
+    /* Grid & Cards */
+    .pro-feat-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .pro-feat-card {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 14px;
+      padding: 16px 10px;
+      color: #fff;
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: clamp(0.75rem, 2.2vw, 0.82rem);
+      line-height: 1.4;
       opacity: 0;
       transform: translateY(16px);
-      transition: opacity 0.45s var(--d, 0s), transform 0.45s var(--d, 0s), background 0.2s;
+      transition: opacity 0.45s var(--d, 0s) cubic-bezier(0.16, 1, 0.3, 1), 
+                  transform 0.45s var(--d, 0s) cubic-bezier(0.16, 1, 0.3, 1), 
+                  background 0.2s, border-color 0.2s, box-shadow 0.2s;
       cursor: default;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
     }
-    .pro-feat-card strong { display:block; font-size:0.93rem; margin: 4px 0 2px; }
-    .pro-feat-card small { color: rgba(255,255,255,0.5); font-size:0.75rem; }
-    .pro-feat-card:hover { background: rgba(99,102,241,0.25); }
-    .pro-feat-card.visible { opacity:1; transform:translateY(0); }
+    .pro-feat-card strong {
+      display: block;
+      font-size: clamp(0.85rem, 2.4vw, 0.95rem);
+      margin: 4px 0 2px;
+      color: #fff;
+    }
+    .pro-feat-card small {
+      color: rgba(255, 255, 255, 0.45);
+      font-size: clamp(0.7rem, 2vw, 0.76rem);
+      display: block;
+    }
+    .pro-feat-card:hover {
+      background: rgba(99, 102, 241, 0.2);
+      border-color: rgba(99, 102, 241, 0.4);
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.15);
+    }
+    .pro-feat-card.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Badge & Button */
+    .pro-badge {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(139, 92, 246, 0.25));
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      padding: 10px 16px;
+      margin-bottom: 24px;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.5s 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .pro-badge span {
+      color: #a5f3fc;
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: clamp(0.72rem, 2.2vw, 0.85rem);
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+    .pro-btn {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      padding: 14px 36px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: clamp(0.92rem, 2.5vw, 1.05rem);
+      box-shadow: 0 0 30px rgba(139, 92, 246, 0.6);
+      letter-spacing: 0.5px;
+      opacity: 0;
+      transform: scale(0.9);
+      transition: opacity 0.4s 0.55s cubic-bezier(0.16, 1, 0.3, 1), 
+                  transform 0.4s 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+                  box-shadow 0.2s, background 0.25s;
+    }
+    .pro-btn:hover {
+      box-shadow: 0 0 40px rgba(139, 92, 246, 0.8);
+      transform: scale(1.03);
+    }
+    .pro-btn:active {
+      transform: scale(0.97);
+    }
+
+    /* Pulse Background Animation */
     @keyframes pro-bg-pulse {
-      0%   { background: radial-gradient(ellipse at 30% 40%, #1a0a3e 0%, #000 70%); }
-      50%  { background: radial-gradient(ellipse at 70% 60%, #0e0730 0%, #000 70%); }
-      100% { background: radial-gradient(ellipse at 30% 40%, #1a0a3e 0%, #000 70%); }
+      0%   { background: radial-gradient(ellipse at 30% 40%, #160a36 0%, #000 70%); }
+      50%  { background: radial-gradient(ellipse at 70% 60%, #0c062c 0%, #000 70%); }
+      100% { background: radial-gradient(ellipse at 30% 40%, #160a36 0%, #000 70%); }
     }
-    #pro-launch-overlay.active { animation: pro-bg-pulse 4s ease-in-out infinite; }
+    #pro-launch-overlay.active {
+      animation: pro-bg-pulse 4s ease-in-out infinite;
+    }
+
+    /* ═══════════════ MEDIA QUERIES ═══════════════ */
+
+    /* Mobile Portrait (iPhone, Android) */
+    @media (max-width: 480px) {
+      #pro-welcome-phase {
+        padding: 24px 16px;
+      }
+      .pro-crown {
+        margin-bottom: 8px;
+      }
+      .pro-sub {
+        margin-bottom: 20px;
+      }
+      .pro-feat-grid {
+        gap: 8px;
+        margin-bottom: 20px;
+      }
+      .pro-feat-card {
+        padding: 12px 6px;
+        border-radius: 12px;
+      }
+      .pro-badge {
+        padding: 8px 12px;
+        margin-bottom: 20px;
+      }
+      .pro-btn {
+        width: 100%;
+        padding: 13px 24px;
+      }
+    }
+
+    /* Small/Medium Tablets (e.g. iPad Mini, iPad Portrait) */
+    @media (min-width: 481px) and (max-width: 768px) {
+      #pro-welcome-phase {
+        padding: 32px;
+      }
+      .pro-welcome-inner {
+        max-width: 460px;
+      }
+    }
+
+    /* Very short heights (e.g. landscape phones, small viewports) */
+    @media (max-height: 580px) {
+      #pro-welcome-phase {
+        padding: 16px 20px;
+        justify-content: flex-start;
+      }
+      .pro-welcome-inner {
+        margin: auto 0;
+      }
+      .pro-crown {
+        font-size: 2rem;
+        margin-bottom: 4px;
+      }
+      .pro-title {
+        margin-bottom: 4px;
+      }
+      .pro-sub {
+        margin-bottom: 12px;
+      }
+      .pro-feat-grid {
+        grid-template-columns: repeat(4, 1fr); /* 4 in a row to save vertical space! */
+        gap: 8px;
+        margin-bottom: 14px;
+      }
+      .pro-feat-card {
+        padding: 8px 4px;
+        border-radius: 10px;
+      }
+      .pro-feat-card strong {
+        font-size: 0.76rem;
+        margin: 2px 0;
+      }
+      .pro-feat-card small {
+        display: none; /* Hide description text to prevent vertical overflow */
+      }
+      .pro-badge {
+        padding: 6px 12px;
+        margin-bottom: 14px;
+      }
+      .pro-btn {
+        padding: 10px 28px;
+      }
+    }
   </style>
 
   <script>
