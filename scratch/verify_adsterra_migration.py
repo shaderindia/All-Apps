@@ -59,8 +59,18 @@ for fpath in html_files:
         print(f"[!] Leftover AdSense in {rel_path}")
         issues += 1
 
-    # 2. Check body banner presence (based on unique markup style snippet)
-    body_banner_count = content.count('max-width: 1080px; margin: 10px auto 34px;')
+    # 2. Check body banner presence (based on unique markup style snippet containing the sponsor link)
+    body_banner_count = 0
+    start_pos = 0
+    while True:
+        idx = content.find('max-width: 1080px; margin: 10px auto 34px;', start_pos)
+        if idx == -1:
+            break
+        # Check if the banner links to the sponsor ad url
+        block = content[idx:idx+400]
+        if new_ad_url in block:
+            body_banner_count += 1
+        start_pos = idx + 1
     
     if rel_path in expected_banner_files:
         if body_banner_count != 2:
