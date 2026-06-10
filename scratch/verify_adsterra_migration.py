@@ -15,7 +15,7 @@ for root, dirs, files in os.walk(root_dir):
 print(f"Total HTML files to verify: {len(html_files)}")
 issues = 0
 
-# The 6 files that must contain the new sponsored banner links
+# The 6 files that must contain the new sponsored banner blocks in the body
 expected_banner_files = {
     "index.html",
     "cnc-machinist\\index.html",
@@ -24,6 +24,26 @@ expected_banner_files = {
     "passportsizephoto\\index.html",
     "photopassportsizepro\\index.html"
 }
+
+# The files that should have a redirection link in their javascript download functions
+expected_download_redirects = {
+    "passportsizephoto\\index.html", # via script.js
+    "photopassportsizepro\\index.html",
+    "cvbanao\\template1\\index.html",
+    "cvbanao\\template2\\index.html",
+    "cvbanao\\template3\\index.html",
+    "cvbanao\\template4\\index.html",
+    "cvbanao\\template5\\index.html"
+}
+
+# We also check the script.js file for the classic passport photo app
+classic_script_path = os.path.join(root_dir, "passportsizephoto", "script.js")
+if os.path.exists(classic_script_path):
+    with open(classic_script_path, 'r', encoding='utf-8') as f:
+        classic_script_content = f.read()
+    if new_ad_url not in classic_script_content:
+        print("[!] passportsizephoto/script.js is missing the download redirection link")
+        issues += 1
 
 for fpath in html_files:
     rel_path = os.path.relpath(fpath, root_dir)
@@ -39,19 +59,31 @@ for fpath in html_files:
         print(f"[!] Leftover AdSense in {rel_path}")
         issues += 1
 
-    # 2. Check banner presence
-    banner_count = content.count(new_ad_url)
+    # 2. Check body banner presence (based on unique markup style snippet)
+    body_banner_count = content.count('max-width: 1080px; margin: 10px auto 34px;')
     
     if rel_path in expected_banner_files:
-        if banner_count != 2:
-            print(f"[!] {rel_path} has {banner_count} sponsored banners (expected exactly 2)")
+        if body_banner_count != 2:
+            print(f"[!] {rel_path} has {body_banner_count} body banners (expected exactly 2)")
             issues += 1
     else:
-        if banner_count > 0:
-            print(f"[!] {rel_path} contains the sponsored banner link but was not in the expected list")
+        if body_banner_count > 0:
+            print(f"[!] {rel_path} has body banners but was not in the expected list")
+            issues += 1
+            
+    # 3. Check download redirect presence
+    has_redirect = new_ad_url in content
+    if rel_path in expected_download_redirects:
+        if not has_redirect:
+            print(f"[!] {rel_path} is missing the sponsored download redirect link")
+            issues += 1
+    elif rel_path not in expected_banner_files:
+        # If it's not a banner file and not a download redirect file, it should NOT have the ad url
+        if has_redirect:
+            print(f"[!] {rel_path} contains the sponsored link unexpectedly")
             issues += 1
 
 if issues == 0:
-    print("\nSUCCESS: All old Adsterra/AdSense tags are completely removed. The custom sponsored banner is correctly integrated exactly twice on all 6 designated pages!")
+    print("\nSUCCESS: All old Adsterra/AdSense tags are completely removed. The custom sponsored banner and download redirections are correctly integrated!")
 else:
     print(f"\nFound {issues} verification issues.")
