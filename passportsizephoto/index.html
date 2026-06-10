@@ -364,12 +364,12 @@
         <img src="pro-promo-banner.webp" alt="Try Passport Photo PRO - 100% Free Upgrade" style="width: 100%; height: auto; max-width: 960px; aspect-ratio: 800/320; display: block; margin: 0 auto; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.01)'" onmouseout="this.style.transform='scale(1)'" width="800" height="320">
       </a>
       <div style="margin-top: 16px;">
-        <a href="/photopassportsizepro/" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: linear-gradient(135deg, var(--primary, #6366f1), #4f46e5); color: white; text-decoration: none; padding: 12px 28px; border-radius: 999px; font-weight: 700; font-size: 0.9rem; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35); transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='scale(1.03)'; this.style.boxShadow='0 6px 20px rgba(99, 102, 241, 0.45)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px rgba(99, 102, 241, 0.35)'">
-          <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <button onclick="launchProAnimation()" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; border: none; cursor: pointer; padding: 13px 32px; border-radius: 999px; font-weight: 700; font-size: 0.95rem; box-shadow: 0 4px 20px rgba(99,102,241,0.45); transition: transform 0.2s, box-shadow 0.2s; letter-spacing: 0.3px;" onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 8px 28px rgba(99,102,241,0.6)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 20px rgba(99,102,241,0.45)'">
+          <svg style="width: 17px; height: 17px;" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"></path>
           </svg>
-          Open Free Pro Version
-        </a>
+          🚀 Open Free Pro Version
+        </button>
       </div>
     </div>
 
@@ -808,5 +808,235 @@
 
   <!-- Main Script -->
   <script src="script.js?v=1.0.2"></script>
+
+  <!-- ═══════════════ PRO LAUNCH OVERLAY ═══════════════ -->
+  <div id="pro-launch-overlay" style="display:none; position:fixed; inset:0; z-index:99999; background:#000; overflow:hidden;" aria-modal="true" role="dialog" aria-label="Pro Version Loading">
+    <canvas id="pro-sparkle-canvas" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;"></canvas>
+
+    <!-- Phase 1: Countdown -->
+    <div id="pro-countdown-phase" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;">
+      <p style="color:rgba(255,255,255,0.5);font-family:system-ui,sans-serif;font-size:1rem;letter-spacing:2px;text-transform:uppercase;margin-bottom:28px;">Pro Version is Loading</p>
+      <div id="pro-countdown-num" style="font-family:system-ui,sans-serif;font-size:clamp(8rem,22vw,18rem);font-weight:900;color:#fff;line-height:1;text-align:center;text-shadow:0 0 60px rgba(99,102,241,0.9),0 0 120px rgba(99,102,241,0.5);transform:scale(1);opacity:1;transition:transform 0.25s cubic-bezier(.34,1.56,.64,1),opacity 0.2s;">3</div>
+    </div>
+
+    <!-- Phase 2: Welcome Screen -->
+    <div id="pro-welcome-phase" style="display:none;position:absolute;inset:0;align-items:center;justify-content:center;flex-direction:column;padding:24px;">
+      <div style="max-width:520px;width:100%;text-align:center;">
+        <!-- Crown icon -->
+        <div style="font-size:3.5rem;margin-bottom:12px;filter:drop-shadow(0 0 20px gold);">✨👑✨</div>
+        <h1 id="pro-welcome-title" style="font-family:system-ui,sans-serif;font-size:clamp(1.6rem,5vw,2.8rem);font-weight:900;color:#fff;margin:0 0 6px;letter-spacing:-1px;opacity:0;transform:translateY(20px);transition:opacity 0.5s,transform 0.5s;">Welcome to Passport Size Photo PRO</h1>
+        <p style="color:rgba(255,255,255,0.55);font-family:system-ui,sans-serif;font-size:0.9rem;margin-bottom:28px;opacity:0;transform:translateY(15px);transition:opacity 0.5s 0.15s,transform 0.5s 0.15s;" id="pro-welcome-sub">Everything Unlocked. Zero Cost. Forever Free.</p>
+
+        <!-- Feature cards -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px;">
+          <div class="pro-feat-card" style="--d:0s">🪄<br><strong>Remove Background</strong><br><small>AI-powered instant BG removal</small></div>
+          <div class="pro-feat-card" style="--d:0.08s">🎨<br><strong>Change BG Colour</strong><br><small>Any color — official or custom</small></div>
+          <div class="pro-feat-card" style="--d:0.16s">🔓<br><strong>No Login • No Registration</strong><br><small>Jump straight in, no account needed</small></div>
+          <div class="pro-feat-card" style="--d:0.24s">⬇️<br><strong>HD Quality Download</strong><br><small>Full-resolution prints, every time</small></div>
+        </div>
+
+        <div style="background:linear-gradient(135deg,rgba(99,102,241,0.25),rgba(139,92,246,0.25));border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:10px 16px;margin-bottom:24px;opacity:0;transform:translateY(10px);transition:opacity 0.5s 0.4s,transform 0.5s 0.4s;" id="pro-free-badge">
+          <span style="color:#a5f3fc;font-family:system-ui,sans-serif;font-size:0.85rem;font-weight:700;">🌟 ALL FREE ACCESS · FOREVER · NO STRINGS ATTACHED 🌟</span>
+        </div>
+
+        <button onclick="window.location.href='/photopassportsizepro/'" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;cursor:pointer;padding:15px 40px;border-radius:999px;font-weight:800;font-size:1.05rem;box-shadow:0 0 30px rgba(139,92,246,0.6);letter-spacing:0.5px;opacity:0;transform:scale(0.9);transition:opacity 0.4s 0.55s,transform 0.4s 0.55s;" id="pro-enter-btn">🚀 Enter Pro Version Now</button>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .pro-feat-card {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 14px;
+      padding: 14px 10px;
+      color: #fff;
+      font-family: system-ui, sans-serif;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.45s var(--d, 0s), transform 0.45s var(--d, 0s), background 0.2s;
+      cursor: default;
+    }
+    .pro-feat-card strong { display:block; font-size:0.93rem; margin: 4px 0 2px; }
+    .pro-feat-card small { color: rgba(255,255,255,0.5); font-size:0.75rem; }
+    .pro-feat-card:hover { background: rgba(99,102,241,0.25); }
+    .pro-feat-card.visible { opacity:1; transform:translateY(0); }
+    @keyframes pro-bg-pulse {
+      0%   { background: radial-gradient(ellipse at 30% 40%, #1a0a3e 0%, #000 70%); }
+      50%  { background: radial-gradient(ellipse at 70% 60%, #0e0730 0%, #000 70%); }
+      100% { background: radial-gradient(ellipse at 30% 40%, #1a0a3e 0%, #000 70%); }
+    }
+    #pro-launch-overlay.active { animation: pro-bg-pulse 4s ease-in-out infinite; }
+  </style>
+
+  <script>
+  (function() {
+    /* ── Sparkle Particle System ── */
+    var canvas, ctx, particles = [], rafId;
+
+    function initCanvas() {
+      canvas = document.getElementById('pro-sparkle-canvas');
+      ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      window.addEventListener('resize', function() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      });
+    }
+
+    function spawnParticle(burst) {
+      var colors = ['#a78bfa','#818cf8','#f0abfc','#fde68a','#6ee7b7','#fff','#c4b5fd','#fb7185'];
+      var cx = burst ? burst.x : Math.random() * canvas.width;
+      var cy = burst ? burst.y : Math.random() * canvas.height;
+      particles.push({
+        x: cx, y: cy,
+        vx: (Math.random()-0.5) * (burst ? 8 : 2),
+        vy: (Math.random()-0.5) * (burst ? 8 : 2) - (burst ? 3 : 1),
+        r: Math.random() * (burst ? 5 : 3) + 1,
+        color: colors[Math.floor(Math.random()*colors.length)],
+        alpha: 1,
+        decay: Math.random() * 0.018 + (burst ? 0.012 : 0.006),
+        spin: (Math.random()-0.5)*0.2,
+        angle: Math.random()*Math.PI*2,
+        star: Math.random() > 0.5
+      });
+    }
+
+    function drawStar(ctx, cx, cy, r, color, alpha, angle) {
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.translate(cx, cy);
+      ctx.rotate(angle);
+      ctx.beginPath();
+      for (var i=0; i<5; i++) {
+        var a = (i*4*Math.PI/5) - Math.PI/2;
+        var b = (i*4*Math.PI/5 + 2*Math.PI/5) - Math.PI/2;
+        if(i===0) ctx.moveTo(Math.cos(a)*r, Math.sin(a)*r);
+        else ctx.lineTo(Math.cos(a)*r, Math.sin(a)*r);
+        ctx.lineTo(Math.cos(b)*r*0.4, Math.sin(b)*r*0.4);
+      }
+      ctx.closePath();
+      ctx.fillStyle = color;
+      ctx.shadowBlur = 8; ctx.shadowColor = color;
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function renderParticles() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      for (var i=particles.length-1; i>=0; i--) {
+        var p = particles[i];
+        p.x += p.vx; p.y += p.vy;
+        p.vy += 0.06; // gravity
+        p.alpha -= p.decay;
+        p.angle += p.spin;
+        if (p.alpha <= 0) { particles.splice(i,1); continue; }
+        if (p.star) {
+          drawStar(ctx, p.x, p.y, p.r, p.color, p.alpha, p.angle);
+        } else {
+          ctx.save();
+          ctx.globalAlpha = p.alpha;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+          ctx.fillStyle = p.color;
+          ctx.shadowBlur = 10; ctx.shadowColor = p.color;
+          ctx.fill();
+          ctx.restore();
+        }
+      }
+      rafId = requestAnimationFrame(renderParticles);
+    }
+
+    function burstSparkles(count) {
+      var cx = canvas.width/2, cy = canvas.height/2;
+      for(var i=0;i<count;i++) spawnParticle({x:cx,y:cy});
+    }
+
+    var bgSpawnInterval;
+    function startBgSpawn() {
+      bgSpawnInterval = setInterval(function(){
+        for(var i=0;i<3;i++) spawnParticle(null);
+      }, 120);
+    }
+    function stopBgSpawn() { clearInterval(bgSpawnInterval); }
+
+    /* ── Countdown Logic ── */
+    function runCountdown(cb) {
+      var el = document.getElementById('pro-countdown-num');
+      var n = 3;
+      el.textContent = n;
+
+      function tick() {
+        // Animate out
+        el.style.transform = 'scale(2.2) rotateY(90deg)';
+        el.style.opacity = '0';
+        setTimeout(function(){
+          n--;
+          if(n <= 0) { cb(); return; }
+          el.textContent = n;
+          el.style.transition = 'none';
+          el.style.transform = 'scale(0.4) rotateY(-90deg)';
+          el.style.opacity = '0';
+          // Force reflow
+          void el.offsetWidth;
+          el.style.transition = 'transform 0.35s cubic-bezier(.34,1.56,.64,1), opacity 0.3s';
+          el.style.transform = 'scale(1) rotateY(0deg)';
+          el.style.opacity = '1';
+          burstSparkles(18);
+          setTimeout(tick, 920);
+        }, 350);
+      }
+
+      setTimeout(tick, 900);
+    }
+
+    /* ── Welcome Screen ── */
+    function showWelcome() {
+      var countdown = document.getElementById('pro-countdown-phase');
+      var welcome   = document.getElementById('pro-welcome-phase');
+      countdown.style.display = 'none';
+      welcome.style.display   = 'flex';
+
+      burstSparkles(90);
+      stopBgSpawn();
+      startBgSpawn();
+
+      var title = document.getElementById('pro-welcome-title');
+      var sub   = document.getElementById('pro-welcome-sub');
+      var badge = document.getElementById('pro-free-badge');
+      var btn   = document.getElementById('pro-enter-btn');
+      var cards = document.querySelectorAll('.pro-feat-card');
+
+      // Stagger animations
+      setTimeout(function(){ title.style.opacity='1'; title.style.transform='translateY(0)'; }, 80);
+      setTimeout(function(){ sub.style.opacity='1';   sub.style.transform='translateY(0)'; },  180);
+      cards.forEach(function(c){ setTimeout(function(){ c.classList.add('visible'); }, 100); });
+      setTimeout(function(){ badge.style.opacity='1'; badge.style.transform='translateY(0)'; }, 500);
+      setTimeout(function(){ btn.style.opacity='1';   btn.style.transform='scale(1)'; }, 650);
+      setTimeout(function(){ burstSparkles(60); }, 400);
+    }
+
+    /* ── Public entry point ── */
+    window.launchProAnimation = function() {
+      var overlay = document.getElementById('pro-launch-overlay');
+      overlay.style.display = 'block';
+      overlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+
+      initCanvas();
+      renderParticles();
+      startBgSpawn();
+
+      runCountdown(function(){
+        burstSparkles(120);
+        setTimeout(showWelcome, 350);
+      });
+    };
+  }());
+  </script>
+
 </body>
 </html>
