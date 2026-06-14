@@ -228,6 +228,12 @@
       --radius: 24px;
       --radius-sm: 16px;
       --focus: 0 0 0 4px rgba(79, 70, 229, 0.15);
+
+      --theme-color: #4f46e5;
+      --theme-dark: #4338ca;
+      --theme-light: #f5f3ff;
+      --theme-soft: #e0e7ff;
+      --theme-border: #c7d2fe;
     }
 
     * {
@@ -589,6 +595,58 @@
     .template-name {
       font-weight: 700;
       font-size: 0.8rem;
+    }
+
+    .theme-picker-box {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 12px 16px;
+      background: var(--surface-soft);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    .theme-picker-box label {
+      margin: 0;
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .theme-picker-box input[type="color"] {
+      width: 44px;
+      height: 38px;
+      min-height: 38px;
+      padding: 3px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: none;
+      cursor: pointer;
+    }
+
+    .theme-color-presets {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .theme-color-btn {
+      width: 26px;
+      height: 26px;
+      min-height: 26px;
+      padding: 0;
+      border-radius: 50%;
+      border: 2px solid #ffffff;
+      box-shadow: 0 0 0 1px var(--border);
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+
+    .theme-color-btn:hover {
+      transform: scale(1.15);
     }
 
     /* Logo Drag & Drop Zone Styling */
@@ -984,26 +1042,26 @@
 
     #receiptPreview.template-4 .receipt {
       font-family: Georgia, serif;
-      border: 2px solid #d8b4fe;
-      background: #fdfaff;
+      border: 2px solid var(--theme-border, #d8b4fe);
+      background: var(--theme-light, #fdfaff);
       padding: 22px;
     }
 
     #receiptPreview.template-4 .receipt-header strong {
       font-family: Georgia, serif;
       font-size: 2rem;
-      color: #6b21a8;
+      color: var(--theme-color, #6b21a8);
     }
 
     #receiptPreview.template-4 .receipt-items {
-      border-top: 1px dashed #c084fc;
-      border-bottom: 1px dashed #c084fc;
+      border-top: 1px dashed var(--theme-border, #c084fc);
+      border-bottom: 1px dashed var(--theme-border, #c084fc);
       padding: 9px 0;
     }
 
     #receiptPreview.template-4 .grand-total,
     #receiptPreview.template-4 .receipt-footer {
-      color: #6b21a8;
+      color: var(--theme-color, #6b21a8);
     }
 
     #receiptPreview.template-5 .receipt {
@@ -1016,7 +1074,7 @@
 
     #receiptPreview.template-5 .receipt-header,
     #receiptPreview.template-5 .grand-total {
-      color: #86efac;
+      color: var(--theme-color, #86efac);
     }
 
     #receiptPreview.template-5 .muted-line,
@@ -1509,6 +1567,19 @@
                 <span class="template-name">Dark</span>
               </button>
             </div>
+
+            <div class="theme-picker-box">
+              <label for="themeColorPicker">Theme Color</label>
+              <input type="color" id="themeColorPicker" value="#4f46e5" oninput="updateThemeColor(this.value, true)" aria-label="Choose custom receipt color" />
+              <div class="theme-color-presets" aria-label="Theme color presets">
+                <button type="button" class="theme-color-btn" style="background:#4f46e5;" onclick="updateThemeColor('#4f46e5', true)" aria-label="Indigo theme"></button>
+                <button type="button" class="theme-color-btn" style="background:#2563eb;" onclick="updateThemeColor('#2563eb', true)" aria-label="Blue theme"></button>
+                <button type="button" class="theme-color-btn" style="background:#10b981;" onclick="updateThemeColor('#10b981', true)" aria-label="Emerald theme"></button>
+                <button type="button" class="theme-color-btn" style="background:#7c3aed;" onclick="updateThemeColor('#7c3aed', true)" aria-label="Purple theme"></button>
+                <button type="button" class="theme-color-btn" style="background:#be123c;" onclick="updateThemeColor('#be123c', true)" aria-label="Rose theme"></button>
+                <button type="button" class="theme-color-btn" style="background:#0f172a;" onclick="updateThemeColor('#0f172a', true)" aria-label="Slate theme"></button>
+              </div>
+            </div>
           </section>
 
           <section class="section" aria-labelledby="companyHeading">
@@ -1675,6 +1746,14 @@
               <button type="button" class="btn btn-secondary" id="downloadPdfBtn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="12" x2="12" y1="18" y2="12"/><line x1="9" x2="15" y1="15" y2="15"/></svg>
                 <span>Download PDF</span>
+              </button>
+              <button type="button" class="btn btn-secondary" id="exportJsonBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M10 12a1 1 0 0 0-1 1v1a1 1 0 0 1-1 1 1 1 0 0 1 1 1v1a1 1 0 0 0 1 1"/><path d="M14 18a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1 1 1 0 0 1-1-1v-1a1 1 0 0 0-1-1"/></svg>
+                <span>Export JSON</span>
+              </button>
+              <button type="button" class="btn btn-secondary" id="exportCsvBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+                <span>Export CSV</span>
               </button>
               <button type="button" class="btn btn-ghost" id="copySummaryBtn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
@@ -1916,6 +1995,7 @@
     let saveTimer = null;
     let customCurrencySymbolVal = "";
     let customCurrencyPositionVal = "before";
+    let currentThemeColor = "#4f46e5";
 
     const $ = (id) => document.getElementById(id);
 
@@ -2148,6 +2228,7 @@
         footerText: $("footerText").value,
         customCurrencySymbol: $("customCurrencySymbol").value,
         customCurrencyPosition: $("customCurrencyPosition").value,
+        themeColor: currentThemeColor,
         items: Array.from(document.querySelectorAll(".item-entry")).map((entry) => ({
           name: entry.querySelector(".item-name").value,
           qty: entry.querySelector(".item-qty").value,
@@ -2215,6 +2296,9 @@
           $("logoDropZonePrompt").style.display = "none";
         }
 
+        const themeColor = data.themeColor || "#4f46e5";
+        updateThemeColor(themeColor, false);
+
         applyTemplate(activeTemplate, false);
         updateReceipt();
 
@@ -2257,6 +2341,144 @@
       
       saveDraft();
       showToast("Logo removed.");
+    }
+
+    function hexToRgb(hex) {
+      const cleanHex = hex.replace("#", "");
+      const bigint = parseInt(cleanHex, 16);
+      return {
+        r: (bigint >> 16) & 255,
+        g: (bigint >> 8) & 255,
+        b: bigint & 255
+      };
+    }
+
+    function rgbToHex(r, g, b) {
+      return "#" + [r, g, b]
+        .map(value => {
+          const hex = Math.max(0, Math.min(255, Math.round(value))).toString(16);
+          return hex.length === 1 ? "0" + hex : hex;
+        })
+        .join("");
+    }
+
+    function mixColor(color1, color2, percent) {
+      const c1 = hexToRgb(color1);
+      const c2 = hexToRgb(color2);
+      const p = percent / 100;
+
+      return rgbToHex(
+        c1.r * (1 - p) + c2.r * p,
+        c1.g * (1 - p) + c2.g * p,
+        c1.b * (1 - p) + c2.b * p
+      );
+    }
+
+    function darkenColor(color, percent) {
+      const rgb = hexToRgb(color);
+      const factor = 1 - percent / 100;
+      return rgbToHex(rgb.r * factor, rgb.g * factor, rgb.b * factor);
+    }
+
+    function updateThemeColor(color, shouldSave = false) {
+      currentThemeColor = color;
+
+      const dark = darkenColor(color, 20);
+      const light = mixColor(color, "#ffffff", 94);
+      const soft = mixColor(color, "#ffffff", 88);
+      const border = mixColor(color, "#ffffff", 75);
+
+      document.documentElement.style.setProperty("--primary", color);
+      document.documentElement.style.setProperty("--primary-dark", dark);
+      document.documentElement.style.setProperty("--theme-color", color);
+      document.documentElement.style.setProperty("--theme-dark", dark);
+      document.documentElement.style.setProperty("--theme-light", light);
+      document.documentElement.style.setProperty("--theme-soft", soft);
+      document.documentElement.style.setProperty("--theme-border", border);
+
+      const picker = document.getElementById("themeColorPicker");
+      if (picker) picker.value = color;
+
+      const themeMeta = document.querySelector('meta[name="theme-color"]');
+      if (themeMeta) themeMeta.setAttribute("content", color);
+
+      if (shouldSave) saveDraft();
+    }
+
+    function exportJSON() {
+      const draft = collectDraft();
+      const filename = `receipt-${escapeFileName(draft.invoiceNumber)}.json`;
+      const blob = new Blob([JSON.stringify(draft, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      showToast("JSON exported successfully.");
+    }
+
+    function exportCSV() {
+      const draft = collectDraft();
+      const filename = `receipt-${escapeFileName(draft.invoiceNumber)}.csv`;
+      
+      const escapeCSV = (val) => {
+        const text = String(val ?? "").replace(/"/g, '""');
+        return text.includes(",") || text.includes("\n") || text.includes('"') ? `"${text}"` : text;
+      };
+
+      const rows = [];
+      
+      rows.push(["Receipt Details"]);
+      rows.push(["Receipt Number", draft.invoiceNumber]);
+      rows.push(["Date", draft.invoiceDate]);
+      rows.push(["Company Name", draft.companyName]);
+      rows.push(["Company Address", draft.companyAddress]);
+      rows.push(["Company Phone", draft.companyPhone]);
+      rows.push(["Tax ID", draft.taxId]);
+      rows.push(["Customer Name", draft.customerName]);
+      rows.push(["Cashier/Staff", draft.cashier]);
+      rows.push(["Payment Method", draft.paymentMethod]);
+      rows.push(["Currency", draft.currency]);
+      rows.push([]);
+
+      rows.push(["Item Name", "Quantity", "Unit Price", "Total Price"]);
+      
+      let subtotal = 0;
+      draft.items.forEach(item => {
+        const qty = parseFloat(item.qty) || 0;
+        const price = parseFloat(item.price) || 0;
+        const total = qty * price;
+        subtotal += total;
+        rows.push([item.name, qty, price, total]);
+      });
+      
+      rows.push([]);
+      
+      const discount = subtotal * ((parseFloat(draft.discountRate) || 0) / 100);
+      const taxable = Math.max(0, subtotal - discount);
+      const tax = taxable * ((parseFloat(draft.taxRate) || 0) / 100);
+      const total = taxable + tax;
+      
+      rows.push(["Subtotal", subtotal]);
+      if (discount > 0) rows.push([`Discount (${draft.discountRate}%)`, -discount]);
+      if (tax > 0) rows.push([`Tax (${draft.taxRate}%)`, tax]);
+      rows.push(["Total Paid", total]);
+
+      const csvContent = rows.map(r => r.map(escapeCSV).join(",")).join("\n");
+      
+      const blob = new Blob(["\ufeff" + csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      showToast("CSV exported successfully.");
     }
 
     function resetForm() {
@@ -2493,6 +2715,8 @@
       $("printBtn").addEventListener("click", printReceipt);
       $("downloadJpgBtn").addEventListener("click", () => downloadReceipt("jpg"));
       $("downloadPdfBtn").addEventListener("click", () => downloadReceipt("pdf"));
+      $("exportJsonBtn").addEventListener("click", exportJSON);
+      $("exportCsvBtn").addEventListener("click", exportCSV);
       $("copySummaryBtn").addEventListener("click", copySummary);
 
       setupLogoUpload();
