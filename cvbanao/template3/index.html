@@ -815,6 +815,76 @@
       }
     }
 
+    /* Mobile Tab Switching styles */
+    .mobile-view-tabs {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 32px);
+      max-width: 480px;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      border-radius: 9999px;
+      box-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.15), 0 1px 3px rgba(15, 23, 42, 0.05);
+      z-index: 9999;
+      padding: 6px;
+      gap: 6px;
+    }
+
+    .mobile-tab {
+      flex: 1;
+      padding: 10px 20px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 13.5px;
+      color: #475569;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 9999px;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .mobile-tab.active {
+      color: #ffffff;
+      background: #10b981;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+    @media (max-width: 1100px) {
+      .mobile-view-tabs {
+        display: flex;
+      }
+
+      .builder-layout .preview-panel {
+        display: none;
+      }
+
+      .builder-layout .form-panel {
+        display: block;
+      }
+
+      body.show-preview .builder-layout .preview-panel {
+        display: block;
+      }
+
+      body.show-preview .builder-layout .form-panel {
+        display: none;
+      }
+
+      body {
+        padding-bottom: 80px;
+      }
+    }
+
     @media (max-width: 760px) {
       body {
         background: #f8fafc;
@@ -1047,6 +1117,7 @@
       .preview-toolbar,
       .intro,
       .mobile-preview-button,
+      .mobile-view-tabs,
       footer {
         display: none !important;
       }
@@ -1106,7 +1177,7 @@
       <p>Modern dark-sidebar CV design with live preview, photo crop, local saving, and exact A4 PDF download.</p>
     </section>
 
-    <button class="btn-primary mobile-preview-button" onclick="scrollToPreview()">
+    <button class="btn-primary mobile-preview-button" onclick="switchMobileView('preview')">
       <i class="fa-solid fa-eye"></i> View Live Preview
     </button>
 
@@ -1961,6 +2032,9 @@
 
       const pageWidth = page.offsetWidth;
       const pageHeight = page.offsetHeight;
+      
+      if (pageWidth === 0) return;
+
       const availableWidth = wrapper.clientWidth - 20;
 
       let scale = availableWidth / pageWidth;
@@ -2185,7 +2259,24 @@
       }
     }
 
+    function switchMobileView(view) {
+      const tabEditor = document.getElementById("tabEditor");
+      const tabPreview = document.getElementById("tabPreview");
+      
+      if (view === 'preview') {
+        document.body.classList.add("show-preview");
+        tabEditor.classList.remove("active");
+        tabPreview.classList.add("active");
+        setTimeout(updatePreviewScale, 100);
+      } else {
+        document.body.classList.remove("show-preview");
+        tabEditor.classList.add("active");
+        tabPreview.classList.remove("active");
+      }
+    }
+
     function scrollToPreview() {
+      switchMobileView('preview');
       document.getElementById("previewPanel").scrollIntoView({
         behavior: "smooth",
         block: "start"
@@ -2201,5 +2292,15 @@
       }, 3000);
     }
   </script>
+
+  <!-- Mobile View Toggle Bar -->
+  <div class="mobile-view-tabs" id="mobileViewTabs">
+    <button class="mobile-tab active" id="tabEditor" onclick="switchMobileView('editor')">
+      <i class="fa-solid fa-pen-to-square"></i> Editor
+    </button>
+    <button class="mobile-tab" id="tabPreview" onclick="switchMobileView('preview')">
+      <i class="fa-solid fa-eye"></i> Preview
+    </button>
+  </div>
 </body>
 </html>
