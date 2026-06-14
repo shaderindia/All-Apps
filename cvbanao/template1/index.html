@@ -77,6 +77,14 @@
   </script>
 
   <style>
+    :root {
+      --theme-color: #4f46e5;
+      --theme-dark: #3730a3;
+      --theme-light: #eef2ff;
+      --theme-soft: #e0e7ff;
+      --theme-border: #c7d2fe;
+    }
+
     * {
       box-sizing: border-box;
     }
@@ -124,7 +132,7 @@
     .brand {
       font-size: 22px;
       font-weight: 800;
-      color: #4f46e5;
+      color: var(--theme-color);
       display: flex;
       align-items: center;
       gap: 9px;
@@ -196,7 +204,7 @@
     }
 
     .card h2 i {
-      color: #4f46e5;
+      color: var(--theme-color);
     }
 
     .grid {
@@ -237,8 +245,8 @@
     input:focus,
     textarea:focus,
     select:focus {
-      border-color: #4f46e5;
-      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+      border-color: var(--theme-color);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--theme-color) 15%, transparent);
     }
 
     textarea {
@@ -269,7 +277,7 @@
     }
 
     .photo-upload-area:hover {
-      border-color: #4f46e5;
+      border-color: var(--theme-color);
     }
 
     .photo-upload-area img {
@@ -303,22 +311,22 @@
     }
 
     .btn-primary {
-      background: #4f46e5;
+      background: var(--theme-color);
       color: #ffffff;
     }
 
     .btn-primary:hover {
-      background: #4338ca;
+      background: var(--theme-dark);
     }
 
     .btn-outline {
       background: #ffffff;
-      color: #4f46e5;
-      border: 1px solid #4f46e5;
+      color: var(--theme-color);
+      border: 1px solid var(--theme-color);
     }
 
     .btn-outline:hover {
-      background: #eef2ff;
+      background: var(--theme-light);
     }
 
     .btn-danger {
@@ -407,6 +415,53 @@
       flex: 1;
     }
 
+    .theme-picker-box {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 10px 14px;
+      background: #f8fafc;
+      border-radius: 12px;
+      margin-top: 12px;
+    }
+
+    .theme-picker-box label {
+      margin: 0;
+      font-size: 13px;
+      font-weight: 800;
+      color: #334155;
+    }
+
+    .theme-picker-box input[type="color"] {
+      width: 46px;
+      height: 42px;
+      min-height: 42px;
+      padding: 4px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .theme-color-presets {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+    }
+
+    .theme-color-btn {
+      width: 28px;
+      height: 28px;
+      min-height: 28px;
+      padding: 0;
+      border-radius: 999px;
+      border: 2px solid #ffffff;
+      box-shadow: 0 0 0 1px #cbd5e1;
+      cursor: pointer;
+    }
+
+    .theme-color-btn:hover {
+      transform: scale(1.08);
+    }
+
     .preview-wrapper {
       width: 100%;
       min-height: 420px;
@@ -465,7 +520,7 @@
       height: 120px;
       border-radius: 50%;
       overflow: hidden;
-      border: 3px solid #4f46e5;
+      border: 3px solid var(--theme-color);
       flex-shrink: 0;
       background: #f3f4f6;
       display: flex;
@@ -493,7 +548,7 @@
     .resume-info h2 {
       font-size: 1.28em;
       font-weight: 700;
-      color: #4f46e5;
+      color: var(--theme-color);
       margin: 0 0 10px 0;
     }
 
@@ -624,7 +679,7 @@
       height: min(78vw, 340px);
       max-height: 62vh;
       margin: 0 auto;
-      border: 2px solid #4f46e5;
+      border: 2px solid var(--theme-color);
       border-radius: 50%;
       overflow: hidden;
       background: #e5e7eb;
@@ -706,7 +761,7 @@
     }
 
     footer a {
-      color: #4f46e5;
+      color: var(--theme-color);
       font-weight: 700;
     }
 
@@ -1010,8 +1065,8 @@
 
     .mobile-tab.active {
       color: #ffffff;
-      background: #4f46e5;
-      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+      background: var(--theme-color);
+      box-shadow: 0 4px 12px color-mix(in srgb, var(--theme-color) 30%, transparent);
     }
 
     @media (max-width: 1100px) {
@@ -1300,6 +1355,20 @@
             <span>Large</span>
             <strong id="fontSizeDisplay">10pt</strong>
           </div>
+
+          <div class="theme-picker-box">
+            <label for="themeColorPicker">Theme Color</label>
+            <input type="color" id="themeColorPicker" value="#4f46e5" oninput="updateThemeColor(this.value, true)" aria-label="Choose resume theme color" />
+
+            <div class="theme-color-presets" aria-label="Theme color presets">
+              <button type="button" class="theme-color-btn" style="background:#4f46e5;" onclick="updateThemeColor('#4f46e5', true)" aria-label="Indigo theme"></button>
+              <button type="button" class="theme-color-btn" style="background:#2563eb;" onclick="updateThemeColor('#2563eb', true)" aria-label="Blue theme"></button>
+              <button type="button" class="theme-color-btn" style="background:#16a34a;" onclick="updateThemeColor('#16a34a', true)" aria-label="Green theme"></button>
+              <button type="button" class="theme-color-btn" style="background:#7c3aed;" onclick="updateThemeColor('#7c3aed', true)" aria-label="Purple theme"></button>
+              <button type="button" class="theme-color-btn" style="background:#be123c;" onclick="updateThemeColor('#be123c', true)" aria-label="Rose theme"></button>
+              <button type="button" class="theme-color-btn" style="background:#0f172a;" onclick="updateThemeColor('#0f172a', true)" aria-label="Dark theme"></button>
+            </div>
+          </div>
         </div>
 
         <div class="preview-wrapper" id="previewWrapper">
@@ -1364,6 +1433,7 @@
     let photoData = "";
     let originalPhotoData = "";
     let currentFontSize = 10;
+    let currentThemeColor = "#4f46e5";
 
     let cropState = {
       scale: 1,
@@ -1415,6 +1485,7 @@
       fillDemoData();
       addLanguageField("English", "Fluent");
       addLanguageField("Hindi", "Native");
+      updateThemeColor(currentThemeColor, false);
     }
 
     function fillDemoData() {
@@ -1775,7 +1846,8 @@
         photo: photoData,
         originalPhoto: originalPhotoData,
         languages,
-        fontSize: currentFontSize
+        fontSize: currentFontSize,
+        themeColor: currentThemeColor
       };
     }
 
@@ -2023,6 +2095,11 @@
         currentFontSize = parseFloat(data.fontSize);
       }
 
+      if (data.themeColor) {
+        currentThemeColor = data.themeColor;
+      }
+      updateThemeColor(currentThemeColor, false);
+
       updatePreview();
       adjustFontSize(currentFontSize, false);
 
@@ -2046,6 +2123,8 @@
       fillDemoData();
       addLanguageField("English", "Fluent");
       addLanguageField("Hindi", "Native");
+      currentThemeColor = "#4f46e5";
+      updateThemeColor(currentThemeColor, false);
 
       updatePreview();
       autoSaveResume();
@@ -2141,6 +2220,66 @@
       } else {
         showToast("Copy this page URL from your browser.", "info");
       }
+    }
+
+    function updateThemeColor(color, shouldSave = false) {
+      currentThemeColor = color;
+
+      const dark = darkenColor(color, 18);
+      const light = mixColor(color, "#ffffff", 92);
+      const soft = mixColor(color, "#ffffff", 82);
+      const border = mixColor(color, "#ffffff", 70);
+
+      document.documentElement.style.setProperty("--theme-color", color);
+      document.documentElement.style.setProperty("--theme-dark", dark);
+      document.documentElement.style.setProperty("--theme-light", light);
+      document.documentElement.style.setProperty("--theme-soft", soft);
+      document.documentElement.style.setProperty("--theme-border", border);
+
+      const picker = document.getElementById("themeColorPicker");
+      if (picker) picker.value = color;
+
+      const themeMeta = document.querySelector('meta[name="theme-color"]');
+      if (themeMeta) themeMeta.setAttribute("content", color);
+
+      if (shouldSave) autoSaveResume();
+    }
+
+    function hexToRgb(hex) {
+      const cleanHex = hex.replace("#", "");
+      const bigint = parseInt(cleanHex, 16);
+      return {
+        r: (bigint >> 16) & 255,
+        g: (bigint >> 8) & 255,
+        b: bigint & 255
+      };
+    }
+
+    function rgbToHex(r, g, b) {
+      return "#" + [r, g, b]
+        .map(value => {
+          const hex = Math.max(0, Math.min(255, Math.round(value))).toString(16);
+          return hex.length === 1 ? "0" + hex : hex;
+        })
+        .join("");
+    }
+
+    function mixColor(color1, color2, percent) {
+      const c1 = hexToRgb(color1);
+      const c2 = hexToRgb(color2);
+      const p = percent / 100;
+
+      return rgbToHex(
+        c1.r * (1 - p) + c2.r * p,
+        c1.g * (1 - p) + c2.g * p,
+        c1.b * (1 - p) + c2.b * p
+      );
+    }
+
+    function darkenColor(color, percent) {
+      const c = hexToRgb(color);
+      const p = 1 - percent / 100;
+      return rgbToHex(c.r * p, c.g * p, c.b * p);
     }
 
     function switchMobileView(view) {

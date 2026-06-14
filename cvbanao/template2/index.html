@@ -121,6 +121,14 @@
   </script>
 
   <style>
+    :root {
+      --theme-color: #17457e;
+      --theme-dark: #0f3057;
+      --theme-light: #eff6ff;
+      --theme-soft: #dbeafe;
+      --theme-border: #bfdbfe;
+    }
+
     * {
       box-sizing: border-box;
     }
@@ -270,7 +278,7 @@
     }
 
     .card h2 i {
-      color: #17457e;
+      color: var(--theme-color);
     }
 
     .grid {
@@ -310,8 +318,8 @@
     input:focus,
     textarea:focus,
     select:focus {
-      border-color: #17457e;
-      box-shadow: 0 0 0 3px rgba(23,69,126,0.15);
+      border-color: var(--theme-color);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--theme-color) 15%, transparent);
     }
 
     textarea {
@@ -339,6 +347,10 @@
       color: #64748b;
       text-align: center;
       flex-shrink: 0;
+    }
+
+    .photo-area:hover {
+      border-color: var(--theme-color);
     }
 
     .photo-area img {
@@ -381,22 +393,22 @@
     }
 
     .btn-primary {
-      background: #17457e;
+      background: var(--theme-color);
       color: #ffffff;
     }
 
     .btn-primary:hover {
-      background: #103762;
+      background: var(--theme-dark);
     }
 
     .btn-outline {
       background: #ffffff;
-      color: #17457e;
-      border: 1px solid #17457e;
+      color: var(--theme-color);
+      border: 1px solid var(--theme-color);
     }
 
     .btn-outline:hover {
-      background: #eff6ff;
+      background: var(--theme-light);
     }
 
     .btn-danger {
@@ -462,6 +474,53 @@
       font-size: 13px;
     }
 
+    .theme-picker-box {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 10px 14px;
+      background: #f8fafc;
+      border-radius: 12px;
+      margin-top: 12px;
+    }
+
+    .theme-picker-box label {
+      margin: 0;
+      font-size: 13px;
+      font-weight: 800;
+      color: #334155;
+    }
+
+    .theme-picker-box input[type="color"] {
+      width: 46px;
+      height: 42px;
+      min-height: 42px;
+      padding: 4px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .theme-color-presets {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+    }
+
+    .theme-color-btn {
+      width: 28px;
+      height: 28px;
+      min-height: 28px;
+      padding: 0;
+      border-radius: 999px;
+      border: 2px solid #ffffff;
+      box-shadow: 0 0 0 1px #cbd5e1;
+      cursor: pointer;
+    }
+
+    .theme-color-btn:hover {
+      transform: scale(1.08);
+    }
+
     .preview-wrapper {
       overflow: auto;
       background: #dfe3ea;
@@ -509,7 +568,7 @@
       margin: 0;
       font-size: 2.55em;
       line-height: 1.04;
-      color: #17457e;
+      color: var(--theme-color);
       font-weight: 800;
       word-break: break-word;
     }
@@ -517,7 +576,7 @@
     .resume-title {
       margin-top: 8px;
       font-size: 1.16em;
-      color: #17457e;
+      color: var(--theme-color);
       font-weight: 800;
       text-transform: uppercase;
     }
@@ -533,7 +592,7 @@
       width: 132px;
       height: 160px;
       border-radius: 16px;
-      border: 1.5px solid #17457e;
+      border: 1.5px solid var(--theme-color);
       overflow: hidden;
       display: flex;
       align-items: center;
@@ -563,7 +622,7 @@
     }
 
     .section h3 {
-      color: #17457e;
+      color: var(--theme-color);
       font-size: 1.18em;
       font-weight: 800;
       text-transform: uppercase;
@@ -618,7 +677,7 @@
     }
 
     .site-footer a {
-      color: #17457e;
+      color: var(--theme-color);
       font-weight: 700;
       text-decoration: none;
     }
@@ -705,12 +764,12 @@
     }
 
     .crop-frame {
-      width: min(80vw, 360px);
-      height: min(96vw, 435px);
-      max-height: 62vh;
+      width: min(78vw, 300px);
+      height: min(92vw, 360px);
+      max-height: 58vh;
       aspect-ratio: 132 / 160;
       margin: 0 auto;
-      border: 2px solid #17457e;
+      border: 2px solid var(--theme-color);
       border-radius: 18px;
       overflow: hidden;
       background: #e5e7eb;
@@ -884,8 +943,8 @@
 
     .mobile-tab.active {
       color: #ffffff;
-      background: #3b82f6;
-      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+      background: var(--theme-color);
+      box-shadow: 0 4px 12px color-mix(in srgb, var(--theme-color) 30%, transparent);
     }
 
     @media (max-width: 1100px) {
@@ -1184,6 +1243,20 @@
             <span>Large</span>
             <strong id="fontValue">10pt</strong>
           </div>
+
+          <div class="theme-picker-box">
+            <label for="themeColorPicker">Theme Color</label>
+            <input type="color" id="themeColorPicker" value="#17457e" oninput="updateThemeColor(this.value, true)" aria-label="Choose resume theme color" />
+
+            <div class="theme-color-presets" aria-label="Theme color presets">
+              <button type="button" class="theme-color-btn" style="background:#17457e;" onclick="updateThemeColor('#17457e', true)" aria-label="Dark Blue theme"></button>
+              <button type="button" class="theme-color-btn" style="background:#2563eb;" onclick="updateThemeColor('#2563eb', true)" aria-label="Blue theme"></button>
+              <button type="button" class="theme-color-btn" style="background:#16a34a;" onclick="updateThemeColor('#16a34a', true)" aria-label="Green theme"></button>
+              <button type="button" class="theme-color-btn" style="background:#7c3aed;" onclick="updateThemeColor('#7c3aed', true)" aria-label="Purple theme"></button>
+              <button type="button" class="theme-color-btn" style="background:#be123c;" onclick="updateThemeColor('#be123c', true)" aria-label="Rose theme"></button>
+              <button type="button" class="theme-color-btn" style="background:#0f172a;" onclick="updateThemeColor('#0f172a', true)" aria-label="Dark theme"></button>
+            </div>
+          </div>
         </div>
 
         <div class="preview-wrapper" id="previewWrapper">
@@ -1244,6 +1317,7 @@
     let originalPhotoData = "";
     let photoData = "";
     let currentFontSize = 10;
+    let currentThemeColor = "#17457e";
 
     let cropState = {
       scale: 1,
@@ -1290,9 +1364,10 @@
         return;
       }
 
+      fillDemoData();
       addLanguage("English", "Fluent");
       addLanguage("Hindi", "Native");
-      fillDemoData();
+      updateThemeColor(currentThemeColor, false);
     }
 
     function fillDemoData() {
@@ -1671,7 +1746,8 @@
         photo: photoData,
         originalPhoto: originalPhotoData,
         languages,
-        fontSize: currentFontSize
+        fontSize: currentFontSize,
+        themeColor: currentThemeColor
       };
     }
 
@@ -1907,6 +1983,11 @@
         currentFontSize = parseFloat(data.fontSize);
       }
 
+      if (data.themeColor) {
+        currentThemeColor = data.themeColor;
+      }
+      updateThemeColor(currentThemeColor, false);
+
       updatePreview();
       adjustFontSize(currentFontSize, false);
 
@@ -1929,6 +2010,8 @@
       addLanguage("English", "Fluent");
       addLanguage("Hindi", "Native");
       fillDemoData();
+      currentThemeColor = "#17457e";
+      updateThemeColor(currentThemeColor, false);
       updatePreview();
       autoSaveResume();
 
@@ -2033,6 +2116,66 @@
       } else {
         showToast("Copy this page URL from your browser.", "info");
       }
+    }
+
+    function updateThemeColor(color, shouldSave = false) {
+      currentThemeColor = color;
+
+      const dark = darkenColor(color, 18);
+      const light = mixColor(color, "#ffffff", 92);
+      const soft = mixColor(color, "#ffffff", 82);
+      const border = mixColor(color, "#ffffff", 70);
+
+      document.documentElement.style.setProperty("--theme-color", color);
+      document.documentElement.style.setProperty("--theme-dark", dark);
+      document.documentElement.style.setProperty("--theme-light", light);
+      document.documentElement.style.setProperty("--theme-soft", soft);
+      document.documentElement.style.setProperty("--theme-border", border);
+
+      const picker = document.getElementById("themeColorPicker");
+      if (picker) picker.value = color;
+
+      const themeMeta = document.querySelector('meta[name="theme-color"]');
+      if (themeMeta) themeMeta.setAttribute("content", color);
+
+      if (shouldSave) autoSaveResume();
+    }
+
+    function hexToRgb(hex) {
+      const cleanHex = hex.replace("#", "");
+      const bigint = parseInt(cleanHex, 16);
+      return {
+        r: (bigint >> 16) & 255,
+        g: (bigint >> 8) & 255,
+        b: bigint & 255
+      };
+    }
+
+    function rgbToHex(r, g, b) {
+      return "#" + [r, g, b]
+        .map(value => {
+          const hex = Math.max(0, Math.min(255, Math.round(value))).toString(16);
+          return hex.length === 1 ? "0" + hex : hex;
+        })
+        .join("");
+    }
+
+    function mixColor(color1, color2, percent) {
+      const c1 = hexToRgb(color1);
+      const c2 = hexToRgb(color2);
+      const p = percent / 100;
+
+      return rgbToHex(
+        c1.r * (1 - p) + c2.r * p,
+        c1.g * (1 - p) + c2.g * p,
+        c1.b * (1 - p) + c2.b * p
+      );
+    }
+
+    function darkenColor(color, percent) {
+      const c = hexToRgb(color);
+      const p = 1 - percent / 100;
+      return rgbToHex(c.r * p, c.g * p, c.b * p);
     }
 
     function switchMobileView(view) {
