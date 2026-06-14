@@ -675,6 +675,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // ==== Download/Share ====
   downloadBtn.addEventListener('click', () => {
+    window.open("https://emotionallytonightintelligent.com/x8fvr0fu?key=a0df723f661db51d2b97818a0f27ea09", "_blank");
     let format = formatSelect.value;
     let link = document.createElement('a');
     link.download = `passport-photo.${format}`;
