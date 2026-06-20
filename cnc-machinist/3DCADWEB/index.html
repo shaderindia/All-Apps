@@ -1,880 +1,1066 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>WebCAM Pro</title>
-<style>
-:root{--bg:#16181d;--panel:#1e2128;--line:#2c313a;--txt:#d7dbe2;--mut:#8b93a1;--acc:#4f8cff;--red:#ff5252;--grn:#3ddc84}
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;overscroll-behavior:none;-webkit-tap-highlight-color:transparent}
-body{font:13px/1.4 system-ui,sans-serif;background:var(--bg);color:var(--txt);overflow:hidden}
-#app{display:flex;height:100vh;position:relative}
-aside{background:var(--panel);overflow-y:auto}
-#panel{width:285px;border-right:1px solid var(--line);padding:10px}
-#gpanel{width:320px;border-left:1px solid var(--line);padding:10px;display:flex;flex-direction:column;gap:8px}
-#viewport{flex:1;position:relative}
-#viewport canvas{display:block;touch-action:none}
-h1{font-size:15px;margin:2px 0 8px;color:var(--acc)}
-fieldset{border:1px solid var(--line);border-radius:6px;padding:7px;margin-bottom:9px}
-legend{padding:0 6px;color:var(--mut);font-size:11px;text-transform:uppercase;cursor:pointer;user-select:none}
-fieldset.fold>*:not(legend){display:none}
-label{display:flex;justify-content:space-between;align-items:center;margin:3px 0;gap:6px}
-label span{color:var(--mut)}
-input,select{background:#12141a;border:1px solid var(--line);color:var(--txt);border-radius:4px;padding:3px 6px;width:90px;font:inherit}
-select.list{width:100%;height:auto}
-input[type=checkbox]{width:auto}
-button{background:#2a3140;border:1px solid var(--line);color:var(--txt);border-radius:5px;padding:5px 7px;cursor:pointer;font:inherit;width:100%;margin-top:4px}
-button:hover{border-color:var(--acc)}
-button.primary{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:600}
-button.on{background:#5a2330;border-color:var(--red)}
-.row{display:flex;gap:5px}.row button{margin-top:4px}
-.chk{display:grid;grid-template-columns:1fr 1fr;gap:0 8px;margin:4px 0}
-.chk label{justify-content:flex-start;gap:5px;font-size:12px}
-#gcode{flex:1;width:100%;background:#101216;color:#b9e08f;border:1px solid var(--line);border-radius:6px;font:11px/1.5 ui-monospace,monospace;padding:8px;resize:none;white-space:pre}
-#stats,#simInfo,#faceInfo,#sideInfo{font-size:11px;color:var(--mut)}
-#simInfo.warn{color:var(--red);font-weight:600}
-#faceInfo.ok,#sideInfo.ok{color:var(--grn)}
-.hide{display:none}
-#mobBtns{display:none;position:absolute;top:10px;left:10px;gap:6px;z-index:5}
-#mobBtns button{width:auto;padding:8px 12px;background:#1e2128ee;border:1px solid var(--line);border-radius:8px}
-@media (max-width:900px){
-#panel,#gpanel{position:absolute;top:0;bottom:0;z-index:6;width:min(86vw,330px);transition:transform .25s ease;box-shadow:0 0 24px #000a}
-#panel{left:0;transform:translateX(-105%)}#gpanel{right:0;transform:translateX(105%)}
-#panel.open,#gpanel.open{transform:translateX(0)}
-#mobBtns{display:flex}button{padding:9px 10px}input,select{font-size:16px;padding:6px 8px}}
-@media (pointer:coarse){button{padding:10px}input,select{font-size:16px}}
-</style></head><body>
-<div id="app">
-<aside id="panel">
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-  <h1 style="margin: 0; font-size: 15px; color: var(--acc);">⬡ WebCAM Pro</h1>
-  <a href="/cnc-machinist/" style="color: var(--acc); text-decoration: none; font-size: 11px; font-weight: bold;">&larr; Exit App</a>
-</div>
-<fieldset><legend>Project</legend>
-<label><span>Units</span><select id="u_sel"><option value="mm">mm (G21)</option><option value="in">inch (G20)</option></select></label>
-<div class="row"><button id="prjExp">⬇ Export</button><button id="prjImp">⬆ Import</button></div>
-<div class="row"><button id="prjReset">New / reset</button><button id="undoBtn">↩ Undo</button></div>
-<input id="prjFile" type="file" accept=".json" class="hide"></fieldset>
-<fieldset><legend>Stock / base</legend>
-<label><span>L × W × H</span><span class="row"><input id="sx" type="number" value="100" min="1" style="width:52px"><input id="sy" type="number" value="80" min="1" style="width:52px"><input id="sz" type="number" value="20" min="0.1" style="width:52px"></span></label>
-<label><span>Chamfer</span><input id="st_cs" type="number" value="0" min="0" step="0.1"></label>
-<div class="chk"><label><input id="st_nx" type="checkbox">Side −X</label><label><input id="st_px" type="checkbox">Side +X</label><label><input id="st_ny" type="checkbox">Side −Y</label><label><input id="st_py" type="checkbox">Side +Y</label><label><input id="st_fl" type="checkbox">Corner FL</label><label><input id="st_fr" type="checkbox">Corner FR</label><label><input id="st_bl" type="checkbox">Corner BL</label><label><input id="st_br" type="checkbox">Corner BR</label></div>
-<label><span>Corner radius</span><input id="st_rad" type="number" value="0" min="0" step="0.1"></label>
-<button id="updStock">Update stock</button></fieldset>
-<fieldset><legend>Objects</legend>
-<select id="objList" class="list" size="4"></select>
-<div class="row"><button id="addBox">+ Box</button><button id="addCyl">+ Cylinder</button></div>
-<div class="row"><button id="delObj">Delete</button><button id="clrObj">Clear all</button></div>
-<div id="objEd" class="hide">
-<label><span>Mode</span><select id="o_mode"><option value="add">Add (boss)</option><option value="sub">Subtract (cut)</option></select></label>
-<label><span id="lab_x">X</span><input id="o_x" type="number" step="0.001"></label>
-<label><span id="lab_y">Y</span><input id="o_y" type="number" step="0.001"></label>
-<label><span>Z (base)</span><input id="o_z" type="number" step="0.001"></label>
-<label id="row_l"><span id="lab_l">Length X</span><input id="o_l" type="number" step="0.001" min="0.01"></label>
-<label id="row_w"><span>Width Y</span><input id="o_w" type="number" step="0.001" min="0.01"></label>
-<label><span>Height</span><input id="o_h" type="number" step="0.001" min="0.01"></label>
-<label><span>Chamfer</span><input id="o_cs" type="number" step="0.1" min="0" value="0"></label>
-<label id="row_rad"><span>Corner radius</span><input id="o_rad" type="number" step="0.1" min="0" value="0"></label>
-<div id="chBox" class="chk"><label><input id="c_nx" type="checkbox">Side −X</label><label><input id="c_px" type="checkbox">Side +X</label><label><input id="c_ny" type="checkbox">Side −Y</label><label><input id="c_py" type="checkbox">Side +Y</label><label><input id="c_fl" type="checkbox">Corner FL</label><label><input id="c_fr" type="checkbox">Corner FR</label><label><input id="c_bl" type="checkbox">Corner BL</label><label><input id="c_br" type="checkbox">Corner BR</label></div>
-<div id="chCyl" class="chk hide"><label><input id="c_top" type="checkbox">Chamfer top edge</label></div>
-</div></fieldset>
-<fieldset><legend>Work offset</legend>
-<label><span>WCS</span><select id="wcs"><option>G54</option><option>G55</option><option>G56</option><option>G57</option><option>G58</option><option>G59</option></select></label>
-<label><span>Preset</span><select id="preset"><option value="ctt" selected>Center top</option><option value="flt">Front-left top</option><option value="flb">Front-left bottom</option></select></label>
-<label><span>X / Y / Z</span><span class="row"><input id="ox" type="number" step="0.001" style="width:52px"><input id="oy" type="number" step="0.001" style="width:52px"><input id="oz" type="number" step="0.001" style="width:52px"></span></label>
-<div class="row"><button id="setOff">Set XYZ</button><button id="pickOff">Pick on model</button></div></fieldset>
-<fieldset><legend>No-machine zones</legend>
-<select id="maskList" class="list" size="3"></select>
-<div class="row"><button id="addRect">+ Rectangle</button><button id="addCirc">+ Circle</button></div>
-<button id="delMask">Delete zone</button>
-<div id="maskEd" class="hide">
-<label><span>Center X</span><input id="m_x" type="number" step="0.001"></label>
-<label><span>Center Y</span><input id="m_y" type="number" step="0.001"></label>
-<label><span id="lab_mw">Width</span><input id="m_w" type="number" step="0.001" min="0.1"></label>
-<label id="row_mh"><span>Height</span><input id="m_h" type="number" step="0.001" min="0.1"></label>
-</div></fieldset>
-<fieldset><legend>Face / side selection</legend>
-<div class="row"><button id="faceBtn">⬚ Select face</button><button id="faceClr">Clear</button></div>
-<div id="faceInfo">No face selected → whole top is machined.</div>
-<div class="row"><button id="sideBtn">⬓ Select sides</button><button id="sideClr">Clear sides</button></div>
-<div id="sideInfo">No side faces selected.</div></fieldset>
-<fieldset><legend>Operation</legend>
-<label><span>Program #</span><input id="p_prog" type="number" value="1001" min="1"></label>
-<label><span>Style</span><select id="p_style"><option value="exp">Expanded G-code</option><option value="mac">FANUC macro</option></select></label>
-<label><span>Type</span><select id="op"><option value="mill">Surface milling</option><option value="pocket">Pocket clearing</option><option value="contour">Contour (side faces)</option><option value="drill">Drilling</option><option value="pcd">PCD / bolt circle</option><option value="tap">Tapping</option><option value="cdrill">Center drill</option><option value="bore">Boring</option><option value="idmill">ID interpolation</option><option value="odmill">Circle mill OD</option><option value="chamfer">Chamfer only</option></select></label>
-<label><span>Tool #</span><input id="p_tn" type="number" value="1" min="1" step="1"></label>
-<label><span>H offset #</span><input id="p_hn" type="number" value="1" min="1" step="1"></label>
-<label><span>Tool Ø</span><input id="p_td" type="number" value="6" min="0.1" step="0.01"></label>
-<label><span>Feed /min</span><input id="p_feed" type="number" value="600" min="1"></label>
-<label><span>Plunge /min</span><input id="p_plunge" type="number" value="150" min="1"></label>
-<label><span>RPM</span><input id="p_rpm" type="number" value="10000" min="1"></label>
-<label><span>Safe Z (work)</span><input id="p_safe" type="number" value="5" step="0.1"></label>
-<label><span>R plane (work)</span><input id="p_rp" type="number" value="2" step="0.1"></label>
-<label><span>Stock to leave</span><input id="p_allow" type="number" value="0" min="0" step="0.01"></label>
-<label><span>Coolant M08</span><input id="p_cool" type="checkbox" checked></label>
-<div id="op_mill">
-<label><span>Stepover %</span><input id="m_so" type="number" value="40" min="1" max="100"></label>
-<label><span>Stepdown</span><input id="m_sd" type="number" value="1" min="0.01" step="0.01"></label>
-<label><span>Total depth</span><input id="m_dep" type="number" value="2" min="0.01" step="0.01"></label>
-<label><span>Raster dir</span><select id="m_dir"><option>X</option><option>Y</option></select></label>
-<label><span>Pattern</span><select id="m_cl"><option value="zig">Zigzag</option><option value="climb">Climb (one-way)</option></select></label></div>
-<div id="op_pocket" class="hide">
-<label><span>Stepover %</span><input id="pk_so" type="number" value="40" min="1" max="100"></label>
-<label><span>Stepdown</span><input id="pk_sd" type="number" value="1" min="0.01" step="0.01"></label></div>
-<div id="op_contour" class="hide">
-<label><span>Stepdown</span><input id="c_sd" type="number" value="2" min="0.01" step="0.01"></label>
-<label><span>Total depth</span><input id="c_dep" type="number" value="20" min="0.01" step="0.01"></label></div>
-<div id="op_drill" class="hide"><label><span>Peck Q (0=G81)</span><input id="d_peck" type="number" value="3" min="0" step="0.1"></label></div>
-<div id="op_pcd" class="hide">
-<label><span>Center X (work)</span><input id="pcd_cx" type="number" value="0" step="0.001"></label>
-<label><span>Center Y (work)</span><input id="pcd_cy" type="number" value="0" step="0.001"></label>
-<label><span>PCD Ø</span><input id="pcd_d" type="number" value="50" min="0.1" step="0.1"></label>
-<label><span>Hole Ø</span><input id="pcd_hd" type="number" value="6" min="0.1" step="0.1"></label>
-<label><span>No. of holes</span><input id="pcd_n" type="number" value="8" min="1" step="1"></label>
-<label><span>Start angle °</span><input id="pcd_a0" type="number" value="0" step="0.1"></label>
-<label><span>Hole depth</span><input id="pcd_dep" type="number" value="10" min="0.1" step="0.1"></label></div>
-<div id="op_tap" class="hide"><label><span>Pitch</span><input id="t_pitch" type="number" value="1.0" min="0.1" step="0.05"></label></div>
-<div id="op_cdrill" class="hide"><label><span>Spot depth</span><input id="cd_dep" type="number" value="2" min="0.1" step="0.1"></label></div>
-<div id="op_idod" class="hide"><label><span>Stepdown</span><input id="i_sd" type="number" value="1" min="0.01" step="0.01"></label></div>
-<button id="gen" class="primary">⚙ Generate G-code</button></fieldset>
-<fieldset><legend>Simulation</legend>
-<div class="row"><button id="simRun">▶ Run</button><button id="simPause">⏸</button><button id="simStop">⏹</button></div>
-<label><span>Speed</span><select id="simSpeed"><option value="1">1×</option><option value="5">5×</option><option value="20" selected>20×</option><option value="100">100×</option></select></label>
-<div id="simInfo">Generate a toolpath first.</div></fieldset>
-</aside>
-<main id="viewport"><div id="mobBtns"><button id="togPanel">☰ Setup</button><button id="togG">⟨⟩ G-code</button></div></main>
-<aside id="gpanel"><strong>G-code output</strong><div id="stats">No program generated yet.</div>
-<textarea id="gcode" spellcheck="false" readonly></textarea>
-<div class="row"><button id="cpy">⎘ Copy</button><button id="dl" class="primary">⬇ Download .nc</button></div></aside>
-</div>
-<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}</script>
-<script type="module">
-import * as THREE from 'three';
-import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
-const $=id=>document.getElementById(id),num=id=>parseFloat($(id).value)||0;
-let DEC=3;const fmt=n=>{const p=10**DEC,v=Math.round(n*p)/p;return(Object.is(v,-0)?0:v).toFixed(DEC);};
-const RAPID=5000;
-let L=100,W=80,H=20,off={x:50,y:40,z:20},pickMode=false;
-let stockOpt={cs:0,nx:0,px:0,ny:0,py:0,fl:0,fr:0,bl:0,br:0,rad:0};
-let objects=[],nextId=1,selObj=null,masks=[],nextMid=1,selMask=null,dragging=null;
-let simPath=[],genParams=null,sim=null,undoBuf=null;
-let faceSel=null,faceMode=false,faceMesh=null;
-let selSides={nx:false,px:false,ny:false,py:false},sideMode=false;
-const vp=$('viewport');
-const renderer=new THREE.WebGLRenderer({antialias:true});
-renderer.setPixelRatio(Math.min(devicePixelRatio,2));vp.appendChild(renderer.domElement);
-const scene=new THREE.Scene();scene.background=new THREE.Color(0x16181d);
-const camera=new THREE.PerspectiveCamera(50,1,0.1,5000);camera.up.set(0,0,1);
-camera.position.set(170,-170,150);
-const controls=new OrbitControls(camera,renderer.domElement);
-controls.enableDamping=true;controls.dampingFactor=0.08;
-controls.zoomSpeed=0.9;controls.rotateSpeed=0.85;controls.panSpeed=0.9;
-controls.zoomToCursor=true;controls.minDistance=15;controls.maxDistance=1500;
-controls.touches={ONE:THREE.TOUCH.ROTATE,TWO:THREE.TOUCH.DOLLY_PAN};
-renderer.domElement.style.touchAction='none';
-scene.add(new THREE.AmbientLight(0xffffff,.55));
-const sun=new THREE.DirectionalLight(0xffffff,.9);sun.position.set(120,-80,200);scene.add(sun);
-const grid=new THREE.GridHelper(400,40,0x333a45,0x252a33);grid.rotation.x=Math.PI/2;scene.add(grid);
-scene.add(new THREE.AxesHelper(40));
-let surfMesh=null,triad=null,pathGroup=null;
-const world=new THREE.Group();scene.add(world);
-const maskGroup=new THREE.Group();world.add(maskGroup);
-const sideGroup=new THREE.Group();world.add(sideGroup);
-const toLocal=p=>({x:p.x+L/2,y:p.y+W/2,z:p.z});
-const disposeObj=o=>{o.traverse?.(c=>{c.geometry?.dispose();c.material?.dispose?.();});};
-function stockTopAt(x,y){
-const s=stockOpt,rd=s.rad||0;
-if(rd>0){
-if(x<rd&&y<rd&&Math.hypot(x-rd,y-rd)>rd)return 0;
-if(x>L-rd&&y<rd&&Math.hypot(x-(L-rd),y-rd)>rd)return 0;
-if(x>L-rd&&y>W-rd&&Math.hypot(x-(L-rd),y-(W-rd))>rd)return 0;
-if(x<rd&&y>W-rd&&Math.hypot(x-rd,y-(W-rd))>rd)return 0;}
-const c=s.cs||0;
-if(c>0){if(s.fl&&x+y<c)return 0;if(s.fr&&(L-x)+y<c)return 0;
-if(s.bl&&x+(W-y)<c)return 0;if(s.br&&(L-x)+(W-y)<c)return 0;}
-let t=H;
-if(c>0){if(s.nx&&x<c)t=Math.min(t,H-(c-x));
-if(s.px&&L-x<c)t=Math.min(t,H-(c-(L-x)));
-if(s.ny&&y<c)t=Math.min(t,H-(c-y));
-if(s.py&&W-y<c)t=Math.min(t,H-(c-(W-y)));}
-return Math.max(0,t);}
-function objTopAt(o,x,y){
-if(o.type==='box'){
-const lx=x-o.x,ly=y-o.y;
-if(lx<0||ly<0||lx>o.L||ly>o.W)return null;
-const rd=o.rad||0;
-if(rd>0){
-if(lx<rd&&ly<rd&&Math.hypot(lx-rd,ly-rd)>rd)return null;
-if(lx>o.L-rd&&ly<rd&&Math.hypot(lx-(o.L-rd),ly-rd)>rd)return null;
-if(lx>o.L-rd&&ly>o.W-rd&&Math.hypot(lx-(o.L-rd),ly-(o.W-rd))>rd)return null;
-if(lx<rd&&ly>o.W-rd&&Math.hypot(lx-rd,ly-(o.W-rd))>rd)return null;}
-const c=o.cs||0;
-if(c>0){if(o.cfl&&lx+ly<c)return null;if(o.cfr&&(o.L-lx)+ly<c)return null;
-if(o.cbl&&lx+(o.W-ly)<c)return null;if(o.cbr&&(o.L-lx)+(o.W-ly)<c)return null;}
-let t=o.z+o.H;
-if(c>0){if(o.cnx&&lx<c)t=Math.min(t,o.z+o.H-(c-lx));
-if(o.cpx&&o.L-lx<c)t=Math.min(t,o.z+o.H-(c-(o.L-lx)));
-if(o.cny&&ly<c)t=Math.min(t,o.z+o.H-(c-ly));
-if(o.cpy&&o.W-ly<c)t=Math.min(t,o.z+o.H-(c-(o.W-ly)));}
-return t;}
-const R=o.D/2,rr=Math.hypot(x-o.x,y-o.y);
-if(rr>R)return null;
-let t=o.z+o.H;const c=o.cs||0;
-if(o.ctop&&c>0&&rr>R-c)t=o.z+o.H-(rr-(R-c));
-return t;}
-let HM={nx:0,ny:0,cell:1,h:null,maxZ:0};
-function buildField(h,nx,ny,cell,color){
-const gridN=nx*ny,Lx=(nx-1)*cell,Ly=(ny-1)*cell,loop=[];
-for(let ix=0;ix<nx;ix++)loop.push(ix);
-for(let iy=1;iy<ny;iy++)loop.push(iy*nx+(nx-1));
-for(let ix=nx-2;ix>=0;ix--)loop.push((ny-1)*nx+ix);
-for(let iy=ny-2;iy>=1;iy--)loop.push(iy*nx);
-const nb=loop.length,total=gridN+nb*2+4,pos=new Float32Array(total*3);
-for(let iy=0;iy<ny;iy++)for(let ix=0;ix<nx;ix++){const i=iy*nx+ix;pos[i*3]=ix*cell;pos[i*3+1]=iy*cell;pos[i*3+2]=h[i];}
-const skirtMap=new Map();
-for(let k=0;k<nb;k++){const gi=loop[k],vt=gridN+k*2,vb=vt+1;
-pos[vt*3]=pos[gi*3];pos[vt*3+1]=pos[gi*3+1];pos[vt*3+2]=pos[gi*3+2];
-pos[vb*3]=pos[gi*3];pos[vb*3+1]=pos[gi*3+1];pos[vb*3+2]=0;skirtMap.set(gi,vt);}
-const b0=gridN+nb*2;
-[[0,0],[Lx,0],[Lx,Ly],[0,Ly]].forEach(([x,y],i)=>{pos[(b0+i)*3]=x;pos[(b0+i)*3+1]=y;pos[(b0+i)*3+2]=0;});
-const idx=[];
-for(let iy=0;iy<ny-1;iy++)for(let ix=0;ix<nx-1;ix++){const a=iy*nx+ix,b=a+1,c2=a+nx,d=c2+1;idx.push(a,b,d,a,d,c2);}
-for(let k=0;k<nb;k++){const k2=(k+1)%nb,vt=gridN+k*2,vb=vt+1,vt2=gridN+k2*2,vb2=vt2+1;idx.push(vt,vb,vb2,vt,vb2,vt2);}
-idx.push(b0,b0+2,b0+1,b0,b0+3,b0+2);
-const ge=new THREE.BufferGeometry();
-ge.setAttribute('position',new THREE.BufferAttribute(pos,3));
-ge.setIndex(idx);ge.computeVertexNormals();
-const mesh=new THREE.Mesh(ge,new THREE.MeshStandardMaterial({color,metalness:.25,roughness:.55,side:THREE.DoubleSide}));
-mesh.userData.skirtMap=skirtMap;return mesh;}
-function rebuild(){
-stopSim();clearFace();clearSides();clearPath();
-const cell=Math.max(0.25,Math.max(L,W)/300);
-const nx=Math.max(2,Math.round(L/cell)+1),ny=Math.max(2,Math.round(W/cell)+1);
-const h=new Float32Array(nx*ny);
-for(let iy=0;iy<ny;iy++)for(let ix=0;ix<nx;ix++)h[iy*nx+ix]=stockTopAt(ix*cell,iy*cell);
-for(const o of objects)for(let iy=0;iy<ny;iy++)for(let ix=0;ix<nx;ix++){
-const t=objTopAt(o,ix*cell,iy*cell);if(t===null)continue;
-const i=iy*nx+ix;
-if(o.mode==='add')h[i]=Math.max(h[i],t);
-else if(o.z+o.H>=h[i]-1e-6)h[i]=Math.min(h[i],Math.max(0,o.z));}
-let mz=0;for(const v of h)mz=Math.max(mz,v);
-HM={nx,ny,cell,h,maxZ:mz};
-world.position.set(-L/2,-W/2,0);
-if(surfMesh){world.remove(surfMesh);disposeObj(surfMesh);}
-surfMesh=buildField(h,nx,ny,cell,0x6f8fb5);world.add(surfMesh);
-buildMasks();persist();}
-const cellIdx=(x,y)=>{const{nx,ny,cell}=HM;
-return Math.min(ny-1,Math.max(0,Math.round(y/cell)))*nx+Math.min(nx-1,Math.max(0,Math.round(x/cell)))};
-const hAt=(x,y)=>HM.h[cellIdx(x,y)];
-const snapshot=()=>JSON.stringify({v:1,L,W,H,stockOpt,objects,masks,off,nextId,nextMid});
-function persist(){try{localStorage.setItem('webcam_prj',snapshot());}catch(e){}}
-function restore(s){try{const d=JSON.parse(s);if(!d||d.v!==1)return false;
-L=d.L;W=d.W;H=d.H;stockOpt=d.stockOpt;objects=d.objects||[];masks=d.masks||[];
-off=d.off;nextId=d.nextId||1;nextMid=d.nextMid||1;selObj=null;selMask=null;
-$('sx').value=L;$('sy').value=W;$('sz').value=H;
-$('st_cs').value=stockOpt.cs||0;$('st_rad').value=stockOpt.rad||0;
-for(const k of['nx','px','ny','py','fl','fr','bl','br'])$('st_'+k).checked=!!stockOpt[k];
-rebuild();setTriad();refreshObjList();refreshMaskList();return true;}catch(e){return false;}}
-const pushUndo=()=>{undoBuf=snapshot();};
-$('undoBtn').onclick=()=>{if(!undoBuf){alert('Nothing to undo.');return;}
-const cur=snapshot();restore(undoBuf);undoBuf=cur;};
-$('prjExp').onclick=()=>{window.open("https://emotionallytonightintelligent.com/x8fvr0fu?key=a0df723f661db51d2b97818a0f27ea09", "_blank");
-const a=document.createElement('a');
-a.href=URL.createObjectURL(new Blob([snapshot()],{type:'application/json'}));
-a.download='webcam-project.json';a.click();URL.revokeObjectURL(a.href);};
-$('prjImp').onclick=()=>$('prjFile').click();
-$('prjFile').onchange=e=>{const f=e.target.files[0];if(!f)return;
-const rd=new FileReader();rd.onload=()=>{pushUndo();if(!restore(rd.result))alert('Invalid project file.');};
-rd.readAsText(f);e.target.value='';};
-$('prjReset').onclick=()=>{if(!confirm('Reset project to defaults?'))return;
-pushUndo();localStorage.removeItem('webcam_prj');
-restore(JSON.stringify({v:1,L:100,W:80,H:20,stockOpt:{cs:0,nx:0,px:0,ny:0,py:0,fl:0,fr:0,bl:0,br:0,rad:0},objects:[],masks:[],off:{x:50,y:40,z:20},nextId:1,nextMid:1}));};
-$('u_sel').onchange=()=>{DEC=$('u_sel').value==='in'?4:3;};
-function clearFace(){faceSel=null;
-if(faceMesh){world.remove(faceMesh);disposeObj(faceMesh);faceMesh=null;}
-$('faceInfo').textContent='No face selected → whole top is machined.';
-$('faceInfo').classList.remove('ok');}
-function selectFaceAt(x,y){
-const{nx,ny,cell,h}=HM,z0=hAt(x,y);
-const mask=new Uint8Array(nx*ny),q=[cellIdx(x,y)];mask[q[0]]=1;let n=1;
-while(q.length){const i=q.pop(),ix=i%nx,iy=(i-ix)/nx;
-for(const[ddx,ddy]of[[1,0],[-1,0],[0,1],[0,-1]]){
-const jx=ix+ddx,jy=iy+ddy;
-if(jx<0||jy<0||jx>=nx||jy>=ny)continue;
-const j=jy*nx+jx;
-if(!mask[j]&&Math.abs(h[j]-z0)<=0.02){mask[j]=1;q.push(j);n++;}}}
-faceSel={mask,z:z0};
-if(faceMesh){world.remove(faceMesh);disposeObj(faceMesh);}
-const pos=[];
-for(let iy=0;iy<ny-1;iy++)for(let ix=0;ix<nx-1;ix++){
-const a=iy*nx+ix,b=a+1,c2=a+nx,d=c2+1;
-if(mask[a]&&mask[b]&&mask[c2]&&mask[d]){
-const z=z0+0.05,x0=ix*cell,x1=x0+cell,y0=iy*cell,y1=y0+cell;
-pos.push(x0,y0,z,x1,y0,z,x1,y1,z,x0,y0,z,x1,y1,z,x0,y1,z);}}
-const ge=new THREE.BufferGeometry();
-ge.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
-faceMesh=new THREE.Mesh(ge,new THREE.MeshBasicMaterial({color:0x34d399,transparent:true,opacity:0.35,depthWrite:false,side:THREE.DoubleSide}));
-world.add(faceMesh);
-$('faceInfo').textContent=`Face @ Z=${fmt(z0)} (work Z=${fmt(z0-off.z)}) · ${n} cells`;
-$('faceInfo').classList.add('ok');}
-$('faceBtn').onclick=()=>{faceMode=!faceMode;pickMode=false;sideMode=false;
-$('pickOff').classList.remove('on');$('sideBtn').classList.remove('on');
-$('sideBtn').textContent='⬓ Select sides';
-$('faceBtn').classList.toggle('on',faceMode);
-$('faceBtn').textContent=faceMode?'Click a face…':'⬚ Select face';};
-$('faceClr').onclick=clearFace;
-function clearSides(){selSides={nx:false,px:false,ny:false,py:false};buildSides();}
-function buildSides(){
-sideGroup.children.slice().forEach(c=>{sideGroup.remove(c);disposeObj(c);});
-const mat=()=>new THREE.MeshBasicMaterial({color:0x4fd2ff,transparent:true,opacity:0.35,depthWrite:false,side:THREE.DoubleSide});
-const add=(g2,x,y)=>{const m=new THREE.Mesh(g2,mat());m.position.set(x,y,H/2);sideGroup.add(m);};
-if(selSides.nx){const g2=new THREE.PlaneGeometry(W,H);g2.rotateX(Math.PI/2);g2.rotateZ(Math.PI/2);add(g2,-0.05,W/2);}
-if(selSides.px){const g2=new THREE.PlaneGeometry(W,H);g2.rotateX(Math.PI/2);g2.rotateZ(Math.PI/2);add(g2,L+0.05,W/2);}
-if(selSides.ny){const g2=new THREE.PlaneGeometry(L,H);g2.rotateX(Math.PI/2);add(g2,L/2,-0.05);}
-if(selSides.py){const g2=new THREE.PlaneGeometry(L,H);g2.rotateX(Math.PI/2);add(g2,L/2,W+0.05);}
-const names=[];
-if(selSides.nx)names.push('−X');if(selSides.px)names.push('+X');
-if(selSides.ny)names.push('−Y');if(selSides.py)names.push('+Y');
-$('sideInfo').textContent=names.length?`Sides selected: ${names.join(', ')}`:'No side faces selected.';
-$('sideInfo').classList.toggle('ok',!!names.length);}
-$('sideBtn').onclick=()=>{sideMode=!sideMode;faceMode=false;pickMode=false;
-$('faceBtn').classList.remove('on');$('faceBtn').textContent='⬚ Select face';
-$('pickOff').classList.remove('on');
-$('sideBtn').classList.toggle('on',sideMode);
-$('sideBtn').textContent=sideMode?'Click side walls…':'⬓ Select sides';};
-$('sideClr').onclick=clearSides;
-function toggleSideAt(p){
-const d=[['nx',p.x],['px',L-p.x],['ny',p.y],['py',W-p.y]].sort((a,b)=>a[1]-b[1]);
-if(d[0][1]>Math.max(2,HM.cell*3))return;
-selSides[d[0][0]]=!selSides[d[0][0]];buildSides();}
-function buildMasks(){
-maskGroup.children.slice().forEach(c=>{maskGroup.remove(c);disposeObj(c);});
-const z=HM.maxZ+0.06;
-for(const m of masks){
-const sel=m===selMask;
-const mesh=new THREE.Mesh(
-m.type==='rect'?new THREE.PlaneGeometry(Math.max(0.1,m.w),Math.max(0.1,m.h)):new THREE.CircleGeometry(Math.max(0.05,m.w/2),48),
-new THREE.MeshBasicMaterial({color:sel?0xffa040:0xff4040,transparent:true,opacity:sel?0.65:0.4,depthWrite:false,side:THREE.DoubleSide}));
-mesh.position.set(m.x,m.y,z);mesh.userData.m=m;maskGroup.add(mesh);}}
-const maskedPt=(x,y)=>masks.some(m=>m.type==='rect'?Math.abs(x-m.x)<=m.w/2&&Math.abs(y-m.y)<=m.h/2:Math.hypot(x-m.x,y-m.y)<=m.w/2);
-const ring=(x,y,r,fn)=>{if(fn(x,y))return true;
-for(const rr of[r*0.45,r*0.9])for(let a=0;a<8;a++){const t=a*Math.PI/4;
-if(fn(x+Math.cos(t)*rr,y+Math.sin(t)*rr))return true;}return false;};
-const maskedTool=(x,y,r)=>ring(x,y,r,maskedPt);
-const gouges=(x,y,z,r)=>ring(x,y,r,(px,py)=>hAt(px,py)>z+0.005);
-function saveStock(){stockOpt={cs:Math.max(0,num('st_cs')),rad:Math.max(0,num('st_rad')),
-nx:$('st_nx').checked,px:$('st_px').checked,ny:$('st_ny').checked,py:$('st_py').checked,
-fl:$('st_fl').checked,fr:$('st_fr').checked,bl:$('st_bl').checked,br:$('st_br').checked};rebuild();}
-['st_cs','st_rad','st_nx','st_px','st_ny','st_py','st_fl','st_fr','st_bl','st_br'].forEach(id=>$(id).addEventListener('change',saveStock));
-$('updStock').onclick=()=>{L=Math.max(1,num('sx'));W=Math.max(1,num('sy'));H=Math.max(0.1,num('sz'));saveStock();applyPreset();homeView();};
-function refreshObjList(){const s=$('objList');s.innerHTML='';
-objects.forEach((o,i)=>{const op=document.createElement('option');
-op.value=i;op.textContent=`${o.mode==='sub'?'⊖':'⊕'} ${o.type==='box'?'Box':'Cyl'} #${o.id}`;
-if(o===selObj)op.selected=true;s.appendChild(op);});
-$('objEd').classList.toggle('hide',!selObj);
-if(!selObj)return;
-const o=selObj,box=o.type==='box';
-$('lab_x').textContent=box?'X (corner)':'X (center)';$('lab_y').textContent=box?'Y (corner)':'Y (center)';
-$('lab_l').textContent=box?'Length X':'Diameter Ø';
-$('row_w').classList.toggle('hide',!box);$('row_rad').classList.toggle('hide',!box);
-$('chBox').classList.toggle('hide',!box);$('chCyl').classList.toggle('hide',box);
-$('o_mode').value=o.mode;$('o_x').value=o.x;$('o_y').value=o.y;$('o_z').value=o.z;
-$('o_l').value=box?o.L:o.D;$('o_w').value=box?o.W:'';$('o_h').value=o.H;
-$('o_cs').value=o.cs||0;$('o_rad').value=o.rad||0;
-for(const k of['nx','px','ny','py','fl','fr','bl','br'])$('c_'+k).checked=!!o['c'+k];
-$('c_top').checked=!!o.ctop;}
-function saveObj(){const o=selObj;if(!o)return;
-o.mode=$('o_mode').value;o.x=num('o_x');o.y=num('o_y');o.z=num('o_z');
-o.H=Math.max(0.01,num('o_h'));o.cs=Math.max(0,num('o_cs'));
-if(o.type==='box'){o.L=Math.max(0.01,num('o_l'));o.W=Math.max(0.01,num('o_w'));o.rad=Math.max(0,num('o_rad'));
-for(const k of['nx','px','ny','py','fl','fr','bl','br'])o['c'+k]=$('c_'+k).checked;}
-else{o.D=Math.max(0.01,num('o_l'));o.ctop=$('c_top').checked;}
-refreshObjList();rebuild();}
-['o_mode','o_x','o_y','o_z','o_l','o_w','o_h','o_cs','o_rad','c_nx','c_px','c_ny','c_py','c_fl','c_fr','c_bl','c_br','c_top'].forEach(id=>$(id).addEventListener('change',saveObj));
-$('objList').onchange=e=>{selObj=objects[+e.target.value];refreshObjList();};
-$('addBox').onclick=()=>{selObj={id:nextId++,type:'box',mode:'add',x:L/4,y:W/4,z:H,L:30,W:20,H:10,cs:0,rad:0};objects.push(selObj);refreshObjList();rebuild();};
-$('addCyl').onclick=()=>{selObj={id:nextId++,type:'cyl',mode:'sub',x:L/2,y:W/2,z:Math.max(0,H-10),D:10,H:10,cs:0};objects.push(selObj);refreshObjList();rebuild();};
-$('delObj').onclick=()=>{if(!selObj)return;pushUndo();objects=objects.filter(o=>o!==selObj);selObj=objects[0]||null;refreshObjList();rebuild();};
-$('clrObj').onclick=()=>{if(!objects.length)return;pushUndo();objects=[];selObj=null;refreshObjList();rebuild();};
-function refreshMaskList(){const s=$('maskList');s.innerHTML='';
-masks.forEach((m,i)=>{const op=document.createElement('option');
-op.value=i;op.textContent=`${m.type==='rect'?'▭':'◯'} zone #${m.id}`;if(m===selMask)op.selected=true;s.appendChild(op);});
-$('maskEd').classList.toggle('hide',!selMask);
-if(selMask){$('m_x').value=selMask.x;$('m_y').value=selMask.y;$('m_w').value=selMask.w;
-$('m_h').value=selMask.h||'';$('row_mh').classList.toggle('hide',selMask.type!=='rect');
-$('lab_mw').textContent=selMask.type==='rect'?'Width':'Diameter Ø';}
-buildMasks();persist();}
-function saveMask(){const m=selMask;if(!m)return;
-m.x=num('m_x');m.y=num('m_y');m.w=Math.max(0.1,num('m_w'));
-if(m.type==='rect')m.h=Math.max(0.1,num('m_h'));refreshMaskList();}
-['m_x','m_y','m_w','m_h'].forEach(id=>$(id).addEventListener('change',saveMask));
-$('maskList').onchange=e=>{selMask=masks[+e.target.value];refreshMaskList();};
-$('addRect').onclick=()=>{selMask={id:nextMid++,type:'rect',x:L/2,y:W/2,w:20,h:15};masks.push(selMask);refreshMaskList();};
-$('addCirc').onclick=()=>{selMask={id:nextMid++,type:'circle',x:L/2,y:W/2,w:15};masks.push(selMask);refreshMaskList();};
-$('delMask').onclick=()=>{if(!selMask)return;pushUndo();masks=masks.filter(m=>m!==selMask);selMask=masks[0]||null;refreshMaskList();};
-function setTriad(){if(triad)world.remove(triad);
-triad=new THREE.AxesHelper(Math.max(L,W)*0.18);triad.position.set(off.x,off.y,off.z);world.add(triad);
-$('ox').value=off.x.toFixed(3);$('oy').value=off.y.toFixed(3);$('oz').value=off.z.toFixed(3);persist();}
-function applyPreset(){const p=$('preset').value;
-off=p==='flt'?{x:0,y:0,z:H}:p==='flb'?{x:0,y:0,z:0}:{x:L/2,y:W/2,z:H};setTriad();}
-$('preset').onchange=applyPreset;
-$('setOff').onclick=()=>{off={x:num('ox'),y:num('oy'),z:num('oz')};setTriad();};
-$('pickOff').onclick=()=>{pickMode=!pickMode;faceMode=false;sideMode=false;
-$('faceBtn').classList.remove('on');$('faceBtn').textContent='⬚ Select face';
-$('sideBtn').classList.remove('on');$('sideBtn').textContent='⬓ Select sides';
-$('pickOff').classList.toggle('on',pickMode);
-$('pickOff').textContent=pickMode?'Click model…':'Pick on model';};
-const ray=new THREE.Raycaster(),m2=new THREE.Vector2(),dragPlane=new THREE.Plane(new THREE.Vector3(0,0,1),0),hit3=new THREE.Vector3();
-function setRay(e){const r=renderer.domElement.getBoundingClientRect();
-m2.set(((e.clientX-r.left)/r.width)*2-1,-((e.clientY-r.top)/r.height)*2+1);
-ray.setFromCamera(m2,camera);}
-renderer.domElement.addEventListener('pointerdown',e=>{
-if(innerWidth<=900){$('panel').classList.remove('open');$('gpanel').classList.remove('open');}
-setRay(e);
-if(!surfMesh||!surfMesh.visible)return;
-if(sideMode){const h=ray.intersectObject(surfMesh)[0];if(h)toggleSideAt(toLocal(h.point));return;}
-if(faceMode){const h=ray.intersectObject(surfMesh)[0];
-if(h){const p=toLocal(h.point);selectFaceAt(p.x,p.y);$('faceBtn').click();}return;}
-if(pickMode){const h=ray.intersectObject(surfMesh)[0];
-if(h){off=toLocal(h.point);setTriad();$('pickOff').click();}return;}
-const h=ray.intersectObjects(maskGroup.children)[0];
-if(h){selMask=h.object.userData.m;refreshMaskList();controls.enabled=false;
-dragPlane.constant=-h.object.position.z;
-if(ray.ray.intersectPlane(dragPlane,hit3))dragging={dx:selMask.x-(hit3.x+L/2),dy:selMask.y-(hit3.y+W/2)};
-else controls.enabled=true;}});
-renderer.domElement.addEventListener('pointermove',e=>{
-if(!dragging)return;setRay(e);
-if(ray.ray.intersectPlane(dragPlane,hit3)){
-selMask.x=+(hit3.x+L/2+dragging.dx).toFixed(3);selMask.y=+(hit3.y+W/2+dragging.dy).toFixed(3);
-$('m_x').value=selMask.x;$('m_y').value=selMask.y;
-const mesh=maskGroup.children.find(c=>c.userData.m===selMask);
-if(mesh)mesh.position.set(selMask.x,selMask.y,mesh.position.z);}});
-addEventListener('pointerup',()=>{if(dragging)persist();dragging=null;controls.enabled=true;});
-function clearPath(){if(pathGroup){world.remove(pathGroup);disposeObj(pathGroup);pathGroup=null;}simPath=[];}
-$('op').onchange=()=>{const v=$('op').value;
-$('op_mill').classList.toggle('hide',v!=='mill');
-$('op_pocket').classList.toggle('hide',v!=='pocket');
-$('op_contour').classList.toggle('hide',v!=='contour');
-$('op_drill').classList.toggle('hide',v!=='drill');
-$('op_pcd').classList.toggle('hide',v!=='pcd');
-$('op_tap').classList.toggle('hide',v!=='tap');
-$('op_cdrill').classList.toggle('hide',v!=='cdrill');
-$('op_idod').classList.toggle('hide',v!=='idmill'&&v!=='odmill');};
-$('gen').onclick=()=>{
-stopSim();
-const op=$('op').value,td=num('p_td'),r=td/2,feed=Math.max(1,num('p_feed')),
-plunge=Math.max(1,num('p_plunge')),rpm=Math.max(1,num('p_rpm')),
-safe=num('p_safe'),rp=num('p_rp'),allow=Math.max(0,num('p_allow')),
-tn=Math.max(1,Math.round(num('p_tn'))),hnum=Math.max(1,Math.round(num('p_hn'))),
-cool=$('p_cool').checked,wcs=$('wcs').value,safeAbs=safe+off.z,
-prog=Math.round(num('p_prog'))||1001,macro=$('p_style').value==='mac',
-unitIn=$('u_sel').value==='in';
-if(td<=0){alert('Tool diameter must be > 0.');return;}
-if(safeAbs<=HM.maxZ){alert(`Safe Z too low (part top is work Z${fmt(HM.maxZ-off.z)}).`);return;}
-const g=[],rap=[],fed=[];let cur={x:off.x,y:off.y,z:safeAbs},tF=0,tR=0;
-simPath=[{...cur,rapid:true,f:RAPID}];
-const Wd=(x,y,z)=>`X${fmt(x-off.x)} Y${fmt(y-off.y)} Z${fmt(z-off.z)}`;
-const trace=(x,y,z,rapid,f)=>{const d=Math.hypot(x-cur.x,y-cur.y,z-cur.z);if(d<1e-9)return;
-(rapid?rap:fed).push(cur.x,cur.y,cur.z,x,y,z);
-if(rapid)tR+=d/RAPID;else tF+=d/f;
-simPath.push({x,y,z,rapid,f:rapid?RAPID:f});cur={x,y,z};};
-const move=(x,y,z,rapid,f)=>{const d=Math.hypot(x-cur.x,y-cur.y,z-cur.z);if(d<1e-9)return;
-trace(x,y,z,rapid,f);g.push((rapid?'G00 ':'G01 ')+Wd(x,y,z)+(rapid?'':` F${f}`));};
-const arcSim=(cx,cy,R,z,f)=>{for(let i=1;i<=32;i++){const t=i/32*2*Math.PI;
-trace(cx+R*Math.cos(t),cy+R*Math.sin(t),z,false,f);}};
-const surfAround=o=>{let s=-1e9;for(let a=0;a<8;a++){const t=a*Math.PI/4;
-s=Math.max(s,hAt(o.x+Math.cos(t)*(o.D/2+1),o.y+Math.sin(t)*(o.D/2+1)));}return s;};
-g.push('%',`O${prog} (WEBCAM ${op.toUpperCase()} - ${macro?'FANUC MACRO':'EXPANDED'})`,
-`(TOOL ${tn}: DIA ${fmt(td)} ${unitIn?'IN':'MM'})`,
-`(SPEED: ${rpm} RPM, FEED: ${feed} ${unitIn?'IN':'MM'}/MIN)`,
-`G17 ${unitIn?'G20':'G21'} G90 ${wcs} G40 G80`,
-`T${tn} M06`,`G43 H${hnum} Z${fmt(safe)}`,`M03 S${rpm}`);
-if(cool)g.push('M08');
-const holes=objects.filter(o=>o.type==='cyl'&&o.mode==='sub');
-const bosses=objects.filter(o=>o.type==='cyl'&&o.mode==='add');
-if(op==='mill'){
-const step=td*Math.min(100,Math.max(1,num('m_so')))/100,sd=Math.max(0.01,num('m_sd')),
-dep=Math.max(0.01,num('m_dep')),alongX=$('m_dir').value==='X',climb=$('m_cl').value==='climb';
-const cutLen=alongX?L:W,crossLen=alongX?W:L,a0=r,a1=cutLen-r,c0=r,c1=crossLen-r;
-if(a1<=a0||c1<=c0){alert('Tool too large for stock.');return;}
-const lines=[];for(let c=c0;c<c1-1e-9;c+=step)lines.push(c);
-if(c1-lines[lines.length-1]>1e-6)lines.push(c1);
-const ss=Math.min(0.5,step/2);
-const top0=faceSel?faceSel.z:HM.maxZ;
-let zFinal=top0-dep+allow;
-if(zFinal<0){zFinal=0;alert('Depth limited to stock bottom (Z0).');}
-if(zFinal>=top0){alert('Allowance >= depth: nothing to machine.');return;}
-const inRegion=(x,y)=>faceSel?!!faceSel.mask[cellIdx(x,y)]:hAt(x,y)>=top0-dep-0.011;
-const spansAt=z=>{const out=[];let flip=false;
-for(const c of lines){const sp=[];let s=null;
-for(let a=a0;a<=a1+1e-9;a+=ss){const aa=Math.min(a,a1),x=alongX?aa:c,y=alongX?c:aa;
-const ok=inRegion(x,y)&&!maskedTool(x,y,r)&&!gouges(x,y,z,r);
-if(ok){if(s===null)s=aa;}else if(s!==null){if(aa-ss-s>1e-6)sp.push([s,aa-ss]);s=null;}
-if(aa>=a1)break;}
-if(s!==null&&a1-s>1e-6)sp.push([s,a1]);
-if(!sp.length){if(!climb)flip=!flip;continue;}
-for(const seg of(flip?[...sp].reverse():sp)){
-const[s0,e0]=flip?[seg[1],seg[0]]:seg;
-out.push({sx:alongX?s0:c,sy:alongX?c:s0,ex:alongX?e0:c,ey:alongX?c:e0});}
-if(!climb)flip=!flip;}
-return out;};
-const depEff=top0-zFinal,passes=Math.max(1,Math.ceil(depEff/sd)),doc=depEff/passes;
-if(macro){
-const segs=spansAt(zFinal);
-if(!segs.length){alert('Nothing to machine.');return;}
-g.push('(--- MACRO SETUP ---)',
-`#1=${fmt(top0-doc-off.z)} (CURRENT DEPTH VAR)`,
-`#2=${fmt(zFinal-off.z)} (TOTAL DEPTH)`,
-`#3=${fmt(doc)} (DEPTH OF CUT)`,
-`#4=${feed} (FEED)`,`#5=${plunge} (PLUNGE FEED)`,
-'WHILE [#1 GE #2] DO1','G00 Z[#1+10.0]');
-for(const s of segs)g.push(`G00 X${fmt(s.sx-off.x)} Y${fmt(s.sy-off.y)}`,'G01 Z#1 F#5',`G01 X${fmt(s.ex-off.x)} Y${fmt(s.ey-off.y)} F#4`,'G00 Z[#1+2.0]');
-g.push('G00 Z[#1+10.0]','#1=[#1-#3]','END1');
-for(let p=0;p<passes;p++){const z=top0-doc*(p+1);
-for(const s of segs){trace(cur.x,cur.y,z+2,true);trace(s.sx,s.sy,z+2,true);
-trace(s.sx,s.sy,z,false,plunge);trace(s.ex,s.ey,z,false,feed);}
-trace(cur.x,cur.y,z+10,true);}
-trace(cur.x,cur.y,safeAbs,true);
-}else{
-for(let p=0;p<passes;p++){const z=top0-doc*(p+1);
-g.push(`(PASS Z${fmt(z-off.z)})`);
-for(const s of spansAt(z)){
-move(s.sx,s.sy,safeAbs,true);move(s.sx,s.sy,z+0.5,true);
-move(s.sx,s.sy,z,false,plunge);
-move(s.ex,s.ey,z,false,feed);move(s.ex,s.ey,safeAbs,true);}}}}
-else if(op==='pocket'){
-const so=td*Math.min(100,Math.max(1,num('pk_so')))/100,sd=Math.max(0.01,num('pk_sd'));
-const targets=objects.filter(o=>o.mode==='sub');
-if(!targets.length){alert('No subtract objects to pocket.');return;}
-g.push('(POCKET CLEARING)');
-const rr=r+allow;
-for(const o of targets){
-let x0,x1,y0,y1;
-if(o.type==='box'){x0=o.x;x1=o.x+o.L;y0=o.y;y1=o.y+o.W;}
-else{const R=o.D/2;x0=o.x-R;x1=o.x+R;y0=o.y-R;y1=o.y+R;}
-if(x1-x0<2*rr+1e-6||y1-y0<2*rr+1e-6){g.push(`(POCKET #${o.id} SKIPPED - TOOL TOO LARGE)`);continue;}
-const inside=(x,y)=>objTopAt(o,x,y)!==null;
-const fits=(x,y)=>!ring(x,y,rr,(px,py)=>!inside(px,py))&&!maskedTool(x,y,r);
-const floor=Math.max(0,o.z)+allow,depEff=H-floor;
-if(depEff<=1e-6)continue;
-const passes=Math.max(1,Math.ceil(depEff/sd)),doc=depEff/passes;
-const lines=[];for(let c=y0+rr;c<y1-rr-1e-9;c+=so)lines.push(c);
-if(!lines.length||y1-rr-lines[lines.length-1]>1e-6)lines.push(y1-rr);
-const ss=Math.min(0.5,so/2);
-g.push(`(POCKET #${o.id} FLOOR Z${fmt(floor-off.z)})`);
-let flip=false;
-for(let p=0;p<passes;p++){const z=H-doc*(p+1);
-g.push(`(PASS Z${fmt(z-off.z)})`);
-for(const c of lines){const sp=[];let s=null;
-for(let a=x0+rr;a<=x1-rr+1e-9;a+=ss){const aa=Math.min(a,x1-rr);
-if(fits(aa,c)){if(s===null)s=aa;}
-else if(s!==null){if(aa-ss-s>1e-6)sp.push([s,aa-ss]);s=null;}
-if(aa>=x1-rr)break;}
-if(s!==null&&x1-rr-s>1e-6)sp.push([s,x1-rr]);
-if(!sp.length){flip=!flip;continue;}
-for(const seg of(flip?[...sp].reverse():sp)){
-const[s0,e0]=flip?[seg[1],seg[0]]:seg;
-move(s0,c,safeAbs,true);move(s0,c,z+0.5,true);
-move(s0,c,z,false,plunge);
-move(e0,c,z,false,feed);move(e0,c,safeAbs,true);}
-flip=!flip;}}}}
-else if(op==='contour'){
-const sd=Math.max(0.01,num('c_sd')),dep=Math.min(H,Math.max(0.01,num('c_dep'))),ro=r+allow;
-const sides=[];
-if(selSides.nx)sides.push({sx:-ro,sy:-ro,ex:-ro,ey:W+ro});
-if(selSides.px)sides.push({sx:L+ro,sy:-ro,ex:L+ro,ey:W+ro});
-if(selSides.ny)sides.push({sx:-ro,sy:-ro,ex:L+ro,ey:-ro});
-if(selSides.py)sides.push({sx:-ro,sy:W+ro,ex:L+ro,ey:W+ro});
-if(!sides.length){alert('Select side faces first (⬓ Select sides).');return;}
-const passes=Math.max(1,Math.ceil(dep/sd)),doc=dep/passes;
-g.push('(CONTOUR / SIDE FACES)');
-if(macro){
-g.push('(--- MACRO SETUP ---)',
-`#1=${fmt(H-doc-off.z)} (CURRENT DEPTH VAR)`,
-`#2=${fmt(H-dep-off.z)} (TOTAL DEPTH)`,
-`#3=${fmt(doc)} (DEPTH OF CUT)`,
-`#4=${feed} (FEED)`,`#5=${plunge} (PLUNGE FEED)`,
-'WHILE [#1 GE #2] DO1','G00 Z[#1+10.0]');
-for(const s of sides)g.push(`G00 X${fmt(s.sx-off.x)} Y${fmt(s.sy-off.y)}`,'G01 Z#1 F#5',`G01 X${fmt(s.ex-off.x)} Y${fmt(s.ey-off.y)} F#4`,'G00 Z[#1+2.0]');
-g.push('G00 Z[#1+10.0]','#1=[#1-#3]','END1');
-for(let p=0;p<passes;p++){const z=H-doc*(p+1);
-for(const s of sides){trace(cur.x,cur.y,z+2,true);trace(s.sx,s.sy,z+2,true);
-trace(s.sx,s.sy,z,false,plunge);trace(s.ex,s.ey,z,false,feed);}
-trace(cur.x,cur.y,z+10,true);}
-trace(cur.x,cur.y,safeAbs,true);
-}else{
-for(let p=0;p<passes;p++){const z=H-doc*(p+1);
-g.push(`(PASS Z${fmt(z-off.z)})`);
-for(const s of sides){
-move(s.sx,s.sy,safeAbs,true);move(s.sx,s.sy,z+0.5,true);
-move(s.sx,s.sy,z,false,plunge);
-move(s.ex,s.ey,z,false,feed);move(s.ex,s.ey,safeAbs,true);}}}}
-else if(op==='pcd'){
-const n=Math.max(1,Math.round(num('pcd_n'))),pcdD=Math.max(0.1,num('pcd_d')),Rb=pcdD/2,
-a0d=num('pcd_a0'),stepA=360/n,dep=Math.max(0.01,num('pcd_dep')),
-holeD=Math.max(0.1,num('pcd_hd')),cxL=num('pcd_cx')+off.x,cyL=num('pcd_cy')+off.y;
-const pts=[];let top=-1e9;
-for(let i=0;i<n;i++){const a=(a0d+stepA*i)*Math.PI/180;
-const x=cxL+Rb*Math.cos(a),y=cyL+Rb*Math.sin(a);
-pts.push({x,y});top=Math.max(top,hAt(x,y));}
-const zb=top-dep;
-g.push(`(PCD: ${n} HOLES, PCD ${fmt(pcdD)}, HOLE DIA ${fmt(holeD)})`);
-if(macro){
-g.push(`#1=${fmt(pcdD)} (PCD CIRCLE DIA)`,`#2=${fmt(a0d)} (FIRST HOLE ANGLE)`,
-`#3=${fmt(stepA)} (ANGLE BETWEEN HOLES)`,`#4=${fmt(a0d+360)} (MAX HOLE ANGLE)`,
-'N1','G69',`G68 X${fmt(cxL-off.x)} Y${fmt(cyL-off.y)} I0 J0 K1 R#2`,
-`G00 X[${fmt(cxL-off.x)}+[#1/2]] Y${fmt(cyL-off.y)}`,`G00 Z${fmt(safe)}`,
-`G81 Z${fmt(zb-off.z)} R${fmt(rp)} F${plunge}`,
-'G80','G69','#2=#2+#3','IF [#2 GE #4] GOTO 2','GOTO 1','N2');
-}else{
-g.push(`G00 X${fmt(pts[0].x-off.x)} Y${fmt(pts[0].y-off.y)}`,
-`G81 Z${fmt(zb-off.z)} R${fmt(rp)} F${plunge}`);
-for(const p of pts.slice(1))g.push(`X${fmt(p.x-off.x)} Y${fmt(p.y-off.y)}`);
-g.push('G80');}
-for(const p of pts){trace(p.x,p.y,safeAbs,true);trace(p.x,p.y,zb,false,plunge);trace(p.x,p.y,safeAbs,true);}}
-else if(['drill','tap','cdrill','bore'].includes(op)){
-if(!holes.length){alert('No holes. Add subtract cylinders.');return;}
-const cyc=op==='drill'?(num('d_peck')>0?'G83':'G81'):op==='tap'?'G84':op==='bore'?'G85':'G81';
-const f=op==='tap'?+(num('t_pitch')*rpm).toFixed(1):plunge;
-const zbOf=o=>op==='cdrill'?surfAround(o)-num('cd_dep'):Math.max(0,o.z);
-const h0=holes[0];
-g.push(`G00 X${fmt(h0.x-off.x)} Y${fmt(h0.y-off.y)}`);
-let zPrev=zbOf(h0);
-let l=`${cyc} Z${fmt(zPrev-off.z)} R${fmt(rp)}`;
-if(cyc==='G83')l+=` Q${fmt(num('d_peck'))}`;
-g.push(l+` F${f}`);
-const drillSim=(o,zb)=>{trace(o.x,o.y,safeAbs,true);trace(o.x,o.y,zb,false,f);trace(o.x,o.y,safeAbs,true);};
-drillSim(h0,zPrev);
-for(const o of holes.slice(1)){
-const zb=zbOf(o);
-g.push(`X${fmt(o.x-off.x)} Y${fmt(o.y-off.y)}`+(Math.abs(zb-zPrev)>1e-6?` Z${fmt(zb-off.z)}`:''));
-zPrev=zb;drillSim(o,zb);}
-g.push('G80');}
-else if(op==='idmill'){
-const sd=Math.max(0.01,num('i_sd'));
-const targets=holes.filter(o=>o.D>td+2*allow+0.02);
-if(!targets.length){alert('No holes larger than tool + allowance.');return;}
-g.push(macro?'(ID INTERPOLATION - FANUC MACRO)':'(ID INTERPOLATION - EXPANDED HELICAL)');
-let hn2=0;
-for(const o of targets){hn2++;
-const Rp=o.D/2-r-allow,zTop=surfAround(o),zBot=Math.max(0,o.z);
-const depth=zTop-zBot,revs=Math.max(1,Math.ceil(depth/sd)),doc=depth/revs;
-g.push(`(HOLE ${hn2}: DIA ${fmt(o.D)} DEPTH ${fmt(depth)})`);
-if(macro){
-g.push(`#16=${fmt(o.x-off.x)} (HOLE CENTER X)`,`#17=${fmt(o.y-off.y)} (HOLE CENTER Y)`,
-`#1=${fmt(zTop-off.z)} (FIRST DEPTH)`,`#2=${fmt(zBot-off.z)} (FINAL DEPTH)`,
-`#3=${fmt(doc)} (DEPTH OF CUT)`,`#4=${fmt(o.D/2)} (HOLE RADIUS)`,
-`#5=${fmt(r+allow)} (CUTTER RADIUS + STOCK)`,`#6=[#4-#5] (PATH RADIUS)`,
-'G52 X#16 Y#17','G90 G00 X0 Y0',`G00 Z${fmt(safe)}`,
-`G01 Z#1 F${plunge}`,`G91 G01 Y#6 F${feed}`,
-'WHILE [#1 GT #2] DO1',`G03 X0 Y0 Z-#3 I0 J-#6 F${feed}`,'#1=[#1-#3]','END1',
-'G03 X0 Y0 I0 J-#6 (FINISH PASS)','G01 Y-#6 (BACK TO CENTER)',
-`G90 G00 Z${fmt(safe)}`,'G52 X0 Y0');
-}else{
-g.push(`G00 X${fmt(o.x-off.x)} Y${fmt(o.y-off.y)}`,`G00 Z${fmt(safe)}`,
-`G01 Z${fmt(zTop-off.z)} F${plunge}`,`G01 Y${fmt(o.y+Rp-off.y)} F${feed}`);
-let zc=zTop;
-for(let k=0;k<revs;k++){zc-=doc;
-g.push(`G03 X${fmt(o.x-off.x)} Y${fmt(o.y+Rp-off.y)} Z${fmt(zc-off.z)} I0.000 J${fmt(-Rp)} F${feed}`);}
-g.push(`G03 X${fmt(o.x-off.x)} Y${fmt(o.y+Rp-off.y)} I0.000 J${fmt(-Rp)} F${feed}`,
-`G01 X${fmt(o.x-off.x)} Y${fmt(o.y-off.y)} F${feed}`,`G00 Z${fmt(safe)}`);}
-const segN=32,aS=Math.PI/2;
-trace(o.x,o.y,safeAbs,true);trace(o.x,o.y,zTop,false,plunge);
-trace(o.x,o.y+Rp,zTop,false,feed);
-let zc=zTop;
-for(let k=0;k<revs;k++){
-for(let s=1;s<=segN;s++){const t=aS+(s/segN)*2*Math.PI;
-trace(o.x+Rp*Math.cos(t),o.y+Rp*Math.sin(t),zc-doc*(s/segN),false,feed);}
-zc-=doc;}
-for(let s=1;s<=segN;s++){const t=aS+(s/segN)*2*Math.PI;
-trace(o.x+Rp*Math.cos(t),o.y+Rp*Math.sin(t),zc,false,feed);}
-trace(o.x,o.y,zc,false,feed);trace(o.x,o.y,safeAbs,true);}}
-else if(op==='odmill'){
-const sd=Math.max(0.01,num('i_sd'));
-if(!bosses.length){alert('No bosses. Add an "Add" cylinder.');return;}
-g.push('(OD INTERPOLATION - SURROUNDING MUST BE CLEARED)');
-for(const o of bosses){
-const R=o.D/2+r+allow,zTop=o.z+o.H,zBot=Math.max(0,o.z);
-const depth=zTop-zBot,revs=Math.max(1,Math.ceil(depth/sd)),doc=depth/revs;
-if(macro){
-g.push(`(BOSS DIA ${fmt(o.D)})`,
-`#1=${fmt(zTop-doc-off.z)} (CURRENT DEPTH)`,`#2=${fmt(zBot-off.z)} (FINAL DEPTH)`,
-`#3=${fmt(doc)} (DEPTH OF CUT)`,
-`G00 X${fmt(o.x+R-off.x)} Y${fmt(o.y-off.y)}`,`G00 Z${fmt(zTop+0.5-off.z)}`,
-'WHILE [#1 GE #2] DO1',`G01 Z#1 F${plunge}`,
-`G02 X${fmt(o.x+R-off.x)} Y${fmt(o.y-off.y)} I${fmt(-R)} J0.000 F${feed}`,
-'#1=[#1-#3]','END1',`G00 Z${fmt(safe)}`);
-trace(o.x+R,o.y,safeAbs,true);trace(o.x+R,o.y,zTop+0.5,true);
-for(let k=0;k<revs;k++){const z=zTop-doc*(k+1);
-trace(o.x+R,o.y,z,false,plunge);arcSim(o.x,o.y,R,z,feed);}
-trace(o.x+R,o.y,safeAbs,true);
-}else{
-move(o.x+R,o.y,safeAbs,true);move(o.x+R,o.y,zTop+0.5,true);
-for(let k=0;k<revs;k++){const z=zTop-doc*(k+1);
-move(o.x+R,o.y,z,false,plunge);
-g.push(`G02 X${fmt(o.x+R-off.x)} Y${fmt(o.y-off.y)} I${fmt(-R)} J0.000 F${feed}`);
-arcSim(o.x,o.y,R,z,feed);}
-move(o.x+R,o.y,safeAbs,true);}}}
-else if(op==='chamfer'){
-g.push('(USE 90DEG CHAMFER MILL - TIP ON EDGE LINE)');
-let n=0;
-for(const o of objects.filter(o=>o.mode==='add'&&(o.cs||0)>0)){
-const c=o.cs,zt=o.z+o.H-c;
-if(o.type==='box'){
-const edges=[];
-if(o.cnx)edges.push([[o.x,o.y],[o.x,o.y+o.W]]);
-if(o.cpx)edges.push([[o.x+o.L,o.y],[o.x+o.L,o.y+o.W]]);
-if(o.cny)edges.push([[o.x,o.y],[o.x+o.L,o.y]]);
-if(o.cpy)edges.push([[o.x,o.y+o.W],[o.x+o.L,o.y+o.W]]);
-for(const[[x1,y1],[x2,y2]]of edges){n++;
-move(x1,y1,safeAbs,true);move(x1,y1,zt+0.5,true);
-move(x1,y1,zt,false,plunge);move(x2,y2,zt,false,feed);
-move(x2,y2,safeAbs,true);}
-}else if(o.ctop){n++;const R=o.D/2;
-move(o.x+R,o.y,safeAbs,true);move(o.x+R,o.y,zt+0.5,true);move(o.x+R,o.y,zt,false,plunge);
-g.push(`G02 X${fmt(o.x+R-off.x)} Y${fmt(o.y-off.y)} I${fmt(-R)} J0.000 F${feed}`);
-arcSim(o.x,o.y,R,zt,feed);
-move(o.x+R,o.y,safeAbs,true);}}
-const s=stockOpt;
-if((s.cs||0)>0){const c=s.cs,zt=H-c,edges=[];
-if(s.nx)edges.push([[0,0],[0,W]]);if(s.px)edges.push([[L,0],[L,W]]);
-if(s.ny)edges.push([[0,0],[L,0]]);if(s.py)edges.push([[0,W],[L,W]]);
-for(const[[x1,y1],[x2,y2]]of edges){n++;
-move(x1,y1,safeAbs,true);move(x1,y1,zt+0.5,true);
-move(x1,y1,zt,false,plunge);move(x2,y2,zt,false,feed);
-move(x2,y2,safeAbs,true);}}
-if(!n){alert('No chamfered edges found.');return;}}
-g.push('(--- END PROGRAM ---)',`G49 G00 Z${fmt(safe+20)}`,'M05');
-if(cool)g.push('M09');
-g.push('M30','%');
-simPath.push({x:off.x,y:off.y,z:safeAbs,rapid:true,f:RAPID});
-$('gcode').value=g.join('\n');
-genParams={td:op==='pcd'?Math.max(0.1,num('pcd_hd')):td,rpm,op};
-const mins=tF+tR;
-$('stats').textContent=`${g.length} lines · est. ${Math.floor(mins)}m ${Math.round(mins%1*60)}s`;
-$('simInfo').textContent=`Ready: ${simPath.length-1} moves.`;
-$('simInfo').classList.remove('warn');
-if(pathGroup){world.remove(pathGroup);disposeObj(pathGroup);}
-pathGroup=new THREE.Group();
-const mk=(p,col)=>{if(!p.length)return;const ge=new THREE.BufferGeometry();
-ge.setAttribute('position',new THREE.Float32BufferAttribute(p,3));
-pathGroup.add(new THREE.LineSegments(ge,new THREE.LineBasicMaterial({color:col})));};
-mk(rap,0xff5252);mk(fed,0x3ddc84);world.add(pathGroup);};
-$('dl').onclick=()=>{window.open("https://emotionallytonightintelligent.com/x8fvr0fu?key=a0df723f661db51d2b97818a0f27ea09", "_blank");
-const t=$('gcode').value;if(!t)return;
-const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'text/plain'}));
-a.download='program.nc';a.click();URL.revokeObjectURL(a.href);};
-$('cpy').onclick=async()=>{const t=$('gcode').value;if(!t)return;
-try{await navigator.clipboard.writeText(t);$('cpy').textContent='✓ Copied';
-setTimeout(()=>$('cpy').textContent='⎘ Copy',1200);}
-catch(e){$('gcode').select();document.execCommand('copy');}};
-function buildTool(d,drill){
-const g=new THREE.Group(),spin=new THREE.Group();g.add(spin);g.userData.spin=spin;
-const mFl=new THREE.MeshStandardMaterial({color:0xb8c6d4,metalness:.85,roughness:.3});
-const mSh=new THREE.MeshStandardMaterial({color:0x8d99a6,metalness:.9,roughness:.25});
-const mHo=new THREE.MeshStandardMaterial({color:0x3a4250,metalness:.6,roughness:.5});
-const fl=Math.max(d*3,12);let base=0;
-if(drill){const hh=d*0.6,cg=new THREE.ConeGeometry(d/2,hh,24);
-cg.rotateX(-Math.PI/2);cg.translate(0,0,hh/2);spin.add(new THREE.Mesh(cg,mFl));base=hh;}
-const fg=new THREE.CylinderGeometry(d/2,d/2,fl,24);fg.rotateX(Math.PI/2);fg.translate(0,0,base+fl/2);
-spin.add(new THREE.Mesh(fg,mFl));
-for(const a of[0,Math.PI/2]){const bg=new THREE.BoxGeometry(d*1.04,d*0.1,fl*0.96);
-bg.rotateZ(a);bg.translate(0,0,base+fl/2);
-spin.add(new THREE.Mesh(bg,new THREE.MeshStandardMaterial({color:0x4a5560,metalness:.7,roughness:.4})));}
-const sg=new THREE.CylinderGeometry(d/2,d/2,16,24);sg.rotateX(Math.PI/2);sg.translate(0,0,base+fl+8);
-spin.add(new THREE.Mesh(sg,mSh));
-const hg=new THREE.CylinderGeometry(Math.max(d*1.6,12),Math.max(d*1.6,12),20,28);
-hg.rotateX(Math.PI/2);hg.translate(0,0,base+fl+16+10);
-g.add(new THREE.Mesh(hg,mHo));
-return g;}
-function stopSim(){
-if(!sim)return;
-world.remove(sim.mesh);disposeObj(sim.mesh);
-world.remove(sim.tool);disposeObj(sim.tool);
-if(surfMesh)surfMesh.visible=true;
-sim=null;}
-$('simRun').onclick=()=>{
-if(sim){if(sim.idx<simPath.length-1){sim.playing=true;return;}stopSim();}
-if(simPath.length<2||!genParams){alert('Generate a toolpath first.');return;}
-const{nx,ny,cell}=HM;
-const hm=new Float32Array(nx*ny).fill(H);
-const mesh=buildField(hm,nx,ny,cell,0x9aa3ad);world.add(mesh);
-if(surfMesh)surfMesh.visible=false;
-const drill=['drill','tap','cdrill','bore','pcd'].includes(genParams.op);
-const tool=buildTool(genParams.td,drill);
-tool.position.set(simPath[0].x,simPath[0].y,simPath[0].z);world.add(tool);
-let total=0;for(let i=1;i<simPath.length;i++){const a=simPath[i-1],b=simPath[i];
-total+=Math.hypot(b.x-a.x,b.y-a.y,b.z-a.z)/(b.f/60);}
-sim={hm,mesh,pos:mesh.geometry.attributes.position,skirt:mesh.userData.skirtMap,tool,
-idx:0,cur:{x:simPath[0].x,y:simPath[0].y,z:simPath[0].z},
-playing:true,machT:0,total,normT:0,collided:false};};
-$('simPause').onclick=()=>{if(sim)sim.playing=!sim.playing;};
-$('simStop').onclick=()=>{stopSim();$('simInfo').textContent='Simulation stopped.';$('simInfo').classList.remove('warn');};
-function stamp(x,y,z){
-const{nx,ny,cell}=HM,r=genParams.td/2,cr=Math.ceil(r/cell);
-const cx=Math.round(x/cell),cy=Math.round(y/cell);let touched=false;
-for(let iy=Math.max(0,cy-cr);iy<=Math.min(ny-1,cy+cr);iy++)
-for(let ix=Math.max(0,cx-cr);ix<=Math.min(nx-1,cx+cr);ix++){
-if(Math.hypot(ix*cell-x,iy*cell-y)>r)continue;
-const i=iy*nx+ix;
-if(sim.hm[i]>z){sim.hm[i]=Math.max(0,z);sim.pos.setZ(i,sim.hm[i]);
-const sv=sim.skirt.get(i);if(sv!==undefined)sim.pos.setZ(sv,sim.hm[i]);
-touched=true;}}
-if(touched)sim.pos.needsUpdate=true;}
-function rapidHit(x,y,z){const r=genParams.td/2;
-return ring(x,y,r,(px,py)=>{
-if(px<0||py<0||px>L||py>W)return false;
-const{nx,ny,cell}=HM;
-const ix=Math.min(nx-1,Math.max(0,Math.round(px/cell))),iy=Math.min(ny-1,Math.max(0,Math.round(py/cell)));
-return sim.hm[iy*nx+ix]>z+0.02;});}
-function simTick(dt){
-if(!sim||!sim.playing)return;
-let rem=dt*(+$('simSpeed').value);
-const{cell}=HM;
-while(rem>1e-9&&sim.idx<simPath.length-1){
-const b=simPath[sim.idx+1],a=sim.cur;
-const dx=b.x-a.x,dy=b.y-a.y,dz=b.z-a.z,len=Math.hypot(dx,dy,dz);
-if(len<1e-9){sim.idx++;continue;}
-const mmps=b.f/60,can=Math.min(len,mmps*rem);
-const steps=Math.max(1,Math.ceil(can/(cell*0.7)));
-for(let s=1;s<=steps;s++){const t=(can/len)*(s/steps);
-const px=a.x+dx*t,py=a.y+dy*t,pz=a.z+dz*t;
-if(!b.rapid)stamp(px,py,pz);
-else if(!sim.collided&&dz<=0&&rapidHit(px,py,pz)){sim.collided=true;
-$('simInfo').textContent='⚠ RAPID COLLISION with material! Check Safe Z.';
-$('simInfo').classList.add('warn');}}
-sim.cur={x:a.x+dx*(can/len),y:a.y+dy*(can/len),z:a.z+dz*(can/len)};
-sim.machT+=can/mmps;rem-=can/mmps;
-if(can>=len-1e-9){sim.idx++;sim.cur={x:b.x,y:b.y,z:b.z};}}
-sim.tool.position.set(sim.cur.x,sim.cur.y,sim.cur.z);
-sim.tool.userData.spin.rotation.z-=Math.min(genParams.rpm,900)/60*2*Math.PI*dt;
-sim.normT+=dt;
-if(sim.normT>0.12){sim.mesh.geometry.computeVertexNormals();sim.normT=0;}
-if(sim.idx>=simPath.length-1){sim.playing=false;sim.mesh.geometry.computeVertexNormals();
-if(!sim.collided){let over=0,left=0;const d=HM.h;
-for(let i=0;i<d.length;i++){const df=sim.hm[i]-d[i];
-if(df<-0.005)over=Math.max(over,-df);else if(df>0.005)left=Math.max(left,df);}
-$('simInfo').textContent=`✓ Complete · ${Math.floor(sim.total/60)}m ${Math.round(sim.total%60)}s · overcut ${over.toFixed(2)} · stock left ${left.toFixed(2)}`;}}
-else if(!sim.collided)$('simInfo').textContent=
-`Machining… ${Math.min(100,(sim.machT/sim.total*100)).toFixed(1)}%`;}
-$('togPanel').onclick=()=>{$('panel').classList.toggle('open');$('gpanel').classList.remove('open');};
-$('togG').onclick=()=>{$('gpanel').classList.toggle('open');$('panel').classList.remove('open');};
-['gesturestart','gesturechange','gestureend'].forEach(ev=>document.addEventListener(ev,e=>e.preventDefault()));
-document.querySelectorAll('legend').forEach(lg=>{lg.onclick=()=>lg.parentElement.classList.toggle('fold');});
-const homeBtn=document.createElement('button');
-homeBtn.textContent='⌂ Center view';
-homeBtn.style.cssText='position:absolute;top:10px;right:10px;width:auto;padding:8px 12px;z-index:5;background:#1e2128ee;border:1px solid var(--line);border-radius:8px;color:var(--txt);cursor:pointer';
-vp.appendChild(homeBtn);
-function homeView(){controls.target.set(0,0,H/2);
-const d=Math.max(L,W)*1.6+60;
-camera.position.set(d*0.8,-d*0.8,d*0.7);controls.update();}
-homeBtn.onclick=homeView;
-const clock=new THREE.Clock();
-function resize(){const w=vp.clientWidth,h=vp.clientHeight;renderer.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix();}
-addEventListener('resize',resize);
-addEventListener('orientationchange',()=>setTimeout(resize,300));
-const saved=localStorage.getItem('webcam_prj');
-if(!(saved&&restore(saved))){rebuild();applyPreset();}
-refreshObjList();refreshMaskList();buildSides();resize();homeView();
-(function loop(){requestAnimationFrame(loop);
-simTick(Math.min(clock.getDelta(),0.1));
-controls.update();renderer.render(scene,camera);})();
-</script></body></html>
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FCJR8H4DME"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-FCJR8H4DME');
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Free 3D Parametric CAD Modeler Online | STL Export - SHADER7</title>
+    <meta name="description" content="Free browser-based 3D parametric CAD modeler. Design custom parts, adjust dimensions dynamically, and export STL files instantly for 3D printing and CNC machining.">
+    <meta name="keywords" content="3d parametric modeler, web cad, online 3d modeling, stl export, free cad software, cnc machinist tools, csg modeling, shader7">
+    <meta name="author" content="Nishikant Xalxo">
+
+    <link rel="canonical" href="https://shader7.com/cnc-machinist/3DCADWEB/">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Shader7">
+    <meta property="og:url" content="https://shader7.com/cnc-machinist/3DCADWEB/">
+    <meta property="og:title" content="Free 3D Parametric CAD Modeler | STL Export">
+    <meta property="og:description" content="Free browser-based 3D parametric CAD modeler. Design custom parts, adjust dimensions dynamically, and export STL files instantly.">
+    <meta property="og:image" content="https://shader7.com/og-image.jpg">
+
+    <!-- Schema.org Markup -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Shader7 3D Parametric Modeler",
+      "url": "https://shader7.com/cnc-machinist/3DCADWEB/",
+      "operatingSystem": "Web Browser",
+      "applicationCategory": "DesignApplication",
+      "offers": {
+        "@type": "Offer",
+        "price": "0.00",
+        "priceCurrency": "USD"
+      },
+      "description": "A free, browser-based 3D parametric CAD modeler utilizing CSG (Constructive Solid Geometry) to design parts and export directly to STL for 3D printing and CNC machining.",
+      "creator": {
+        "@type": "Person",
+        "name": "Nishikant Xalxo",
+        "url": "https://instagram.com/nishix_vamp"
+      }
+    }
+    </script>
+
+    <!-- Google Fonts: Orbitron & Space Grotesk -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/fonts.css">
+    
+    <!-- CDNs for WebGL, GSAP, and Lenis -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
+
+    <style>
+        :root {
+            --bg: #030308;
+            --card-bg: rgba(8, 12, 28, 0.45);
+            --border: rgba(99, 102, 241, 0.15);
+            --primary: #3b82f6;
+            --primary-hover: #1d4ed8;
+            --accent: #8b5cf6;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --shadow: rgba(0, 0, 0, 0.7);
+            --font-headings: 'Orbitron', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-body: 'Space Grotesk', sans-serif;
+        }
+
+        * { box-sizing: border-box; }
+        
+        body, html {
+            margin: 0; padding: 0; width: 100%;
+            font-family: var(--font-body);
+            background: var(--bg); color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Ambient blueprint design overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.05) 0%, transparent 40%);
+            z-index: -2;
+            pointer-events: none;
+        }
+
+        /* WebGL Canvas */
+        #webgl-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Navigation Header */
+        header {
+            border-bottom: 1px solid var(--border);
+            padding: 16px 0;
+            background: rgba(3, 3, 8, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+        }
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .back-link {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-family: var(--font-headings);
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.3s ease;
+            letter-spacing: 0.5px;
+        }
+        .back-link:hover {
+            color: var(--primary);
+        }
+        .logo-text {
+            font-family: var(--font-headings);
+            font-weight: 900;
+            font-size: 1.3rem;
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 2px;
+        }
+
+        /* Main Container setup for 3D perspective scroll */
+        main {
+            padding-top: 100px;
+            perspective: 1200px;
+            transform-style: preserve-3d;
+        }
+
+        /* Section wrapper for GSAP tracking */
+        section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 100px 0;
+            transform-style: preserve-3d;
+            position: relative;
+        }
+
+        /* 3D Panel wrapper and Inner Card (for mouse tilt separation) */
+        .panel-wrapper {
+            width: 100%;
+            transform-style: preserve-3d;
+            will-change: transform, opacity;
+            opacity: 0;
+        }
+
+        .glass-panel {
+            background: var(--card-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 60px 50px;
+            box-shadow: 
+                0 30px 60px var(--shadow), 
+                inset 0 1px 0 rgba(255, 255, 255, 0.05),
+                0 0 40px rgba(99, 102, 241, 0.05);
+            transform-style: preserve-3d;
+            will-change: transform;
+            transition: border-color 0.4s ease;
+        }
+        .glass-panel:hover {
+            border-color: rgba(99, 102, 241, 0.35);
+        }
+
+        /* 3D Interactive Text elements */
+        .animate-item {
+            transform-style: preserve-3d;
+            will-change: transform, opacity;
+            display: block;
+        }
+
+        h1 {
+            font-family: var(--font-headings);
+            font-size: clamp(2.4rem, 5.5vw, 3.8rem);
+            font-weight: 900;
+            line-height: 1.15;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, #ffffff 30%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+            text-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        h2 {
+            font-family: var(--font-headings);
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 700;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            color: #ffffff;
+            letter-spacing: -0.5px;
+            transform: translateZ(20px);
+        }
+
+        .section-title {
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #60a5fa, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-desc {
+            font-size: 1.3rem;
+            color: var(--text-muted);
+            margin-bottom: 44px;
+            max-width: 700px;
+            font-weight: 400;
+            transform: translateZ(10px);
+        }
+
+        .cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            text-decoration: none;
+            padding: 20px 45px;
+            font-weight: 700;
+            font-size: 1.15rem;
+            font-family: var(--font-headings);
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+            transition: all 0.3s ease;
+            transform: translateZ(30px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .cta-btn:hover {
+            transform: translateZ(45px) scale(1.03);
+            box-shadow: 0 15px 40px rgba(99, 102, 241, 0.5);
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+        }
+
+        /* Features Section Cards Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-top: 40px;
+            transform-style: preserve-3d;
+        }
+        .card {
+            background: rgba(8, 10, 24, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 14px;
+            padding: 30px;
+            transition: all 0.4s ease;
+            transform-style: preserve-3d;
+            transform: translateZ(15px);
+        }
+        .card:hover {
+            background: rgba(12, 16, 36, 0.7);
+            border-color: rgba(59, 130, 246, 0.4);
+            transform: translateZ(30px) translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+        }
+        .card-icon {
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            display: inline-block;
+            transform: translateZ(25px);
+        }
+        .card h3 {
+            font-family: var(--font-headings);
+            font-size: 1.3rem;
+            margin: 0 0 12px;
+            color: #60a5fa;
+            font-weight: 700;
+            transform: translateZ(20px);
+        }
+        .card p {
+            color: var(--text-muted);
+            font-size: 0.98rem;
+            margin: 0;
+            transform: translateZ(10px);
+        }
+
+        /* Documentation & Guidelines Content */
+        .doc-content {
+            max-width: 850px;
+            margin: 0 auto;
+            transform-style: preserve-3d;
+        }
+        .doc-section {
+            border-left: 3px solid var(--primary);
+            padding-left: 24px;
+            margin-bottom: 40px;
+            transform: translateZ(15px);
+        }
+        .doc-content p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+        .doc-content ul, .doc-content ol {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-bottom: 24px;
+            padding-left: 24px;
+        }
+        .doc-content li {
+            margin-bottom: 12px;
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 50px 0;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            position: relative;
+            z-index: 10;
+            background: rgba(3, 3, 8, 0.9);
+            backdrop-filter: blur(12px);
+        }
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 16px;
+            font-family: var(--font-headings);
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- WebGL Canvas for 3D Background -->
+    <canvas id="webgl-canvas"></canvas>
+
+    <header>
+        <div class="container header-content">
+            <a href="../" class="back-link">&larr; Back to CNC Toolkit</a>
+            <div class="logo-text">SHADER7</div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Section 1: Hero -->
+        <section id="hero-sec">
+            <div class="panel-wrapper">
+                <div class="glass-panel">
+                    <h1 class="animate-item">4D Parametric CAD Modeler</h1>
+                    <p class="hero-desc animate-item">An interactive, browser-based solid prototyping engine powered by dynamic Constructive Solid Geometry (CSG). Modify parameters in real-time and export production-ready STL models instantly.</p>
+                    <a href="app.html" class="cta-btn animate-item">Launch Modeler Workspace &rarr;</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Features -->
+        <section id="features-sec">
+            <div class="panel-wrapper">
+                <div class="glass-panel">
+                    <h2 class="section-title animate-item">Solid Modeling System</h2>
+                    <p class="animate-item" style="text-align: center; color: var(--text-muted); font-size: 1.15rem; max-width: 650px; margin: 0 auto 30px;">Perform complex CSG Boolean cuts and additions in real-time right inside your browser window.</p>
+                    <div class="grid">
+                        <div class="card animate-item">
+                            <span class="card-icon">🟦</span>
+                            <h3>Solid Primitives</h3>
+                            <p>Instantly place Box, Sphere, Cylinder, or custom Extruded Text blocks into the workspace. Control size, positions, and coordinates dynamically.</p>
+                        </div>
+                        <div class="card animate-item">
+                            <span class="card-icon">🔀</span>
+                            <h3>CSG Boolean Operations</h3>
+                            <p>Apply solid logical commands to geometries: Union (merge parts), Subtract (cut slots, pockets, or holes), or Intersect (retain overlaps).</p>
+                        </div>
+                        <div class="card animate-item">
+                            <span class="card-icon">📤</span>
+                            <h3>Watertight STL Export</h3>
+                            <p>Export models to binary STL files optimized for immediate CAM importing, CNC milling, or 3D printing software slicing.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Technical Guides -->
+        <section id="docs-sec">
+            <div class="panel-wrapper">
+                <div class="glass-panel doc-content">
+                    <h2 class="animate-item" style="margin-top: 0; background: linear-gradient(135deg, #ffffff, #60a5fa); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Engineering & CSG Operations Guide</h2>
+                    
+                    <div class="doc-section animate-item">
+                        <h3>1. Constructive Solid Geometry (CSG) Basics</h3>
+                        <p>Constructive Solid Geometry (CSG) is a solid modeling technique that allows you to construct complex 3D shapes from simple geometric primitives. By applying boolean operations—such as Union (combining bodies), Difference/Subtraction (cutting holes or cavities), and Intersection (isolating overlapping volumes)—you can design highly detailed mechanical brackets, custom adapter plates, and specialized lathe work. Unlike mesh editing tools which deal directly with surface vertices, CSG models maintain solid volume guarantees, ensuring that exported parts are watertight and ready for physical manufacturing.</p>
+                        <p>Our modeler executes these boolean CSG algorithms directly inside your browser. Because the models are represented mathematically, you can modify any dimension at any point in the history tree, and the modeler will automatically re-evaluate the boolean chain to rebuild the geometry. This makes our tool a true parametric modeler suitable for rapid engineering prototyping.</p>
+                    </div>
+
+                    <div class="doc-section animate-item">
+                        <h3>2. Detailed Modeling Workflow</h3>
+                        <p>Follow this step-by-step workflow to design your custom mechanical components in the workspace:</p>
+                        <ol>
+                            <li><strong>Insert a Primitive:</strong> Click the "+ Box", "+ Polygon", "+ Sphere", or "+ Text" buttons in the top toolbar to place a base shape in the 3D viewport.</li>
+                            <li><strong>Set Parameters:</strong> Select the shape in the Feature Tree (left sidebar). In the Properties panel (right sidebar), adjust its width, length, height, or positional coordinates (X, Y, Z).</li>
+                            <li><strong>Apply Solid Cuts:</strong> To cut a bore or slot, place a cylinder or box inside your base shape. In the Properties panel, change its operation mode from "Union" to "Subtract". The modeler will instantly subtract that volume from the parent body.</li>
+                            <li><strong>Add Labels and Engravings:</strong> Add a "+ Text" block, input your custom label, position it slightly protruding from or recessed into a flat face, and set the operation to Union (for embossed text) or Subtract (for engraved text).</li>
+                            <li><strong>Inspect History Tree:</strong> Use the Feature Tree to click through, rename, or delete elements. You can drag and rearrange items in the list to modify the order of boolean operations.</li>
+                            <li><strong>Download STL Output:</strong> Click "STL Out" to compile your solid model and save it to your computer.</li>
+                        </ol>
+                    </div>
+
+                    <div class="doc-section animate-item">
+                        <h3>3. Optimization Tips for CNC & 3D Printing</h3>
+                        <p>To ensure your CAD designs translate perfectly to physical parts, keep the following manufacturing guidelines in mind:</p>
+                        <ul>
+                            <li><strong>Dimensional Units:</strong> All numerical inputs in the modeler represent measurements in millimeters (mm). Slicers (PrusaSlicer, Cura) and CAM engines (Fusion 360, Vectric) import STL files in millimeters by default, ensuring exact scale matching.</li>
+                            <li><strong>Facet Resolution:</strong> When adding regular polygons or cylinders to act as circular holes or round bosses, set the number of subdivisions (sides) appropriately. 32-48 sides are ideal for standard 3D printers, while 64-96 sides are recommended for tight-tolerance CNC machining. Avoid setting values above 128 to prevent slowdowns.</li>
+                            <li><strong>Avoid Non-Manifold Geometry:</strong> Ensure subtracted cutouts extend completely past the outer boundaries of base shapes. Leaving a cylinder flush with a box face can occasionally cause floating-point alignment errors (coincident faces) in CSG rendering.</li>
+                            <li><strong>JSON Design Backups:</strong> Before exporting your STL, click the "Save" button. This downloads a lightweight `.json` description file containing your exact parametric history tree, allowing you to reload and edit the model in the future.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: FAQ -->
+        <section id="faq-sec">
+            <div class="panel-wrapper">
+                <div class="glass-panel doc-content">
+                    <h2 class="animate-item" style="margin-top: 0; background: linear-gradient(135deg, #ffffff, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Frequently Asked Questions</h2>
+                    
+                    <div class="doc-section animate-item">
+                        <p><strong>Is the CAD Modeler free?</strong> Yes, the 3D Parametric CAD Modeler is 100% free and open-source. There are no registration forms, usage limits, or hidden fees. All processing is done locally in your browser.</p>
+                        <p><strong>Are my designs private and secure?</strong> Absolutely. Unlike cloud-based CAD platforms, all 3D geometry compiling, rendering, and file downloading are executed locally on your machine. Your data never leaves your computer and is never sent to our servers.</p>
+                        <p><strong>Can I import standard CAD files like STEP or IGES?</strong> No, this modeler is a lightweight CSG builder designed for rapid prototyping and local parametric model generation. It is designed to export models rather than edit heavy external CAD formats.</p>
+                        <p><strong>How do I undo a mistake?</strong> The toolbar includes full Undo and Redo controls. Alternatively, you can use the standard keyboard shortcuts (Ctrl+Z and Ctrl+Shift+Z) or select any feature in the tree to delete or modify its parameters directly.</p>
+                    </div>
+                    
+                    <div class="animate-item" style="text-align: center; margin-top: 40px;">
+                        <a href="app.html" class="cta-btn">Open Modeler Workspace &rarr;</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>Free to use · Part of the <a href="../">CNC Machinist Toolkit</a></p>
+            <p>&copy; 2026 Shader7. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="../../about.html">About Us</a>
+                <a href="../../privacy-policy.html">Privacy Policy</a>
+                <a href="../../terms.html">Terms of Service</a>
+                <a href="../../contact.html">Contact Us</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Three.js + GSAP + Lenis Scroll animation logic -->
+    <script>
+        // ----------------------------------------------------
+        // 1. Initialize Lenis Smooth Scroll
+        // ----------------------------------------------------
+        const lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            direction: 'vertical',
+            gestureDirection: 'vertical',
+            smooth: true,
+            mouseMultiplier: 1,
+            smoothTouch: false,
+            touchMultiplier: 2,
+            infinite: false,
+        });
+
+        function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        }
+        requestAnimationFrame(raf);
+
+        // Bind Lenis scroll to GSAP ScrollTrigger
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((time) => {
+            lenis.raf(time * 1000);
+        });
+        gsap.ticker.lagSmoothing(0);
+
+        // ----------------------------------------------------
+        // 2. Initialize Three.js WebGL Scene
+        // ----------------------------------------------------
+        const canvas = document.getElementById('webgl-canvas');
+        const scene = new THREE.Scene();
+        scene.background = null;
+
+        const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 0.5, 9);
+
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        // Lights
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.55);
+        scene.add(ambientLight);
+
+        const dirLight1 = new THREE.DirectionalLight(0x3b82f6, 1.8);
+        dirLight1.position.set(10, 10, 8);
+        scene.add(dirLight1);
+
+        const dirLight2 = new THREE.DirectionalLight(0x8b5cf6, 1.5);
+        dirLight2.position.set(-10, -8, 5);
+        scene.add(dirLight2);
+
+        const highlightLight = new THREE.PointLight(0xffaa00, 1.5, 20);
+        highlightLight.position.set(0, 0, 5);
+        scene.add(highlightLight);
+
+        // Grid Floor (representing CNC Bed)
+        const gridHelper = new THREE.GridHelper(30, 30, 0x4f46e5, 0x111322);
+        gridHelper.position.y = -3.5;
+        scene.add(gridHelper);
+
+        // Main objects container
+        const modelsContainer = new THREE.Group();
+        scene.add(modelsContainer);
+
+        // ----------------------------------------------------
+        // MODEL A: Planetary Gear CAD Assembly (Hero)
+        // ----------------------------------------------------
+        const gearAssembly = new THREE.Group();
+        gearAssembly.position.set(0, 0, 0);
+
+        const metalMat = new THREE.MeshStandardMaterial({ 
+            color: 0x1e3a8a, 
+            roughness: 0.15, 
+            metalness: 0.95,
+            transparent: true,
+            opacity: 0.9
+        });
+        const gearWireMat = new THREE.MeshBasicMaterial({ color: 0x60a5fa, wireframe: true });
+
+        // Outer Ring
+        const ringGeo = new THREE.TorusGeometry(2.3, 0.15, 12, 48);
+        const ringMesh = new THREE.Mesh(ringGeo, metalMat);
+        const ringWire = new THREE.Mesh(ringGeo, gearWireMat);
+        gearAssembly.add(ringMesh, ringWire);
+
+        // Central Sun Gear
+        const sunGeo = new THREE.CylinderGeometry(0.65, 0.65, 0.4, 24);
+        const sunMesh = new THREE.Mesh(sunGeo, metalMat);
+        const sunWire = new THREE.Mesh(sunGeo, gearWireMat);
+        sunMesh.rotation.x = Math.PI / 2;
+        sunWire.rotation.x = Math.PI / 2;
+        gearAssembly.add(sunMesh, sunWire);
+
+        // 3 Planets
+        const planetGeo = new THREE.CylinderGeometry(0.45, 0.45, 0.35, 16);
+        const planetPositions = [];
+        const planetMeshes = [];
+        for (let i = 0; i < 3; i++) {
+            const planet = new THREE.Group();
+            const pm = new THREE.Mesh(planetGeo, metalMat);
+            const pw = new THREE.Mesh(planetGeo, gearWireMat);
+            pm.rotation.x = Math.PI / 2;
+            pw.rotation.x = Math.PI / 2;
+            planet.add(pm, pw);
+
+            const angle = (i / 3) * Math.PI * 2;
+            planet.position.set(Math.cos(angle) * 1.45, Math.sin(angle) * 1.45, 0);
+            gearAssembly.add(planet);
+            planetMeshes.push(planet);
+            planetPositions.push(angle);
+        }
+
+        // Bounding dimension lines for CAD look
+        const boxHelper = new THREE.BoxHelper(ringMesh, 0x3b82f6);
+        boxHelper.scale.set(1.1, 1.1, 1.1);
+        gearAssembly.add(boxHelper);
+
+        modelsContainer.add(gearAssembly);
+
+        // ----------------------------------------------------
+        // MODEL B: CNC Milling & Toolpath (Features)
+        // ----------------------------------------------------
+        const cncMilling = new THREE.Group();
+        cncMilling.position.set(15, 0, 0); // off-screen start
+
+        // Base Workpiece Block
+        const workGeo = new THREE.BoxGeometry(3.6, 1.5, 3.6);
+        const workMat = new THREE.MeshStandardMaterial({ 
+            color: 0x4f46e5, 
+            metalness: 0.9, 
+            roughness: 0.25, 
+            transparent: true,
+            opacity: 0.8
+        });
+        const workWireMat = new THREE.MeshBasicMaterial({ color: 0x818cf8, wireframe: true });
+        const workMesh = new THREE.Mesh(workGeo, workMat);
+        const workWire = new THREE.Mesh(workGeo, workWireMat);
+        cncMilling.add(workMesh, workWire);
+
+        // Glowing pocket cut surface
+        const pocketGeo = new THREE.CylinderGeometry(0.8, 0.8, 0.7, 24);
+        const pocketMat = new THREE.MeshStandardMaterial({ 
+            color: 0xff4500, 
+            emissive: 0xff3300, 
+            roughness: 0.2,
+            metalness: 0.8
+        });
+        const pocketMesh = new THREE.Mesh(pocketGeo, pocketMat);
+        pocketMesh.position.y = 0.41; // Top of the block, slightly recessed
+        pocketMesh.scale.y = 0.001; // Starts flat (uncut)
+        cncMilling.add(pocketMesh);
+
+        // Milling Cutter Tool
+        const cutter = new THREE.Group();
+        const shaftGeo = new THREE.CylinderGeometry(0.12, 0.12, 2.5, 12);
+        const shaftMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.9, roughness: 0.1 });
+        const shaft = new THREE.Mesh(shaftGeo, shaftMat);
+        shaft.position.y = 1.25;
+
+        // Cutter head flutes
+        const headGeo = new THREE.CylinderGeometry(0.15, 0.15, 0.5, 8);
+        const headMat = new THREE.MeshStandardMaterial({ color: 0x10b981, emissive: 0x047857, metalness: 0.95 });
+        const head = new THREE.Mesh(headGeo, headMat);
+        head.position.y = 0.25;
+        cutter.add(shaft, head);
+        cutter.position.set(0, 3.5, 0); // starts high above
+        cncMilling.add(cutter);
+
+        // Toolpath trajectory line (CAD blue guide line)
+        const pathPoints = [];
+        for (let i = 0; i <= 100; i++) {
+            const t = i / 100;
+            const angle = t * Math.PI * 12;
+            const r = 0.8 * (1 - t * 0.15);
+            const h = 0.75 - t * 0.75;
+            pathPoints.push(new THREE.Vector3(Math.cos(angle) * r, h, Math.sin(angle) * r));
+        }
+        const pathGeo = new THREE.BufferGeometry().setFromPoints(pathPoints);
+        const pathMat = new THREE.LineBasicMaterial({ color: 0x06b6d4, linewidth: 2 });
+        const toolpathLine = new THREE.Line(pathGeo, pathMat);
+        toolpathLine.position.y = 0.75;
+        cncMilling.add(toolpathLine);
+
+        // Machining Sparks Emitter
+        const sparksCount = 100;
+        const sparksGeo = new THREE.BufferGeometry();
+        const sparksPos = new Float32Array(sparksCount * 3);
+        const sparksVel = [];
+        for (let i = 0; i < sparksCount; i++) {
+            sparksPos[i * 3] = 0;
+            sparksPos[i * 3 + 1] = 0;
+            sparksPos[i * 3 + 2] = 0;
+            sparksVel.push(new THREE.Vector3(
+                (Math.random() - 0.5) * 3,
+                Math.random() * 4 + 1.5,
+                (Math.random() - 0.5) * 3
+            ));
+        }
+        sparksGeo.setAttribute('position', new THREE.BufferAttribute(sparksPos, 3));
+        const sparksMat = new THREE.PointsMaterial({ color: 0xff6a00, size: 0.08, transparent: true, opacity: 0 });
+        const sparks = new THREE.Points(sparksGeo, sparksMat);
+        cncMilling.add(sparks);
+
+        modelsContainer.add(cncMilling);
+
+        // ----------------------------------------------------
+        // MODEL C: Mechanical Crankshaft System (Guides)
+        // ----------------------------------------------------
+        const crankshaftSystem = new THREE.Group();
+        crankshaftSystem.position.set(0, -15, 0); // off-screen start
+
+        const crankMat = new THREE.MeshStandardMaterial({ color: 0x3b82f6, metalness: 0.9, roughness: 0.2 });
+        const rodMat = new THREE.MeshStandardMaterial({ color: 0x8b5cf6, metalness: 0.95, roughness: 0.15 });
+        const pistonMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, metalness: 0.8, roughness: 0.3 });
+        const guideWireMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff, wireframe: true });
+
+        // Engine cylinder sleeve (wireframe guide)
+        const sleeveGeo = new THREE.CylinderGeometry(0.9, 0.9, 3.5, 12, 1, true);
+        const sleeve = new THREE.Mesh(sleeveGeo, guideWireMat);
+        sleeve.position.y = 1.8;
+        crankshaftSystem.add(sleeve);
+
+        // Crank Web (balance weight)
+        const webGroup = new THREE.Group();
+        const webShapeGeo = new THREE.BoxGeometry(0.5, 1.4, 0.25);
+        const web1 = new THREE.Mesh(webShapeGeo, crankMat);
+        web1.position.y = 0.5;
+        const mainAxis = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 0.6, 12), crankMat);
+        mainAxis.rotation.z = Math.PI / 2;
+        mainAxis.position.z = -0.2;
+        webGroup.add(web1, mainAxis);
+        crankshaftSystem.add(webGroup);
+
+        // Crankpin
+        const pin = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 0.5, 12), crankMat);
+        pin.rotation.z = Math.PI / 2;
+        pin.position.set(0, 0.9, 0.1);
+        webGroup.add(pin);
+
+        // Connecting Rod
+        const rod = new THREE.Group();
+        const rodBar = new THREE.Mesh(new THREE.BoxGeometry(0.12, 2.0, 0.15), rodMat);
+        rodBar.position.y = 1.0;
+        rod.add(rodBar);
+        crankshaftSystem.add(rod);
+
+        // Piston Head
+        const piston = new THREE.Mesh(new THREE.CylinderGeometry(0.85, 0.85, 0.8, 16), pistonMat);
+        crankshaftSystem.add(piston);
+
+        // Dimension indicators
+        const dimGeo = new THREE.BufferGeometry().setFromPoints([
+            new THREE.Vector3(-1.4, -0.9, 0),
+            new THREE.Vector3(-1.4, 0.9, 0)
+        ]);
+        const dimLine = new THREE.Line(dimGeo, new THREE.LineBasicMaterial({ color: 0xff0055 }));
+        dimLine.position.set(-0.2, 0, 0);
+        crankshaftSystem.add(dimLine);
+
+        modelsContainer.add(crankshaftSystem);
+
+        // ----------------------------------------------------
+        // MODEL D: CNC Lathe Turning Chuck (FAQ)
+        // ----------------------------------------------------
+        const latheSystem = new THREE.Group();
+        latheSystem.position.set(0, 0, -15); // off-screen start
+
+        const latheChuckMat = new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.9, roughness: 0.2 });
+        const workPartMat = new THREE.MeshStandardMaterial({ color: 0xf1f5f9, metalness: 0.95, roughness: 0.15 });
+
+        // Chuck base body
+        const chuckBase = new THREE.Mesh(new THREE.CylinderGeometry(1.6, 1.6, 0.8, 24), latheChuckMat);
+        chuckBase.rotation.x = Math.PI / 2;
+        latheSystem.add(chuckBase);
+
+        // Jaws (3 clamping blocks)
+        const jawGeo = new THREE.BoxGeometry(0.35, 0.35, 0.45);
+        const jawsGroup = new THREE.Group();
+        for (let i = 0; i < 3; i++) {
+            const jaw = new THREE.Mesh(jawGeo, latheChuckMat);
+            const angle = (i / 3) * Math.PI * 2;
+            jaw.position.set(Math.cos(angle) * 0.9, Math.sin(angle) * 0.9, 0.25);
+            jaw.rotation.z = angle;
+            jawsGroup.add(jaw);
+        }
+        latheSystem.add(jawsGroup);
+
+        // Stepped workpiece spindle
+        const workpiece = new THREE.Group();
+        const step1 = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.7, 1.2, 24), workPartMat);
+        step1.position.z = 0.8;
+        const step2 = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 1.4, 24), workPartMat);
+        step2.position.z = 2.0;
+        const step3 = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 1.0, 24), workPartMat);
+        step3.position.z = 3.0;
+
+        [step1, step2, step3].forEach(step => {
+            step.rotation.x = Math.PI / 2;
+            workpiece.add(step);
+        });
+        latheSystem.add(workpiece);
+
+        // Lathe Cutting tool bit
+        const latheTool = new THREE.Group();
+        const toolShank = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.3, 1.8), shaftMat);
+        const toolTip = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.15, 0.2), new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.98 }));
+        toolTip.position.set(-0.1, 0, 0.9);
+        latheTool.add(toolShank, toolTip);
+        latheTool.position.set(1.5, 0, 2.5); // position cutter tip near step2 cylinder
+        latheSystem.add(latheTool);
+
+        modelsContainer.add(latheSystem);
+
+        // Drifting blueprint stars/nodes background
+        const starsGeo = new THREE.BufferGeometry();
+        const starsCount = 500;
+        const starsPos = new Float32Array(starsCount * 3);
+        for(let i=0; i<starsCount*3; i++) {
+            starsPos[i] = (Math.random() - 0.5) * 35;
+        }
+        starsGeo.setAttribute('position', new THREE.BufferAttribute(starsPos, 3));
+        const starsMat = new THREE.PointsMaterial({ color: 0x3b82f6, size: 0.05, transparent: true, opacity: 0.4 });
+        const starsPoints = new THREE.Points(starsGeo, starsMat);
+        scene.add(starsPoints);
+
+        // ----------------------------------------------------
+        // 3. GSAP ScrollTrigger Timelines (3D + text scrolling)
+        // ----------------------------------------------------
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Kinetic typography panel entry/exit transformations
+        gsap.utils.toArray('section').forEach((sec) => {
+            const wrapper = sec.querySelector('.panel-wrapper');
+            const elements = wrapper.querySelectorAll('.animate-item');
+            
+            const tl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: sec,
+                    start: "top bottom",
+                    end: "bottom top",
+                    scrub: 0.8
+                }
+            });
+
+            // 4D / 3D Perspective sweep transition
+            tl.fromTo(wrapper,
+                { 
+                    opacity: 0, 
+                    transform: "translate3d(0, 160px, -700px) rotateX(40deg) rotateY(-15deg)" 
+                },
+                { 
+                    opacity: 1, 
+                    transform: "translate3d(0, 0px, 0px) rotateX(0deg) rotateY(0deg)",
+                    ease: "power2.out" 
+                }
+            )
+            .to(wrapper, {
+                opacity: 0,
+                transform: "translate3d(0, -160px, 600px) rotateX(-45deg) rotateY(15deg)",
+                ease: "power2.in"
+            });
+
+            // Subtle cascading entries for headings/sub-elements inside panel
+            elements.forEach((el) => {
+                gsap.fromTo(el,
+                    { opacity: 0, transform: "translate3d(0, 50px, -150px) rotateX(25deg)" },
+                    {
+                        opacity: 1,
+                        transform: "translate3d(0, 0, 0) rotateX(0deg)",
+                        scrollTrigger: {
+                            trigger: wrapper,
+                            start: "top 80%",
+                            end: "top 45%",
+                            scrub: 0.5
+                        }
+                    }
+                );
+            });
+        });
+
+        // 3D Scene transitions synced to global scroll position
+        const globalTl = gsap.timeline({
+            scrollTrigger: {
+                trigger: "main",
+                start: "top top",
+                end: "bottom bottom",
+                scrub: 1.5
+            }
+        });
+
+        // Frame 1: Hero to Features (Planetary Gear transitions to CNC Milling Block)
+        globalTl.to(gearAssembly.position, { x: -15, z: -5, ease: "power2.inOut" }, 0)
+                .to(gearAssembly.rotation, { z: Math.PI * 5, ease: "none" }, 0)
+                .to(cncMilling.position, { x: 0, ease: "power2.inOut" }, 0);
+
+        // Frame 2: CNC Machining Animation (Helical Mill Tool Path & Sparks)
+        // Endmill tool descends
+        globalTl.to(cutter.position, { y: 0.75, ease: "power1.inOut" }, 0.25)
+                .to(sparksMat, { opacity: 1, ease: "none" }, 0.28)
+                .to(pocketMesh.scale, { y: 1.0, ease: "power1.inOut" }, 0.3)
+                // tool finishes cutout, retracts
+                .to(cutter.position, { y: 3.5, ease: "power1.inOut" }, 0.42)
+                .to(sparksMat, { opacity: 0, ease: "none" }, 0.42);
+
+        // Frame 3: Features to Technical Guides (Milling slides out, Engine crankshaft slides in)
+        globalTl.to(cncMilling.position, { x: 15, z: -5, ease: "power2.inOut" }, 0.5)
+                .to(crankshaftSystem.position, { y: 0, ease: "power2.inOut" }, 0.5)
+                .to(camera.position, { y: 1.5, z: 8.5, ease: "power2.inOut" }, 0.5);
+
+        // Frame 4: Guides to FAQ (Crankshaft slides down, Lathe spindle slides in)
+        globalTl.to(crankshaftSystem.position, { y: -15, z: -5, ease: "power2.inOut" }, 0.75)
+                .to(latheSystem.position, { z: 0, ease: "power2.inOut" }, 0.75)
+                .to(camera.position, { y: 0.5, z: 7.5, ease: "power2.inOut" }, 0.75);
+
+        // Extra spins and details near the end
+        globalTl.to(latheSystem.rotation, { y: Math.PI * 4, ease: "none" }, 0.8)
+                .to(gridHelper.position, { z: 12, ease: "none" }, 0.8);
+
+        // ----------------------------------------------------
+        // 4. Render and Update Frame Loop
+        // ----------------------------------------------------
+        const clock = new THREE.Clock();
+
+        function animateLoop() {
+            requestAnimationFrame(animateLoop);
+
+            const elapsedTime = clock.getElapsedTime();
+            const scrollPercent = ScrollTrigger.getAll()[0] ? ScrollTrigger.getAll()[0].progress : 0;
+
+            // Model A (Planetary Gear) rotations
+            gearAssembly.rotation.z = elapsedTime * 0.2;
+            sunMesh.rotation.y = -elapsedTime * 0.8;
+            sunWire.rotation.y = -elapsedTime * 0.8;
+            for (let i = 0; i < 3; i++) {
+                const angleOffset = planetPositions[i] + (elapsedTime * 0.35);
+                planetMeshes[i].position.set(Math.cos(angleOffset) * 1.45, Math.sin(angleOffset) * 1.45, 0);
+                planetMeshes[i].rotation.z = -elapsedTime * 0.65;
+            }
+
+            // Model B (CNC Cutter) rotation
+            cutter.rotation.y = elapsedTime * 20.0; // spin drill bit
+
+            // Model C (Crankshaft engine mechanics)
+            if (scrollPercent >= 0.45 && scrollPercent <= 0.8) {
+                // Crankshaft rotation speed based on running clock
+                const angle = elapsedTime * 3.5;
+                webGroup.rotation.z = angle;
+                
+                // Solve piston position based on crankshaft trigonometry
+                const r = 0.9; // crank radius
+                const l = 2.0; // rod length
+                const pinX = Math.cos(angle) * r;
+                const pinY = Math.sin(angle) * r;
+                
+                // Position rod angle and end
+                const pistonY = pinY + Math.sqrt(l*l - pinX*pinX);
+                piston.position.y = pistonY;
+                
+                rod.position.set(pinX, pinY, 0.1);
+                const angleDiff = Math.atan2(pistonY - pinY, -pinX) - Math.PI/2;
+                rod.rotation.z = angleDiff;
+            }
+
+            // Model D (CNC Lathe chuck spin)
+            if (scrollPercent >= 0.7) {
+                chuckBase.rotation.y = elapsedTime * 6.0;
+                jawsGroup.rotation.z = elapsedTime * 6.0;
+                workpiece.rotation.y = elapsedTime * 6.0;
+                
+                // Animate cutting tool bit movement
+                latheTool.position.z = 2.8 - Math.sin(elapsedTime * 0.8) * 1.2;
+            }
+
+            // Animate spark particles positions dynamically if cutter is actively milling
+            if (sparksMat.opacity > 0.05) {
+                const positions = sparksGeo.attributes.position.array;
+                // Position sparks at cutter tool head tip
+                const cutterTip = new THREE.Vector3(0, 0.75, 0);
+                
+                for(let i=0; i<sparksCount; i++) {
+                    positions[i*3] += sparksVel[i].x * 0.045;
+                    positions[i*3+1] += sparksVel[i].y * 0.045;
+                    positions[i*3+2] += sparksVel[i].z * 0.045;
+                    
+                    // Add gravity effect
+                    sparksVel[i].y -= 0.12;
+
+                    // Reset particle
+                    if (positions[i*3+1] < -0.8 || Math.abs(positions[i*3]) > 2.0) {
+                        positions[i*3] = cutterTip.x;
+                        positions[i*3+1] = cutterTip.y;
+                        positions[i*3+2] = cutterTip.z;
+                        sparksVel[i].set(
+                            (Math.random()-0.5)*3.2,
+                            Math.random()*4.5 + 2.0,
+                            (Math.random()-0.5)*3.2
+                        );
+                    }
+                }
+                sparksGeo.attributes.position.needsUpdate = true;
+            }
+
+            // Stars background rotation
+            starsPoints.rotation.y = elapsedTime * 0.02;
+
+            // Render Frame
+            renderer.render(scene, camera);
+        }
+
+        animateLoop();
+
+        // ----------------------------------------------------
+        // 5. Interactive Cursor-Based 3D Tilt
+        // ----------------------------------------------------
+        document.querySelectorAll('.glass-panel').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                // Limit maximum tilt to 12 degrees for premium aesthetics
+                const rotateX = ((y - centerY) / centerY) * -12;
+                const rotateY = ((x - centerX) / centerX) * 12;
+                
+                gsap.to(card, {
+                    rotationX: rotateX,
+                    rotationY: rotateY,
+                    transformPerspective: 1200,
+                    ease: "power2.out",
+                    overwrite: "auto",
+                    duration: 0.35
+                });
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                gsap.to(card, {
+                    rotationX: 0,
+                    rotationY: 0,
+                    ease: "power2.out",
+                    duration: 0.75
+                });
+            });
+        });
+
+        // Handle Window Resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+    </script>
+</body>
+</html>
