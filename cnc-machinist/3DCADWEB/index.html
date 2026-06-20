@@ -64,15 +64,15 @@
 
     <style>
         :root {
-            --bg: #030308;
-            --card-bg: rgba(8, 12, 28, 0.45);
-            --border: rgba(99, 102, 241, 0.15);
+            --bg: #020206;
+            --card-bg: rgba(6, 8, 20, 0.82); /* Darker backdrop for maximum contrast */
+            --border: rgba(99, 102, 241, 0.25); /* Bright high-contrast neon borders */
             --primary: #3b82f6;
             --primary-hover: #1d4ed8;
             --accent: #8b5cf6;
             --text: #f8fafc;
-            --text-muted: #94a3b8;
-            --shadow: rgba(0, 0, 0, 0.7);
+            --text-muted: #e2e8f0; /* Crisp slate-white body text */
+            --shadow: rgba(0, 0, 0, 0.9);
             --font-headings: 'Orbitron', -apple-system, BlinkMacSystemFont, sans-serif;
             --font-body: 'Space Grotesk', sans-serif;
         }
@@ -87,7 +87,7 @@
         body {
             margin: 0; padding: 0; width: 100%;
             font-family: var(--font-body);
-            background: transparent; /* transparent body to let canvas show through */
+            background: transparent;
             color: var(--text);
             line-height: 1.6;
             overflow-x: hidden;
@@ -112,7 +112,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            z-index: -1; /* behind body content but in front of html background */
+            z-index: -1;
             pointer-events: none;
         }
 
@@ -128,7 +128,7 @@
         header {
             border-bottom: 1px solid var(--border);
             padding: 16px 0;
-            background: rgba(3, 3, 8, 0.75);
+            background: rgba(3, 3, 8, 0.85);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             position: fixed;
@@ -183,7 +183,7 @@
             position: relative;
         }
 
-        /* 3D Panel wrapper and Inner Card (for mouse tilt separation) */
+        /* 3D Panel wrapper and Inner Card */
         .panel-wrapper {
             width: 100%;
             transform-style: preserve-3d;
@@ -193,21 +193,77 @@
 
         .glass-panel {
             background: var(--card-bg);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
+            backdrop-filter: blur(35px); /* Maximized blur for high contrast readability */
+            -webkit-backdrop-filter: blur(35px);
             border: 1px solid var(--border);
             border-radius: 20px;
             padding: 60px 50px;
             box-shadow: 
                 0 30px 60px var(--shadow), 
-                inset 0 1px 0 rgba(255, 255, 255, 0.05),
-                0 0 40px rgba(99, 102, 241, 0.05);
+                inset 0 1px 0 rgba(255, 255, 255, 0.08),
+                0 0 40px rgba(99, 102, 241, 0.08);
             transform-style: preserve-3d;
             will-change: transform;
             transition: border-color 0.4s ease;
         }
         .glass-panel:hover {
-            border-color: rgba(99, 102, 241, 0.35);
+            border-color: rgba(99, 102, 241, 0.45);
+        }
+
+        /* Split Columns for 3D visual panels */
+        .split-layout {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 48px;
+            align-items: center;
+        }
+        @media (max-width: 950px) {
+            .split-layout {
+                grid-template-columns: 1fr;
+                gap: 40px;
+                text-align: center;
+            }
+            .split-layout .hero-left {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        /* Realistic Image Mockups with strong shadows */
+        .image-mockup {
+            transform-style: preserve-3d;
+            transform: translateZ(25px);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(0, 0, 0, 0.6);
+            will-change: transform;
+        }
+        .realistic-img {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: cover;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .image-mockup:hover .realistic-img {
+            transform: scale(1.05);
+        }
+
+        /* Image label caption for high-contrast context */
+        .image-caption {
+            background: rgba(6, 8, 20, 0.9);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 12px 18px;
+            font-size: 0.82rem;
+            font-family: var(--font-headings);
+            font-weight: 700;
+            color: #60a5fa;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            text-align: center;
         }
 
         /* 3D Interactive Text elements */
@@ -219,7 +275,7 @@
 
         h1 {
             font-family: var(--font-headings);
-            font-size: clamp(2.4rem, 5.5vw, 3.8rem);
+            font-size: clamp(2.4rem, 5vw, 3.6rem);
             font-weight: 900;
             line-height: 1.15;
             margin-bottom: 24px;
@@ -232,7 +288,7 @@
 
         h2 {
             font-family: var(--font-headings);
-            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-size: clamp(1.8rem, 4vw, 2.4rem);
             font-weight: 700;
             margin-top: 30px;
             margin-bottom: 20px;
@@ -251,7 +307,7 @@
         }
 
         .hero-desc {
-            font-size: 1.3rem;
+            font-size: 1.25rem;
             color: var(--text-muted);
             margin-bottom: 44px;
             max-width: 700px;
@@ -291,8 +347,8 @@
             transform-style: preserve-3d;
         }
         .card {
-            background: rgba(8, 10, 24, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(8, 10, 24, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 14px;
             padding: 30px;
             transition: all 0.4s ease;
@@ -300,8 +356,8 @@
             transform: translateZ(15px);
         }
         .card:hover {
-            background: rgba(12, 16, 36, 0.7);
-            border-color: rgba(59, 130, 246, 0.4);
+            background: rgba(12, 16, 36, 0.8);
+            border-color: rgba(59, 130, 246, 0.5);
             transform: translateZ(30px) translateY(-5px);
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
         }
@@ -326,9 +382,9 @@
             transform: translateZ(10px);
         }
 
-        /* Documentation & Guidelines Content */
+        /* Documentation & Guidelines Content with Split Column Layout */
         .doc-content {
-            max-width: 850px;
+            max-width: 1000px;
             margin: 0 auto;
             transform-style: preserve-3d;
         }
@@ -362,7 +418,7 @@
             font-size: 0.95rem;
             position: relative;
             z-index: 10;
-            background: rgba(3, 3, 8, 0.9);
+            background: rgba(3, 3, 8, 0.95);
             backdrop-filter: blur(12px);
         }
         .footer-links {
@@ -397,23 +453,32 @@
     </header>
 
     <main class="container">
-        <!-- Section 1: Hero -->
+        <!-- Section 1: Hero (3D App UI Interface Showcase) -->
         <section id="hero-sec">
             <div class="panel-wrapper">
-                <div class="glass-panel">
-                    <h1 class="animate-item">4D Parametric CAD Modeler</h1>
-                    <p class="hero-desc animate-item">An interactive, browser-based solid prototyping engine powered by dynamic Constructive Solid Geometry (CSG). Modify parameters in real-time and export production-ready STL models instantly.</p>
-                    <a href="app.html" class="cta-btn animate-item">Launch Modeler Workspace &rarr;</a>
+                <div class="glass-panel split-layout">
+                    <div class="hero-left animate-item">
+                        <h1>4D Parametric CAD Modeler</h1>
+                        <p class="hero-desc animate-item">An interactive, browser-based solid prototyping engine powered by dynamic Constructive Solid Geometry (CSG). Modify parameters in real-time and export production-ready STL models instantly.</p>
+                        <a href="app.html" class="cta-btn animate-item">Launch Modeler Workspace &rarr;</a>
+                    </div>
+                    <div class="hero-right animate-item">
+                        <div class="image-mockup">
+                            <img src="images/cad_editor_screenshot.png" alt="3D Parametric CAD Modeler App Workspace Interface Screen mockup" class="realistic-img">
+                            <div class="image-caption">Realistic 3D Workspace UI</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- Section 2: Features -->
+        <!-- Section 2: Features (Planetary 4D Analysis Showcase) -->
         <section id="features-sec">
             <div class="panel-wrapper">
                 <div class="glass-panel">
                     <h2 class="section-title animate-item">Solid Modeling System</h2>
                     <p class="animate-item" style="text-align: center; color: var(--text-muted); font-size: 1.15rem; max-width: 650px; margin: 0 auto 30px;">Perform complex CSG Boolean cuts and additions in real-time right inside your browser window.</p>
+                    
                     <div class="grid">
                         <div class="card animate-item">
                             <span class="card-icon">🟦</span>
@@ -431,20 +496,50 @@
                             <p>Export models to binary STL files optimized for immediate CAM importing, CNC milling, or 3D printing software slicing.</p>
                         </div>
                     </div>
+
+                    <!-- 4D Simulation Showcase Sub-Section -->
+                    <div class="split-layout animate-item" style="margin-top: 60px;">
+                        <div class="hero-left">
+                            <h2 style="margin-top: 0; background: linear-gradient(135deg, #ffffff, #a5b4fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">4D Structural Load Simulation</h2>
+                            <p style="color: var(--text-muted); font-size: 1.1rem; margin-bottom: 20px;">
+                                Analyze spatial stress boundaries and kinematic mesh operations dynamically over time (4D). The engine evaluates how dimensional variations affect safety factor loads, mechanical shear, and rotation tolerances.
+                            </p>
+                            <p style="color: var(--text-muted); font-size: 1.1rem; margin: 0;">
+                                Design with exact safety tolerance feedback. Visual stress color gradients change in real-time in response to parametric coordinates adjustments, letting engineers inspect structural limits before generating G-code.
+                            </p>
+                        </div>
+                        <div class="hero-right">
+                            <div class="image-mockup">
+                                <img src="images/planetary_gear_4d.png" alt="Holographic 4D stress analysis of planetary gear model rendering" class="realistic-img">
+                                <div class="image-caption">Realistic 4D Stress Analysis Simulation</div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </section>
 
-        <!-- Section 3: Technical Guides -->
+        <!-- Section 3: Technical Guides (4D CNC Machining Showcase) -->
         <section id="docs-sec">
             <div class="panel-wrapper">
                 <div class="glass-panel doc-content">
                     <h2 class="animate-item" style="margin-top: 0; background: linear-gradient(135deg, #ffffff, #60a5fa); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Engineering & CSG Operations Guide</h2>
                     
-                    <div class="doc-section animate-item">
-                        <h3>1. Constructive Solid Geometry (CSG) Basics</h3>
-                        <p>Constructive Solid Geometry (CSG) is a solid modeling technique that allows you to construct complex 3D shapes from simple geometric primitives. By applying boolean operations—such as Union (combining bodies), Difference/Subtraction (cutting holes or cavities), and Intersection (isolating overlapping volumes)—you can design highly detailed mechanical brackets, custom adapter plates, and specialized lathe work. Unlike mesh editing tools which deal directly with surface vertices, CSG models maintain solid volume guarantees, ensuring that exported parts are watertight and ready for physical manufacturing.</p>
-                        <p>Our modeler executes these boolean CSG algorithms directly inside your browser. Because the models are represented mathematically, you can modify any dimension at any point in the history tree, and the modeler will automatically re-evaluate the boolean chain to rebuild the geometry. This makes our tool a true parametric modeler suitable for rapid engineering prototyping.</p>
+                    <div class="split-layout animate-item" style="margin-bottom: 40px;">
+                        <div class="doc-text-block">
+                            <div class="doc-section">
+                                <h3>1. Constructive Solid Geometry (CSG) Basics</h3>
+                                <p>Constructive Solid Geometry (CSG) is a solid modeling technique that allows you to construct complex 3D shapes from simple geometric primitives. By applying boolean operations—such as Union (combining bodies), Difference/Subtraction (cutting holes or cavities), and Intersection (isolating overlapping volumes)—you can design highly detailed mechanical brackets, custom adapter plates, and specialized lathe work. Unlike mesh editing tools which deal directly with surface vertices, CSG models maintain solid volume guarantees, ensuring that exported parts are watertight and ready for physical manufacturing.</p>
+                                <p>Our modeler executes these boolean CSG algorithms directly inside your browser. Because the models are represented mathematically, you can modify any dimension at any point in the history tree, and the modeler will automatically re-evaluate the boolean chain to rebuild the geometry. This makes our tool a true parametric modeler suitable for rapid engineering prototyping.</p>
+                            </div>
+                        </div>
+                        <div class="doc-visual-block">
+                            <div class="image-mockup">
+                                <img src="images/cnc_milling_4d.png" alt="CNC 5-axis milling machine cutter processing steel component with 4D blueprint simulation" class="realistic-img">
+                                <div class="image-caption">Realistic 4D CNC Milling Process</div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="doc-section animate-item">
