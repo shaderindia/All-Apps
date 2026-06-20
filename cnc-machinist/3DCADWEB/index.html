@@ -79,16 +79,22 @@
 
         * { box-sizing: border-box; }
         
-        body, html {
+        html {
+            background: var(--bg);
+            margin: 0; padding: 0; width: 100%;
+        }
+
+        body {
             margin: 0; padding: 0; width: 100%;
             font-family: var(--font-body);
-            background: var(--bg); color: var(--text);
+            background: transparent; /* transparent body to let canvas show through */
+            color: var(--text);
             line-height: 1.6;
             overflow-x: hidden;
         }
 
         /* Ambient blueprint design overlay */
-        body::before {
+        html::before {
             content: '';
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -106,7 +112,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            z-index: -1;
+            z-index: -1; /* behind body content but in front of html background */
             pointer-events: none;
         }
 
@@ -934,7 +940,7 @@
             requestAnimationFrame(animateLoop);
 
             const elapsedTime = clock.getElapsedTime();
-            const scrollPercent = ScrollTrigger.getAll()[0] ? ScrollTrigger.getAll()[0].progress : 0;
+            const scrollPercent = globalTl.scrollTrigger ? globalTl.scrollTrigger.progress : 0;
 
             // Model A (Planetary Gear) rotations
             gearAssembly.rotation.z = elapsedTime * 0.2;
