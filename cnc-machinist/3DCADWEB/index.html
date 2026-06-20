@@ -105,7 +105,17 @@
             -moz-osx-font-smoothing: grayscale;
         }
 
-        /* Full-Screen 3D Canvas Background */
+        /* Fixed CNC Machine Background Image */
+        #bg-image {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            z-index: -1;
+            background: url('images/cnc_machine_bg.png') center center / cover no-repeat;
+            filter: brightness(0.92) saturate(1.1);
+        }
+
+        /* Full-Screen 3D Canvas Background — layered OVER the BG image */
         #webgl-canvas {
             position: fixed;
             top: 0; left: 0;
@@ -114,14 +124,12 @@
             pointer-events: none;
         }
 
-        /* Soft gradient overlay for text readability over 3D */
+        /* Very subtle overlay — lets BG image shine through */
         #webgl-overlay {
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: 
-                radial-gradient(ellipse at 50% 30%, rgba(248, 250, 252, 0.3) 0%, transparent 70%),
-                linear-gradient(180deg, rgba(248, 250, 252, 0.15) 0%, rgba(241, 245, 249, 0.5) 50%, rgba(248, 250, 252, 0.85) 100%);
+            background: linear-gradient(180deg, rgba(248, 250, 252, 0.08) 0%, rgba(241, 245, 249, 0.12) 100%);
             z-index: 1;
             pointer-events: none;
         }
@@ -251,29 +259,29 @@
             position: relative;
         }
 
-        /* Glass Panel */
+        /* Glass Panel — always visible, NO fade-out */
         .panel-wrapper {
             width: 100%;
             transform-style: preserve-3d;
-            will-change: transform, opacity;
-            opacity: 0;
+            will-change: transform;
+            opacity: 1;
         }
 
         .glass-panel {
-            background: var(--card-bg);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.78);
+            backdrop-filter: blur(40px) saturate(1.2);
+            -webkit-backdrop-filter: blur(40px) saturate(1.2);
+            border: 1px solid rgba(255, 255, 255, 0.5);
             border-radius: 24px;
             padding: 60px 50px;
-            box-shadow: var(--shadow-xl);
+            box-shadow: 0 30px 80px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.6);
             transform-style: preserve-3d;
             will-change: transform;
             transition: border-color 0.4s ease, box-shadow 0.4s ease;
         }
         .glass-panel:hover {
             border-color: var(--border-hover);
-            box-shadow: 0 30px 80px rgba(249, 115, 22, 0.06), var(--shadow-xl);
+            box-shadow: 0 35px 90px rgba(0,0,0,0.18), 0 0 30px rgba(249, 115, 22, 0.08), inset 0 1px 0 rgba(255,255,255,0.7);
         }
 
         /* Split Columns */
@@ -612,10 +620,13 @@
 </head>
 <body>
 
-    <!-- Full-Screen 3D Canvas Background -->
+    <!-- Fixed CNC Machine Background Image -->
+    <div id="bg-image"></div>
+
+    <!-- Full-Screen 3D Canvas Background (transparent, layered over image) -->
     <canvas id="webgl-canvas"></canvas>
     
-    <!-- Soft overlay for readability -->
+    <!-- Subtle overlay -->
     <div id="webgl-overlay"></div>
 
     <!-- Floating Tech HUDs -->
@@ -896,21 +907,21 @@
             lenis.raf(time * 1000);
         });
         gsap.ticker.lagSmoothing(0);
-
         // ----------------------------------------------------
-        // 2. Initialize Three.js WebGL Scene — BRIGHT THEME
+        // 2. Initialize Three.js WebGL Scene — TRANSPARENT over BG image
         // ----------------------------------------------------
         const canvas = document.getElementById('webgl-canvas');
         const scene = new THREE.Scene();
         
-        // Bright gradient background
-        scene.background = new THREE.Color(0xf0f4f8);
-        scene.fog = new THREE.FogExp2(0xf0f4f8, 0.018);
+        // No background — transparent to show CNC image behind
+        // scene.background = null (default)
+        scene.fog = new THREE.FogExp2(0xc8ccd0, 0.012);
 
         const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
         camera.position.set(0, 1.5, 12);
 
-        const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: false });
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+        renderer.setClearColor(0x000000, 0); // Fully transparent clear
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -953,22 +964,13 @@
         accentPoint.position.set(3, 2, 5);
         scene.add(accentPoint);
 
-        // Ground plane (subtle shadow receiver)
-        const groundGeo = new THREE.PlaneGeometry(100, 100);
-        const groundMat = new THREE.MeshStandardMaterial({ 
-            color: 0xe8ecf0, 
-            roughness: 0.9, 
-            metalness: 0.0
-        });
-        const ground = new THREE.Mesh(groundGeo, groundMat);
-        ground.rotation.x = -Math.PI / 2;
-        ground.position.y = -4;
-        ground.receiveShadow = true;
-        scene.add(ground);
+        // Ground plane removed — scene is transparent to show CNC BG image
 
-        // Grid Floor (Engineering Grid — bright)
-        const gridHelper = new THREE.GridHelper(40, 40, 0xb0bec5, 0xdfe6ed);
+        // Grid Floor (Engineering Grid — semi-transparent)
+        const gridHelper = new THREE.GridHelper(40, 40, 0x90a4ae, 0xb0bec5);
         gridHelper.position.y = -3.98;
+        gridHelper.material.transparent = true;
+        gridHelper.material.opacity = 0.25;
         scene.add(gridHelper);
 
         // Main models container
@@ -1301,46 +1303,43 @@
         const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
         if (!prefersReducedMotion) {
+            // Panels slide in with 3D transforms but NEVER fade out
             gsap.utils.toArray('section').forEach((sec) => {
                 const wrapper = sec.querySelector('.panel-wrapper');
                 const elements = wrapper.querySelectorAll('.animate-item');
                 
-                const tl = gsap.timeline({
-                    scrollTrigger: {
-                        trigger: sec,
-                        start: "top bottom",
-                        end: "bottom top",
-                        scrub: 0.8
-                    }
-                });
-
-                tl.fromTo(wrapper,
+                // 3D entrance only — no exit fade
+                gsap.fromTo(wrapper,
                     { 
-                        opacity: 0, 
-                        transform: "translate3d(0, 160px, -700px) rotateX(40deg) rotateY(-15deg)" 
+                        y: 120, 
+                        rotateX: 12, 
+                        scale: 0.94
                     },
                     { 
-                        opacity: 1, 
-                        transform: "translate3d(0, 0px, 0px) rotateX(0deg) rotateY(0deg)",
-                        ease: "power2.out" 
+                        y: 0, 
+                        rotateX: 0, 
+                        scale: 1,
+                        ease: "power3.out",
+                        scrollTrigger: {
+                            trigger: sec,
+                            start: "top 85%",
+                            end: "top 35%",
+                            scrub: 0.6
+                        }
                     }
-                )
-                .to(wrapper, {
-                    opacity: 0,
-                    transform: "translate3d(0, -160px, 600px) rotateX(-45deg) rotateY(15deg)",
-                    ease: "power2.in"
-                });
+                );
 
-                elements.forEach((el) => {
+                elements.forEach((el, i) => {
                     gsap.fromTo(el,
-                        { opacity: 0, transform: "translate3d(0, 50px, -150px) rotateX(25deg)" },
+                        { y: 40, rotateX: 8 },
                         {
-                            opacity: 1,
-                            transform: "translate3d(0, 0, 0) rotateX(0deg)",
+                            y: 0,
+                            rotateX: 0,
+                            ease: "power2.out",
                             scrollTrigger: {
                                 trigger: wrapper,
                                 start: "top 80%",
-                                end: "top 45%",
+                                end: "top 50%",
                                 scrub: 0.5
                             }
                         }
