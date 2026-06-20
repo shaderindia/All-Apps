@@ -422,6 +422,121 @@
             background: linear-gradient(135deg, var(--accent-hover), #D97706);
         }
 
+        /* Interactive HUD Control Styles */
+        .hud-control-group {
+            background: rgba(255, 255, 255, 0.72);
+            backdrop-filter: blur(16px) saturate(1.2);
+            -webkit-backdrop-filter: blur(16px) saturate(1.2);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 12px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        }
+
+        .hud-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 6px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 10px;
+            font-family: var(--font-headings);
+            font-weight: 700;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            text-align: center;
+        }
+
+        .hud-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            transform: translateY(-1px);
+            background: var(--accent-light);
+        }
+
+        .hud-btn.active {
+            background: linear-gradient(135deg, var(--accent), #F59E0B);
+            border: none;
+            color: white !important;
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.25);
+        }
+
+        .hud-toggle {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 5px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 10px;
+            font-family: var(--font-headings);
+            font-weight: 700;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .hud-toggle:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--accent-light);
+            transform: translateY(-1px);
+        }
+
+        .hud-toggle.active {
+            background: var(--accent-light);
+            border-color: var(--accent);
+            color: var(--accent) !important;
+            box-shadow: 0 2px 8px rgba(249, 115, 22, 0.12);
+        }
+
+        .hud-play-btn {
+            background: linear-gradient(135deg, var(--accent), #F59E0B);
+            border: none;
+            color: white;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.25);
+            flex-shrink: 0;
+        }
+
+        .hud-play-btn:hover {
+            transform: scale(1.08);
+            box-shadow: 0 6px 16px rgba(249, 115, 22, 0.35);
+        }
+
+        .hud-play-btn.playing {
+            background: linear-gradient(135deg, #ef4444, #f87171);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+        }
+
+        .hud-play-btn.playing:hover {
+            box-shadow: 0 6px 16px rgba(239, 68, 68, 0.35);
+        }
+
+        .hud-slider {
+            flex: 1;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            outline: none;
+            cursor: pointer;
+            -webkit-appearance: none;
+            appearance: none;
+            accent-color: var(--accent);
+        }
+
         /* Tech Badges */
         .tech-badge {
             font-family: var(--font-headings);
@@ -763,34 +878,34 @@
                                 
                                 <div class="hud-controls" style="position: absolute; top: 12px; right: 12px; display: flex; flex-direction: column; gap: 8px; z-index: 10;">
                                     <!-- Shading Mode Group -->
-                                    <div style="background: rgba(255,255,255,0.92); backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 8px; padding: 6px; display: flex; flex-direction: column; gap: 4px;">
+                                    <div class="hud-control-group">
                                         <div style="font-size: 8px; font-family: var(--font-headings); font-weight: 800; color: var(--text-muted); text-align: center; text-transform: uppercase; margin-bottom: 2px;">Shading</div>
-                                        <button id="btn-shade-solid" class="hud-btn active" title="Solid Shading" style="background: var(--accent); border: none; color: #fff; padding: 5px 8px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: bold; transition: all 0.2s;">Solid</button>
-                                        <button id="btn-shade-wire" class="hud-btn" title="Wireframe Blueprint" style="background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 5px 8px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: bold; transition: all 0.2s;">Wire</button>
-                                        <button id="btn-shade-xray" class="hud-btn" title="X-Ray Glass" style="background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 5px 8px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: bold; transition: all 0.2s;">Glass</button>
+                                        <button id="btn-shade-solid" class="hud-btn active" title="Solid Shading">Solid</button>
+                                        <button id="btn-shade-wire" class="hud-btn" title="Wireframe Blueprint">Wire</button>
+                                        <button id="btn-shade-xray" class="hud-btn" title="X-Ray Glass">Glass</button>
                                     </div>
 
                                     <!-- Material Selection Group -->
-                                    <div style="background: rgba(255,255,255,0.92); backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 8px; padding: 6px; display: flex; flex-direction: column; gap: 4px;">
+                                    <div class="hud-control-group">
                                         <div style="font-size: 8px; font-family: var(--font-headings); font-weight: 800; color: var(--text-muted); text-align: center; text-transform: uppercase; margin-bottom: 2px;">Finish</div>
-                                        <button id="btn-mat-default" class="hud-btn active" title="Steel & Blue Anodized" style="background: var(--accent); border: none; color: #fff; padding: 5px 8px; border-radius: 6px; cursor: pointer; font-size: 10px; font-weight: bold; transition: all 0.2s;">Steel/Blue</button>
-                                        <button id="btn-mat-brass" class="hud-btn" title="Industrial Brass" style="background: transparent; border: 1px solid var(--border); color: #b45309; padding: 5px 8px; border-radius: 6px; cursor: pointer; font-size: 10px; font-weight: bold; transition: all 0.2s;">Brass</button>
-                                        <button id="btn-mat-copper" class="hud-btn" title="Brushed Copper" style="background: transparent; border: 1px solid var(--border); color: #c2410c; padding: 5px 8px; border-radius: 6px; cursor: pointer; font-size: 10px; font-weight: bold; transition: all 0.2s;">Copper</button>
+                                        <button id="btn-mat-default" class="hud-btn active" title="Steel & Blue Anodized">Steel/Blue</button>
+                                        <button id="btn-mat-brass" class="hud-btn" title="Industrial Brass">Brass</button>
+                                        <button id="btn-mat-copper" class="hud-btn" title="Brushed Copper">Copper</button>
                                     </div>
                                 </div>
 
-                                <div class="hud-bottom-bar" style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(12px); border-top: 1px solid var(--border); padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; z-index: 10; flex-wrap: wrap; gap: 8px;">
+                                <div class="hud-bottom-bar" style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.8); backdrop-filter: blur(16px); border-top: 1px solid var(--border); padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; z-index: 10; flex-wrap: wrap; gap: 8px;">
                                     <!-- Carving Simulation Playback -->
                                     <div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 200px;">
-                                        <button id="btn-sim-play" style="background: var(--accent); border: none; color: white; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 12px; transition: background 0.3s; flex-shrink: 0;">▶</button>
+                                        <button id="btn-sim-play" class="hud-play-btn" title="Toggle Carving Playback">▶</button>
                                         <span style="font-family: var(--font-headings); font-size: 10px; font-weight: 700; color: var(--text); flex-shrink: 0;">Carving:</span>
-                                        <input id="slider-carve-progress" type="range" min="0" max="100" value="100" style="flex: 1; height: 4px; background: #e2e8f0; border-radius: 2px; outline: none; cursor: pointer; -webkit-appearance: none; accent-color: var(--accent);">
+                                        <input id="slider-carve-progress" type="range" min="0" max="100" value="100" class="hud-slider">
                                     </div>
                                     
                                     <!-- Toggle overlays -->
                                     <div style="display: flex; gap: 6px;">
-                                        <button id="btn-toggle-dims" class="hud-toggle active" title="Toggle Dimension Lines" style="background: var(--accent-light); border: 1px solid var(--accent); color: var(--accent); padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 10px; font-family: var(--font-headings); font-weight: 700; transition: all 0.2s;">📐 Dims</button>
-                                        <button id="btn-toggle-grid" class="hud-toggle active" title="Toggle Grid Floor" style="background: var(--accent-light); border: 1px solid var(--accent); color: var(--accent); padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 10px; font-family: var(--font-headings); font-weight: 700; transition: all 0.2s;">🕸️ Grid</button>
+                                        <button id="btn-toggle-dims" class="hud-toggle active" title="Toggle Dimension Lines">📐 Dims</button>
+                                        <button id="btn-toggle-grid" class="hud-toggle active" title="Toggle Grid Floor">🕸️ Grid</button>
                                     </div>
                                 </div>
                             </div>
@@ -894,17 +1009,79 @@
                     line.classList.toggle('active', index === activeIndex);
                 });
             }
+
+            // Slide out and fade fixed HUDs as user scrolls
+            const hudLeft = document.getElementById('hud-left');
+            const hudRight = document.getElementById('hud-right');
+            if (hudLeft && hudRight) {
+                const opacityVal = Math.max(0, 1 - scrollPercent * 3.5);
+                hudLeft.style.opacity = opacityVal;
+                hudRight.style.opacity = opacityVal;
+                
+                const shiftVal = scrollPercent * 60;
+                hudLeft.style.transform = `translateX(${-shiftVal}px)`;
+                hudRight.style.transform = `translateX(${shiftVal}px)`;
+            }
         });
         gsap.ticker.add((time) => {
             lenis.raf(time * 1000);
         });
         gsap.ticker.lagSmoothing(0);
+
+        // ----------------------------------------------------
+        // Helpers: Procedural Maps for High-End 3D Visuals
+        // ----------------------------------------------------
+        function createReflectionMap() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 256;
+            canvas.height = 128;
+            const ctx = canvas.getContext('2d');
+            const grad = ctx.createLinearGradient(0, 0, 0, 128);
+            grad.addColorStop(0.0, '#e2e8f0');
+            grad.addColorStop(0.4, '#ffffff');
+            grad.addColorStop(0.5, '#64748b');
+            grad.addColorStop(0.6, '#334155');
+            grad.addColorStop(1.0, '#1e293b');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, 256, 128);
+
+            ctx.fillStyle = 'rgba(255,255,255,0.7)';
+            ctx.fillRect(40, 20, 30, 80);
+            ctx.fillRect(160, 30, 20, 60);
+
+            const tex = new THREE.CanvasTexture(canvas);
+            tex.mapping = THREE.EquirectangularReflectionMapping;
+            return tex;
+        }
+
+        function createSparkTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 32;
+            canvas.height = 32;
+            const ctx = canvas.getContext('2d');
+            const grad = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
+            grad.addColorStop(0.0, 'rgba(255, 255, 255, 1.0)');
+            grad.addColorStop(0.15, 'rgba(255, 200, 50, 1.0)');
+            grad.addColorStop(0.4, 'rgba(249, 115, 22, 0.45)');
+            grad.addColorStop(0.7, 'rgba(239, 68, 68, 0.15)');
+            grad.addColorStop(1.0, 'rgba(0, 0, 0, 0.0)');
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.arc(16, 16, 16, 0, Math.PI * 2);
+            ctx.fill();
+            return new THREE.CanvasTexture(canvas);
+        }
+
         // ----------------------------------------------------
         // 2. Initialize Three.js WebGL Scene — TRANSPARENT over BG image
         // ----------------------------------------------------
         const canvas = document.getElementById('webgl-canvas');
         const scene = new THREE.Scene();
         
+        // Dynamic studio lighting reflection map for metal materials
+        const envMap = createReflectionMap();
+        scene.environment = envMap;
+
         // No background — transparent to show CNC image behind
         // scene.background = null (default)
         scene.fog = new THREE.FogExp2(0xc8ccd0, 0.012);
@@ -1285,7 +1462,18 @@
             ));
         }
         sparksGeo.setAttribute('position', new THREE.BufferAttribute(sparksPos, 3));
-        const sparksMat = new THREE.PointsMaterial({ color: 0xff6a00, size: 0.08, transparent: true, opacity: 0 });
+        
+        // Custom glowing round ember particles
+        const sparkTexture = createSparkTexture();
+        const sparksMat = new THREE.PointsMaterial({ 
+            color: 0xffaa44, 
+            size: 0.18, 
+            transparent: true, 
+            opacity: 0,
+            map: sparkTexture,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+        });
         const sparks = new THREE.Points(sparksGeo, sparksMat);
         scene.add(sparks);
 
@@ -1613,6 +1801,7 @@
         const intCanvas = document.getElementById('interactive-workpiece-canvas');
         const intScene = new THREE.Scene();
         intScene.background = new THREE.Color(0xf1f5f9);
+        intScene.environment = envMap; // Apply dynamic reflection map
 
         const intCamera = new THREE.PerspectiveCamera(40, intCanvas.clientWidth / intCanvas.clientHeight, 0.1, 100);
         intCamera.position.set(4, 3, 6);
@@ -1871,7 +2060,18 @@
             intSparksVel.push(new THREE.Vector3((Math.random() - 0.5) * 1.5, Math.random() * 2 + 0.5, (Math.random() - 0.5) * 1.5));
         }
         intSparksGeo.setAttribute('position', new THREE.BufferAttribute(intSparksPos, 3));
-        const intSparksMat = new THREE.PointsMaterial({ color: 0xffa500, size: 0.04, transparent: true, opacity: 0 });
+        
+        // Glowing round ember particles
+        const intSparkTexture = createSparkTexture();
+        const intSparksMat = new THREE.PointsMaterial({ 
+            color: 0xffa500, 
+            size: 0.08, 
+            transparent: true, 
+            opacity: 0,
+            map: intSparkTexture,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+        });
         const intSparksPoints = new THREE.Points(intSparksGeo, intSparksMat);
         intWorkpieceGroup.add(intSparksPoints);
 
@@ -1885,13 +2085,13 @@
         playBtn.onclick = () => {
             simPlaying = !simPlaying;
             playBtn.textContent = simPlaying ? '⏸' : '▶';
-            playBtn.style.background = simPlaying ? '#ef4444' : 'var(--accent)';
+            playBtn.classList.toggle('playing', simPlaying);
         };
 
         slider.oninput = (e) => {
             simPlaying = false;
             playBtn.textContent = '▶';
-            playBtn.style.background = 'var(--accent)';
+            playBtn.classList.remove('playing');
             simProgress = e.target.value / 100;
             updateIntWorkpieceGeometry(simProgress);
         };
@@ -1901,12 +2101,8 @@
         const btnMatCopper = document.getElementById('btn-mat-copper');
 
         function setMaterials(metalMat, collarMat, activeBtn) {
-            [btnMatDefault, btnMatBrass, btnMatCopper].forEach(b => {
-                b.classList.remove('active');
-                b.style.background = 'transparent';
-            });
+            [btnMatDefault, btnMatBrass, btnMatCopper].forEach(b => b.classList.remove('active'));
             activeBtn.classList.add('active');
-            activeBtn.style.background = 'var(--accent)';
             
             activeMetalMat = metalMat;
             activeCollarMat = collarMat;
@@ -1929,12 +2125,8 @@
         const btnShadeXray = document.getElementById('btn-shade-xray');
 
         function setShading(mode, activeBtn) {
-            [btnShadeSolid, btnShadeWire, btnShadeXray].forEach(b => {
-                b.classList.remove('active');
-                b.style.background = 'transparent';
-            });
+            [btnShadeSolid, btnShadeWire, btnShadeXray].forEach(b => b.classList.remove('active'));
             activeBtn.classList.add('active');
-            activeBtn.style.background = 'var(--accent)';
 
             const meshes = [intLeftMesh, intAxleMesh, intCollar1Mesh, intCollar2Mesh, intFlangeMesh, intTailMesh];
 
@@ -1969,15 +2161,11 @@
         btnToggleDims.onclick = () => {
             dimsGroup.visible = !dimsGroup.visible;
             btnToggleDims.classList.toggle('active', dimsGroup.visible);
-            btnToggleDims.style.background = dimsGroup.visible ? 'var(--accent-light)' : 'transparent';
-            btnToggleDims.style.borderColor = dimsGroup.visible ? 'var(--accent)' : 'var(--border)';
         };
 
         btnToggleGrid.onclick = () => {
             intGrid.visible = !intGrid.visible;
             btnToggleGrid.classList.toggle('active', intGrid.visible);
-            btnToggleGrid.style.background = intGrid.visible ? 'var(--accent-light)' : 'transparent';
-            btnToggleGrid.style.borderColor = intGrid.visible ? 'var(--accent)' : 'var(--border)';
         };
 
         const intClock = new THREE.Clock();
