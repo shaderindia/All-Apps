@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-FCJR8H4DME"></script>
     <script>
@@ -50,10 +50,10 @@
     }
     </script>
 
-    <!-- Google Fonts: Orbitron & Space Grotesk -->
+    <!-- Google Fonts: Outfit & Work Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/fonts.css">
     
     <!-- CDNs for WebGL, GSAP, and Lenis -->
@@ -66,124 +66,115 @@
 
     <style>
         :root {
-            /* WCAG & Contrast Optimization Variables */
-            --bg: #0a0f1d; /* Brightened slate dark blue */
-            --card-bg: rgba(10, 14, 28, 0.82); /* Lower opacity for background grid sight */
-            --border: rgba(99, 102, 241, 0.35); /* High contrast border lines */
-            --primary: #3b82f6;
-            --primary-hover: #1d4ed8;
-            --accent: #8b5cf6;
-            --text: #ffffff; /* Max-brightness pure white for headers */
-            --text-muted: #f1f5f9; /* Bright slate-white body copy for crisp legibility */
-            --shadow: rgba(0, 0, 0, 0.95);
-            --font-headings: 'Orbitron', -apple-system, BlinkMacSystemFont, sans-serif;
-            --font-body: 'Space Grotesk', sans-serif;
+            --bg: #F8FAFC;
+            --bg-warm: #F1F5F9;
+            --card-bg: rgba(255, 255, 255, 0.72);
+            --card-bg-solid: #ffffff;
+            --border: rgba(100, 116, 139, 0.18);
+            --border-hover: rgba(249, 115, 22, 0.4);
+            --primary: #64748B;
+            --primary-dark: #475569;
+            --accent: #F97316;
+            --accent-hover: #EA580C;
+            --accent-light: rgba(249, 115, 22, 0.1);
+            --text: #1E293B;
+            --text-secondary: #334155;
+            --text-muted: #64748B;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+            --shadow-lg: 0 20px 50px rgba(0,0,0,0.1);
+            --shadow-xl: 0 30px 80px rgba(0,0,0,0.12);
+            --font-headings: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-body: 'Work Sans', -apple-system, BlinkMacSystemFont, sans-serif;
         }
 
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         
         html {
             background: var(--bg);
-            margin: 0; padding: 0; width: 100%;
+            scroll-behavior: smooth;
         }
 
         body {
-            margin: 0; padding: 0; width: 100%;
             font-family: var(--font-body);
             background-color: var(--bg);
-            /* Engineering graph paper background grid to fill empty areas */
-            background-image: 
-                linear-gradient(rgba(59, 130, 246, 0.035) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(59, 130, 246, 0.035) 1px, transparent 1px),
-                linear-gradient(rgba(59, 130, 246, 0.015) 2px, transparent 2px),
-                linear-gradient(90deg, rgba(59, 130, 246, 0.015) 2px, transparent 2px);
-            background-size: 20px 20px, 20px 20px, 100px 100px, 100px 100px;
             color: var(--text);
-            line-height: 1.65; /* Increased line spacing for dark mode readability */
+            line-height: 1.65;
             overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
-        /* Ambient blueprint design overlay */
-        html::before {
-            content: '';
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: 
-                radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.05) 0%, transparent 40%),
-                radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.05) 0%, transparent 40%);
-            z-index: -2;
-            pointer-events: none;
-        }
-
-        /* WebGL Canvas */
+        /* Full-Screen 3D Canvas Background */
         #webgl-canvas {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: -2;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            z-index: 0;
             pointer-events: none;
         }
 
-        /* Brighter vignette overlay to let WebGL details pop */
+        /* Soft gradient overlay for text readability over 3D */
         #webgl-overlay {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at center, rgba(10, 14, 26, 0.1) 0%, rgba(10, 14, 26, 0.45) 100%);
-            z-index: -1;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: 
+                radial-gradient(ellipse at 50% 30%, rgba(248, 250, 252, 0.3) 0%, transparent 70%),
+                linear-gradient(180deg, rgba(248, 250, 252, 0.15) 0%, rgba(241, 245, 249, 0.5) 50%, rgba(248, 250, 252, 0.85) 100%);
+            z-index: 1;
             pointer-events: none;
         }
 
-        /* Floating Tech HUD Panels to fill empty margins */
+        /* Floating Tech HUD Panels */
         .tech-hud {
             position: fixed;
-            width: 210px;
-            background: rgba(10, 14, 28, 0.78);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(59, 130, 246, 0.25);
-            border-radius: 8px;
+            width: 200px;
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(100, 116, 139, 0.15);
+            border-radius: 12px;
             padding: 14px;
             font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-            color: #a5b4fc;
+            color: var(--primary-dark);
             font-size: 11px;
             z-index: 10;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05);
+            box-shadow: var(--shadow-lg);
             pointer-events: none;
             transition: all 0.3s ease;
         }
         .tech-hud-title {
             font-family: var(--font-headings);
             font-size: 9px;
-            font-weight: 900;
-            color: #60a5fa;
+            font-weight: 800;
+            color: var(--accent);
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
             margin-bottom: 8px;
-            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
-            padding-bottom: 4px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 6px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
         .hud-line {
-            line-height: 1.5;
+            line-height: 1.6;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
             opacity: 0.5;
             transition: color 0.15s, opacity 0.15s;
+            color: var(--text-muted);
         }
         .hud-line.active {
-            color: #38bdf8;
+            color: var(--accent);
             opacity: 1;
             font-weight: bold;
-            text-shadow: 0 0 8px rgba(56, 189, 248, 0.5);
         }
         .hud-stat {
             font-size: 11px;
-            color: #94a3b8;
+            color: var(--text-muted);
         }
         
         #hud-left { left: 24px; top: 140px; }
@@ -205,12 +196,13 @@
         header {
             border-bottom: 1px solid var(--border);
             padding: 16px 0;
-            background: rgba(7, 10, 19, 0.9);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            background: rgba(255, 255, 255, 0.82);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
             position: fixed;
             top: 0; left: 0; right: 0;
             z-index: 100;
+            box-shadow: 0 1px 8px rgba(0,0,0,0.04);
         }
         .header-content {
             display: flex;
@@ -222,34 +214,33 @@
             color: var(--text-muted);
             font-size: 0.9rem;
             font-family: var(--font-headings);
-            font-weight: 700;
+            font-weight: 600;
             display: inline-flex;
             align-items: center;
             gap: 8px;
             transition: color 0.3s ease;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.3px;
         }
         .back-link:hover {
-            color: var(--primary);
+            color: var(--accent);
         }
         .logo-text {
             font-family: var(--font-headings);
             font-weight: 900;
             font-size: 1.3rem;
-            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            background: linear-gradient(135deg, var(--primary-dark), var(--accent));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             letter-spacing: 2px;
         }
 
-        /* Main Container setup for 3D perspective scroll */
+        /* Main Container */
         main {
             padding-top: 100px;
             perspective: 1200px;
             transform-style: preserve-3d;
         }
 
-        /* Section wrapper for GSAP tracking */
         section {
             min-height: 100vh;
             display: flex;
@@ -260,7 +251,7 @@
             position: relative;
         }
 
-        /* 3D Panel wrapper and Inner Card */
+        /* Glass Panel */
         .panel-wrapper {
             width: 100%;
             transform-style: preserve-3d;
@@ -270,24 +261,22 @@
 
         .glass-panel {
             background: var(--card-bg);
-            backdrop-filter: blur(40px); /* Heavy backdrop filter to eliminate 3D visual noise */
-            -webkit-backdrop-filter: blur(40px);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
             border: 1px solid var(--border);
-            border-radius: 20px;
+            border-radius: 24px;
             padding: 60px 50px;
-            box-shadow: 
-                0 30px 60px var(--shadow), 
-                inset 0 1px 0 rgba(255, 255, 255, 0.08),
-                0 0 40px rgba(99, 102, 241, 0.08);
+            box-shadow: var(--shadow-xl);
             transform-style: preserve-3d;
             will-change: transform;
-            transition: border-color 0.4s ease;
+            transition: border-color 0.4s ease, box-shadow 0.4s ease;
         }
         .glass-panel:hover {
-            border-color: rgba(99, 102, 241, 0.45);
+            border-color: var(--border-hover);
+            box-shadow: 0 30px 80px rgba(249, 115, 22, 0.06), var(--shadow-xl);
         }
 
-        /* Split Columns for 3D visual panels */
+        /* Split Columns */
         .split-layout {
             display: grid;
             grid-template-columns: 1.2fr 1fr;
@@ -307,15 +296,15 @@
             }
         }
 
-        /* Realistic Image Mockups with strong shadows */
+        /* Image Mockups */
         .image-mockup {
             transform-style: preserve-3d;
             transform: translateZ(25px);
-            border-radius: 14px;
+            border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            background: rgba(0, 0, 0, 0.6);
+            box-shadow: var(--shadow-xl);
+            border: 1px solid var(--border);
+            background: var(--card-bg-solid);
             will-change: transform;
         }
         .realistic-img {
@@ -326,24 +315,24 @@
             transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .image-mockup:hover .realistic-img {
-            transform: scale(1.05);
+            transform: scale(1.03);
         }
 
-        /* Image label caption for high-contrast context */
+        /* Image Caption */
         .image-caption {
-            background: rgba(6, 8, 20, 0.95);
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.95);
+            border-top: 1px solid var(--border);
             padding: 12px 18px;
-            font-size: 0.82rem;
+            font-size: 0.8rem;
             font-family: var(--font-headings);
             font-weight: 700;
-            color: #60a5fa;
+            color: var(--accent);
             letter-spacing: 0.5px;
             text-transform: uppercase;
             text-align: center;
         }
 
-        /* 3D Interactive Text elements */
+        /* Animated elements */
         .animate-item {
             transform-style: preserve-3d;
             will-change: transform, opacity;
@@ -354,13 +343,15 @@
             font-family: var(--font-headings);
             font-size: clamp(2.4rem, 5vw, 3.6rem);
             font-weight: 900;
-            line-height: 1.15;
+            line-height: 1.1;
             margin-bottom: 24px;
-            background: linear-gradient(135deg, #ffffff 30%, #a5b4fc 100%);
+            color: var(--text);
+            letter-spacing: -1.5px;
+        }
+        h1 .accent-word {
+            background: linear-gradient(135deg, var(--accent), #F59E0B);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            letter-spacing: -1px;
-            text-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
         }
 
         h2 {
@@ -369,8 +360,8 @@
             font-weight: 700;
             margin-top: 30px;
             margin-bottom: 20px;
-            color: #ffffff;
-            letter-spacing: -0.5px;
+            color: var(--text);
+            letter-spacing: -0.8px;
             transform: translateZ(20px);
         }
 
@@ -378,51 +369,83 @@
             text-align: center;
             margin-top: 0;
             margin-bottom: 12px;
-            background: linear-gradient(135deg, #60a5fa, #c084fc);
+            background: linear-gradient(135deg, var(--text), var(--accent));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        /* Optimized Body/Para Text for maximum contrast and zero halation bleeding */
         p, li {
-            color: var(--text-muted);
+            color: var(--text-secondary);
             font-size: 1.08rem;
-            font-weight: 500; /* Medium weight instead of light for robust dark readability */
-            letter-spacing: 0.25px; /* Slight tracking increase to offset dark mode ink-spread look */
-            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6); /* Soft backing shadow for contrast */
+            font-weight: 400;
+            letter-spacing: 0.01em;
         }
 
         .hero-desc {
-            font-size: 1.25rem;
+            font-size: 1.2rem;
             margin-bottom: 44px;
             max-width: 700px;
             transform: translateZ(10px);
+            color: var(--text-muted);
+            line-height: 1.7;
         }
 
+        /* CTA Button */
         .cta-btn {
             display: inline-flex;
             align-items: center;
             gap: 12px;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
+            background: linear-gradient(135deg, var(--accent), #F59E0B);
             color: white;
             text-decoration: none;
-            padding: 20px 45px;
+            padding: 18px 42px;
             font-weight: 700;
-            font-size: 1.15rem;
+            font-size: 1.1rem;
             font-family: var(--font-headings);
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(249, 115, 22, 0.3);
             transition: all 0.3s ease;
             transform: translateZ(30px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: none;
+            cursor: pointer;
+            letter-spacing: 0.3px;
         }
         .cta-btn:hover {
             transform: translateZ(45px) scale(1.03);
-            box-shadow: 0 15px 40px rgba(99, 102, 241, 0.5);
-            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            box-shadow: 0 15px 45px rgba(249, 115, 22, 0.45);
+            background: linear-gradient(135deg, var(--accent-hover), #D97706);
         }
 
-        /* Features Section Cards Grid */
+        /* Tech Badges */
+        .tech-badge {
+            font-family: var(--font-headings);
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .badge-engine {
+            color: var(--accent);
+            background: var(--accent-light);
+            border: 1px solid rgba(249, 115, 22, 0.25);
+        }
+        .badge-export {
+            color: #059669;
+            background: rgba(5, 150, 105, 0.08);
+            border: 1px solid rgba(5, 150, 105, 0.25);
+        }
+        .badge-status {
+            color: var(--primary-dark);
+            background: rgba(71, 85, 105, 0.08);
+            border: 1px solid rgba(71, 85, 105, 0.2);
+        }
+
+        /* Feature Cards Grid */
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -431,51 +454,76 @@
             transform-style: preserve-3d;
         }
         .card {
-            background: rgba(8, 10, 24, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 14px;
-            padding: 30px;
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
             transition: all 0.4s ease;
             transform-style: preserve-3d;
             transform: translateZ(15px);
+            cursor: pointer;
         }
         .card:hover {
-            background: rgba(12, 16, 36, 0.85);
-            border-color: rgba(59, 130, 246, 0.5);
+            background: rgba(255, 255, 255, 0.95);
+            border-color: var(--border-hover);
             transform: translateZ(30px) translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 20px 50px rgba(249, 115, 22, 0.08);
         }
         .card-icon {
-            font-size: 2.2rem;
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             margin-bottom: 20px;
-            display: inline-block;
-            transform: translateZ(25px);
+            font-size: 1.4rem;
+        }
+        .card-icon.icon-blue {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+        }
+        .card-icon.icon-orange {
+            background: var(--accent-light);
+            color: var(--accent);
+        }
+        .card-icon.icon-green {
+            background: rgba(5, 150, 105, 0.08);
+            color: #059669;
         }
         .card h3 {
             font-family: var(--font-headings);
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             margin: 0 0 12px;
-            color: #60a5fa;
+            color: var(--text);
             font-weight: 700;
             transform: translateZ(20px);
         }
         .card p {
-            font-size: 0.98rem;
+            font-size: 0.95rem;
             margin: 0;
             transform: translateZ(10px);
+            color: var(--text-muted);
         }
 
-        /* Documentation & Guidelines Content with Split Column Layout */
+        /* Documentation Content */
         .doc-content {
             max-width: 1000px;
             margin: 0 auto;
             transform-style: preserve-3d;
         }
         .doc-section {
-            border-left: 3px solid var(--primary);
+            border-left: 3px solid var(--accent);
             padding-left: 24px;
             margin-bottom: 40px;
             transform: translateZ(15px);
+        }
+        .doc-section h3 {
+            font-family: var(--font-headings);
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 12px;
         }
 
         /* Accessibility: respect user prefers-reduced-motion */
@@ -496,22 +544,24 @@
             }
         }
 
-        /* Interactive instruction tooltip for 3D model */
+        /* 3D Model Tooltip */
         #model-tooltip {
             position: fixed;
             bottom: 24px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(10, 14, 28, 0.9);
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border: 1px solid var(--border);
             border-radius: 30px;
             padding: 8px 20px;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             font-family: var(--font-headings);
             font-weight: 700;
-            color: #3b82f6;
+            color: var(--accent);
             letter-spacing: 0.5px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            box-shadow: var(--shadow-md);
             z-index: 10;
             pointer-events: none;
             display: inline-flex;
@@ -529,16 +579,18 @@
             font-size: 0.95rem;
             position: relative;
             z-index: 10;
-            background: rgba(7, 10, 19, 0.98);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(12px);
         }
+        footer p { color: var(--text-muted); }
+        footer a { color: var(--text-secondary); text-decoration: none; }
         .footer-links {
             display: flex;
             justify-content: center;
             gap: 24px;
             margin-top: 16px;
             font-family: var(--font-headings);
-            font-weight: 700;
+            font-weight: 600;
             font-size: 0.85rem;
         }
         .footer-links a {
@@ -547,21 +599,28 @@
             transition: color 0.3s ease;
         }
         .footer-links a:hover {
-            color: var(--primary);
+            color: var(--accent);
+        }
+
+        /* Responsive Refinements */
+        @media (max-width: 768px) {
+            .glass-panel { padding: 36px 24px; border-radius: 18px; }
+            section { padding: 60px 0; }
+            .grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-    <!-- WebGL Canvas for 3D Background -->
+    <!-- Full-Screen 3D Canvas Background -->
     <canvas id="webgl-canvas"></canvas>
     
-    <!-- Dark Vignette contrast overlay -->
+    <!-- Soft overlay for readability -->
     <div id="webgl-overlay"></div>
 
-    <!-- Floating Tech HUDs in margins -->
+    <!-- Floating Tech HUDs -->
     <div id="hud-left" class="tech-hud">
-        <div class="tech-hud-title"><span>G-Code Feed</span><span style="color: #38bdf8; font-size: 8px;">● RUNNING</span></div>
+        <div class="tech-hud-title"><span>G-Code Feed</span><span style="color: #059669; font-size: 8px;">● RUNNING</span></div>
         <div class="hud-line active">G90 G21 (Metric)</div>
         <div class="hud-line">G17 G40 G80 (Cancel)</div>
         <div class="hud-line">T01 M06 (Tool Change)</div>
@@ -572,17 +631,17 @@
         <div class="hud-line">G01 Z-2.000 F150</div>
     </div>
     <div id="hud-right" class="tech-hud">
-        <div class="tech-hud-title"><span>CAD Coordinates</span><span style="color: #10b981; font-size: 8px;">● SYNCED</span></div>
-        <div class="hud-stat">X-AXIS: <span id="hud-val-x" style="color:#fff; font-weight: bold;">0.000</span></div>
-        <div class="hud-stat" style="margin-top: 4px;">Y-AXIS: <span id="hud-val-y" style="color:#fff; font-weight: bold;">0.000</span></div>
-        <div class="hud-stat" style="margin-top: 4px;">Z-AXIS: <span id="hud-val-z" style="color:#fff; font-weight: bold;">5.000</span></div>
-        <div class="hud-stat" style="margin-top: 4px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 4px; margin-top: 6px;">FEED: <span style="color:#60a5fa; font-weight: bold;">600 mm/min</span></div>
-        <div class="hud-stat">SPEED: <span style="color:#60a5fa; font-weight: bold;">12,000 RPM</span></div>
-        <div class="hud-stat">TOOL: <span style="color:#10b981; font-weight: bold;">Ø6.0mm Carbide</span></div>
+        <div class="tech-hud-title"><span>CAD Coordinates</span><span style="color: #059669; font-size: 8px;">● SYNCED</span></div>
+        <div class="hud-stat">X-AXIS: <span id="hud-val-x" style="color: var(--text); font-weight: bold;">0.000</span></div>
+        <div class="hud-stat" style="margin-top: 4px;">Y-AXIS: <span id="hud-val-y" style="color: var(--text); font-weight: bold;">0.000</span></div>
+        <div class="hud-stat" style="margin-top: 4px;">Z-AXIS: <span id="hud-val-z" style="color: var(--text); font-weight: bold;">5.000</span></div>
+        <div class="hud-stat" style="margin-top: 4px; border-top: 1px dashed var(--border); padding-top: 4px; margin-top: 6px;">FEED: <span style="color: var(--accent); font-weight: bold;">600 mm/min</span></div>
+        <div class="hud-stat">SPEED: <span style="color: var(--accent); font-weight: bold;">12,000 RPM</span></div>
+        <div class="hud-stat">TOOL: <span style="color: #059669; font-weight: bold;">Ø6.0mm Carbide</span></div>
     </div>
 
     <!-- 3D Interactive Tooltip -->
-    <div id="model-tooltip">🖱️ Click & Drag anywhere on background to rotate 3D workpiece</div>
+    <div id="model-tooltip">🖱️ Click & Drag background to rotate 3D CNC models</div>
 
     <header>
         <div class="container header-content">
@@ -592,17 +651,17 @@
     </header>
 
     <main class="container">
-        <!-- Section 1: Hero (3D App UI Interface Showcase) -->
+        <!-- Section 1: Hero -->
         <section id="hero-sec">
             <div class="panel-wrapper">
                 <div class="glass-panel split-layout">
                     <div class="hero-left animate-item">
-                        <h1>4D Parametric CAD Modeler</h1>
+                        <h1><span class="accent-word">4D Parametric</span> CAD Modeler</h1>
                         <p class="hero-desc animate-item">An interactive, browser-based solid prototyping engine powered by dynamic Constructive Solid Geometry (CSG). Modify parameters in real-time and export production-ready STL models instantly.</p>
-                        <div class="tech-labels-row animate-item" style="display: flex; gap: 12px; margin-bottom: 30px; flex-wrap: wrap;">
-                            <span style="font-family: var(--font-headings); font-size: 0.72rem; font-weight: 700; color: #38bdf8; background: rgba(56,189,248,0.12); border: 1px solid rgba(56,189,248,0.3); padding: 5px 12px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 8px rgba(0,0,0,0.35);">⚙️ Engine: CSG v2.4</span>
-                            <span style="font-family: var(--font-headings); font-size: 0.72rem; font-weight: 700; color: #10b981; background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.3); padding: 5px 12px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 8px rgba(0,0,0,0.35);">📤 Export: STL, NC, JSON</span>
-                            <span style="font-family: var(--font-headings); font-size: 0.72rem; font-weight: 700; color: #a78bfa; background: rgba(167,139,250,0.12); border: 1px solid rgba(167,139,250,0.3); padding: 5px 12px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 8px rgba(0,0,0,0.35);">✓ Status: Production Ready</span>
+                        <div class="tech-labels-row animate-item" style="display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap;">
+                            <span class="tech-badge badge-engine">⚙️ Engine: CSG v2.4</span>
+                            <span class="tech-badge badge-export">📤 Export: STL, NC, JSON</span>
+                            <span class="tech-badge badge-status">✓ Production Ready</span>
                         </div>
                         <a href="app.html" class="cta-btn animate-item">Launch Modeler Workspace &rarr;</a>
                     </div>
@@ -616,35 +675,41 @@
             </div>
         </section>
 
-        <!-- Section 2: Features (Planetary 4D Analysis Showcase) -->
+        <!-- Section 2: Features -->
         <section id="features-sec">
             <div class="panel-wrapper">
                 <div class="glass-panel">
                     <h2 class="section-title animate-item">Solid Modeling System</h2>
-                    <p class="animate-item" style="text-align: center; color: var(--text-muted); font-size: 1.15rem; max-width: 650px; margin: 0 auto 30px;">Perform complex CSG Boolean cuts and additions in real-time right inside your browser window.</p>
+                    <p class="animate-item" style="text-align: center; color: var(--text-muted); font-size: 1.1rem; max-width: 650px; margin: 0 auto 30px;">Perform complex CSG Boolean cuts and additions in real-time right inside your browser window.</p>
                     
                     <div class="grid">
                         <div class="card animate-item">
-                            <span class="card-icon">🟦</span>
+                            <div class="card-icon icon-blue">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+                            </div>
                             <h3>Solid Primitives</h3>
                             <p>Instantly place Box, Sphere, Cylinder, or custom Extruded Text blocks into the workspace. Control size, positions, and coordinates dynamically.</p>
                         </div>
                         <div class="card animate-item">
-                            <span class="card-icon">🔀</span>
+                            <div class="card-icon icon-orange">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><path d="M13 6h3a2 2 0 0 1 2 2v7"></path><path d="M11 18H8a2 2 0 0 1-2-2V9"></path></svg>
+                            </div>
                             <h3>CSG Boolean Operations</h3>
                             <p>Apply solid logical commands to geometries: Union (merge parts), Subtract (cut slots, pockets, or holes), or Intersect (retain overlaps).</p>
                         </div>
                         <div class="card animate-item">
-                            <span class="card-icon">📤</span>
+                            <div class="card-icon icon-green">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                            </div>
                             <h3>Watertight STL Export</h3>
                             <p>Export models to binary STL files optimized for immediate CAM importing, CNC milling, or 3D printing software slicing.</p>
                         </div>
                     </div>
 
-                    <!-- 4D Simulation Showcase Sub-Section -->
+                    <!-- 4D Simulation Sub-Section -->
                     <div class="split-layout animate-item" style="margin-top: 60px;">
                         <div class="hero-left">
-                            <h2 style="margin-top: 0; background: linear-gradient(135deg, #ffffff, #a5b4fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">4D Structural Load Simulation</h2>
+                            <h2 style="margin-top: 0;">4D Structural Load Simulation</h2>
                             <p style="margin-bottom: 20px;">
                                 Analyze spatial stress boundaries and kinematic mesh operations dynamically over time (4D). The engine evaluates how dimensional variations affect safety factor loads, mechanical shear, and rotation tolerances.
                             </p>
@@ -653,7 +718,7 @@
                             </p>
                         </div>
                         <div class="hero-right">
-                            <div class="image-mockup interactive-viewer-container" style="height: 380px; position: relative; overflow: hidden; background: rgba(5, 7, 15, 0.95); border: 1px solid var(--border); border-radius: 14px;">
+                            <div class="image-mockup interactive-viewer-container" style="height: 380px; position: relative; overflow: hidden; background: #0a0e1c; border: 1px solid var(--border); border-radius: 16px;">
                                 <spline-viewer url="https://prod.spline.design/9f5b8706-bf32-440d-b35e-e6b7db9090e0/scene.splinecode" style="width: 100%; height: 100%; display: block;" hint="false"></spline-viewer>
                                 <div class="image-caption" style="position: absolute; bottom: 0; left: 0; right: 0; z-index: 5;">Interactive 3D Glass Refraction (Move Mouse)</div>
                             </div>
@@ -664,11 +729,11 @@
             </div>
         </section>
 
-        <!-- Section 3: Technical Guides (4D CNC Machining Showcase) -->
+        <!-- Section 3: Technical Guides -->
         <section id="docs-sec">
             <div class="panel-wrapper">
                 <div class="glass-panel doc-content">
-                    <h2 class="animate-item" style="margin-top: 0; background: linear-gradient(135deg, #ffffff, #60a5fa); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Engineering & CSG Operations Guide</h2>
+                    <h2 class="animate-item" style="margin-top: 0;">Engineering & CSG Operations Guide</h2>
                     
                     <div class="split-layout animate-item" style="margin-bottom: 40px;">
                         <div class="doc-text-block">
@@ -679,44 +744,44 @@
                             </div>
                         </div>
                         <div class="doc-visual-block">
-                            <div class="image-mockup interactive-viewer-container" style="height: 420px; position: relative; overflow: hidden; background: rgba(5, 7, 15, 0.95); border: 1px solid var(--border); border-radius: 14px;">
+                            <div class="image-mockup interactive-viewer-container" style="height: 420px; position: relative; overflow: hidden; background: #f1f5f9; border: 1px solid var(--border); border-radius: 16px;">
                                 <canvas id="interactive-workpiece-canvas" style="width: 100%; height: 100%; display: block; outline: none;"></canvas>
                                 
                                 <!-- HUD Overlay controls -->
-                                <div class="hud-top" style="position: absolute; top: 12px; left: 12px; font-family: var(--font-headings); font-size: 0.8rem; font-weight: 700; color: #60a5fa; text-shadow: 0 2px 4px rgba(0,0,0,0.8); background: rgba(10,14,28,0.75); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(99,102,241,0.25);">
+                                <div class="hud-top" style="position: absolute; top: 12px; left: 12px; font-family: var(--font-headings); font-size: 0.75rem; font-weight: 700; color: var(--accent); background: rgba(255,255,255,0.9); backdrop-filter: blur(8px); padding: 5px 10px; border-radius: 6px; border: 1px solid var(--border);">
                                     WORKPIECE INTERACTIVE CAD VIEW
                                 </div>
                                 
                                 <div class="hud-controls" style="position: absolute; top: 12px; right: 12px; display: flex; flex-direction: column; gap: 8px; z-index: 10;">
                                     <!-- Shading Mode Group -->
-                                    <div style="background: rgba(10, 14, 28, 0.85); border: 1px solid var(--border); border-radius: 6px; padding: 4px; display: flex; flex-direction: column; gap: 4px;">
-                                        <div style="font-size: 8px; font-family: var(--font-headings); font-weight: 900; color: #8b93a1; text-align: center; text-transform: uppercase; margin-bottom: 2px;">Shading</div>
-                                        <button id="btn-shade-solid" class="hud-btn active" title="Solid Shading" style="background: var(--primary); border: none; color: #fff; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; transition: all 0.2s;">Solid</button>
-                                        <button id="btn-shade-wire" class="hud-btn" title="Wireframe Blueprint" style="background: transparent; border: 1px solid rgba(255,255,255,0.15); color: #a5b4fc; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; transition: all 0.2s;">Wire</button>
-                                        <button id="btn-shade-xray" class="hud-btn" title="X-Ray Glass" style="background: transparent; border: 1px solid rgba(255,255,255,0.15); color: #a5b4fc; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; transition: all 0.2s;">Glass</button>
+                                    <div style="background: rgba(255,255,255,0.92); backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 8px; padding: 6px; display: flex; flex-direction: column; gap: 4px;">
+                                        <div style="font-size: 8px; font-family: var(--font-headings); font-weight: 800; color: var(--text-muted); text-align: center; text-transform: uppercase; margin-bottom: 2px;">Shading</div>
+                                        <button id="btn-shade-solid" class="hud-btn active" title="Solid Shading" style="background: var(--accent); border: none; color: #fff; padding: 5px 8px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: bold; transition: all 0.2s;">Solid</button>
+                                        <button id="btn-shade-wire" class="hud-btn" title="Wireframe Blueprint" style="background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 5px 8px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: bold; transition: all 0.2s;">Wire</button>
+                                        <button id="btn-shade-xray" class="hud-btn" title="X-Ray Glass" style="background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 5px 8px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: bold; transition: all 0.2s;">Glass</button>
                                     </div>
 
                                     <!-- Material Selection Group -->
-                                    <div style="background: rgba(10, 14, 28, 0.85); border: 1px solid var(--border); border-radius: 6px; padding: 4px; display: flex; flex-direction: column; gap: 4px;">
-                                        <div style="font-size: 8px; font-family: var(--font-headings); font-weight: 900; color: #8b93a1; text-align: center; text-transform: uppercase; margin-bottom: 2px;">Finish</div>
-                                        <button id="btn-mat-default" class="hud-btn active" title="Steel & Blue Anodized" style="background: var(--primary); border: none; color: #fff; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 10px; font-weight: bold; transition: all 0.2s;">Steel/Blue</button>
-                                        <button id="btn-mat-brass" class="hud-btn" title="Industrial Brass" style="background: transparent; border: 1px solid rgba(255,255,255,0.15); color: #fbbf24; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 10px; font-weight: bold; transition: all 0.2s;">Brass</button>
-                                        <button id="btn-mat-copper" class="hud-btn" title="Brushed Copper" style="background: transparent; border: 1px solid rgba(255,255,255,0.15); color: #f97316; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 10px; font-weight: bold; transition: all 0.2s;">Copper</button>
+                                    <div style="background: rgba(255,255,255,0.92); backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 8px; padding: 6px; display: flex; flex-direction: column; gap: 4px;">
+                                        <div style="font-size: 8px; font-family: var(--font-headings); font-weight: 800; color: var(--text-muted); text-align: center; text-transform: uppercase; margin-bottom: 2px;">Finish</div>
+                                        <button id="btn-mat-default" class="hud-btn active" title="Steel & Blue Anodized" style="background: var(--accent); border: none; color: #fff; padding: 5px 8px; border-radius: 6px; cursor: pointer; font-size: 10px; font-weight: bold; transition: all 0.2s;">Steel/Blue</button>
+                                        <button id="btn-mat-brass" class="hud-btn" title="Industrial Brass" style="background: transparent; border: 1px solid var(--border); color: #b45309; padding: 5px 8px; border-radius: 6px; cursor: pointer; font-size: 10px; font-weight: bold; transition: all 0.2s;">Brass</button>
+                                        <button id="btn-mat-copper" class="hud-btn" title="Brushed Copper" style="background: transparent; border: 1px solid var(--border); color: #c2410c; padding: 5px 8px; border-radius: 6px; cursor: pointer; font-size: 10px; font-weight: bold; transition: all 0.2s;">Copper</button>
                                     </div>
                                 </div>
 
-                                <div class="hud-bottom-bar" style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(7, 10, 19, 0.95); border-top: 1px solid var(--border); padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; z-index: 10; flex-wrap: wrap; gap: 8px;">
+                                <div class="hud-bottom-bar" style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(12px); border-top: 1px solid var(--border); padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; z-index: 10; flex-wrap: wrap; gap: 8px;">
                                     <!-- Carving Simulation Playback -->
                                     <div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 200px;">
-                                        <button id="btn-sim-play" style="background: var(--primary); border: none; color: white; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 12px; transition: background 0.3s; flex-shrink: 0;">▶</button>
-                                        <span style="font-family: var(--font-headings); font-size: 10px; font-weight: 700; color: #fff; flex-shrink: 0;">Carving:</span>
-                                        <input id="slider-carve-progress" type="range" min="0" max="100" value="100" style="flex: 1; height: 4px; background: #1e293b; border-radius: 2px; outline: none; cursor: pointer; -webkit-appearance: none;">
+                                        <button id="btn-sim-play" style="background: var(--accent); border: none; color: white; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 12px; transition: background 0.3s; flex-shrink: 0;">▶</button>
+                                        <span style="font-family: var(--font-headings); font-size: 10px; font-weight: 700; color: var(--text); flex-shrink: 0;">Carving:</span>
+                                        <input id="slider-carve-progress" type="range" min="0" max="100" value="100" style="flex: 1; height: 4px; background: #e2e8f0; border-radius: 2px; outline: none; cursor: pointer; -webkit-appearance: none; accent-color: var(--accent);">
                                     </div>
                                     
                                     <!-- Toggle overlays -->
                                     <div style="display: flex; gap: 6px;">
-                                        <button id="btn-toggle-dims" class="hud-toggle active" title="Toggle Dimension Lines" style="background: rgba(59,130,246,0.2); border: 1px solid var(--primary); color: #60a5fa; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 10px; font-family: var(--font-headings); font-weight: 700; transition: all 0.2s;">📐 Dims</button>
-                                        <button id="btn-toggle-grid" class="hud-toggle active" title="Toggle Grid Floor" style="background: rgba(59,130,246,0.2); border: 1px solid var(--primary); color: #60a5fa; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 10px; font-family: var(--font-headings); font-weight: 700; transition: all 0.2s;">🕸️ Grid</button>
+                                        <button id="btn-toggle-dims" class="hud-toggle active" title="Toggle Dimension Lines" style="background: var(--accent-light); border: 1px solid var(--accent); color: var(--accent); padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 10px; font-family: var(--font-headings); font-weight: 700; transition: all 0.2s;">📐 Dims</button>
+                                        <button id="btn-toggle-grid" class="hud-toggle active" title="Toggle Grid Floor" style="background: var(--accent-light); border: 1px solid var(--accent); color: var(--accent); padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 10px; font-family: var(--font-headings); font-weight: 700; transition: all 0.2s;">🕸️ Grid</button>
                                     </div>
                                 </div>
                             </div>
@@ -743,7 +808,7 @@
                             <li><strong>Dimensional Units:</strong> All numerical inputs in the modeler represent measurements in millimeters (mm). Slicers (PrusaSlicer, Cura) and CAM engines (Fusion 360, Vectric) import STL files in millimeters by default, ensuring exact scale matching.</li>
                             <li><strong>Facet Resolution:</strong> When adding regular polygons or cylinders to act as circular holes or round bosses, set the number of subdivisions (sides) appropriately. 32-48 sides are ideal for standard 3D printers, while 64-96 sides are recommended for tight-tolerance CNC machining. Avoid setting values above 128 to prevent slowdowns.</li>
                             <li><strong>Avoid Non-Manifold Geometry:</strong> Ensure subtracted cutouts extend completely past the outer boundaries of base shapes. Leaving a cylinder flush with a box face can occasionally cause floating-point alignment errors (coincident faces) in CSG rendering.</li>
-                            <li><strong>JSON Design Backups:</strong> Before exporting your STL, click the "Save" button. This downloads a lightweight `.json` description file containing your exact parametric history tree, allowing you to reload and edit the model in the future.</li>
+                            <li><strong>JSON Design Backups:</strong> Before exporting your STL, click the "Save" button. This downloads a lightweight .json description file containing your exact parametric history tree, allowing you to reload and edit the model in the future.</li>
                         </ul>
                     </div>
                 </div>
@@ -754,7 +819,7 @@
         <section id="faq-sec">
             <div class="panel-wrapper">
                 <div class="glass-panel doc-content">
-                    <h2 class="animate-item" style="margin-top: 0; background: linear-gradient(135deg, #ffffff, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Frequently Asked Questions</h2>
+                    <h2 class="animate-item" style="margin-top: 0;">Frequently Asked Questions</h2>
                     
                     <div class="doc-section animate-item">
                         <p><strong>Is the CAD Modeler free?</strong> Yes, the 3D Parametric CAD Modeler is 100% free and open-source. There are no registration forms, usage limits, or hidden fees. All processing is done locally in your browser.</p>
@@ -807,7 +872,6 @@
         }
         requestAnimationFrame(raf);
 
-        // Bind Lenis scroll to GSAP ScrollTrigger and update Floating HUD
         lenis.on('scroll', (e) => {
             ScrollTrigger.update();
             
@@ -834,71 +898,204 @@
         gsap.ticker.lagSmoothing(0);
 
         // ----------------------------------------------------
-        // 2. Initialize Three.js WebGL Scene
+        // 2. Initialize Three.js WebGL Scene — BRIGHT THEME
         // ----------------------------------------------------
         const canvas = document.getElementById('webgl-canvas');
         const scene = new THREE.Scene();
-        scene.background = null;
+        
+        // Bright gradient background
+        scene.background = new THREE.Color(0xf0f4f8);
+        scene.fog = new THREE.FogExp2(0xf0f4f8, 0.018);
 
         const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.set(0, 0.5, 9);
+        camera.position.set(0, 1.5, 12);
 
-        const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: false });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.outputColorSpace = THREE.SRGBColorSpace;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.4;
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-        // Lights (Amplified for high-contrast visibility)
-        const ambientLight = new THREE.AmbientLight(0xffffff, 1.15);
-        scene.add(ambientLight);
+        // Hemisphere light (sky + ground fill)
+        const hemiLight = new THREE.HemisphereLight(0xddeeff, 0xe8e0d8, 1.2);
+        scene.add(hemiLight);
 
-        const dirLight1 = new THREE.DirectionalLight(0xffffff, 2.6);
-        dirLight1.position.set(10, 12, 10);
-        scene.add(dirLight1);
+        // Main directional light (warm sunlight)
+        const sunLight = new THREE.DirectionalLight(0xfff4e6, 2.8);
+        sunLight.position.set(8, 15, 10);
+        sunLight.castShadow = true;
+        sunLight.shadow.mapSize.width = 2048;
+        sunLight.shadow.mapSize.height = 2048;
+        sunLight.shadow.camera.near = 0.5;
+        sunLight.shadow.camera.far = 60;
+        sunLight.shadow.camera.left = -12;
+        sunLight.shadow.camera.right = 12;
+        sunLight.shadow.camera.top = 12;
+        sunLight.shadow.camera.bottom = -12;
+        sunLight.shadow.radius = 4;
+        scene.add(sunLight);
 
-        const dirLight2 = new THREE.DirectionalLight(0x3b82f6, 1.8);
-        dirLight2.position.set(-10, -8, 5);
-        scene.add(dirLight2);
+        // Fill light (cool blue)
+        const fillLight = new THREE.DirectionalLight(0xc8dcf0, 1.2);
+        fillLight.position.set(-10, 5, -5);
+        scene.add(fillLight);
 
-        const dirLight3 = new THREE.DirectionalLight(0x8b5cf6, 1.6);
-        dirLight3.position.set(-8, 8, 4);
-        scene.add(dirLight3);
+        // Rim light (orange accent)
+        const rimLight = new THREE.DirectionalLight(0xf97316, 0.8);
+        rimLight.position.set(-5, 3, 8);
+        scene.add(rimLight);
 
-        const highlightLight = new THREE.PointLight(0xffaa00, 2.5, 20);
-        highlightLight.position.set(0, 0, 5);
-        scene.add(highlightLight);
+        // Accent point light
+        const accentPoint = new THREE.PointLight(0xf97316, 2.0, 25);
+        accentPoint.position.set(3, 2, 5);
+        scene.add(accentPoint);
 
-        // Grid Floor (representing CNC Bed)
-        const gridHelper = new THREE.GridHelper(30, 30, 0x4f46e5, 0x111322);
-        gridHelper.position.y = -3.5;
+        // Ground plane (subtle shadow receiver)
+        const groundGeo = new THREE.PlaneGeometry(100, 100);
+        const groundMat = new THREE.MeshStandardMaterial({ 
+            color: 0xe8ecf0, 
+            roughness: 0.9, 
+            metalness: 0.0
+        });
+        const ground = new THREE.Mesh(groundGeo, groundMat);
+        ground.rotation.x = -Math.PI / 2;
+        ground.position.y = -4;
+        ground.receiveShadow = true;
+        scene.add(ground);
+
+        // Grid Floor (Engineering Grid — bright)
+        const gridHelper = new THREE.GridHelper(40, 40, 0xb0bec5, 0xdfe6ed);
+        gridHelper.position.y = -3.98;
         scene.add(gridHelper);
 
-        // Main objects container
+        // Main models container
         const modelsContainer = new THREE.Group();
         scene.add(modelsContainer);
 
-        // Materials
+        // Materials — Bright Industrial Metals
         const steelMaterial = new THREE.MeshStandardMaterial({ 
-            color: 0xe2e8f0, // bright steel
-            metalness: 0.95, 
-            roughness: 0.15,
-            transparent: true,
-            opacity: 0.95
+            color: 0xd4d8dc,
+            metalness: 0.92, 
+            roughness: 0.18,
+            envMapIntensity: 1.5
         });
         
         const collarMaterial = new THREE.MeshStandardMaterial({ 
-            color: 0x2563eb, // blue anodized
-            metalness: 0.95, 
-            roughness: 0.12,
-            transparent: true,
-            opacity: 0.95
+            color: 0xf97316, // Safety orange accent
+            metalness: 0.85, 
+            roughness: 0.2,
+            envMapIntensity: 1.2
         });
 
+        // Floating 3D objects for visual richness
+        const floatingGroup = new THREE.Group();
+        scene.add(floatingGroup);
+
+        // Floating gears
+        const torusMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.9, roughness: 0.15 });
+        
+        const gear1 = new THREE.Mesh(new THREE.TorusGeometry(1.2, 0.15, 16, 48), torusMat);
+        gear1.position.set(-6, 2, -5);
+        gear1.castShadow = true;
+        floatingGroup.add(gear1);
+
+        const gear2 = new THREE.Mesh(new THREE.TorusGeometry(0.8, 0.12, 16, 32), 
+            new THREE.MeshStandardMaterial({ color: 0xf97316, metalness: 0.85, roughness: 0.2 }));
+        gear2.position.set(7, -1, -6);
+        gear2.castShadow = true;
+        floatingGroup.add(gear2);
+
+        const gear3 = new THREE.Mesh(new THREE.TorusGeometry(0.6, 0.1, 12, 24), torusMat.clone());
+        gear3.position.set(-5, -2, -3);
+        gear3.castShadow = true;
+        floatingGroup.add(gear3);
+
+        // Floating boxes (precision machined blocks)
+        const blockMat = new THREE.MeshStandardMaterial({ color: 0xcbd5e1, metalness: 0.8, roughness: 0.25 });
+        
+        const block1 = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 0.8), blockMat);
+        block1.position.set(5, 3, -4);
+        block1.rotation.set(0.3, 0.5, 0.2);
+        block1.castShadow = true;
+        floatingGroup.add(block1);
+
+        const block2 = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5), 
+            new THREE.MeshStandardMaterial({ color: 0xf97316, metalness: 0.85, roughness: 0.2 }));
+        block2.position.set(-7, 0, -2);
+        block2.rotation.set(0.6, 0.3, 0.8);
+        block2.castShadow = true;
+        floatingGroup.add(block2);
+
+        // Floating cylinders (CNC shafts)
+        const shaftFloatMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, metalness: 0.95, roughness: 0.12 });
+        
+        const shaft1 = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 2.5, 16), shaftFloatMat);
+        shaft1.position.set(6, 1, -3);
+        shaft1.rotation.set(0.4, 0, 0.6);
+        shaft1.castShadow = true;
+        floatingGroup.add(shaft1);
+
+        const shaft2 = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 1.8, 12), shaftFloatMat.clone());
+        shaft2.position.set(-4, 3, -5);
+        shaft2.rotation.set(0.8, 0.2, 0.3);
+        shaft2.castShadow = true;
+        floatingGroup.add(shaft2);
+
+        // Floating spheres (ball bearings)
+        const bearingMat = new THREE.MeshStandardMaterial({ color: 0xfafafa, metalness: 0.98, roughness: 0.05 });
+        
+        for (let i = 0; i < 5; i++) {
+            const bearing = new THREE.Mesh(new THREE.SphereGeometry(0.15 + Math.random() * 0.15, 16, 16), bearingMat.clone());
+            bearing.position.set(
+                (Math.random() - 0.5) * 16,
+                (Math.random() - 0.5) * 8,
+                -3 - Math.random() * 6
+            );
+            bearing.castShadow = true;
+            floatingGroup.add(bearing);
+        }
+
+        // Soft particle dust (metallic sparks/chips in the air)
+        const dustCount = 300;
+        const dustGeo = new THREE.BufferGeometry();
+        const dustPositions = new Float32Array(dustCount * 3);
+        for (let i = 0; i < dustCount * 3; i++) {
+            dustPositions[i] = (Math.random() - 0.5) * 30;
+        }
+        dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPositions, 3));
+        const dustMat = new THREE.PointsMaterial({ 
+            color: 0xf97316, 
+            size: 0.04, 
+            transparent: true, 
+            opacity: 0.35
+        });
+        const dustPoints = new THREE.Points(dustGeo, dustMat);
+        scene.add(dustPoints);
+
+        // White/silver ambient particles
+        const ambientDustGeo = new THREE.BufferGeometry();
+        const ambientDustPos = new Float32Array(200 * 3);
+        for (let i = 0; i < 200 * 3; i++) {
+            ambientDustPos[i] = (Math.random() - 0.5) * 40;
+        }
+        ambientDustGeo.setAttribute('position', new THREE.BufferAttribute(ambientDustPos, 3));
+        const ambientDustMat = new THREE.PointsMaterial({ 
+            color: 0x94a3b8, 
+            size: 0.06, 
+            transparent: true, 
+            opacity: 0.2
+        });
+        const ambientDust = new THREE.Points(ambientDustGeo, ambientDustMat);
+        scene.add(ambientDust);
+
         // ----------------------------------------------------
-        // BUILD PROCEDURAL WORKPIECE MODEL (From OpenSCAD Script)
+        // BUILD PROCEDURAL WORKPIECE MODEL
         // ----------------------------------------------------
         const workpieceGroup = new THREE.Group();
         
-        // Left cylinder: height 2.7, radius 1.125
         const radialSegments = 120;
         const heightSegments = 100;
         const baseGeom = new THREE.CylinderGeometry(1.125, 1.125, 2.7, radialSegments, heightSegments, false);
@@ -912,52 +1109,52 @@
         }
 
         const leftMesh = new THREE.Mesh(baseGeom, steelMaterial);
-        leftMesh.position.y = -1.53; // Centered stack Y coord
+        leftMesh.position.y = -1.53;
+        leftMesh.castShadow = true;
         workpieceGroup.add(leftMesh);
 
-        // Middle connecting axle: h = 0.45, r = 0.81
         const axleMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.81, 0.81, 0.45, 32), steelMaterial);
         axleMesh.position.y = 0.045;
+        axleMesh.castShadow = true;
         workpieceGroup.add(axleMesh);
 
-        // Right collar body: h = 1.125, r = 1.08
         const collar1Mesh = new THREE.Mesh(new THREE.CylinderGeometry(1.08, 1.08, 1.125, 32), collarMaterial);
         collar1Mesh.position.y = 0.8325;
+        collar1Mesh.castShadow = true;
         workpieceGroup.add(collar1Mesh);
 
-        // Stepped reduction: h = 0.9, r = 0.99
         const collar2Mesh = new THREE.Mesh(new THREE.CylinderGeometry(0.99, 0.99, 0.9, 32), collarMaterial);
         collar2Mesh.position.y = 1.845;
+        collar2Mesh.castShadow = true;
         workpieceGroup.add(collar2Mesh);
 
-        // End Flange: h = 0.225, r = 1.17
         const flangeMesh = new THREE.Mesh(new THREE.CylinderGeometry(1.17, 1.17, 0.225, 32), collarMaterial);
         flangeMesh.position.y = 2.4075;
+        flangeMesh.castShadow = true;
         workpieceGroup.add(flangeMesh);
 
-        // Tailstock interface insert: h = 0.36, r = 0.72
         const tailMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.72, 0.72, 0.36, 32), steelMaterial);
         tailMesh.position.y = 2.7;
+        tailMesh.castShadow = true;
         workpieceGroup.add(tailMesh);
 
         modelsContainer.add(workpieceGroup);
 
-        // Workpiece Carving update logic
+        // Workpiece Carving
         function updateWorkpieceGeometry(progress) {
-            const twistRate = (-90 * (Math.PI / 180)) / 70; // rad per unit height
-            const rCutterCenter = 23 * 0.045; // scaled 1.035 (corrected factor of 10)
-            const rCutter = 4.0 * 0.045; // scaled 0.18
-            const rBase = 25 * 0.045; // scaled 1.125
+            const twistRate = (-90 * (Math.PI / 180)) / 70;
+            const rCutterCenter = 23 * 0.045;
+            const rCutter = 4.0 * 0.045;
+            const rBase = 25 * 0.045;
             
             const zSteps = [5, 11, 17, 23, 29, 35, 41, 47, 53];
-            const rDrill = 2.0 * 0.045; // scaled 0.09
-            const maxDrillDepth = 12.0 * 0.045; // scaled 0.54
+            const rDrill = 2.0 * 0.045;
+            const maxDrillDepth = 12.0 * 0.045;
             
             for (let i = 0; i < posAttr.count; i++) {
                 const origV = origVertices[i];
                 vertex.copy(origV);
                 
-                // Map local Y coordinate (-1.35 to +1.35) to OpenSCAD Z height (0 to 60)
                 const oscadZ = (vertex.y + 1.35) * 22.222;
                 
                 let theta = Math.atan2(vertex.z, vertex.x);
@@ -966,7 +1163,6 @@
                 let r = Math.sqrt(vertex.x * vertex.x + vertex.z * vertex.z);
                 const originalR = r;
                 
-                // 1. Helical flute subtraction (6 flutes)
                 let minCarveR = originalR;
                 for (let h = 0; h < 6; h++) {
                     const thetaStart = h * (Math.PI / 3);
@@ -975,7 +1171,6 @@
                     let angleDiff = theta - thetaHelix;
                     angleDiff = Math.atan2(Math.sin(angleDiff), Math.cos(angleDiff));
                     
-                    // Solve intersecting circle boundary quadratic equation
                     const B = -2 * rCutterCenter * Math.cos(angleDiff);
                     const C = rCutterCenter * rCutterCenter - rCutter * rCutter;
                     const disc = B * B - 4 * C;
@@ -986,7 +1181,6 @@
                         const root = Math.min(root1, root2);
                         
                         if (root > 0 && root < minCarveR) {
-                            // Interpolate depth based on progress parameter
                             const targetCarveR = root;
                             const blendedR = originalR - (originalR - targetCarveR) * progress;
                             if (blendedR < minCarveR) {
@@ -998,7 +1192,6 @@
                 
                 r = minCarveR;
                 
-                // 2. Dimples subtraction
                 for (let h = 0; h < 6; h++) {
                     const thetaStart = h * (Math.PI / 3);
                     for (let j = 0; j < zSteps.length; j++) {
@@ -1031,31 +1224,30 @@
             baseGeom.computeVertexNormals();
         }
 
-        // Initialize at full carved state
         updateWorkpieceGeometry(1.0);
 
         // ----------------------------------------------------
-        // CNC Milling Tool (Features Section)
+        // CNC Milling Tool
         // ----------------------------------------------------
         const millingTool = new THREE.Group();
         
-        // Carbide endmill shaft
         const shaftGeo = new THREE.CylinderGeometry(0.12, 0.12, 2.5, 12);
         const shaftMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.9, roughness: 0.1 });
         const shaft = new THREE.Mesh(shaftGeo, shaftMat);
         shaft.position.y = 1.25;
+        shaft.castShadow = true;
 
-        // Cutter head flutes (emerald carbide coating)
         const headGeo = new THREE.CylinderGeometry(0.15, 0.15, 0.5, 8);
-        const headMat = new THREE.MeshStandardMaterial({ color: 0x10b981, emissive: 0x047857, metalness: 0.95 });
+        const headMat = new THREE.MeshStandardMaterial({ color: 0x059669, emissive: 0x047857, emissiveIntensity: 0.3, metalness: 0.95 });
         const head = new THREE.Mesh(headGeo, headMat);
         head.position.y = 0.25;
+        head.castShadow = true;
         
         millingTool.add(shaft, head);
-        millingTool.position.set(2.2, 5, 0); // start high
+        millingTool.position.set(2.2, 5, 0);
         scene.add(millingTool);
 
-        // Sparks Particles for milling cutting
+        // Sparks Particles
         const sparksCount = 100;
         const sparksGeo = new THREE.BufferGeometry();
         const sparksPos = new Float32Array(sparksCount * 3);
@@ -1076,19 +1268,18 @@
         scene.add(sparks);
 
         // ----------------------------------------------------
-        // Lathe Chuck Model (Guides Section)
+        // Lathe Chuck Model
         // ----------------------------------------------------
         const latheChuck = new THREE.Group();
-        latheChuck.position.set(0, 0, -15); // off-screen start
+        latheChuck.position.set(0, 0, -15);
 
-        const latheChuckMat = new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.9, roughness: 0.2 });
+        const latheChuckMat = new THREE.MeshStandardMaterial({ color: 0x64748b, metalness: 0.88, roughness: 0.22 });
 
-        // Chuck base body
         const chuckBase = new THREE.Mesh(new THREE.CylinderGeometry(1.6, 1.6, 0.8, 24), latheChuckMat);
         chuckBase.rotation.x = Math.PI / 2;
+        chuckBase.castShadow = true;
         latheChuck.add(chuckBase);
 
-        // Jaws (3 clamping blocks)
         const jawGeo = new THREE.BoxGeometry(0.35, 0.35, 0.45);
         const jawsGroup = new THREE.Group();
         for (let i = 0; i < 3; i++) {
@@ -1096,32 +1287,20 @@
             const angle = (i / 3) * Math.PI * 2;
             jaw.position.set(Math.cos(angle) * 0.9, Math.sin(angle) * 0.9, 0.25);
             jaw.rotation.z = angle;
+            jaw.castShadow = true;
             jawsGroup.add(jaw);
         }
         latheChuck.add(jawsGroup);
         scene.add(latheChuck);
 
-        // Drifting blueprint nodes background
-        const starsGeo = new THREE.BufferGeometry();
-        const starsCount = 500;
-        const starsPos = new Float32Array(starsCount * 3);
-        for(let i=0; i<starsCount*3; i++) {
-            starsPos[i] = (Math.random() - 0.5) * 35;
-        }
-        starsGeo.setAttribute('position', new THREE.BufferAttribute(starsPos, 3));
-        const starsMat = new THREE.PointsMaterial({ color: 0x3b82f6, size: 0.05, transparent: true, opacity: 0.4 });
-        const starsPoints = new THREE.Points(starsGeo, starsMat);
-        scene.add(starsPoints);
-
         // ----------------------------------------------------
-        // 3. GSAP ScrollTrigger Timelines (3D + text scrolling)
+        // 3. GSAP ScrollTrigger Timelines
         // ----------------------------------------------------
         gsap.registerPlugin(ScrollTrigger);
 
         const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
         if (!prefersReducedMotion) {
-            // Kinetic typography panel entry/exit transformations
             gsap.utils.toArray('section').forEach((sec) => {
                 const wrapper = sec.querySelector('.panel-wrapper');
                 const elements = wrapper.querySelectorAll('.animate-item');
@@ -1169,7 +1348,6 @@
                 });
             });
 
-            // 3D Scene transitions synced to global scroll position
             const globalTl = gsap.timeline({
                 scrollTrigger: {
                     trigger: "main",
@@ -1179,37 +1357,30 @@
                 }
             });
 
-            // Frame 1: Hero to Features (Move workpiece to milling coordinate)
             globalTl.to(workpieceGroup.position, { x: 2.2, y: 0, z: 0, ease: "power2.inOut" }, 0)
                     .to(workpieceGroup.rotation, { x: 0, y: 0, z: 0, ease: "power2.inOut" }, 0)
                     .to(millingTool.position, { y: 3.5, ease: "power2.inOut" }, 0);
 
-            // Frame 2: CNC Milling process (Descend bit, sparks fly, carve)
             globalTl.to(millingTool.position, { y: 0.75, ease: "power1.inOut" }, 0.25)
                     .to(sparksMat, { opacity: 1, ease: "none" }, 0.28)
-                    // cutter retracts
                     .to(millingTool.position, { y: 3.5, ease: "power1.inOut" }, 0.42)
                     .to(sparksMat, { opacity: 0, ease: "none" }, 0.42);
 
-            // Frame 3: Features to Technical Guides (Lathe chuck clamps workpiece)
             globalTl.to(workpieceGroup.position, { x: -1.5, y: 0.5, z: 0, ease: "power2.inOut" }, 0.5)
                     .to(workpieceGroup.rotation, { x: 0, y: 0, z: Math.PI / 2, ease: "power2.inOut" }, 0.5)
                     .to(millingTool.position, { y: 6.0, ease: "power2.inOut" }, 0.5)
                     .to(latheChuck.position, { x: 1.3, y: 0.5, z: 0, ease: "power2.inOut" }, 0.5)
                     .to(latheChuck.rotation, { x: 0, y: 0, z: Math.PI / 2, ease: "power2.inOut" }, 0.5)
-                    .to(camera.position, { y: 1.5, z: 8.5, ease: "power2.inOut" }, 0.5);
+                    .to(camera.position, { y: 1.5, z: 10.5, ease: "power2.inOut" }, 0.5);
 
-            // Frame 4: Guides to FAQ (Release chuck, return to center blueprint)
             globalTl.to(latheChuck.position, { z: -15, ease: "power2.inOut" }, 0.75)
                     .to(workpieceGroup.position, { x: 0, y: 0.5, z: 0, ease: "power2.inOut" }, 0.75)
                     .to(workpieceGroup.rotation, { x: 0.5, z: 0.2, ease: "power2.inOut" }, 0.75)
-                    .to(camera.position, { y: 0.5, z: 7.5, ease: "power2.inOut" }, 0.75);
+                    .to(camera.position, { y: 1.5, z: 10, ease: "power2.inOut" }, 0.75);
 
-            // Extra spin detail near the end
             globalTl.to(workpieceGroup.rotation, { y: Math.PI * 4, ease: "none" }, 0.8)
                     .to(gridHelper.position, { z: 12, ease: "none" }, 0.8);
         } else {
-            // Reduced motion fallbacks
             gsap.utils.toArray('.panel-wrapper').forEach(wrapper => {
                 gsap.set(wrapper, { opacity: 1, transform: "none" });
             });
@@ -1219,7 +1390,7 @@
         }
 
         // ----------------------------------------------------
-        // 4. Render and Update Frame Loop
+        // 4. Render Loop
         // ----------------------------------------------------
         const clock = new THREE.Clock();
         let lastCarveProgress = -1;
@@ -1230,7 +1401,6 @@
             const elapsedTime = clock.getElapsedTime();
             const scrollPercent = (typeof globalTl !== 'undefined' && globalTl.scrollTrigger) ? globalTl.scrollTrigger.progress : 0;
 
-            // Define dynamic carve progress mapping
             let carveProgress = 1.0;
             if (!prefersReducedMotion) {
                 if (scrollPercent < 0.25) {
@@ -1242,34 +1412,29 @@
                 }
             }
             
-            // Only update geometry if progress value changes to optimize performance
             if (carveProgress !== lastCarveProgress) {
                 updateWorkpieceGeometry(carveProgress);
                 lastCarveProgress = carveProgress;
             }
 
-            // Spinning animations
+            // Spinning
             if (scrollPercent < 0.5) {
-                // Auto spin when not in lathe chuck clamp phase
                 if (!isDragging) {
                     workpieceGroup.rotation.y = elapsedTime * 0.15;
                 }
             } else if (scrollPercent >= 0.5 && scrollPercent < 0.75) {
-                // Lathe Chuck spinning phase
                 const spinSpeed = elapsedTime * 8.0;
                 workpieceGroup.rotation.x = spinSpeed;
                 latheChuck.rotation.x = spinSpeed;
             } else {
-                // FAQ phase
                 if (!isDragging) {
                     workpieceGroup.rotation.y = elapsedTime * 0.25;
                 }
             }
 
-            // Milling tool spin
             millingTool.rotation.y = elapsedTime * 30.0;
 
-            // Animate spark particles during milling
+            // Sparks
             if (sparksMat.opacity > 0.05) {
                 const positions = sparksGeo.attributes.position.array;
                 const cutterTip = new THREE.Vector3(2.2, 0.75, 0);
@@ -1281,7 +1446,6 @@
                     
                     sparksVel[i].y -= 0.12;
 
-                    // Reset particle
                     if (positions[i*3+1] < -0.8 || Math.abs(positions[i*3] - 2.2) > 2.0) {
                         positions[i*3] = cutterTip.x;
                         positions[i*3+1] = cutterTip.y;
@@ -1296,17 +1460,26 @@
                 sparksGeo.attributes.position.needsUpdate = true;
             }
 
-            // Stars background rotation
-            starsPoints.rotation.y = elapsedTime * 0.02;
+            // Floating objects animation
+            floatingGroup.children.forEach((obj, i) => {
+                const speed = 0.3 + i * 0.05;
+                const amplitude = 0.3 + i * 0.08;
+                obj.position.y += Math.sin(elapsedTime * speed + i) * 0.002;
+                obj.rotation.x += 0.002 * (i % 2 === 0 ? 1 : -1);
+                obj.rotation.z += 0.001 * (i % 3 === 0 ? 1 : -1);
+            });
 
-            // Render Frame
+            // Dust rotation
+            dustPoints.rotation.y = elapsedTime * 0.015;
+            ambientDust.rotation.y = -elapsedTime * 0.01;
+
             renderer.render(scene, camera);
         }
 
         animateLoop();
 
         // ----------------------------------------------------
-        // 5. Interactive Click & Drag background controls
+        // 5. Interactive Drag Controls
         // ----------------------------------------------------
         let isDragging = false;
         let previousMousePosition = { x: 0, y: 0 };
@@ -1327,7 +1500,6 @@
                 y: e.clientY - previousMousePosition.y
             };
             
-            // Allow manual rotation on X & Y axis by dragging the background
             modelsContainer.rotation.y += deltaMove.x * 0.005;
             modelsContainer.rotation.x += deltaMove.y * 0.005;
             
@@ -1339,7 +1511,6 @@
             document.body.style.cursor = 'default';
         });
 
-        // Touch drag controls for mobile
         window.addEventListener('touchstart', (e) => {
             if (e.target.tagName === 'A' || e.target.tagName === 'BUTTON' || e.target.closest('.glass-panel') || e.target.closest('header')) {
                 return;
@@ -1366,7 +1537,7 @@
         });
 
         // ----------------------------------------------------
-        // 6. Interactive Cursor-Based 3D Tilt
+        // 6. 3D Tilt on Glass Panels
         // ----------------------------------------------------
         if (!prefersReducedMotion) {
             document.querySelectorAll('.glass-panel').forEach(card => {
@@ -1378,8 +1549,8 @@
                     const centerX = rect.width / 2;
                     const centerY = rect.height / 2;
                     
-                    const rotateX = ((y - centerY) / centerY) * -12;
-                    const rotateY = ((x - centerX) / centerX) * 12;
+                    const rotateX = ((y - centerY) / centerY) * -8;
+                    const rotateY = ((x - centerX) / centerX) * 8;
                     
                     gsap.to(card, {
                         rotationX: rotateX,
@@ -1402,7 +1573,7 @@
             });
         }
 
-        // Handle Window Resize
+        // Handle Resize
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
@@ -1410,11 +1581,11 @@
         });
 
         // ----------------------------------------------------
-        // 7. Interactive Turn-Mill Workpiece Model Showcase
+        // 7. Interactive Turn-Mill Workpiece (Docs Section)
         // ----------------------------------------------------
         const intCanvas = document.getElementById('interactive-workpiece-canvas');
         const intScene = new THREE.Scene();
-        intScene.background = new THREE.Color(0x0a0e1c);
+        intScene.background = new THREE.Color(0xf1f5f9);
 
         const intCamera = new THREE.PerspectiveCamera(40, intCanvas.clientWidth / intCanvas.clientHeight, 0.1, 100);
         intCamera.position.set(4, 3, 6);
@@ -1422,6 +1593,9 @@
         const intRenderer = new THREE.WebGLRenderer({ canvas: intCanvas, antialias: true });
         intRenderer.setSize(intCanvas.clientWidth, intCanvas.clientHeight);
         intRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        intRenderer.outputColorSpace = THREE.SRGBColorSpace;
+        intRenderer.toneMapping = THREE.ACESFilmicToneMapping;
+        intRenderer.toneMappingExposure = 1.3;
 
         const intControls = new THREE.OrbitControls(intCamera, intRenderer.domElement);
         intControls.enableDamping = true;
@@ -1430,46 +1604,41 @@
         intControls.minDistance = 2.5;
         intControls.target.set(0, 0, 0);
 
-        // Lights (Amplified for high-contrast visibility)
-        const intAmbient = new THREE.AmbientLight(0xffffff, 1.15);
-        intScene.add(intAmbient);
+        const intHemiLight = new THREE.HemisphereLight(0xddeeff, 0xe8e0d8, 1.0);
+        intScene.add(intHemiLight);
 
-        const intDir1 = new THREE.DirectionalLight(0xffffff, 2.8);
+        const intDir1 = new THREE.DirectionalLight(0xfff4e6, 2.4);
         intDir1.position.set(5, 8, 5);
         intScene.add(intDir1);
 
-        const intDir2 = new THREE.DirectionalLight(0x3b82f6, 2.0);
+        const intDir2 = new THREE.DirectionalLight(0xc8dcf0, 1.2);
         intDir2.position.set(-5, -3, 3);
         intScene.add(intDir2);
 
-        const intDir3 = new THREE.DirectionalLight(0x8b5cf6, 1.5);
+        const intDir3 = new THREE.DirectionalLight(0xf97316, 0.8);
         intDir3.position.set(-5, 5, 2);
         intScene.add(intDir3);
 
-        // Grid floor
-        const intGrid = new THREE.GridHelper(10, 20, 0x3b82f6, 0x1e293b);
+        const intGrid = new THREE.GridHelper(10, 20, 0xb0bec5, 0xdfe6ed);
         intGrid.position.y = -2.2;
         intScene.add(intGrid);
 
-        // Coordinate axes
         const intAxes = new THREE.AxesHelper(1.8);
         intAxes.position.set(-2.2, -2.1, -2.2);
         intScene.add(intAxes);
 
-        // Materials setup
         const intSteelMat = new THREE.MeshStandardMaterial({
-            color: 0xe2e8f0,
-            metalness: 0.95,
+            color: 0xd4d8dc,
+            metalness: 0.92,
             roughness: 0.18
         });
 
         const intCollarMat = new THREE.MeshStandardMaterial({
-            color: 0x2563eb,
-            metalness: 0.9,
-            roughness: 0.15
+            color: 0xf97316,
+            metalness: 0.85,
+            roughness: 0.2
         });
 
-        // Alternates
         const intBrassMat = new THREE.MeshStandardMaterial({
             color: 0xd97706,
             metalness: 0.95,
@@ -1482,17 +1651,14 @@
             roughness: 0.16
         });
 
-        // Current active materials
         let activeMetalMat = intSteelMat;
         let activeCollarMat = intCollarMat;
 
-        // Group container rotated horizontal like in lathe/image
         const intWorkpieceGroup = new THREE.Group();
-        intWorkpieceGroup.rotation.z = Math.PI / 2; // Horizontal alignment
-        intWorkpieceGroup.position.x = -0.5; // Centered
+        intWorkpieceGroup.rotation.z = Math.PI / 2;
+        intWorkpieceGroup.position.x = -0.5;
         intScene.add(intWorkpieceGroup);
 
-        // Geometries
         const intRadialSegments = 120;
         const intHeightSegments = 100;
         const scaleVal = 0.035;
@@ -1508,66 +1674,58 @@
 
         const intLeftMesh = new THREE.Mesh(intBaseGeom, activeMetalMat);
         intLeftMesh.position.y = -30 * scaleVal;
+        intLeftMesh.castShadow = true;
         intWorkpieceGroup.add(intLeftMesh);
 
-        // Middle connecting axle: h=10, r=18
         const intAxleMesh = new THREE.Mesh(new THREE.CylinderGeometry(18 * scaleVal, 18 * scaleVal, 10 * scaleVal, 32), activeMetalMat);
         intAxleMesh.position.y = 5 * scaleVal;
         intWorkpieceGroup.add(intAxleMesh);
 
-        // Right collar body: h=25, r=24
         const intCollar1Mesh = new THREE.Mesh(new THREE.CylinderGeometry(24 * scaleVal, 24 * scaleVal, 25 * scaleVal, 32), activeCollarMat);
         intCollar1Mesh.position.y = 22.5 * scaleVal;
         intWorkpieceGroup.add(intCollar1Mesh);
 
-        // Stepped reduction: h=20, r=22
         const intCollar2Mesh = new THREE.Mesh(new THREE.CylinderGeometry(22 * scaleVal, 22 * scaleVal, 20 * scaleVal, 32), activeCollarMat);
         intCollar2Mesh.position.y = 45 * scaleVal;
         intWorkpieceGroup.add(intCollar2Mesh);
 
-        // End Flange: h=5, r=26
         const intFlangeMesh = new THREE.Mesh(new THREE.CylinderGeometry(26 * scaleVal, 26 * scaleVal, 5 * scaleVal, 32), activeCollarMat);
         intFlangeMesh.position.y = 57.5 * scaleVal;
         intWorkpieceGroup.add(intFlangeMesh);
 
-        // Tailstock interface: h=8, r=16
         const intTailMesh = new THREE.Mesh(new THREE.CylinderGeometry(16 * scaleVal, 16 * scaleVal, 8 * scaleVal, 32), activeMetalMat);
         intTailMesh.position.y = 64 * scaleVal;
         intWorkpieceGroup.add(intTailMesh);
 
-        // Dimension lines group
         const dimsGroup = new THREE.Group();
         intWorkpieceGroup.add(dimsGroup);
 
-        // Function to create dimension line helper
         function createDimLine(pStart, pEnd, labelText) {
             const dimLineGroup = new THREE.Group();
             
-            const lineMat = new THREE.LineBasicMaterial({ color: 0x60a5fa, transparent: true, opacity: 0.6 });
+            const lineMat = new THREE.LineBasicMaterial({ color: 0xf97316, transparent: true, opacity: 0.7 });
             const lineGeo = new THREE.BufferGeometry().setFromPoints([pStart, pEnd]);
             const line = new THREE.Line(lineGeo, lineMat);
             dimLineGroup.add(line);
             
-            // Tic marks
             const dir = new THREE.Vector3().subVectors(pEnd, pStart).normalize();
             const perp = new THREE.Vector3(-dir.y, dir.x, 0).multiplyScalar(0.08);
             
-            const ticMat = new THREE.LineBasicMaterial({ color: 0x60a5fa, transparent: true, opacity: 0.6 });
+            const ticMat = new THREE.LineBasicMaterial({ color: 0xf97316, transparent: true, opacity: 0.7 });
             const tic1 = new THREE.Line(new THREE.BufferGeometry().setFromPoints([pStart.clone().add(perp), pStart.clone().sub(perp)]), ticMat);
             const tic2 = new THREE.Line(new THREE.BufferGeometry().setFromPoints([pEnd.clone().add(perp), pEnd.clone().sub(perp)]), ticMat);
             dimLineGroup.add(tic1, tic2);
 
-            // Text label billboard
-            const canvas = document.createElement('canvas');
-            canvas.width = 64; canvas.height = 32;
-            const ctx = canvas.getContext('2d');
-            ctx.fillStyle = '#60a5fa';
+            const cvs = document.createElement('canvas');
+            cvs.width = 64; cvs.height = 32;
+            const ctx = cvs.getContext('2d');
+            ctx.fillStyle = '#f97316';
             ctx.font = 'bold 16px sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillText(labelText, 32, 16);
             
-            const tex = new THREE.CanvasTexture(canvas);
+            const tex = new THREE.CanvasTexture(cvs);
             const spriteMat = new THREE.SpriteMaterial({ map: tex, transparent: true, opacity: 0.85 });
             const sprite = new THREE.Sprite(spriteMat);
             sprite.scale.set(0.6, 0.3, 1);
@@ -1577,14 +1735,12 @@
             return dimLineGroup;
         }
 
-        // Add key blueprint dimensions
         dimsGroup.add(createDimLine(new THREE.Vector3(1.3, -60 * scaleVal, 0), new THREE.Vector3(1.3, 0, 0), "h60"));
         dimsGroup.add(createDimLine(new THREE.Vector3(1.3, 0, 0), new THREE.Vector3(1.3, 10 * scaleVal, 0), "h10"));
         dimsGroup.add(createDimLine(new THREE.Vector3(1.3, 10 * scaleVal, 0), new THREE.Vector3(1.3, 68 * scaleVal, 0), "h58"));
         dimsGroup.add(createDimLine(new THREE.Vector3(0, -62 * scaleVal, 0), new THREE.Vector3(25 * scaleVal, -62 * scaleVal, 0), "R25"));
         dimsGroup.add(createDimLine(new THREE.Vector3(0, 69 * scaleVal, 0), new THREE.Vector3(16 * scaleVal, 69 * scaleVal, 0), "R16"));
 
-        // Interactive Carving Logic
         function updateIntWorkpieceGeometry(progress) {
             const twistRate = (-90 * (Math.PI / 180)) / 70;
             const rCutterCenter = 23 * scaleVal;
@@ -1668,20 +1824,17 @@
             intBaseGeom.computeVertexNormals();
         }
 
-        // Initialize at 100% carved state
         updateIntWorkpieceGeometry(1.0);
 
-        // Tool bit in interactive viewport
         const intCutterTool = new THREE.Group();
         const intShaft = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 1.8, 12), new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.9, roughness: 0.1 }));
         intShaft.position.y = 0.9;
-        const intCutterHead = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.3, 8), new THREE.MeshStandardMaterial({ color: 0x10b981, emissive: 0x047857, metalness: 0.95 }));
+        const intCutterHead = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.3, 8), new THREE.MeshStandardMaterial({ color: 0x059669, emissive: 0x047857, metalness: 0.95 }));
         intCutterHead.position.y = 0.15;
         intCutterTool.add(intShaft, intCutterHead);
         intCutterTool.position.set(0, (23 - 4) * scaleVal + 0.15, 0);
         intWorkpieceGroup.add(intCutterTool);
 
-        // Interactive Sparks Emitter
         const intSparksCount = 40;
         const intSparksGeo = new THREE.BufferGeometry();
         const intSparksPos = new Float32Array(intSparksCount * 3);
@@ -1695,7 +1848,6 @@
         const intSparksPoints = new THREE.Points(intSparksGeo, intSparksMat);
         intWorkpieceGroup.add(intSparksPoints);
 
-        // Controls binding
         let simPlaying = false;
         let simProgress = 1.0;
         let playDirection = 1;
@@ -1706,18 +1858,17 @@
         playBtn.onclick = () => {
             simPlaying = !simPlaying;
             playBtn.textContent = simPlaying ? '⏸' : '▶';
-            playBtn.style.background = simPlaying ? '#ef4444' : 'var(--primary)';
+            playBtn.style.background = simPlaying ? '#ef4444' : 'var(--accent)';
         };
 
         slider.oninput = (e) => {
             simPlaying = false;
             playBtn.textContent = '▶';
-            playBtn.style.background = 'var(--primary)';
+            playBtn.style.background = 'var(--accent)';
             simProgress = e.target.value / 100;
             updateIntWorkpieceGeometry(simProgress);
         };
 
-        // Material selections
         const btnMatDefault = document.getElementById('btn-mat-default');
         const btnMatBrass = document.getElementById('btn-mat-brass');
         const btnMatCopper = document.getElementById('btn-mat-copper');
@@ -1728,7 +1879,7 @@
                 b.style.background = 'transparent';
             });
             activeBtn.classList.add('active');
-            activeBtn.style.background = 'var(--primary)';
+            activeBtn.style.background = 'var(--accent)';
             
             activeMetalMat = metalMat;
             activeCollarMat = collarMat;
@@ -1746,7 +1897,6 @@
         btnMatBrass.onclick = () => setMaterials(intBrassMat, intBrassMat, btnMatBrass);
         btnMatCopper.onclick = () => setMaterials(intCopperMat, intCopperMat, btnMatCopper);
 
-        // Shading Modes
         const btnShadeSolid = document.getElementById('btn-shade-solid');
         const btnShadeWire = document.getElementById('btn-shade-wire');
         const btnShadeXray = document.getElementById('btn-shade-xray');
@@ -1757,7 +1907,7 @@
                 b.style.background = 'transparent';
             });
             activeBtn.classList.add('active');
-            activeBtn.style.background = 'var(--primary)';
+            activeBtn.style.background = 'var(--accent)';
 
             const meshes = [intLeftMesh, intAxleMesh, intCollar1Mesh, intCollar2Mesh, intFlangeMesh, intTailMesh];
 
@@ -1786,25 +1936,23 @@
         btnShadeWire.onclick = () => setShading('wire', btnShadeWire);
         btnShadeXray.onclick = () => setShading('xray', btnShadeXray);
 
-        // Toggles
         const btnToggleDims = document.getElementById('btn-toggle-dims');
         const btnToggleGrid = document.getElementById('btn-toggle-grid');
 
         btnToggleDims.onclick = () => {
             dimsGroup.visible = !dimsGroup.visible;
             btnToggleDims.classList.toggle('active', dimsGroup.visible);
-            btnToggleDims.style.background = dimsGroup.visible ? 'rgba(59,130,246,0.2)' : 'transparent';
-            btnToggleDims.style.borderColor = dimsGroup.visible ? 'var(--primary)' : 'rgba(255,255,255,0.15)';
+            btnToggleDims.style.background = dimsGroup.visible ? 'var(--accent-light)' : 'transparent';
+            btnToggleDims.style.borderColor = dimsGroup.visible ? 'var(--accent)' : 'var(--border)';
         };
 
         btnToggleGrid.onclick = () => {
             intGrid.visible = !intGrid.visible;
             btnToggleGrid.classList.toggle('active', intGrid.visible);
-            btnToggleGrid.style.background = intGrid.visible ? 'rgba(59,130,246,0.2)' : 'transparent';
-            btnToggleGrid.style.borderColor = intGrid.visible ? 'var(--primary)' : 'rgba(255,255,255,0.15)';
+            btnToggleGrid.style.background = intGrid.visible ? 'var(--accent-light)' : 'transparent';
+            btnToggleGrid.style.borderColor = intGrid.visible ? 'var(--accent)' : 'var(--border)';
         };
 
-        // Render Frame Loop for Interactive Viewport
         const intClock = new THREE.Clock();
         function intAnimate() {
             requestAnimationFrame(intAnimate);
