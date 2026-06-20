@@ -969,6 +969,38 @@
         const modelsContainer = new THREE.Group();
         scene.add(modelsContainer);
 
+        // ----------------------------------------------------
+        // 3D Background Plane with 3D Parallax & Dynamic Shadows
+        // ----------------------------------------------------
+        const bgTexture = new THREE.TextureLoader().load('images/cnc_machine_bg.png', () => {
+            const cssBg = document.getElementById('bg-image');
+            if (cssBg) cssBg.style.display = 'none';
+        });
+        bgTexture.minFilter = THREE.LinearFilter;
+
+        const bgGeometry = new THREE.PlaneGeometry(1, 1);
+        const bgMaterial = new THREE.MeshStandardMaterial({
+            map: bgTexture,
+            roughness: 0.95,
+            metalness: 0.05,
+            depthWrite: false,
+            fog: false,
+            color: 0xdddddd
+        });
+        const bgMesh = new THREE.Mesh(bgGeometry, bgMaterial);
+        bgMesh.position.set(0, 0, -12); // Place far back behind models
+        bgMesh.receiveShadow = true;
+        scene.add(bgMesh);
+
+        function updateBgSize() {
+            if (!bgMesh || !camera) return;
+            const distance = camera.position.z - bgMesh.position.z;
+            const vFov = (camera.fov * Math.PI) / 180;
+            const planeHeight = 2 * distance * Math.tan(vFov / 2);
+            const planeWidth = planeHeight * camera.aspect;
+            bgMesh.scale.set(planeWidth, planeHeight, 1);
+        }
+
         // Materials — Bright Industrial Metals
         const steelMaterial = new THREE.MeshStandardMaterial({ 
             color: 0xd4d8dc,
@@ -1464,6 +1496,12 @@
             dustPoints.rotation.y = elapsedTime * 0.015;
             ambientDust.rotation.y = -elapsedTime * 0.01;
 
+            // Parallax movement for 3D background plane
+            if (bgMesh) {
+                bgMesh.rotation.y = modelsContainer.rotation.y * 0.08;
+                bgMesh.rotation.x = modelsContainer.rotation.x * 0.08;
+            }
+
             renderer.render(scene, camera);
         }
 
@@ -1569,7 +1607,9 @@
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
+            updateBgSize();
         });
+        updateBgSize();
 
         // ----------------------------------------------------
         // 7. Interactive Turn-Mill Workpiece (Docs Section)
