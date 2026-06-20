@@ -97,7 +97,7 @@
 
         body {
             font-family: var(--font-body);
-            background-color: var(--bg);
+            background-color: transparent;
             color: var(--text);
             line-height: 1.65;
             overflow-x: hidden;
@@ -979,17 +979,13 @@
         bgTexture.minFilter = THREE.LinearFilter;
 
         const bgGeometry = new THREE.PlaneGeometry(1, 1);
-        const bgMaterial = new THREE.MeshStandardMaterial({
+        const bgMaterial = new THREE.MeshBasicMaterial({
             map: bgTexture,
-            roughness: 0.95,
-            metalness: 0.05,
             depthWrite: false,
-            fog: false,
-            color: 0xdddddd
+            color: 0xffffff
         });
         const bgMesh = new THREE.Mesh(bgGeometry, bgMaterial);
         bgMesh.position.set(0, 0, -12); // Place far back behind models
-        bgMesh.receiveShadow = true;
         scene.add(bgMesh);
 
         function updateBgSize() {
