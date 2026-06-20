@@ -58,6 +58,7 @@
     
     <!-- CDNs for WebGL, GSAP, and Lenis -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
@@ -65,7 +66,7 @@
     <style>
         :root {
             /* WCAG & Contrast Optimization Variables */
-            --bg: #070a13; /* Slate dark blue instead of black to mitigate astigmatism halation */
+            --bg: #070a13; /* Slate dark blue to mitigate astigmatism halation */
             --card-bg: rgba(10, 14, 28, 0.88); /* Higher opacity glassmorphism for contrast */
             --border: rgba(99, 102, 241, 0.3); /* High contrast border lines */
             --primary: #3b82f6;
@@ -90,7 +91,7 @@
             font-family: var(--font-body);
             background: transparent;
             color: var(--text);
-            line-height: 1.65; /* Slightly increased line spacing for dark mode readability */
+            line-height: 1.65; /* Increased line spacing for dark mode readability */
             overflow-x: hidden;
         }
 
@@ -420,13 +421,37 @@
                 transition-duration: 0s !important;
                 scroll-behavior: auto !important;
             }
-            .panel-wrapper {
+            .panel-wrapper, .glass-panel {
                 opacity: 1 !important;
                 transform: none !important;
             }
             .animate-item {
                 transform: none !important;
             }
+        }
+
+        /* Interactive instruction tooltip for 3D model */
+        #model-tooltip {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(10, 14, 28, 0.9);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 8px 20px;
+            font-size: 0.85rem;
+            font-family: var(--font-headings);
+            font-weight: 700;
+            color: #3b82f6;
+            letter-spacing: 0.5px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            z-index: 10;
+            pointer-events: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
         }
 
         /* Footer */
@@ -467,6 +492,9 @@
     
     <!-- Dark Vignette contrast overlay -->
     <div id="webgl-overlay"></div>
+
+    <!-- 3D Interactive Tooltip -->
+    <div id="model-tooltip">🖱️ Click & Drag anywhere on background to rotate 3D workpiece</div>
 
     <header>
         <div class="container header-content">
@@ -558,9 +586,46 @@
                             </div>
                         </div>
                         <div class="doc-visual-block">
-                            <div class="image-mockup">
-                                <img src="images/cnc_milling_4d.png" alt="CNC 5-axis milling machine cutter processing steel component with 4D blueprint simulation" class="realistic-img">
-                                <div class="image-caption">Realistic 4D CNC Milling Process</div>
+                            <div class="image-mockup interactive-viewer-container" style="height: 420px; position: relative; overflow: hidden; background: rgba(5, 7, 15, 0.95); border: 1px solid var(--border); border-radius: 14px;">
+                                <canvas id="interactive-workpiece-canvas" style="width: 100%; height: 100%; display: block; outline: none;"></canvas>
+                                
+                                <!-- HUD Overlay controls -->
+                                <div class="hud-top" style="position: absolute; top: 12px; left: 12px; font-family: var(--font-headings); font-size: 0.8rem; font-weight: 700; color: #60a5fa; text-shadow: 0 2px 4px rgba(0,0,0,0.8); background: rgba(10,14,28,0.75); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(99,102,241,0.25);">
+                                    WORKPIECE INTERACTIVE CAD VIEW
+                                </div>
+                                
+                                <div class="hud-controls" style="position: absolute; top: 12px; right: 12px; display: flex; flex-direction: column; gap: 8px; z-index: 10;">
+                                    <!-- Shading Mode Group -->
+                                    <div style="background: rgba(10, 14, 28, 0.85); border: 1px solid var(--border); border-radius: 6px; padding: 4px; display: flex; flex-direction: column; gap: 4px;">
+                                        <div style="font-size: 8px; font-family: var(--font-headings); font-weight: 900; color: #8b93a1; text-align: center; text-transform: uppercase; margin-bottom: 2px;">Shading</div>
+                                        <button id="btn-shade-solid" class="hud-btn active" title="Solid Shading" style="background: var(--primary); border: none; color: #fff; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; transition: all 0.2s;">Solid</button>
+                                        <button id="btn-shade-wire" class="hud-btn" title="Wireframe Blueprint" style="background: transparent; border: 1px solid rgba(255,255,255,0.15); color: #a5b4fc; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; transition: all 0.2s;">Wire</button>
+                                        <button id="btn-shade-xray" class="hud-btn" title="X-Ray Glass" style="background: transparent; border: 1px solid rgba(255,255,255,0.15); color: #a5b4fc; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; transition: all 0.2s;">Glass</button>
+                                    </div>
+
+                                    <!-- Material Selection Group -->
+                                    <div style="background: rgba(10, 14, 28, 0.85); border: 1px solid var(--border); border-radius: 6px; padding: 4px; display: flex; flex-direction: column; gap: 4px;">
+                                        <div style="font-size: 8px; font-family: var(--font-headings); font-weight: 900; color: #8b93a1; text-align: center; text-transform: uppercase; margin-bottom: 2px;">Finish</div>
+                                        <button id="btn-mat-default" class="hud-btn active" title="Steel & Blue Anodized" style="background: var(--primary); border: none; color: #fff; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 10px; font-weight: bold; transition: all 0.2s;">Steel/Blue</button>
+                                        <button id="btn-mat-brass" class="hud-btn" title="Industrial Brass" style="background: transparent; border: 1px solid rgba(255,255,255,0.15); color: #fbbf24; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 10px; font-weight: bold; transition: all 0.2s;">Brass</button>
+                                        <button id="btn-mat-copper" class="hud-btn" title="Brushed Copper" style="background: transparent; border: 1px solid rgba(255,255,255,0.15); color: #f97316; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 10px; font-weight: bold; transition: all 0.2s;">Copper</button>
+                                    </div>
+                                </div>
+
+                                <div class="hud-bottom-bar" style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(7, 10, 19, 0.95); border-top: 1px solid var(--border); padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; z-index: 10; flex-wrap: wrap; gap: 8px;">
+                                    <!-- Carving Simulation Playback -->
+                                    <div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 200px;">
+                                        <button id="btn-sim-play" style="background: var(--primary); border: none; color: white; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 12px; transition: background 0.3s; flex-shrink: 0;">▶</button>
+                                        <span style="font-family: var(--font-headings); font-size: 10px; font-weight: 700; color: #fff; flex-shrink: 0;">Carving:</span>
+                                        <input id="slider-carve-progress" type="range" min="0" max="100" value="100" style="flex: 1; height: 4px; background: #1e293b; border-radius: 2px; outline: none; cursor: pointer; -webkit-appearance: none;">
+                                    </div>
+                                    
+                                    <!-- Toggle overlays -->
+                                    <div style="display: flex; gap: 6px;">
+                                        <button id="btn-toggle-dims" class="hud-toggle active" title="Toggle Dimension Lines" style="background: rgba(59,130,246,0.2); border: 1px solid var(--primary); color: #60a5fa; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 10px; font-family: var(--font-headings); font-weight: 700; transition: all 0.2s;">📐 Dims</button>
+                                        <button id="btn-toggle-grid" class="hud-toggle active" title="Toggle Grid Floor" style="background: rgba(59,130,246,0.2); border: 1px solid var(--primary); color: #60a5fa; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 10px; font-family: var(--font-headings); font-weight: 700; transition: all 0.2s;">🕸️ Grid</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -671,7 +736,7 @@
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
         // Lights
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.55);
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
         scene.add(ambientLight);
 
         const dirLight1 = new THREE.DirectionalLight(0x3b82f6, 1.8);
@@ -695,126 +760,186 @@
         const modelsContainer = new THREE.Group();
         scene.add(modelsContainer);
 
-        // ----------------------------------------------------
-        // MODEL A: Planetary Gear CAD Assembly (Hero)
-        // ----------------------------------------------------
-        const gearAssembly = new THREE.Group();
-        gearAssembly.position.set(0, 0, 0);
-
-        const metalMat = new THREE.MeshStandardMaterial({ 
-            color: 0x1e3a8a, 
-            roughness: 0.15, 
-            metalness: 0.95,
+        // Materials
+        const steelMaterial = new THREE.MeshStandardMaterial({ 
+            color: 0xe2e8f0, // bright steel
+            metalness: 0.95, 
+            roughness: 0.15,
             transparent: true,
-            opacity: 0.9
+            opacity: 0.95
         });
-        const gearWireMat = new THREE.MeshBasicMaterial({ color: 0x60a5fa, wireframe: true });
+        
+        const collarMaterial = new THREE.MeshStandardMaterial({ 
+            color: 0x2563eb, // blue anodized
+            metalness: 0.95, 
+            roughness: 0.12,
+            transparent: true,
+            opacity: 0.95
+        });
 
-        // Outer Ring
-        const ringGeo = new THREE.TorusGeometry(2.3, 0.15, 12, 48);
-        const ringMesh = new THREE.Mesh(ringGeo, metalMat);
-        const ringWire = new THREE.Mesh(ringGeo, gearWireMat);
-        gearAssembly.add(ringMesh, ringWire);
-
-        // Central Sun Gear
-        const sunGeo = new THREE.CylinderGeometry(0.65, 0.65, 0.4, 24);
-        const sunMesh = new THREE.Mesh(sunGeo, metalMat);
-        const sunWire = new THREE.Mesh(sunGeo, gearWireMat);
-        sunMesh.rotation.x = Math.PI / 2;
-        sunWire.rotation.x = Math.PI / 2;
-        gearAssembly.add(sunMesh, sunWire);
-
-        // 3 Planets
-        const planetGeo = new THREE.CylinderGeometry(0.45, 0.45, 0.35, 16);
-        const planetPositions = [];
-        const planetMeshes = [];
-        for (let i = 0; i < 3; i++) {
-            const planet = new THREE.Group();
-            const pm = new THREE.Mesh(planetGeo, metalMat);
-            const pw = new THREE.Mesh(planetGeo, gearWireMat);
-            pm.rotation.x = Math.PI / 2;
-            pw.rotation.x = Math.PI / 2;
-            planet.add(pm, pw);
-
-            const angle = (i / 3) * Math.PI * 2;
-            planet.position.set(Math.cos(angle) * 1.45, Math.sin(angle) * 1.45, 0);
-            gearAssembly.add(planet);
-            planetMeshes.push(planet);
-            planetPositions.push(angle);
+        // ----------------------------------------------------
+        // BUILD PROCEDURAL WORKPIECE MODEL (From OpenSCAD Script)
+        // ----------------------------------------------------
+        const workpieceGroup = new THREE.Group();
+        
+        // Left cylinder: height 2.7, radius 1.125
+        const radialSegments = 120;
+        const heightSegments = 100;
+        const baseGeom = new THREE.CylinderGeometry(1.125, 1.125, 2.7, radialSegments, heightSegments, false);
+        
+        const posAttr = baseGeom.attributes.position;
+        const origVertices = [];
+        const vertex = new THREE.Vector3();
+        for (let i = 0; i < posAttr.count; i++) {
+            vertex.fromBufferAttribute(posAttr, i);
+            origVertices.push(vertex.clone());
         }
 
-        // Bounding dimension lines for CAD look
-        const boxHelper = new THREE.BoxHelper(ringMesh, 0x3b82f6);
-        boxHelper.scale.set(1.1, 1.1, 1.1);
-        gearAssembly.add(boxHelper);
+        const leftMesh = new THREE.Mesh(baseGeom, steelMaterial);
+        leftMesh.position.y = -1.53; // Centered stack Y coord
+        workpieceGroup.add(leftMesh);
 
-        modelsContainer.add(gearAssembly);
+        // Middle connecting axle: h = 0.45, r = 0.81
+        const axleMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.81, 0.81, 0.45, 32), steelMaterial);
+        axleMesh.position.y = 0.045;
+        workpieceGroup.add(axleMesh);
+
+        // Right collar body: h = 1.125, r = 1.08
+        const collar1Mesh = new THREE.Mesh(new THREE.CylinderGeometry(1.08, 1.08, 1.125, 32), collarMaterial);
+        collar1Mesh.position.y = 0.8325;
+        workpieceGroup.add(collar1Mesh);
+
+        // Stepped reduction: h = 0.9, r = 0.99
+        const collar2Mesh = new THREE.Mesh(new THREE.CylinderGeometry(0.99, 0.99, 0.9, 32), collarMaterial);
+        collar2Mesh.position.y = 1.845;
+        workpieceGroup.add(collar2Mesh);
+
+        // End Flange: h = 0.225, r = 1.17
+        const flangeMesh = new THREE.Mesh(new THREE.CylinderGeometry(1.17, 1.17, 0.225, 32), collarMaterial);
+        flangeMesh.position.y = 2.4075;
+        workpieceGroup.add(flangeMesh);
+
+        // Tailstock interface insert: h = 0.36, r = 0.72
+        const tailMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.72, 0.72, 0.36, 32), steelMaterial);
+        tailMesh.position.y = 2.7;
+        workpieceGroup.add(tailMesh);
+
+        modelsContainer.add(workpieceGroup);
+
+        // Workpiece Carving update logic
+        function updateWorkpieceGeometry(progress) {
+            const twistRate = (-90 * (Math.PI / 180)) / 70; // rad per unit height
+            const rCutterCenter = 23 * 0.045; // scaled 1.035 (corrected factor of 10)
+            const rCutter = 4.0 * 0.045; // scaled 0.18
+            const rBase = 25 * 0.045; // scaled 1.125
+            
+            const zSteps = [5, 11, 17, 23, 29, 35, 41, 47, 53];
+            const rDrill = 2.0 * 0.045; // scaled 0.09
+            const maxDrillDepth = 12.0 * 0.045; // scaled 0.54
+            
+            for (let i = 0; i < posAttr.count; i++) {
+                const origV = origVertices[i];
+                vertex.copy(origV);
+                
+                // Map local Y coordinate (-1.35 to +1.35) to OpenSCAD Z height (0 to 60)
+                const oscadZ = (vertex.y + 1.35) * 22.222;
+                
+                let theta = Math.atan2(vertex.z, vertex.x);
+                if (theta < 0) theta += Math.PI * 2;
+                
+                let r = Math.sqrt(vertex.x * vertex.x + vertex.z * vertex.z);
+                const originalR = r;
+                
+                // 1. Helical flute subtraction (6 flutes)
+                let minCarveR = originalR;
+                for (let h = 0; h < 6; h++) {
+                    const thetaStart = h * (Math.PI / 3);
+                    const thetaHelix = thetaStart + oscadZ * twistRate;
+                    
+                    let angleDiff = theta - thetaHelix;
+                    angleDiff = Math.atan2(Math.sin(angleDiff), Math.cos(angleDiff));
+                    
+                    // Solve intersecting circle boundary quadratic equation
+                    const B = -2 * rCutterCenter * Math.cos(angleDiff);
+                    const C = rCutterCenter * rCutterCenter - rCutter * rCutter;
+                    const disc = B * B - 4 * C;
+                    
+                    if (disc >= 0) {
+                        const root1 = (-B - Math.sqrt(disc)) / 2;
+                        const root2 = (-B + Math.sqrt(disc)) / 2;
+                        const root = Math.min(root1, root2);
+                        
+                        if (root > 0 && root < minCarveR) {
+                            // Interpolate depth based on progress parameter
+                            const targetCarveR = root;
+                            const blendedR = originalR - (originalR - targetCarveR) * progress;
+                            if (blendedR < minCarveR) {
+                                minCarveR = blendedR;
+                            }
+                        }
+                    }
+                }
+                
+                r = minCarveR;
+                
+                // 2. Dimples subtraction
+                for (let h = 0; h < 6; h++) {
+                    const thetaStart = h * (Math.PI / 3);
+                    for (let j = 0; j < zSteps.length; j++) {
+                        const zStep = zSteps[j];
+                        const thetaDimple = thetaStart - (zStep * 1.5) * (Math.PI / 180);
+                        
+                        const dZ = oscadZ - zStep;
+                        let dTheta = theta - thetaDimple;
+                        dTheta = Math.atan2(Math.sin(dTheta), Math.cos(dTheta));
+                        const dArc = originalR * dTheta;
+                        
+                        const distToDrillAxis = Math.sqrt(dZ * dZ + dArc * dArc * 100) / 10;
+                        
+                        if (distToDrillAxis < rDrill) {
+                            const currentDrillDepth = maxDrillDepth * progress;
+                            const innerLimit = rBase - currentDrillDepth;
+                            if (r > innerLimit) {
+                                r = innerLimit;
+                            }
+                        }
+                    }
+                }
+                
+                vertex.x = r * Math.cos(theta);
+                vertex.z = r * Math.sin(theta);
+                posAttr.setXYZ(i, vertex.x, vertex.y, vertex.z);
+            }
+            
+            posAttr.needsUpdate = true;
+            baseGeom.computeVertexNormals();
+        }
+
+        // Initialize at full carved state
+        updateWorkpieceGeometry(1.0);
 
         // ----------------------------------------------------
-        // MODEL B: CNC Milling & Toolpath (Features)
+        // CNC Milling Tool (Features Section)
         // ----------------------------------------------------
-        const cncMilling = new THREE.Group();
-        cncMilling.position.set(15, 0, 0); // off-screen start
-
-        // Base Workpiece Block
-        const workGeo = new THREE.BoxGeometry(3.6, 1.5, 3.6);
-        const workMat = new THREE.MeshStandardMaterial({ 
-            color: 0x4f46e5, 
-            metalness: 0.9, 
-            roughness: 0.25, 
-            transparent: true,
-            opacity: 0.8
-        });
-        const workWireMat = new THREE.MeshBasicMaterial({ color: 0x818cf8, wireframe: true });
-        const workMesh = new THREE.Mesh(workGeo, workMat);
-        const workWire = new THREE.Mesh(workGeo, workWireMat);
-        cncMilling.add(workMesh, workWire);
-
-        // Glowing pocket cut surface
-        const pocketGeo = new THREE.CylinderGeometry(0.8, 0.8, 0.7, 24);
-        const pocketMat = new THREE.MeshStandardMaterial({ 
-            color: 0xff4500, 
-            emissive: 0xff3300, 
-            roughness: 0.2,
-            metalness: 0.8
-        });
-        const pocketMesh = new THREE.Mesh(pocketGeo, pocketMat);
-        pocketMesh.position.y = 0.41; // Top of the block, slightly recessed
-        pocketMesh.scale.y = 0.001; // Starts flat (uncut)
-        cncMilling.add(pocketMesh);
-
-        // Milling Cutter Tool
-        const cutter = new THREE.Group();
+        const millingTool = new THREE.Group();
+        
+        // Carbide endmill shaft
         const shaftGeo = new THREE.CylinderGeometry(0.12, 0.12, 2.5, 12);
         const shaftMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.9, roughness: 0.1 });
         const shaft = new THREE.Mesh(shaftGeo, shaftMat);
         shaft.position.y = 1.25;
 
-        // Cutter head flutes
+        // Cutter head flutes (emerald carbide coating)
         const headGeo = new THREE.CylinderGeometry(0.15, 0.15, 0.5, 8);
         const headMat = new THREE.MeshStandardMaterial({ color: 0x10b981, emissive: 0x047857, metalness: 0.95 });
         const head = new THREE.Mesh(headGeo, headMat);
         head.position.y = 0.25;
-        cutter.add(shaft, head);
-        cutter.position.set(0, 3.5, 0); // starts high above
-        cncMilling.add(cutter);
+        
+        millingTool.add(shaft, head);
+        millingTool.position.set(2.2, 5, 0); // start high
+        scene.add(millingTool);
 
-        // Toolpath trajectory line (CAD blue guide line)
-        const pathPoints = [];
-        for (let i = 0; i <= 100; i++) {
-            const t = i / 100;
-            const angle = t * Math.PI * 12;
-            const r = 0.8 * (1 - t * 0.15);
-            const h = 0.75 - t * 0.75;
-            pathPoints.push(new THREE.Vector3(Math.cos(angle) * r, h, Math.sin(angle) * r));
-        }
-        const pathGeo = new THREE.BufferGeometry().setFromPoints(pathPoints);
-        const pathMat = new THREE.LineBasicMaterial({ color: 0x06b6d4, linewidth: 2 });
-        const toolpathLine = new THREE.Line(pathGeo, pathMat);
-        toolpathLine.position.y = 0.75;
-        cncMilling.add(toolpathLine);
-
-        // Machining Sparks Emitter
+        // Sparks Particles for milling cutting
         const sparksCount = 100;
         const sparksGeo = new THREE.BufferGeometry();
         const sparksPos = new Float32Array(sparksCount * 3);
@@ -832,79 +957,20 @@
         sparksGeo.setAttribute('position', new THREE.BufferAttribute(sparksPos, 3));
         const sparksMat = new THREE.PointsMaterial({ color: 0xff6a00, size: 0.08, transparent: true, opacity: 0 });
         const sparks = new THREE.Points(sparksGeo, sparksMat);
-        cncMilling.add(sparks);
-
-        modelsContainer.add(cncMilling);
+        scene.add(sparks);
 
         // ----------------------------------------------------
-        // MODEL C: Mechanical Crankshaft System (Guides)
+        // Lathe Chuck Model (Guides Section)
         // ----------------------------------------------------
-        const crankshaftSystem = new THREE.Group();
-        crankshaftSystem.position.set(0, -15, 0); // off-screen start
-
-        const crankMat = new THREE.MeshStandardMaterial({ color: 0x3b82f6, metalness: 0.9, roughness: 0.2 });
-        const rodMat = new THREE.MeshStandardMaterial({ color: 0x8b5cf6, metalness: 0.95, roughness: 0.15 });
-        const pistonMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, metalness: 0.8, roughness: 0.3 });
-        const guideWireMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff, wireframe: true });
-
-        // Engine cylinder sleeve (wireframe guide)
-        const sleeveGeo = new THREE.CylinderGeometry(0.9, 0.9, 3.5, 12, 1, true);
-        const sleeve = new THREE.Mesh(sleeveGeo, guideWireMat);
-        sleeve.position.y = 1.8;
-        crankshaftSystem.add(sleeve);
-
-        // Crank Web (balance weight)
-        const webGroup = new THREE.Group();
-        const webShapeGeo = new THREE.BoxGeometry(0.5, 1.4, 0.25);
-        const web1 = new THREE.Mesh(webShapeGeo, crankMat);
-        web1.position.y = 0.5;
-        const mainAxis = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 0.6, 12), crankMat);
-        mainAxis.rotation.z = Math.PI / 2;
-        mainAxis.position.z = -0.2;
-        webGroup.add(web1, mainAxis);
-        crankshaftSystem.add(webGroup);
-
-        // Crankpin
-        const pin = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 0.5, 12), crankMat);
-        pin.rotation.z = Math.PI / 2;
-        pin.position.set(0, 0.9, 0.1);
-        webGroup.add(pin);
-
-        // Connecting Rod
-        const rod = new THREE.Group();
-        const rodBar = new THREE.Mesh(new THREE.BoxGeometry(0.12, 2.0, 0.15), rodMat);
-        rodBar.position.y = 1.0;
-        rod.add(rodBar);
-        crankshaftSystem.add(rod);
-
-        // Piston Head
-        const piston = new THREE.Mesh(new THREE.CylinderGeometry(0.85, 0.85, 0.8, 16), pistonMat);
-        crankshaftSystem.add(piston);
-
-        // Dimension indicators
-        const dimGeo = new THREE.BufferGeometry().setFromPoints([
-            new THREE.Vector3(-1.4, -0.9, 0),
-            new THREE.Vector3(-1.4, 0.9, 0)
-        ]);
-        const dimLine = new THREE.Line(dimGeo, new THREE.LineBasicMaterial({ color: 0xff0055 }));
-        dimLine.position.set(-0.2, 0, 0);
-        crankshaftSystem.add(dimLine);
-
-        modelsContainer.add(crankshaftSystem);
-
-        // ----------------------------------------------------
-        // MODEL D: CNC Lathe Turning Chuck (FAQ)
-        // ----------------------------------------------------
-        const latheSystem = new THREE.Group();
-        latheSystem.position.set(0, 0, -15); // off-screen start
+        const latheChuck = new THREE.Group();
+        latheChuck.position.set(0, 0, -15); // off-screen start
 
         const latheChuckMat = new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.9, roughness: 0.2 });
-        const workPartMat = new THREE.MeshStandardMaterial({ color: 0xf1f5f9, metalness: 0.95, roughness: 0.15 });
 
         // Chuck base body
         const chuckBase = new THREE.Mesh(new THREE.CylinderGeometry(1.6, 1.6, 0.8, 24), latheChuckMat);
         chuckBase.rotation.x = Math.PI / 2;
-        latheSystem.add(chuckBase);
+        latheChuck.add(chuckBase);
 
         // Jaws (3 clamping blocks)
         const jawGeo = new THREE.BoxGeometry(0.35, 0.35, 0.45);
@@ -916,35 +982,10 @@
             jaw.rotation.z = angle;
             jawsGroup.add(jaw);
         }
-        latheSystem.add(jawsGroup);
+        latheChuck.add(jawsGroup);
+        scene.add(latheChuck);
 
-        // Stepped workpiece spindle
-        const workpiece = new THREE.Group();
-        const step1 = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.7, 1.2, 24), workPartMat);
-        step1.position.z = 0.8;
-        const step2 = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 1.4, 24), workPartMat);
-        step2.position.z = 2.0;
-        const step3 = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 1.0, 24), workPartMat);
-        step3.position.z = 3.0;
-
-        [step1, step2, step3].forEach(step => {
-            step.rotation.x = Math.PI / 2;
-            workpiece.add(step);
-        });
-        latheSystem.add(workpiece);
-
-        // Lathe Cutting tool bit
-        const latheTool = new THREE.Group();
-        const toolShank = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.3, 1.8), shaftMat);
-        const toolTip = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.15, 0.2), new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.98 }));
-        toolTip.position.set(-0.1, 0, 0.9);
-        latheTool.add(toolShank, toolTip);
-        latheTool.position.set(1.5, 0, 2.5); // position cutter tip near step2 cylinder
-        latheSystem.add(latheTool);
-
-        modelsContainer.add(latheSystem);
-
-        // Drifting blueprint stars/nodes background
+        // Drifting blueprint nodes background
         const starsGeo = new THREE.BufferGeometry();
         const starsCount = 500;
         const starsPos = new Float32Array(starsCount * 3);
@@ -959,8 +1000,8 @@
         // ----------------------------------------------------
         // 3. GSAP ScrollTrigger Timelines (3D + text scrolling)
         // ----------------------------------------------------
-        
-        // Check system settings for prefers-reduced-motion
+        gsap.registerPlugin(ScrollTrigger);
+
         const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
         if (!prefersReducedMotion) {
@@ -978,7 +1019,6 @@
                     }
                 });
 
-                // 4D / 3D Perspective sweep transition
                 tl.fromTo(wrapper,
                     { 
                         opacity: 0, 
@@ -996,7 +1036,6 @@
                     ease: "power2.in"
                 });
 
-                // Subtle cascading entries for headings/sub-elements inside panel
                 elements.forEach((el) => {
                     gsap.fromTo(el,
                         { opacity: 0, transform: "translate3d(0, 50px, -150px) rotateX(25deg)" },
@@ -1024,118 +1063,110 @@
                 }
             });
 
-            // Frame 1: Hero to Features (Planetary Gear transitions to CNC Milling Block)
-            globalTl.to(gearAssembly.position, { x: -15, z: -5, ease: "power2.inOut" }, 0)
-                    .to(gearAssembly.rotation, { z: Math.PI * 5, ease: "none" }, 0)
-                    .to(cncMilling.position, { x: 0, ease: "power2.inOut" }, 0);
+            // Frame 1: Hero to Features (Move workpiece to milling coordinate)
+            globalTl.to(workpieceGroup.position, { x: 2.2, y: 0, z: 0, ease: "power2.inOut" }, 0)
+                    .to(workpieceGroup.rotation, { x: 0, y: 0, z: 0, ease: "power2.inOut" }, 0)
+                    .to(millingTool.position, { y: 3.5, ease: "power2.inOut" }, 0);
 
-            // Frame 2: CNC Machining Animation (Helical Mill Tool Path & Sparks)
-            // Endmill tool descends
-            globalTl.to(cutter.position, { y: 0.75, ease: "power1.inOut" }, 0.25)
+            // Frame 2: CNC Milling process (Descend bit, sparks fly, carve)
+            globalTl.to(millingTool.position, { y: 0.75, ease: "power1.inOut" }, 0.25)
                     .to(sparksMat, { opacity: 1, ease: "none" }, 0.28)
-                    .to(pocketMesh.scale, { y: 1.0, ease: "power1.inOut" }, 0.3)
-                    // tool finishes cutout, retracts
-                    .to(cutter.position, { y: 3.5, ease: "power1.inOut" }, 0.42)
+                    // cutter retracts
+                    .to(millingTool.position, { y: 3.5, ease: "power1.inOut" }, 0.42)
                     .to(sparksMat, { opacity: 0, ease: "none" }, 0.42);
 
-            // Frame 3: Features to Technical Guides (Milling slides out, Engine crankshaft slides in)
-            globalTl.to(cncMilling.position, { x: 15, z: -5, ease: "power2.inOut" }, 0.5)
-                    .to(crankshaftSystem.position, { y: 0, ease: "power2.inOut" }, 0.5)
+            // Frame 3: Features to Technical Guides (Lathe chuck clamps workpiece)
+            globalTl.to(workpieceGroup.position, { x: -1.5, y: 0.5, z: 0, ease: "power2.inOut" }, 0.5)
+                    .to(workpieceGroup.rotation, { x: 0, y: 0, z: Math.PI / 2, ease: "power2.inOut" }, 0.5)
+                    .to(millingTool.position, { y: 6.0, ease: "power2.inOut" }, 0.5)
+                    .to(latheChuck.position, { x: 1.3, y: 0.5, z: 0, ease: "power2.inOut" }, 0.5)
+                    .to(latheChuck.rotation, { x: 0, y: 0, z: Math.PI / 2, ease: "power2.inOut" }, 0.5)
                     .to(camera.position, { y: 1.5, z: 8.5, ease: "power2.inOut" }, 0.5);
 
-            // Frame 4: Guides to FAQ (Crankshaft slides down, Lathe spindle slides in)
-            globalTl.to(crankshaftSystem.position, { y: -15, z: -5, ease: "power2.inOut" }, 0.75)
-                    .to(latheSystem.position, { z: 0, ease: "power2.inOut" }, 0.75)
+            // Frame 4: Guides to FAQ (Release chuck, return to center blueprint)
+            globalTl.to(latheChuck.position, { z: -15, ease: "power2.inOut" }, 0.75)
+                    .to(workpieceGroup.position, { x: 0, y: 0.5, z: 0, ease: "power2.inOut" }, 0.75)
+                    .to(workpieceGroup.rotation, { x: 0.5, z: 0.2, ease: "power2.inOut" }, 0.75)
                     .to(camera.position, { y: 0.5, z: 7.5, ease: "power2.inOut" }, 0.75);
 
-            // Extra spins and details near the end
-            globalTl.to(latheSystem.rotation, { y: Math.PI * 4, ease: "none" }, 0.8)
+            // Extra spin detail near the end
+            globalTl.to(workpieceGroup.rotation, { y: Math.PI * 4, ease: "none" }, 0.8)
                     .to(gridHelper.position, { z: 12, ease: "none" }, 0.8);
         } else {
-            // If user prefers reduced motion, make panels immediately opaque and static
+            // Reduced motion fallbacks
             gsap.utils.toArray('.panel-wrapper').forEach(wrapper => {
                 gsap.set(wrapper, { opacity: 1, transform: "none" });
             });
-            // Show all meshes layout side-by-side or statically centered
-            gearAssembly.position.set(0, 0, 0);
-            cncMilling.position.set(0, 0, -10);
-            crankshaftSystem.position.set(0, -10, -10);
-            latheSystem.position.set(0, 10, -10);
+            workpieceGroup.position.set(0, 0, 0);
+            workpieceGroup.rotation.set(0.5, 0.4, 0.2);
+            latheChuck.position.set(0, 0, -15);
         }
 
         // ----------------------------------------------------
         // 4. Render and Update Frame Loop
         // ----------------------------------------------------
         const clock = new THREE.Clock();
+        let lastCarveProgress = -1;
 
         function animateLoop() {
             requestAnimationFrame(animateLoop);
 
             const elapsedTime = clock.getElapsedTime();
-            
-            // Safe progress check using variable instead of global search
             const scrollPercent = (typeof globalTl !== 'undefined' && globalTl.scrollTrigger) ? globalTl.scrollTrigger.progress : 0;
 
-            // Model A (Planetary Gear) rotations
-            gearAssembly.rotation.z = elapsedTime * 0.2;
-            sunMesh.rotation.y = -elapsedTime * 0.8;
-            sunWire.rotation.y = -elapsedTime * 0.8;
-            for (let i = 0; i < 3; i++) {
-                const angleOffset = planetPositions[i] + (elapsedTime * 0.35);
-                planetMeshes[i].position.set(Math.cos(angleOffset) * 1.45, Math.sin(angleOffset) * 1.45, 0);
-                planetMeshes[i].rotation.z = -elapsedTime * 0.65;
+            // Define dynamic carve progress mapping
+            let carveProgress = 1.0;
+            if (!prefersReducedMotion) {
+                if (scrollPercent < 0.25) {
+                    carveProgress = 0.0;
+                } else if (scrollPercent >= 0.25 && scrollPercent <= 0.45) {
+                    carveProgress = (scrollPercent - 0.25) / 0.20;
+                } else {
+                    carveProgress = 1.0;
+                }
+            }
+            
+            // Only update geometry if progress value changes to optimize performance
+            if (carveProgress !== lastCarveProgress) {
+                updateWorkpieceGeometry(carveProgress);
+                lastCarveProgress = carveProgress;
             }
 
-            // Model B (CNC Cutter) rotation
-            cutter.rotation.y = elapsedTime * 20.0; // spin drill bit
-
-            // Model C (Crankshaft engine mechanics)
-            if (scrollPercent >= 0.45 && scrollPercent <= 0.8) {
-                // Crankshaft rotation speed based on running clock
-                const angle = elapsedTime * 3.5;
-                webGroup.rotation.z = angle;
-                
-                // Solve piston position based on crankshaft trigonometry
-                const r = 0.9; // crank radius
-                const l = 2.0; // rod length
-                const pinX = Math.cos(angle) * r;
-                const pinY = Math.sin(angle) * r;
-                
-                // Position rod angle and end
-                const pistonY = pinY + Math.sqrt(l*l - pinX*pinX);
-                piston.position.y = pistonY;
-                
-                rod.position.set(pinX, pinY, 0.1);
-                const angleDiff = Math.atan2(pistonY - pinY, -pinX) - Math.PI/2;
-                rod.rotation.z = angleDiff;
+            // Spinning animations
+            if (scrollPercent < 0.5) {
+                // Auto spin when not in lathe chuck clamp phase
+                if (!isDragging) {
+                    workpieceGroup.rotation.y = elapsedTime * 0.15;
+                }
+            } else if (scrollPercent >= 0.5 && scrollPercent < 0.75) {
+                // Lathe Chuck spinning phase
+                const spinSpeed = elapsedTime * 8.0;
+                workpieceGroup.rotation.x = spinSpeed;
+                latheChuck.rotation.x = spinSpeed;
+            } else {
+                // FAQ phase
+                if (!isDragging) {
+                    workpieceGroup.rotation.y = elapsedTime * 0.25;
+                }
             }
 
-            // Model D (CNC Lathe chuck spin)
-            if (scrollPercent >= 0.7) {
-                chuckBase.rotation.y = elapsedTime * 6.0;
-                jawsGroup.rotation.z = elapsedTime * 6.0;
-                workpiece.rotation.y = elapsedTime * 6.0;
-                
-                // Animate cutting tool bit movement
-                latheTool.position.z = 2.8 - Math.sin(elapsedTime * 0.8) * 1.2;
-            }
+            // Milling tool spin
+            millingTool.rotation.y = elapsedTime * 30.0;
 
-            // Animate spark particles positions dynamically if cutter is actively milling
+            // Animate spark particles during milling
             if (sparksMat.opacity > 0.05) {
                 const positions = sparksGeo.attributes.position.array;
-                // Position sparks at cutter tool head tip
-                const cutterTip = new THREE.Vector3(0, 0.75, 0);
+                const cutterTip = new THREE.Vector3(2.2, 0.75, 0);
                 
                 for(let i=0; i<sparksCount; i++) {
                     positions[i*3] += sparksVel[i].x * 0.045;
                     positions[i*3+1] += sparksVel[i].y * 0.045;
                     positions[i*3+2] += sparksVel[i].z * 0.045;
                     
-                    // Add gravity effect
                     sparksVel[i].y -= 0.12;
 
                     // Reset particle
-                    if (positions[i*3+1] < -0.8 || Math.abs(positions[i*3]) > 2.0) {
+                    if (positions[i*3+1] < -0.8 || Math.abs(positions[i*3] - 2.2) > 2.0) {
                         positions[i*3] = cutterTip.x;
                         positions[i*3+1] = cutterTip.y;
                         positions[i*3+2] = cutterTip.z;
@@ -1159,7 +1190,67 @@
         animateLoop();
 
         // ----------------------------------------------------
-        // 5. Interactive Cursor-Based 3D Tilt
+        // 5. Interactive Click & Drag background controls
+        // ----------------------------------------------------
+        let isDragging = false;
+        let previousMousePosition = { x: 0, y: 0 };
+
+        window.addEventListener('mousedown', (e) => {
+            if (e.target.tagName === 'A' || e.target.tagName === 'BUTTON' || e.target.closest('.glass-panel') || e.target.closest('header')) {
+                return;
+            }
+            isDragging = true;
+            previousMousePosition = { x: e.clientX, y: e.clientY };
+            document.body.style.cursor = 'grabbing';
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            const deltaMove = {
+                x: e.clientX - previousMousePosition.x,
+                y: e.clientY - previousMousePosition.y
+            };
+            
+            // Allow manual rotation on X & Y axis by dragging the background
+            modelsContainer.rotation.y += deltaMove.x * 0.005;
+            modelsContainer.rotation.x += deltaMove.y * 0.005;
+            
+            previousMousePosition = { x: e.clientX, y: e.clientY };
+        });
+
+        window.addEventListener('mouseup', () => {
+            isDragging = false;
+            document.body.style.cursor = 'default';
+        });
+
+        // Touch drag controls for mobile
+        window.addEventListener('touchstart', (e) => {
+            if (e.target.tagName === 'A' || e.target.tagName === 'BUTTON' || e.target.closest('.glass-panel') || e.target.closest('header')) {
+                return;
+            }
+            isDragging = true;
+            previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        });
+
+        window.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            const deltaMove = {
+                x: e.touches[0].clientX - previousMousePosition.x,
+                y: e.touches[0].clientY - previousMousePosition.y
+            };
+            
+            modelsContainer.rotation.y += deltaMove.x * 0.008;
+            modelsContainer.rotation.x += deltaMove.y * 0.008;
+            
+            previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        });
+
+        window.addEventListener('touchend', () => {
+            isDragging = false;
+        });
+
+        // ----------------------------------------------------
+        // 6. Interactive Cursor-Based 3D Tilt
         // ----------------------------------------------------
         if (!prefersReducedMotion) {
             document.querySelectorAll('.glass-panel').forEach(card => {
@@ -1171,7 +1262,6 @@
                     const centerX = rect.width / 2;
                     const centerY = rect.height / 2;
                     
-                    // Limit maximum tilt to 12 degrees for premium aesthetics
                     const rotateX = ((y - centerY) / centerY) * -12;
                     const rotateY = ((x - centerX) / centerX) * 12;
                     
@@ -1202,6 +1292,474 @@
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
+
+        // ----------------------------------------------------
+        // 7. Interactive Turn-Mill Workpiece Model Showcase
+        // ----------------------------------------------------
+        const intCanvas = document.getElementById('interactive-workpiece-canvas');
+        const intScene = new THREE.Scene();
+        intScene.background = new THREE.Color(0x0a0e1c);
+
+        const intCamera = new THREE.PerspectiveCamera(40, intCanvas.clientWidth / intCanvas.clientHeight, 0.1, 100);
+        intCamera.position.set(4, 3, 6);
+
+        const intRenderer = new THREE.WebGLRenderer({ canvas: intCanvas, antialias: true });
+        intRenderer.setSize(intCanvas.clientWidth, intCanvas.clientHeight);
+        intRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        const intControls = new THREE.OrbitControls(intCamera, intRenderer.domElement);
+        intControls.enableDamping = true;
+        intControls.dampingFactor = 0.05;
+        intControls.maxDistance = 20;
+        intControls.minDistance = 2.5;
+        intControls.target.set(0, 0, 0);
+
+        // Lights
+        const intAmbient = new THREE.AmbientLight(0xffffff, 0.6);
+        intScene.add(intAmbient);
+
+        const intDir1 = new THREE.DirectionalLight(0xffffff, 1.3);
+        intDir1.position.set(5, 8, 5);
+        intScene.add(intDir1);
+
+        const intDir2 = new THREE.DirectionalLight(0x3b82f6, 0.9);
+        intDir2.position.set(-5, -3, 3);
+        intScene.add(intDir2);
+
+        // Grid floor
+        const intGrid = new THREE.GridHelper(10, 20, 0x3b82f6, 0x1e293b);
+        intGrid.position.y = -2.2;
+        intScene.add(intGrid);
+
+        // Coordinate axes
+        const intAxes = new THREE.AxesHelper(1.8);
+        intAxes.position.set(-2.2, -2.1, -2.2);
+        intScene.add(intAxes);
+
+        // Materials setup
+        const intSteelMat = new THREE.MeshStandardMaterial({
+            color: 0xe2e8f0,
+            metalness: 0.95,
+            roughness: 0.18
+        });
+
+        const intCollarMat = new THREE.MeshStandardMaterial({
+            color: 0x2563eb,
+            metalness: 0.9,
+            roughness: 0.15
+        });
+
+        // Alternates
+        const intBrassMat = new THREE.MeshStandardMaterial({
+            color: 0xd97706,
+            metalness: 0.95,
+            roughness: 0.22
+        });
+
+        const intCopperMat = new THREE.MeshStandardMaterial({
+            color: 0xe05e2b,
+            metalness: 0.98,
+            roughness: 0.16
+        });
+
+        // Current active materials
+        let activeMetalMat = intSteelMat;
+        let activeCollarMat = intCollarMat;
+
+        // Group container rotated horizontal like in lathe/image
+        const intWorkpieceGroup = new THREE.Group();
+        intWorkpieceGroup.rotation.z = Math.PI / 2; // Horizontal alignment
+        intWorkpieceGroup.position.x = -0.5; // Centered
+        intScene.add(intWorkpieceGroup);
+
+        // Geometries
+        const intRadialSegments = 120;
+        const intHeightSegments = 100;
+        const scaleVal = 0.035;
+
+        const intBaseGeom = new THREE.CylinderGeometry(25 * scaleVal, 25 * scaleVal, 60 * scaleVal, intRadialSegments, intHeightSegments, false);
+        const intPosAttr = intBaseGeom.attributes.position;
+        const intOrigVertices = [];
+        const intV = new THREE.Vector3();
+        for (let i = 0; i < intPosAttr.count; i++) {
+            intV.fromBufferAttribute(intPosAttr, i);
+            intOrigVertices.push(intV.clone());
+        }
+
+        const intLeftMesh = new THREE.Mesh(intBaseGeom, activeMetalMat);
+        intLeftMesh.position.y = -30 * scaleVal;
+        intWorkpieceGroup.add(intLeftMesh);
+
+        // Middle connecting axle: h=10, r=18
+        const intAxleMesh = new THREE.Mesh(new THREE.CylinderGeometry(18 * scaleVal, 18 * scaleVal, 10 * scaleVal, 32), activeMetalMat);
+        intAxleMesh.position.y = 5 * scaleVal;
+        intWorkpieceGroup.add(intAxleMesh);
+
+        // Right collar body: h=25, r=24
+        const intCollar1Mesh = new THREE.Mesh(new THREE.CylinderGeometry(24 * scaleVal, 24 * scaleVal, 25 * scaleVal, 32), activeCollarMat);
+        intCollar1Mesh.position.y = 22.5 * scaleVal;
+        intWorkpieceGroup.add(intCollar1Mesh);
+
+        // Stepped reduction: h=20, r=22
+        const intCollar2Mesh = new THREE.Mesh(new THREE.CylinderGeometry(22 * scaleVal, 22 * scaleVal, 20 * scaleVal, 32), activeCollarMat);
+        intCollar2Mesh.position.y = 45 * scaleVal;
+        intWorkpieceGroup.add(intCollar2Mesh);
+
+        // End Flange: h=5, r=26
+        const intFlangeMesh = new THREE.Mesh(new THREE.CylinderGeometry(26 * scaleVal, 26 * scaleVal, 5 * scaleVal, 32), activeCollarMat);
+        intFlangeMesh.position.y = 57.5 * scaleVal;
+        intWorkpieceGroup.add(intFlangeMesh);
+
+        // Tailstock interface: h=8, r=16
+        const intTailMesh = new THREE.Mesh(new THREE.CylinderGeometry(16 * scaleVal, 16 * scaleVal, 8 * scaleVal, 32), activeMetalMat);
+        intTailMesh.position.y = 64 * scaleVal;
+        intWorkpieceGroup.add(intTailMesh);
+
+        // Dimension lines group
+        const dimsGroup = new THREE.Group();
+        intWorkpieceGroup.add(dimsGroup);
+
+        // Function to create dimension line helper
+        function createDimLine(pStart, pEnd, labelText) {
+            const dimLineGroup = new THREE.Group();
+            
+            const lineMat = new THREE.LineBasicMaterial({ color: 0x60a5fa, transparent: true, opacity: 0.6 });
+            const lineGeo = new THREE.BufferGeometry().setFromPoints([pStart, pEnd]);
+            const line = new THREE.Line(lineGeo, lineMat);
+            dimLineGroup.add(line);
+            
+            // Tic marks
+            const dir = new THREE.Vector3().subVectors(pEnd, pStart).normalize();
+            const perp = new THREE.Vector3(-dir.y, dir.x, 0).multiplyScalar(0.08);
+            
+            const ticMat = new THREE.LineBasicMaterial({ color: 0x60a5fa, transparent: true, opacity: 0.6 });
+            const tic1 = new THREE.Line(new THREE.BufferGeometry().setFromPoints([pStart.clone().add(perp), pStart.clone().sub(perp)]), ticMat);
+            const tic2 = new THREE.Line(new THREE.BufferGeometry().setFromPoints([pEnd.clone().add(perp), pEnd.clone().sub(perp)]), ticMat);
+            dimLineGroup.add(tic1, tic2);
+
+            // Text label billboard
+            const canvas = document.createElement('canvas');
+            canvas.width = 64; canvas.height = 32;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#60a5fa';
+            ctx.font = 'bold 16px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(labelText, 32, 16);
+            
+            const tex = new THREE.CanvasTexture(canvas);
+            const spriteMat = new THREE.SpriteMaterial({ map: tex, transparent: true, opacity: 0.85 });
+            const sprite = new THREE.Sprite(spriteMat);
+            sprite.scale.set(0.6, 0.3, 1);
+            sprite.position.copy(pStart.clone().add(pEnd).multiplyScalar(0.5).add(perp.clone().multiplyScalar(1.5)));
+            dimLineGroup.add(sprite);
+            
+            return dimLineGroup;
+        }
+
+        // Add key blueprint dimensions
+        dimsGroup.add(createDimLine(new THREE.Vector3(1.3, -60 * scaleVal, 0), new THREE.Vector3(1.3, 0, 0), "h60"));
+        dimsGroup.add(createDimLine(new THREE.Vector3(1.3, 0, 0), new THREE.Vector3(1.3, 10 * scaleVal, 0), "h10"));
+        dimsGroup.add(createDimLine(new THREE.Vector3(1.3, 10 * scaleVal, 0), new THREE.Vector3(1.3, 68 * scaleVal, 0), "h58"));
+        dimsGroup.add(createDimLine(new THREE.Vector3(0, -62 * scaleVal, 0), new THREE.Vector3(25 * scaleVal, -62 * scaleVal, 0), "R25"));
+        dimsGroup.add(createDimLine(new THREE.Vector3(0, 69 * scaleVal, 0), new THREE.Vector3(16 * scaleVal, 69 * scaleVal, 0), "R16"));
+
+        // Interactive Carving Logic
+        function updateIntWorkpieceGeometry(progress) {
+            const twistRate = (-90 * (Math.PI / 180)) / 70;
+            const rCutterCenter = 23 * scaleVal;
+            const rCutter = 4.0 * scaleVal;
+            const rBase = 25 * scaleVal;
+            
+            const zSteps = [5, 11, 17, 23, 29, 35, 41, 47, 53];
+            const rDrill = 2.0 * scaleVal;
+            const maxDrillDepth = 12.0 * scaleVal;
+            
+            for (let i = 0; i < intPosAttr.count; i++) {
+                const origV = intOrigVertices[i];
+                intV.copy(origV);
+                
+                const oscadZ = (intV.y + 30 * scaleVal) / scaleVal;
+                
+                let theta = Math.atan2(intV.z, intV.x);
+                if (theta < 0) theta += Math.PI * 2;
+                
+                let r = Math.sqrt(intV.x * intV.x + intV.z * intV.z);
+                const originalR = r;
+                
+                let minCarveR = originalR;
+                for (let h = 0; h < 6; h++) {
+                    const thetaStart = h * (Math.PI / 3);
+                    const thetaHelix = thetaStart + oscadZ * twistRate;
+                    
+                    let angleDiff = theta - thetaHelix;
+                    angleDiff = Math.atan2(Math.sin(angleDiff), Math.cos(angleDiff));
+                    
+                    const B = -2 * rCutterCenter * Math.cos(angleDiff);
+                    const C = rCutterCenter * rCutterCenter - rCutter * rCutter;
+                    const disc = B * B - 4 * C;
+                    
+                    if (disc >= 0) {
+                        const root1 = (-B - Math.sqrt(disc)) / 2;
+                        const root2 = (-B + Math.sqrt(disc)) / 2;
+                        const root = Math.min(root1, root2);
+                        
+                        if (root > 0 && root < minCarveR) {
+                            const targetCarveR = root;
+                            const blendedR = originalR - (originalR - targetCarveR) * progress;
+                            if (blendedR < minCarveR) {
+                                minCarveR = blendedR;
+                            }
+                        }
+                    }
+                }
+                
+                r = minCarveR;
+                
+                for (let h = 0; h < 6; h++) {
+                    const thetaStart = h * (Math.PI / 3);
+                    for (let j = 0; j < zSteps.length; j++) {
+                        const zStep = zSteps[j];
+                        const thetaDimple = thetaStart - (zStep * 1.5) * (Math.PI / 180);
+                        
+                        const dZ = (oscadZ - zStep) * scaleVal;
+                        let dTheta = theta - thetaDimple;
+                        dTheta = Math.atan2(Math.sin(dTheta), Math.cos(dTheta));
+                        const dArc = originalR * dTheta;
+                        
+                        const distToDrillAxis = Math.sqrt(dZ * dZ + dArc * dArc);
+                        
+                        if (distToDrillAxis < rDrill) {
+                            const currentDrillDepth = maxDrillDepth * progress;
+                            const innerLimit = rBase - currentDrillDepth;
+                            if (r > innerLimit) {
+                                r = innerLimit;
+                            }
+                        }
+                    }
+                }
+                
+                intV.x = r * Math.cos(theta);
+                intV.z = r * Math.sin(theta);
+                intPosAttr.setXYZ(i, intV.x, intV.y, intV.z);
+            }
+            
+            intPosAttr.needsUpdate = true;
+            intBaseGeom.computeVertexNormals();
+        }
+
+        // Initialize at 100% carved state
+        updateIntWorkpieceGeometry(1.0);
+
+        // Tool bit in interactive viewport
+        const intCutterTool = new THREE.Group();
+        const intShaft = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 1.8, 12), new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.9, roughness: 0.1 }));
+        intShaft.position.y = 0.9;
+        const intCutterHead = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.3, 8), new THREE.MeshStandardMaterial({ color: 0x10b981, emissive: 0x047857, metalness: 0.95 }));
+        intCutterHead.position.y = 0.15;
+        intCutterTool.add(intShaft, intCutterHead);
+        intCutterTool.position.set(0, (23 - 4) * scaleVal + 0.15, 0);
+        intWorkpieceGroup.add(intCutterTool);
+
+        // Interactive Sparks Emitter
+        const intSparksCount = 40;
+        const intSparksGeo = new THREE.BufferGeometry();
+        const intSparksPos = new Float32Array(intSparksCount * 3);
+        const intSparksVel = [];
+        for (let i = 0; i < intSparksCount; i++) {
+            intSparksPos[i*3] = 0; intSparksPos[i*3+1] = 0; intSparksPos[i*3+2] = 0;
+            intSparksVel.push(new THREE.Vector3((Math.random() - 0.5) * 1.5, Math.random() * 2 + 0.5, (Math.random() - 0.5) * 1.5));
+        }
+        intSparksGeo.setAttribute('position', new THREE.BufferAttribute(intSparksPos, 3));
+        const intSparksMat = new THREE.PointsMaterial({ color: 0xffa500, size: 0.04, transparent: true, opacity: 0 });
+        const intSparksPoints = new THREE.Points(intSparksGeo, intSparksMat);
+        intWorkpieceGroup.add(intSparksPoints);
+
+        // Controls binding
+        let simPlaying = false;
+        let simProgress = 1.0;
+        let playDirection = 1;
+
+        const playBtn = document.getElementById('btn-sim-play');
+        const slider = document.getElementById('slider-carve-progress');
+
+        playBtn.onclick = () => {
+            simPlaying = !simPlaying;
+            playBtn.textContent = simPlaying ? '⏸' : '▶';
+            playBtn.style.background = simPlaying ? '#ef4444' : 'var(--primary)';
+        };
+
+        slider.oninput = (e) => {
+            simPlaying = false;
+            playBtn.textContent = '▶';
+            playBtn.style.background = 'var(--primary)';
+            simProgress = e.target.value / 100;
+            updateIntWorkpieceGeometry(simProgress);
+        };
+
+        // Material selections
+        const btnMatDefault = document.getElementById('btn-mat-default');
+        const btnMatBrass = document.getElementById('btn-mat-brass');
+        const btnMatCopper = document.getElementById('btn-mat-copper');
+
+        function setMaterials(metalMat, collarMat, activeBtn) {
+            [btnMatDefault, btnMatBrass, btnMatCopper].forEach(b => {
+                b.classList.remove('active');
+                b.style.background = 'transparent';
+            });
+            activeBtn.classList.add('active');
+            activeBtn.style.background = 'var(--primary)';
+            
+            activeMetalMat = metalMat;
+            activeCollarMat = collarMat;
+            
+            intLeftMesh.material = activeMetalMat;
+            intAxleMesh.material = activeMetalMat;
+            intTailMesh.material = activeMetalMat;
+            
+            intCollar1Mesh.material = activeCollarMat;
+            intCollar2Mesh.material = activeCollarMat;
+            intFlangeMesh.material = activeCollarMat;
+        }
+
+        btnMatDefault.onclick = () => setMaterials(intSteelMat, intCollarMat, btnMatDefault);
+        btnMatBrass.onclick = () => setMaterials(intBrassMat, intBrassMat, btnMatBrass);
+        btnMatCopper.onclick = () => setMaterials(intCopperMat, intCopperMat, btnMatCopper);
+
+        // Shading Modes
+        const btnShadeSolid = document.getElementById('btn-shade-solid');
+        const btnShadeWire = document.getElementById('btn-shade-wire');
+        const btnShadeXray = document.getElementById('btn-shade-xray');
+
+        function setShading(mode, activeBtn) {
+            [btnShadeSolid, btnShadeWire, btnShadeXray].forEach(b => {
+                b.classList.remove('active');
+                b.style.background = 'transparent';
+            });
+            activeBtn.classList.add('active');
+            activeBtn.style.background = 'var(--primary)';
+
+            const meshes = [intLeftMesh, intAxleMesh, intCollar1Mesh, intCollar2Mesh, intFlangeMesh, intTailMesh];
+
+            if (mode === 'solid') {
+                meshes.forEach(m => {
+                    m.material.wireframe = false;
+                    m.material.transparent = false;
+                    m.material.opacity = 1.0;
+                });
+            } else if (mode === 'wire') {
+                meshes.forEach(m => {
+                    m.material.wireframe = true;
+                    m.material.transparent = false;
+                    m.material.opacity = 1.0;
+                });
+            } else if (mode === 'xray') {
+                meshes.forEach(m => {
+                    m.material.wireframe = false;
+                    m.material.transparent = true;
+                    m.material.opacity = 0.25;
+                });
+            }
+        }
+
+        btnShadeSolid.onclick = () => setShading('solid', btnShadeSolid);
+        btnShadeWire.onclick = () => setShading('wire', btnShadeWire);
+        btnShadeXray.onclick = () => setShading('xray', btnShadeXray);
+
+        // Toggles
+        const btnToggleDims = document.getElementById('btn-toggle-dims');
+        const btnToggleGrid = document.getElementById('btn-toggle-grid');
+
+        btnToggleDims.onclick = () => {
+            dimsGroup.visible = !dimsGroup.visible;
+            btnToggleDims.classList.toggle('active', dimsGroup.visible);
+            btnToggleDims.style.background = dimsGroup.visible ? 'rgba(59,130,246,0.2)' : 'transparent';
+            btnToggleDims.style.borderColor = dimsGroup.visible ? 'var(--primary)' : 'rgba(255,255,255,0.15)';
+        };
+
+        btnToggleGrid.onclick = () => {
+            intGrid.visible = !intGrid.visible;
+            btnToggleGrid.classList.toggle('active', intGrid.visible);
+            btnToggleGrid.style.background = intGrid.visible ? 'rgba(59,130,246,0.2)' : 'transparent';
+            btnToggleGrid.style.borderColor = intGrid.visible ? 'var(--primary)' : 'rgba(255,255,255,0.15)';
+        };
+
+        // Render Frame Loop for Interactive Viewport
+        const intClock = new THREE.Clock();
+        function intAnimate() {
+            requestAnimationFrame(intAnimate);
+
+            const dt = Math.min(intClock.getDelta(), 0.1);
+            const time = intClock.getElapsedTime();
+
+            if (simPlaying) {
+                simProgress += dt * 0.15 * playDirection;
+                if (simProgress >= 1.0) {
+                    simProgress = 1.0;
+                    playDirection = -1;
+                } else if (simProgress <= 0.0) {
+                    simProgress = 0.0;
+                    playDirection = 1;
+                }
+                slider.value = Math.round(simProgress * 100);
+                updateIntWorkpieceGeometry(simProgress);
+            }
+
+            intCutterTool.rotation.y = time * 25.0;
+
+            if (simPlaying && simProgress < 1.0) {
+                intSparksMat.opacity = 0.9;
+                const cutterY = (Math.sin(time * 1.5) * 30 - 15) * scaleVal;
+                intCutterTool.position.y = cutterY;
+                
+                const positions = intSparksGeo.attributes.position.array;
+                for (let i = 0; i < intSparksCount; i++) {
+                    positions[i*3] += intSparksVel[i].x * 0.03;
+                    positions[i*3+1] += intSparksVel[i].y * 0.03;
+                    positions[i*3+2] += intSparksVel[i].z * 0.03;
+                    
+                    intSparksVel[i].y -= 0.08;
+
+                    if (positions[i*3+1] < -0.3 || Math.abs(positions[i*3]) > 0.5) {
+                        positions[i*3] = 0;
+                        positions[i*3+1] = cutterY;
+                        positions[i*3+2] = 0;
+                        intSparksVel[i].set((Math.random() - 0.5)*1.5, Math.random()*2 + 0.5, (Math.random() - 0.5)*1.5);
+                    }
+                }
+                intSparksGeo.attributes.position.needsUpdate = true;
+            } else {
+                intSparksMat.opacity = Math.max(0, intSparksMat.opacity - dt * 2.0);
+                intCutterTool.position.y = 32 * scaleVal;
+            }
+
+            dimsGroup.children.forEach(helper => {
+                helper.children.forEach(child => {
+                    if (child.isSprite) {
+                        child.quaternion.copy(intCamera.quaternion);
+                    }
+                });
+            });
+
+            if (!simPlaying && intControls.state === -1) {
+                intWorkpieceGroup.rotation.y = time * 0.12;
+            }
+
+            intControls.update();
+            intRenderer.render(intScene, intCamera);
+        }
+
+        intAnimate();
+
+        function intResize() {
+            const w = intCanvas.clientWidth;
+            const h = intCanvas.clientHeight;
+            intCamera.aspect = w / h;
+            intCamera.updateProjectionMatrix();
+            intRenderer.setSize(w, h);
+        }
+        window.addEventListener('resize', intResize);
+        setTimeout(intResize, 100);
 
     </script>
 </body>
