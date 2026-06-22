@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
+    <script>
+        // Ensure trailing slash for proper relative path resolution on web servers
+        if (window.location.protocol.startsWith('http') && !window.location.pathname.endsWith('/')) {
+            const pathParts = window.location.pathname.split('/');
+            const lastPart = pathParts[pathParts.length - 1];
+            if (lastPart && !lastPart.includes('.')) {
+                window.location.replace(window.location.pathname + '/' + window.location.search + window.location.hash);
+            }
+        }
+    </script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-FCJR8H4DME"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -54,7 +64,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/fonts.css">
+    <link rel="stylesheet" href="../../css/fonts.css">
     
     <!-- CDNs for WebGL, GSAP, and Lenis -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -91,7 +101,7 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
         html {
-            background: var(--bg);
+            background: transparent;
             scroll-behavior: auto;
         }
 
@@ -111,7 +121,7 @@
             top: 0; left: 0;
             width: 100vw; height: 100vh;
             z-index: -1;
-            background: url('images/cnc_machine_bg.png') center center / cover no-repeat;
+            background: var(--bg) url('images/cnc_machine_bg.png?v=1.2') center center / cover no-repeat;
             filter: brightness(0.92) saturate(1.1);
         }
 
@@ -1149,7 +1159,7 @@
         // ----------------------------------------------------
         // 3D Background Plane with 3D Parallax & Dynamic Shadows
         // ----------------------------------------------------
-        const bgTexture = new THREE.TextureLoader().load('images/cnc_machine_bg.png', () => {
+        const bgTexture = new THREE.TextureLoader().load('images/cnc_machine_bg.png?v=1.2', () => {
             const cssBg = document.getElementById('bg-image');
             if (cssBg) cssBg.style.display = 'none';
         });
@@ -1159,7 +1169,8 @@
         const bgMaterial = new THREE.MeshBasicMaterial({
             map: bgTexture,
             depthWrite: false,
-            color: 0xffffff
+            color: 0xffffff,
+            fog: false
         });
         const bgMesh = new THREE.Mesh(bgGeometry, bgMaterial);
         bgMesh.position.set(0, 0, -12); // Place far back behind models

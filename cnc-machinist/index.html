@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>
+    // Ensure trailing slash for proper relative path resolution on web servers
+    if (window.location.protocol.startsWith('http') && !window.location.pathname.endsWith('/')) {
+        const pathParts = window.location.pathname.split('/');
+        const lastPart = pathParts[pathParts.length - 1];
+        if (lastPart && !lastPart.includes('.')) {
+            window.location.replace(window.location.pathname + '/' + window.location.search + window.location.hash);
+        }
+    }
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -278,7 +288,7 @@ footer a:hover{color:#93c5fd;}
 <canvas id="bg" aria-hidden="true"></canvas>
 
 <header class="top-bar">
-  <a href="/" aria-label="Shader7 Home">
+  <a href="../index.html" aria-label="Shader7 Home">
     <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
       <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"/>
       <path d="m8 3.293 6 6V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V9.293l6-6Z"/>
@@ -288,14 +298,14 @@ footer a:hover{color:#93c5fd;}
 </header>
 
 <nav class="sticky-nav">
-  <a class="nav-brand" href="/cnc-machinist/">
+  <a class="nav-brand" href="./">
     <span>SHADER<b>7</b></span>
     <span class="nav-badge">CNC HUB</span>
   </a>
   <div class="nav-links">
-    <a href="/#tools">All Tools</a>
-    <a href="/blog.html">Blog</a>
-    <a href="/contact.html">Contact</a>
+    <a href="../index.html#tools">All Tools</a>
+    <a href="../blog.html">Blog</a>
+    <a href="../contact.html">Contact</a>
   </div>
 </nav>
 
@@ -347,8 +357,8 @@ footer a:hover{color:#93c5fd;}
       <div class="card-title">Drill RPM & Feed</div>
       <div class="card-desc">Calculate optimal Spindle Speed RPM and Feed Rate based on your cutter diameter and material.</div>
       <div style="display:flex; flex-direction:column; gap:0.5rem;">
-        <a href="/cnc-machinist/drill/" class="card-link" style="text-decoration:none;">Open Calculator →</a>
-        <a href="/cnc-speeds-feeds-machining-guide.html" class="card-link" style="text-decoration:none; color:#4f46e5; font-size:0.75rem;">Read Deep-Dive Guide →</a>
+        <a href="drill/" class="card-link" style="text-decoration:none;">Open Calculator →</a>
+        <a href="../cnc-speeds-feeds-machining-guide.html" class="card-link" style="text-decoration:none; color:#4f46e5; font-size:0.75rem;">Read Deep-Dive Guide →</a>
       </div>
     </div>
 
@@ -357,8 +367,8 @@ footer a:hover{color:#93c5fd;}
       <div class="card-title">PCD Coordinates</div>
       <div class="card-desc">Get X and Y coordinates for drilling holes on a Pitch Circle Diameter bolt circle.</div>
       <div style="display:flex; flex-direction:column; gap:0.5rem;">
-        <a href="/cnc-machinist/pcd/" class="card-link" style="text-decoration:none;">Open Calculator →</a>
-        <a href="/cnc-pcd-calculator-guide.html" class="card-link" style="text-decoration:none; color:#4f46e5; font-size:0.75rem;">Read Deep-Dive Guide →</a>
+        <a href="pcd/" class="card-link" style="text-decoration:none;">Open Calculator →</a>
+        <a href="../cnc-pcd-calculator-guide.html" class="card-link" style="text-decoration:none; color:#4f46e5; font-size:0.75rem;">Read Deep-Dive Guide →</a>
       </div>
     </div>
 
@@ -367,8 +377,8 @@ footer a:hover{color:#93c5fd;}
       <div class="card-title">Angle Length Calculator</div>
       <div class="card-desc">Enter diameter and angles to calculate radius, horizontal length, vertical height, and generated circle angle diagram.</div>
       <div style="display:flex; flex-direction:column; gap:0.5rem; position:relative; z-index:10;">
-        <a href="/cnc-machinist/angleslengthcalculator/" class="card-link" style="text-decoration:none;">Open Calculator →</a>
-        <a href="/cnc-angle-length-calculator-guide.html" class="card-link" style="text-decoration:none; color:#4f46e5; font-size:0.75rem;">Read Deep-Dive Guide →</a>
+        <a href="angleslengthcalculator/" class="card-link" style="text-decoration:none;">Open Calculator →</a>
+        <a href="../cnc-angle-length-calculator-guide.html" class="card-link" style="text-decoration:none; color:#4f46e5; font-size:0.75rem;">Read Deep-Dive Guide →</a>
       </div>
     </div>
 
@@ -377,8 +387,8 @@ footer a:hover{color:#93c5fd;}
       <div class="card-title">Circular Interpolation</div>
       <div class="card-desc">Generate G02/G03 code for milling internal and external circles, pockets, and circular profiles.</div>
       <div style="display:flex; flex-direction:column; gap:0.5rem;">
-        <a href="/cnc-machinist/idodinterpolation/" class="card-link" style="text-decoration:none;">Generate G-Code →</a>
-        <a href="/cnc-circular-interpolation-g02-g03.html" class="card-link" style="text-decoration:none; color:#4f46e5; font-size:0.75rem;">Read Deep-Dive Guide →</a>
+        <a href="idodinterpolation/" class="card-link" style="text-decoration:none;">Generate G-Code →</a>
+        <a href="../cnc-circular-interpolation-g02-g03.html" class="card-link" style="text-decoration:none; color:#4f46e5; font-size:0.75rem;">Read Deep-Dive Guide →</a>
       </div>
     </div>
 
@@ -387,8 +397,8 @@ footer a:hover{color:#93c5fd;}
       <div class="card-title">Macro Program Generator</div>
       <div class="card-desc">Quick programs for face milling, simple contours, and drilling cycles. Fanuc and Haas compatible.</div>
       <div style="display:flex; flex-direction:column; gap:0.5rem;">
-        <a href="/cnc-machinist/milldrillcontour/" class="card-link" style="text-decoration:none;">Generate G-Code →</a>
-        <a href="/cnc-macro-programming-fanuc-b.html" class="card-link" style="text-decoration:none; color:#4f46e5; font-size:0.75rem;">Read Deep-Dive Guide →</a>
+        <a href="milldrillcontour/" class="card-link" style="text-decoration:none;">Generate G-Code →</a>
+        <a href="../cnc-macro-programming-fanuc-b.html" class="card-link" style="text-decoration:none; color:#4f46e5; font-size:0.75rem;">Read Deep-Dive Guide →</a>
       </div>
     </div>
 
@@ -397,8 +407,8 @@ footer a:hover{color:#93c5fd;}
       <div class="card-title">Chamfer in G17</div>
       <div class="card-desc">Use chamfer in the G17 X,Y plane. Easy to use and quick to generate clean chamfer code.</div>
       <div style="display:flex; flex-direction:column; gap:0.5rem;">
-        <a href="/cnc-machinist/XYchamfer/" class="card-link" style="text-decoration:none;">Generate G-Code →</a>
-        <a href="/cnc-chamfer-programming-guide.html" class="card-link" style="text-decoration:none; color:#4f46e5; font-size:0.75rem;">Read Deep-Dive Guide →</a>
+        <a href="XYchamfer/" class="card-link" style="text-decoration:none;">Generate G-Code →</a>
+        <a href="../cnc-chamfer-programming-guide.html" class="card-link" style="text-decoration:none; color:#4f46e5; font-size:0.75rem;">Read Deep-Dive Guide →</a>
       </div>
     </div>
 
@@ -407,8 +417,8 @@ footer a:hover{color:#93c5fd;}
       <div class="card-title">Circular Chamfer</div>
       <div class="card-desc">Circular interpolation chamfer using G17 in the X,Y plane — fast and precise code generation.</div>
       <div style="display:flex; flex-direction:column; gap:0.5rem;">
-        <a href="/cnc-machinist/CircularChamfer/" class="card-link" style="text-decoration:none;">Generate G-Code →</a>
-        <a href="/cnc-chamfer-programming-guide.html" class="card-link" style="text-decoration:none; color:#4f46e5; font-size:0.75rem;">Read Deep-Dive Guide →</a>
+        <a href="CircularChamfer/" class="card-link" style="text-decoration:none;">Generate G-Code →</a>
+        <a href="../cnc-chamfer-programming-guide.html" class="card-link" style="text-decoration:none; color:#4f46e5; font-size:0.75rem;">Read Deep-Dive Guide →</a>
       </div>
     </div>
 
@@ -417,8 +427,8 @@ footer a:hover{color:#93c5fd;}
       <div class="card-title">3D CAD Web App</div>
       <div class="card-desc">Design your model in the browser with this 3D CAD WebApp. Great for quick geometry visualization.</div>
       <div style="display:flex; flex-direction:column; gap:0.5rem;">
-        <a href="/cnc-machinist/3DCADWEB/" class="card-link" style="text-decoration:none;">Design Your Model →</a>
-        <a href="/3d-cad-browser-machinist-modeling.html" class="card-link" style="text-decoration:none; color:#4f46e5; font-size:0.75rem;">Read Deep-Dive Guide →</a>
+        <a href="3DCADWEB/" class="card-link" style="text-decoration:none;">Design Your Model →</a>
+        <a href="../3d-cad-browser-machinist-modeling.html" class="card-link" style="text-decoration:none; color:#4f46e5; font-size:0.75rem;">Read Deep-Dive Guide →</a>
       </div>
     </div>
 
@@ -480,12 +490,12 @@ footer a:hover{color:#93c5fd;}
 <footer>
   <p>© <span id="yr"></span> Nishikant Xalxo — SHADER7 CNC Tools</p>
   <p style="margin: 10px 0;">
-    <a href="/">Main Site</a> |
-    <a href="/about.html">About Us</a> |
-    <a href="/contact.html">Contact Us</a> |
-    <a href="/privacy-policy.html" style="font-weight: bold; color: #60a5fa;">Privacy Policy</a> |
-    <a href="/terms.html">Terms of Service</a> |
-    <a href="/sitemap.html">Sitemap</a>
+    <a href="../index.html">Main Site</a> |
+    <a href="../about.html">About Us</a> |
+    <a href="../contact.html">Contact Us</a> |
+    <a href="../privacy-policy.html" style="font-weight: bold; color: #60a5fa;">Privacy Policy</a> |
+    <a href="../terms.html">Terms of Service</a> |
+    <a href="../sitemap.html">Sitemap</a>
   </p>
 
   <!-- CNC Machinist Hub Technical Overview -->
