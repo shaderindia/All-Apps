@@ -117,61 +117,131 @@
 
     body {
       font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background-color: #fafbfc;
+      background-image: 
+        linear-gradient(to right, rgba(99, 102, 241, 0.035) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(99, 102, 241, 0.035) 1px, transparent 1px);
+      background-size: 32px 32px;
     }
 
     h1, h2, h3, h4, h5, h6 {
       font-family: "Outfit", "Inter", system-ui, -apple-system, sans-serif !important;
+      letter-spacing: -0.02em;
     }
 
     .hero-bg {
       background:
-        radial-gradient(circle at top left, rgba(59, 130, 246, 0.15), transparent 45%),
-        radial-gradient(circle at bottom right, rgba(6, 182, 212, 0.12), transparent 45%),
-        linear-gradient(135deg, #f8fafc 0%, #f1f5f9 55%, #e2e8f0 100%);
+        radial-gradient(circle at 15% 20%, rgba(99, 102, 241, 0.09), transparent 45%),
+        radial-gradient(circle at 85% 80%, rgba(6, 182, 212, 0.07), transparent 45%),
+        linear-gradient(135deg, #f8fafc 0%, #f1f5f9 60%, #e2e8f0 100%);
       color: #0f172a !important;
+      border-bottom: 1px solid rgba(226, 232, 240, 0.8);
     }
 
     .glass {
-      background: rgba(255, 255, 255, 0.6);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
+      background: rgba(255, 255, 255, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(15, 23, 42, 0.06);
+    }
+
+    /* Filter System */
+    .filter-tag {
+      background: rgba(255, 255, 255, 0.8);
       border: 1px solid rgba(15, 23, 42, 0.08);
+      color: #475569;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+      padding: 0.5rem 1.25rem;
+      border-radius: 9999px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    .filter-tag:hover {
+      background: #ffffff;
+      border-color: rgba(79, 70, 229, 0.35);
+      color: #0f172a;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+    }
+    .filter-tag.active {
+      background: #4f46e5;
+      border-color: #4f46e5;
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(79, 70, 229, 0.25);
     }
 
+    /* Tactile Components styling */
     .tool-card {
-      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+      background: #ffffff;
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      border-radius: 20px;
+      box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.02), 0 2px 6px -1px rgba(0, 0, 0, 0.02);
+      transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1), 
+                  box-shadow 0.4s cubic-bezier(0.23, 1, 0.32, 1), 
+                  border-color 0.3s;
+      position: relative;
     }
-
     .tool-card:hover {
       transform: translateY(-6px);
-      box-shadow: 0 22px 45px -20px rgba(15, 23, 42, 0.12);
-      border-color: rgba(37, 99, 235, 0.4);
+      border-color: rgba(79, 70, 229, 0.3);
+      box-shadow: 0 24px 48px -12px rgba(79, 70, 229, 0.12), 
+                  0 8px 24px -8px rgba(0, 0, 0, 0.04);
+    }
+    
+    /* Category Accent Line indicators */
+    .tool-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      border-radius: 20px 20px 0 0;
+      opacity: 0.85;
+      z-index: 10;
+      transition: height 0.3s;
+    }
+    .tool-card[data-category="photo"]::before { background: linear-gradient(90deg, #4f46e5, #6366f1); }
+    .tool-card[data-category="doc"]::before { background: linear-gradient(90deg, #2563eb, #3b82f6); }
+    .tool-card[data-category="finance"]::before { background: linear-gradient(90deg, #059669, #10b981); }
+    .tool-card[data-category="tech"]::before { background: linear-gradient(90deg, #ea580c, #f97316); }
+    .tool-card:hover::before {
+      height: 6px;
     }
 
     .blog-card {
-      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
     }
-
     .blog-card:hover {
       transform: translateY(-4px);
-      box-shadow: 0 18px 35px -22px rgba(15, 23, 42, 0.4);
+      box-shadow: 0 18px 35px -22px rgba(15, 23, 42, 0.3);
+      border-color: rgba(79, 70, 229, 0.25);
     }
 
     .hero-button {
       min-width: 240px;
+      transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    .hero-button:hover {
+      transform: translateY(-1.5px);
+    }
+    .hero-button:active {
+      transform: translateY(0);
     }
 
     @keyframes pulse-blue {
       0% {
-        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+        box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.6);
       }
-
       70% {
-        box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+        box-shadow: 0 0 0 10px rgba(79, 70, 229, 0);
       }
-
       100% {
-        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+        box-shadow: 0 0 0 0 rgba(79, 70, 229, 0);
       }
     }
 
@@ -199,10 +269,11 @@
       padding: 10px 14px;
       border-radius: 10px;
       font-weight: 700;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
     }
 
     .hidden-tool {
-      display: none;
+      display: none !important;
     }
 
     /* Premium 3D Sliding Carousel Button Container */
@@ -227,7 +298,7 @@
       padding: 0 1.5rem;
       white-space: nowrap;
       text-decoration: none;
-      box-shadow: 0 20px 45px -8px rgba(0, 0, 0, 0.45);
+      box-shadow: 0 20px 45px -8px rgba(15, 23, 42, 0.22);
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
       transform-style: preserve-3d;
@@ -238,7 +309,8 @@
                   opacity 4s cubic-bezier(0.25, 1, 0.5, 1), 
                   filter 4s cubic-bezier(0.25, 1, 0.5, 1), 
                   border-color 0.3s, 
-                  background 0.3s;
+                  background 0.3s,
+                  box-shadow 0.3s;
     }
     
     /* 3D Entry State (Right) - blurred, scaled, faded, unclickable */
@@ -322,7 +394,6 @@
       width: 1.25em;
       text-align: center;
     }
-
   </style>
   <!-- Tailwind CSS inlined — eliminates render-blocking network request -->
 
@@ -983,7 +1054,7 @@
       </p>
     </div>
 
-    <div class="max-w-xl mx-auto mb-12">
+    <div class="max-w-xl mx-auto mb-8">
       <label for="toolSearch" class="sr-only">Search tools</label>
       <input
         id="toolSearch"
@@ -996,11 +1067,20 @@
       </p>
     </div>
 
+    <!-- Category Filter Tags -->
+    <div class="flex flex-wrap items-center justify-center gap-2.5 mb-12 max-w-3xl mx-auto px-4">
+      <button data-filter="all" class="filter-tag active">All Tools</button>
+      <button data-filter="photo" class="filter-tag">Photo & ID</button>
+      <button data-filter="doc" class="filter-tag">Resume & Docs</button>
+      <button data-filter="finance" class="filter-tag">Finance & Utils</button>
+      <button data-filter="tech" class="filter-tag">Tech & Machinist</button>
+    </div>
+
     <div id="toolsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 
       <!-- Passport Photo Pro -->
-      <article data-tool="passport photo pro id photo ai crop" class="tool-card bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100 relative">
-        <div class="absolute top-0 right-0 bg-yellow-400 text-yellow-950 text-xs font-black px-3 py-1 rounded-bl-xl shadow-sm">POPULAR</div>
+      <article data-tool="passport photo pro id photo ai crop" data-category="photo" class="tool-card overflow-hidden relative">
+        <div class="absolute top-0 right-0 bg-yellow-400 text-yellow-950 text-xs font-black px-3 py-1 rounded-bl-xl shadow-sm z-10">POPULAR</div>
         
         <img src="/photopassportsizepro/banner.webp" alt="Passport Photo PRO Banner" class="w-full h-48 object-contain bg-black" style="height: 192px; object-fit: contain; background-color: #010005;" width="800" height="320" loading="lazy">
 
@@ -1016,8 +1096,8 @@
       </article>
 
       <!-- Photo Compressor -->
-      <article data-tool="photo compressor image compress resize crop jpg png webp cm mm inch px" class="tool-card bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100 relative ring-2 ring-green-500">
-        <div class="absolute top-0 right-0 bg-green-700 text-white text-xs font-black px-3 py-1 rounded-bl-xl shadow-sm">NEW</div>
+      <article data-tool="photo compressor image compress resize crop jpg png webp cm mm inch px" data-category="photo" class="tool-card overflow-hidden relative ring-2 ring-green-500">
+        <div class="absolute top-0 right-0 bg-green-700 text-white text-xs font-black px-3 py-1 rounded-bl-xl shadow-sm z-10">NEW</div>
         
         <img src="/photocompressor/banner.webp" alt="Photo Compressor Banner" class="w-full h-48 object-cover" style="height: 192px; object-fit: cover;" width="384" height="192" loading="lazy">
 
@@ -1033,7 +1113,7 @@
       </article>
 
       <!-- Resume Builder -->
-      <article data-tool="resume builder cv banao ats career job pdf" class="tool-card bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100">
+      <article data-tool="resume builder cv banao ats career job pdf" data-category="doc" class="tool-card overflow-hidden">
         <img src="/cvbanao/banner.webp" alt="CV Banao Resume Builder Banner" class="w-full h-48 object-cover" style="height: 192px; object-fit: cover;" width="384" height="192" loading="lazy">
 
         <div class="p-8">
@@ -1048,7 +1128,7 @@
       </article>
 
       <!-- Salary Calculator -->
-      <article data-tool="salary calculator hourly yearly monthly weekly income pay finance" class="tool-card bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100">
+      <article data-tool="salary calculator hourly yearly monthly weekly income pay finance" data-category="finance" class="tool-card overflow-hidden">
         <div class="p-8">
           <div class="w-14 h-14 bg-emerald-50 border border-emerald-100 rounded-2xl flex items-center justify-center mb-5 shadow-sm" aria-hidden="true">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-600">
@@ -1067,7 +1147,7 @@
       </article>
 
       <!-- FairShare -->
-      <article data-tool="fairshare bill splitter split expenses roommates friends travel" class="tool-card bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100">
+      <article data-tool="fairshare bill splitter split expenses roommates friends travel" data-category="finance" class="tool-card overflow-hidden">
         <div class="p-8">
           <div class="w-14 h-14 bg-blue-50 border border-blue-100 rounded-2xl flex items-center justify-center mb-5 shadow-sm" aria-hidden="true">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-blue-600">
@@ -1087,7 +1167,7 @@
       </article>
 
       <!-- Receipt Maker -->
-      <article data-tool="receipt maker invoice bill pdf freelance business" class="tool-card bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100">
+      <article data-tool="receipt maker invoice bill pdf freelance business" data-category="finance" class="tool-card overflow-hidden">
         <div class="p-8">
           <div class="w-14 h-14 bg-purple-50 border border-purple-100 rounded-2xl flex items-center justify-center mb-5 shadow-sm" aria-hidden="true">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-purple-600">
@@ -1106,8 +1186,8 @@
       </article>
 
       <!-- Private Chat -->
-      <article data-tool="quick private chat berofchat room code experimental p2p message shader7" class="tool-card bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100 relative">
-        <div class="absolute top-0 right-0 bg-indigo-600 text-white text-xs font-black px-3 py-1 rounded-bl-xl shadow-sm">PRIVATE</div>
+      <article data-tool="quick private chat berofchat room code experimental p2p message shader7" data-category="tech" class="tool-card overflow-hidden relative">
+        <div class="absolute top-0 right-0 bg-indigo-600 text-white text-xs font-black px-3 py-1 rounded-bl-xl shadow-sm z-10">PRIVATE</div>
         
         <img src="/berofchat/banner.webp" alt="BerofChat Private Chat Banner" class="w-full h-48 object-cover" style="height: 192px; object-fit: cover;" width="384" height="192" loading="lazy">
 
@@ -1145,8 +1225,8 @@
       </article>
 
       <!-- CNC Hub -->
-      <article data-tool="cnc machinist gcode pcd drill chamfer interpolation calculator simulator" class="tool-card bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100 relative">
-        <div class="absolute top-0 right-0 bg-orange-700 text-white text-xs font-black px-3 py-1 rounded-bl-xl shadow-sm">CNC</div>
+      <article data-tool="cnc machinist gcode pcd drill chamfer interpolation calculator simulator" data-category="tech" class="tool-card overflow-hidden relative">
+        <div class="absolute top-0 right-0 bg-orange-700 text-white text-xs font-black px-3 py-1 rounded-bl-xl shadow-sm z-10">CNC</div>
         
         <img src="/cnc-machinist/banner.webp" alt="CNC Machinist Hub Banner" class="w-full h-48 object-cover" style="height: 192px; object-fit: cover;" width="384" height="192" loading="lazy">
 
@@ -1162,7 +1242,7 @@
       </article>
 
       <!-- Classic Passport Tool -->
-      <article data-tool="classic passport photo id photo size print" class="tool-card bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100">
+      <article data-tool="classic passport photo id photo size print" data-category="photo" class="tool-card overflow-hidden">
         <div class="p-8">
           <img src="passport-logo.webp" alt="Passport Photo Classic Logo" class="w-14 h-14 rounded-2xl object-cover mb-5 shadow-md" style="width: 56px; height: 56px; object-fit: cover;" width="56" height="56" loading="lazy">
           <h3 class="text-xl font-black text-gray-900 mb-2">Passport Photo Classic</h3>
@@ -1476,34 +1556,51 @@
     const toolSearch = document.getElementById("toolSearch");
     const toolCards = document.querySelectorAll("[data-tool]");
     const noToolResults = document.getElementById("noToolResults");
+    const filterButtons = document.querySelectorAll(".filter-tag");
+    let activeCategory = "all";
+
+    function updateFilters() {
+      const query = toolSearch ? toolSearch.value.trim().toLowerCase() : "";
+      let visibleCount = 0;
+
+      toolCards.forEach(function (card) {
+        const matchesSearch = !query || (
+          card.getAttribute("data-tool") +
+          " " +
+          card.textContent
+        ).toLowerCase().includes(query);
+        const cardCategory = card.getAttribute("data-category") || "all";
+        const matchesCategory = activeCategory === "all" || cardCategory === activeCategory;
+
+        if (matchesSearch && matchesCategory) {
+          card.classList.remove("hidden-tool");
+          visibleCount++;
+        } else {
+          card.classList.add("hidden-tool");
+        }
+      });
+
+      if (noToolResults) {
+        if (visibleCount === 0) {
+          noToolResults.classList.remove("hidden");
+        } else {
+          noToolResults.classList.add("hidden");
+        }
+      }
+    }
 
     if (toolSearch && toolCards.length) {
-      toolSearch.addEventListener("input", function () {
-        const query = toolSearch.value.trim().toLowerCase();
-        let visibleCount = 0;
+      toolSearch.addEventListener("input", updateFilters);
+    }
 
-        toolCards.forEach(function (card) {
-          const searchableText = (
-            card.getAttribute("data-tool") +
-            " " +
-            card.textContent
-          ).toLowerCase();
-
-          if (!query || searchableText.includes(query)) {
-            card.classList.remove("hidden-tool");
-            visibleCount++;
-          } else {
-            card.classList.add("hidden-tool");
-          }
+    if (filterButtons.length) {
+      filterButtons.forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          filterButtons.forEach(function (b) { b.classList.remove("active"); });
+          btn.classList.add("active");
+          activeCategory = btn.getAttribute("data-filter");
+          updateFilters();
         });
-
-        if (noToolResults) {
-          if (visibleCount === 0) {
-            noToolResults.classList.remove("hidden");
-          } else {
-            noToolResults.classList.add("hidden");
-          }
-        }
       });
     }
 
