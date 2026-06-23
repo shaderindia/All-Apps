@@ -563,6 +563,7 @@ footer a:hover{color:#1d4ed8;}
 </footer>
 
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 
 <script>
 window.addEventListener('DOMContentLoaded', () => {
@@ -781,6 +782,45 @@ window.addEventListener('DOMContentLoaded', () => {
   const backPanel = new THREE.Mesh(backPanelGeo, backPanelMat);
   backPanel.position.set(0, 30, -50);
   scene.add(backPanel);
+
+  // Load GLTF Model (Covered Car) in the background
+  const gltfLoader = new THREE.GLTFLoader();
+  gltfLoader.load('models/covered_car/covered_car_1k.gltf', (gltf) => {
+    const car = gltf.scene;
+
+    // Auto-scale to cover the background space majestically
+    const box = new THREE.Box3().setFromObject(car);
+    const size = new THREE.Vector3();
+    box.getSize(size);
+    const maxDim = Math.max(size.x, size.y, size.z);
+    const targetSize = 55; // Majestic background scale
+    const scale = targetSize / maxDim;
+    car.scale.set(scale, scale, scale);
+
+    // Position the car centered, sitting on the floor (y = -10)
+    const center = new THREE.Vector3();
+    box.getCenter(center);
+    car.position.set(-center.x * scale, -10 - (box.min.y * scale), -25);
+
+    // Traverse and apply high-quality PBR settings to car mesh materials
+    car.traverse((node) => {
+      if (node.isMesh) {
+        node.castShadow = true;
+        node.receiveShadow = true;
+        if (node.material) {
+          node.material.metalness = 0.85;
+          node.material.roughness = 0.28;
+          node.material.envMapIntensity = 1.8;
+          node.material.side = THREE.DoubleSide;
+        }
+      }
+    });
+
+    scene.add(car);
+    window.carAsset = car;
+  }, undefined, (err) => {
+    console.error('Error loading car model:', err);
+  });
 
   // Left-Side Spindle & Tool Assembly
   const spindleGroup = new THREE.Group();
@@ -1007,6 +1047,12 @@ window.addEventListener('DOMContentLoaded', () => {
     gearGroup.rotation.z -= 0.004;
 
     particles.rotation.y += 0.0003;
+
+    // Dynamic covered car animation (rotation + float)
+    if (window.carAsset) {
+      window.carAsset.rotation.y = tick * 0.05 + mx * 0.25;
+      window.carAsset.position.y = -10 + Math.sin(tick * 1.5) * 0.15;
+    }
 
     // High performance chips physics emitter
     const isCutting = Math.abs(tableFeed) < 1.8;
