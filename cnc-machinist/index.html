@@ -669,77 +669,118 @@ window.addEventListener('DOMContentLoaded', () => {
   rimLight.position.set(-20, 20, -20);
   scene.add(rimLight);
 
-  // Procedural PBR Texture Generator (for brushed metal tool marks & scratches)
-  const canvasSize = 256;
-  const normalCanvas = document.createElement('canvas');
-  normalCanvas.width = canvasSize;
-  normalCanvas.height = canvasSize;
-  const nCtx = normalCanvas.getContext('2d');
-  nCtx.fillStyle = '#8080ff';
-  nCtx.fillRect(0, 0, canvasSize, canvasSize);
-  nCtx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
-  for (let i = 0; i < 400; i++) {
-    const y = Math.random() * canvasSize;
-    nCtx.beginPath();
-    nCtx.moveTo(0, y);
-    nCtx.lineTo(canvasSize, y);
-    nCtx.stroke();
-  }
-  const normalTex = new THREE.CanvasTexture(normalCanvas);
-  normalTex.wrapS = THREE.RepeatWrapping;
-  normalTex.wrapT = THREE.RepeatWrapping;
-  normalTex.repeat.set(2, 2);
+  // Scanned PBR Textures Loader
+  const textureLoader = new THREE.TextureLoader();
 
-  const roughnessCanvas = document.createElement('canvas');
-  roughnessCanvas.width = canvasSize;
-  roughnessCanvas.height = canvasSize;
-  const rCtx = roughnessCanvas.getContext('2d');
-  rCtx.fillStyle = '#222222';
-  rCtx.fillRect(0, 0, canvasSize, canvasSize);
-  rCtx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
-  for (let i = 0; i < 30; i++) {
-    rCtx.lineWidth = 0.5 + Math.random();
-    rCtx.beginPath();
-    rCtx.moveTo(Math.random() * canvasSize, Math.random() * canvasSize);
-    rCtx.lineTo(Math.random() * canvasSize, Math.random() * canvasSize);
-    rCtx.stroke();
+  // Helper to load, set repeat wrapping and map repeats
+  function loadTexture(url, repeatX = 1, repeatY = 1) {
+    const tex = textureLoader.load(url);
+    tex.wrapS = THREE.RepeatWrapping;
+    tex.wrapT = THREE.RepeatWrapping;
+    tex.repeat.set(repeatX, repeatY);
+    return tex;
   }
-  const roughnessTex = new THREE.CanvasTexture(roughnessCanvas);
-  roughnessTex.wrapS = THREE.RepeatWrapping;
-  roughnessTex.wrapT = THREE.RepeatWrapping;
 
-  // Premium PBR Materials
+  // Load metal textures (with repeat tuning for machine parts)
+  const metalDiffuse = loadTexture('textures/metal_plate/metal_plate_diffuse.jpg', 4, 4);
+  const metalNormal = loadTexture('textures/metal_plate/metal_plate_normal.jpg', 4, 4);
+  const metalRoughness = loadTexture('textures/metal_plate/metal_plate_roughness.jpg', 4, 4);
+  const metalMetallic = loadTexture('textures/metal_plate/metal_plate_metallic.jpg', 4, 4);
+  const metalAo = loadTexture('textures/metal_plate/metal_plate_ao.jpg', 4, 4);
+
+  // Load concrete textures for the industrial workshop floor
+  const concreteDiffuse = loadTexture('textures/anti_slip_concrete/anti_slip_concrete_diffuse.jpg', 16, 16);
+  const concreteNormal = loadTexture('textures/anti_slip_concrete/anti_slip_concrete_normal.jpg', 16, 16);
+  const concreteRoughness = loadTexture('textures/anti_slip_concrete/anti_slip_concrete_roughness.jpg', 16, 16);
+  const concreteAo = loadTexture('textures/anti_slip_concrete/anti_slip_concrete_ao.jpg', 16, 16);
+
+  // Load black planks textures for the workshop background enclosure wall
+  const planksDiffuse = loadTexture('textures/black_painted_planks/black_painted_planks_diffuse.jpg', 8, 4);
+  const planksNormal = loadTexture('textures/black_painted_planks/black_painted_planks_normal.jpg', 8, 4);
+  const planksRoughness = loadTexture('textures/black_painted_planks/black_painted_planks_roughness.jpg', 8, 4);
+  const planksAo = loadTexture('textures/black_painted_planks/black_painted_planks_ao.jpg', 8, 4);
+
+  // Premium Scanned PBR Materials (Material-Enforcement-Engine Compliant)
   const steelMat = new THREE.MeshStandardMaterial({
-    color: 0x94a3b8,
-    metalness: 0.95,
-    roughness: 0.25,
-    roughnessMap: roughnessTex,
-    normalMap: normalTex,
-    normalScale: new THREE.Vector2(0.04, 0.04)
+    map: metalDiffuse,
+    normalMap: metalNormal,
+    roughnessMap: metalRoughness,
+    metalnessMap: metalMetallic,
+    aoMap: metalAo,
+    color: 0xf1f5f9, // Polished industrial steel tint
+    metalness: 1.0,
+    roughness: 0.18,
+    normalScale: new THREE.Vector2(0.12, 0.12)
   });
 
   const aluminumMat = new THREE.MeshStandardMaterial({
-    color: 0xcbd5e1,
+    map: metalDiffuse,
+    normalMap: metalNormal,
+    roughnessMap: metalRoughness,
+    metalnessMap: metalMetallic,
+    aoMap: metalAo,
+    color: 0xe2e8f0, // Brushed raw aluminum block tint
     metalness: 0.85,
-    roughness: 0.35,
-    roughnessMap: roughnessTex,
-    normalMap: normalTex,
-    normalScale: new THREE.Vector2(0.06, 0.06)
+    roughness: 0.32,
+    normalScale: new THREE.Vector2(0.18, 0.18)
   });
 
   const cutterMat = new THREE.MeshStandardMaterial({
-    color: 0xd97706, // Titanium Nitride Gold
-    metalness: 0.95,
-    roughness: 0.2,
-    roughnessMap: roughnessTex
+    map: metalDiffuse,
+    normalMap: metalNormal,
+    roughnessMap: metalRoughness,
+    metalnessMap: metalMetallic,
+    aoMap: metalAo,
+    color: 0xd97706, // Titanium Nitride Gold coating
+    metalness: 1.0,
+    roughness: 0.15,
+    normalScale: new THREE.Vector2(0.08, 0.08)
   });
 
   const darkSteelMat = new THREE.MeshStandardMaterial({
-    color: 0x1e293b, // Black oxide parts
-    metalness: 0.8,
-    roughness: 0.3,
-    roughnessMap: roughnessTex
+    map: metalDiffuse,
+    normalMap: metalNormal,
+    roughnessMap: metalRoughness,
+    metalnessMap: metalMetallic,
+    aoMap: metalAo,
+    color: 0x334155, // Dark oxide structural components
+    metalness: 0.9,
+    roughness: 0.38,
+    normalScale: new THREE.Vector2(0.2, 0.2)
   });
+
+  const floorMat = new THREE.MeshStandardMaterial({
+    map: concreteDiffuse,
+    normalMap: concreteNormal,
+    roughnessMap: concreteRoughness,
+    aoMap: concreteAo,
+    color: 0xe2e8f0, // Slate concrete floor tone
+    roughness: 0.85,
+    metalness: 0.05
+  });
+
+  const backPanelMat = new THREE.MeshStandardMaterial({
+    map: planksDiffuse,
+    normalMap: planksNormal,
+    roughnessMap: planksRoughness,
+    aoMap: planksAo,
+    color: 0x1e293b, // Dark charcoal painted backing wall
+    roughness: 0.9,
+    metalness: 0.05
+  });
+
+  // Workshop Floor Plane (Placed just below grid helper at y = -10)
+  const floorGeo = new THREE.PlaneGeometry(400, 400);
+  const floor = new THREE.Mesh(floorGeo, floorMat);
+  floor.rotation.x = -Math.PI / 2;
+  floor.position.y = -10.05;
+  scene.add(floor);
+
+  // Workshop Background Wall Enclosure
+  const backPanelGeo = new THREE.PlaneGeometry(400, 160);
+  const backPanel = new THREE.Mesh(backPanelGeo, backPanelMat);
+  backPanel.position.set(0, 30, -50);
+  scene.add(backPanel);
 
   // Left-Side Spindle & Tool Assembly
   const spindleGroup = new THREE.Group();
