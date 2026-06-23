@@ -646,103 +646,266 @@ window.addEventListener('DOMContentLoaded', () => {
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 500);
-  camera.position.set(0, 8, 55);
+  camera.position.set(0, 5, 45);
 
-  const gridHelper = new THREE.GridHelper(200, 60, 0x1e3a8a, 0x0f172a);
-  gridHelper.position.y = -20;
-  gridHelper.material.opacity = 0.4;
+  const gridHelper = new THREE.GridHelper(200, 60, 0x3b82f6, 0x1e293b);
+  gridHelper.position.y = -10;
+  gridHelper.material.opacity = 0.15;
   gridHelper.material.transparent = true;
   scene.add(gridHelper);
 
-  scene.add(new THREE.AmbientLight(0x0a1628, 2));
+  scene.add(new THREE.AmbientLight(0x0f172a, 1.8));
 
-  const bl = new THREE.PointLight(0x3b82f6, 6, 120);
-  bl.position.set(-30, 20, 10);
-  scene.add(bl);
+  // High-performance PBR Industrial Lighting
+  const keyLight = new THREE.DirectionalLight(0xffffff, 2.5);
+  keyLight.position.set(-10, 30, 20);
+  scene.add(keyLight);
 
-  const bl2 = new THREE.PointLight(0x818cf8, 4, 100);
-  bl2.position.set(30, 15, 5);
-  scene.add(bl2);
+  const fillLight = new THREE.DirectionalLight(0x3b82f6, 1.5);
+  fillLight.position.set(20, -10, 10);
+  scene.add(fillLight);
 
-  const bl3 = new THREE.PointLight(0x60a5fa, 3, 80);
-  bl3.position.set(0, -5, 30);
-  scene.add(bl3);
+  const rimLight = new THREE.DirectionalLight(0x818cf8, 2.0);
+  rimLight.position.set(-20, 20, -20);
+  scene.add(rimLight);
 
-  const meshes = [];
+  // Procedural PBR Texture Generator (for brushed metal tool marks & scratches)
+  const canvasSize = 256;
+  const normalCanvas = document.createElement('canvas');
+  normalCanvas.width = canvasSize;
+  normalCanvas.height = canvasSize;
+  const nCtx = normalCanvas.getContext('2d');
+  nCtx.fillStyle = '#8080ff';
+  nCtx.fillRect(0, 0, canvasSize, canvasSize);
+  nCtx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+  for (let i = 0; i < 400; i++) {
+    const y = Math.random() * canvasSize;
+    nCtx.beginPath();
+    nCtx.moveTo(0, y);
+    nCtx.lineTo(canvasSize, y);
+    nCtx.stroke();
+  }
+  const normalTex = new THREE.CanvasTexture(normalCanvas);
+  normalTex.wrapS = THREE.RepeatWrapping;
+  normalTex.wrapT = THREE.RepeatWrapping;
+  normalTex.repeat.set(2, 2);
 
-  const spindleMat = new THREE.MeshPhongMaterial({
-    color: 0x3b82f6,
-    emissive: 0x1d4ed8,
-    emissiveIntensity: 0.3,
-    wireframe: false,
-    transparent: true,
-    opacity: 0.7,
-    shininess: 80
+  const roughnessCanvas = document.createElement('canvas');
+  roughnessCanvas.width = canvasSize;
+  roughnessCanvas.height = canvasSize;
+  const rCtx = roughnessCanvas.getContext('2d');
+  rCtx.fillStyle = '#222222';
+  rCtx.fillRect(0, 0, canvasSize, canvasSize);
+  rCtx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+  for (let i = 0; i < 30; i++) {
+    rCtx.lineWidth = 0.5 + Math.random();
+    rCtx.beginPath();
+    rCtx.moveTo(Math.random() * canvasSize, Math.random() * canvasSize);
+    rCtx.lineTo(Math.random() * canvasSize, Math.random() * canvasSize);
+    rCtx.stroke();
+  }
+  const roughnessTex = new THREE.CanvasTexture(roughnessCanvas);
+  roughnessTex.wrapS = THREE.RepeatWrapping;
+  roughnessTex.wrapT = THREE.RepeatWrapping;
+
+  // Premium PBR Materials
+  const steelMat = new THREE.MeshStandardMaterial({
+    color: 0x94a3b8,
+    metalness: 0.95,
+    roughness: 0.25,
+    roughnessMap: roughnessTex,
+    normalMap: normalTex,
+    normalScale: new THREE.Vector2(0.04, 0.04)
   });
 
-  const spindle = new THREE.Mesh(new THREE.TorusKnotGeometry(6, 1.2, 180, 12, 3, 5), spindleMat);
-  spindle.position.set(-22, 0, -15);
-  scene.add(spindle);
-  meshes.push({ m: spindle, rx: 0.003, ry: 0.007 });
-
-  const gearMat = new THREE.MeshPhongMaterial({
-    color: 0x1e40af,
-    wireframe: true,
-    transparent: true,
-    opacity: 0.35
+  const aluminumMat = new THREE.MeshStandardMaterial({
+    color: 0xcbd5e1,
+    metalness: 0.85,
+    roughness: 0.35,
+    roughnessMap: roughnessTex,
+    normalMap: normalTex,
+    normalScale: new THREE.Vector2(0.06, 0.06)
   });
 
-  const gear = new THREE.Mesh(new THREE.CylinderGeometry(10, 10, 2, 32, 1), gearMat);
-  gear.position.set(22, -5, -20);
-  scene.add(gear);
-  meshes.push({ m: gear, rx: 0.001, ry: 0.008 });
-
-  const drillMat = new THREE.MeshPhongMaterial({
-    color: 0x475569,
-    emissive: 0x1e3a8a,
-    emissiveIntensity: 0.2,
-    shininess: 120
+  const cutterMat = new THREE.MeshStandardMaterial({
+    color: 0xd97706, // Titanium Nitride Gold
+    metalness: 0.95,
+    roughness: 0.2,
+    roughnessMap: roughnessTex
   });
 
-  const drillGroup = new THREE.Group();
-  const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 12, 16), drillMat);
-  const tip = new THREE.Mesh(new THREE.ConeGeometry(0.5, 2.5, 16), drillMat);
-  tip.position.y = -7.25;
-  drillGroup.add(shaft);
-  drillGroup.add(tip);
-  drillGroup.position.set(15, 8, -10);
-  drillGroup.rotation.z = 0.4;
-  scene.add(drillGroup);
-  meshes.push({ m: drillGroup, rx: 0, ry: 0.012 });
-
-  const wpMat = new THREE.MeshPhongMaterial({
-    color: 0x64748b,
-    emissive: 0x0f172a,
-    wireframe: false,
-    transparent: true,
-    opacity: 0.5,
-    shininess: 60
+  const darkSteelMat = new THREE.MeshStandardMaterial({
+    color: 0x1e293b, // Black oxide parts
+    metalness: 0.8,
+    roughness: 0.3,
+    roughnessMap: roughnessTex
   });
 
-  const wp = new THREE.Mesh(new THREE.OctahedronGeometry(5, 0), wpMat);
-  wp.position.set(-15, -8, -25);
-  scene.add(wp);
-  meshes.push({ m: wp, rx: 0.005, ry: 0.006 });
+  // Left-Side Spindle & Tool Assembly
+  const spindleGroup = new THREE.Group();
+  
+  const spindleCasing = new THREE.Mesh(new THREE.CylinderGeometry(4.5, 4.5, 4, 32), darkSteelMat);
+  spindleCasing.position.y = 8;
+  spindleGroup.add(spindleCasing);
 
-  const chipMat = new THREE.MeshPhongMaterial({
-    color: 0x3b82f6,
-    wireframe: true,
-    transparent: true,
-    opacity: 0.2
-  });
+  const rotatingGroup = new THREE.Group();
+  spindleGroup.add(rotatingGroup);
 
-  const chip = new THREE.Mesh(new THREE.IcosahedronGeometry(8, 1), chipMat);
-  chip.position.set(5, 5, -35);
-  scene.add(chip);
-  meshes.push({ m: chip, rx: 0.002, ry: 0.003 });
+  const holderTaper = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 2.5, 3.5, 32), steelMat);
+  holderTaper.position.y = 4.25;
+  rotatingGroup.add(holderTaper);
 
+  const holderFlange = new THREE.Mesh(new THREE.CylinderGeometry(3.6, 3.6, 0.8, 32), steelMat);
+  holderFlange.position.y = 2.1;
+  rotatingGroup.add(holderFlange);
+
+  const holderNut = new THREE.Mesh(new THREE.CylinderGeometry(2.5, 2.5, 2, 32), darkSteelMat);
+  holderNut.position.y = 0.7;
+  rotatingGroup.add(holderNut);
+
+  const cutterShank = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.8, 4, 16), steelMat);
+  cutterShank.position.y = -2;
+  rotatingGroup.add(cutterShank);
+
+  const cutterCore = new THREE.Mesh(new THREE.CylinderGeometry(0.65, 0.65, 3.2, 16), cutterMat);
+  cutterCore.position.y = -4.5;
+  rotatingGroup.add(cutterCore);
+
+  // Helical spiral flutes detailing
+  const fluteCount = 4;
+  const fluteSegments = 40;
+  const fluteLength = 3.0;
+  for (let f = 0; f < fluteCount; f++) {
+    const startAngle = (f / fluteCount) * Math.PI * 2;
+    for (let s = 0; s < fluteSegments; s++) {
+      const t = s / fluteSegments;
+      const z = -fluteLength / 2 + t * fluteLength;
+      const angle = startAngle + t * Math.PI * 3.5;
+      const r = 0.82;
+      const fx = Math.cos(angle) * r;
+      const fz = Math.sin(angle) * r;
+      
+      const fluteGeo = new THREE.BoxGeometry(0.16, 0.16, 0.16);
+      const flute = new THREE.Mesh(fluteGeo, cutterMat);
+      flute.position.set(fx, -4.5 + z, fz);
+      rotatingGroup.add(flute);
+    }
+  }
+
+  spindleGroup.position.set(-15, 4.7, -10);
+  scene.add(spindleGroup);
+
+  // Left-Side Vice & Stepped Workpiece Assembly
+  const workpieceTable = new THREE.Group();
+  workpieceTable.position.set(-15, -3, -10);
+
+  const viceBase = new THREE.Mesh(new THREE.BoxGeometry(16, 1.2, 12), darkSteelMat);
+  viceBase.position.y = -1.6;
+  workpieceTable.add(viceBase);
+
+  const jawFront = new THREE.Mesh(new THREE.BoxGeometry(14, 2.5, 1.8), darkSteelMat);
+  jawFront.position.set(0, 0.25, 4);
+  workpieceTable.add(jawFront);
+
+  const jawBack = new THREE.Mesh(new THREE.BoxGeometry(14, 2.5, 1.8), darkSteelMat);
+  jawBack.position.set(0, 0.25, -4);
+  workpieceTable.add(jawBack);
+
+  const wpGroup = new THREE.Group();
+  
+  const wpBase = new THREE.Mesh(new THREE.BoxGeometry(12, 1, 6.2), aluminumMat);
+  wpBase.position.y = -0.5;
+  wpGroup.add(wpBase);
+
+  const wpLeft = new THREE.Mesh(new THREE.BoxGeometry(3.5, 2, 6.2), aluminumMat);
+  wpLeft.position.set(-4.25, 1, 0);
+  wpGroup.add(wpLeft);
+
+  const wpRight = new THREE.Mesh(new THREE.BoxGeometry(3.5, 2, 6.2), aluminumMat);
+  wpRight.position.set(4.25, 1, 0);
+  wpGroup.add(wpRight);
+
+  const wpMid = new THREE.Mesh(new THREE.BoxGeometry(5, 0.8, 6.2), aluminumMat);
+  wpMid.position.set(0, 0.4, 0);
+  wpGroup.add(wpMid);
+
+  wpGroup.position.y = 0.5;
+  workpieceTable.add(wpGroup);
+
+  scene.add(workpieceTable);
+
+  // Flying Metal Chips Particles
+  const chipsGroup = new THREE.Group();
+  scene.add(chipsGroup);
+
+  const maxChips = 50;
+  const chips = [];
+  const chipGeo = new THREE.TetrahedronGeometry(0.14);
+
+  for (let i = 0; i < maxChips; i++) {
+    const chip = new THREE.Mesh(chipGeo, cutterMat);
+    chip.position.set(0, 0, 0);
+    chip.visible = false;
+    chipsGroup.add(chip);
+    chips.push({
+      mesh: chip,
+      velocity: new THREE.Vector3(),
+      life: 0
+    });
+  }
+
+  // Right-Side Spur Gear Assembly
+  const gearGroup = new THREE.Group();
+
+  const gearHub = new THREE.Mesh(new THREE.CylinderGeometry(2.2, 2.2, 3.2, 32), steelMat);
+  gearHub.rotation.x = Math.PI / 2;
+  gearGroup.add(gearHub);
+
+  const gearHole = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.2, 3.3, 24), new THREE.MeshBasicMaterial({ color: 0x010307 }));
+  gearHole.rotation.x = Math.PI / 2;
+  gearGroup.add(gearHole);
+
+  const keyway = new THREE.Mesh(new THREE.BoxGeometry(0.4, 1.5, 3.25), steelMat);
+  keyway.position.set(0, 1.0, 0);
+  gearGroup.add(keyway);
+
+  const gearWeb = new THREE.Mesh(new THREE.CylinderGeometry(6.5, 6.5, 1.4, 32), steelMat);
+  gearWeb.rotation.x = Math.PI / 2;
+  gearGroup.add(gearWeb);
+
+  for (let i = 0; i < 6; i++) {
+    const angle = (i / 6) * Math.PI * 2;
+    const holeX = Math.cos(angle) * 4.2;
+    const holeY = Math.sin(angle) * 4.2;
+    
+    const hole = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.2, 1.5, 16), new THREE.MeshBasicMaterial({ color: 0x02050a }));
+    hole.position.set(holeX, holeY, 0);
+    hole.rotation.x = Math.PI / 2;
+    gearGroup.add(hole);
+  }
+
+  const gearRim = new THREE.Mesh(new THREE.CylinderGeometry(8.2, 8.2, 2.8, 32), steelMat);
+  gearRim.rotation.x = Math.PI / 2;
+  gearGroup.add(gearRim);
+
+  const teethCount = 24;
+  for (let i = 0; i < teethCount; i++) {
+    const angle = (i / teethCount) * Math.PI * 2;
+    const toothX = Math.cos(angle) * 8.2;
+    const toothY = Math.sin(angle) * 8.2;
+
+    const tooth = new THREE.Mesh(new THREE.BoxGeometry(1.1, 2.5, 2.8), steelMat);
+    tooth.position.set(toothX, toothY, 0);
+    tooth.rotation.z = angle;
+    gearGroup.add(tooth);
+  }
+
+  gearGroup.position.set(15, -1, -12);
+  scene.add(gearGroup);
+
+  // Background Ambient Dust Particles
   const pGeo = new THREE.BufferGeometry();
-  const pN = 600;
+  const pN = 400;
   const pPos = new Float32Array(pN * 3);
 
   for (let i = 0; i < pN; i++) {
@@ -752,44 +915,24 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
-
   const pMat = new THREE.PointsMaterial({
-    color: 0x3b82f6,
-    size: 0.3,
+    color: 0x60a5fa,
+    size: 0.25,
     transparent: true,
-    opacity: 0.35
+    opacity: 0.25
   });
-
   const particles = new THREE.Points(pGeo, pMat);
   scene.add(particles);
 
+  // Grid Guideline Circles
   const pathPoints = [];
-  for (let i = 0; i <= 120; i++) {
-    const a = (i / 120) * Math.PI * 2;
-    pathPoints.push(new THREE.Vector3(Math.cos(a) * 18, Math.sin(a) * 18, -40));
+  for (let i = 0; i <= 64; i++) {
+    const a = (i / 64) * Math.PI * 2;
+    pathPoints.push(new THREE.Vector3(Math.cos(a) * 16, Math.sin(a) * 16, -30));
   }
-
   const pathGeo = new THREE.BufferGeometry().setFromPoints(pathPoints);
-  const pathMat = new THREE.LineBasicMaterial({
-    color: 0x60a5fa,
-    transparent: true,
-    opacity: 0.15
-  });
+  const pathMat = new THREE.LineBasicMaterial({ color: 0x3b82f6, transparent: true, opacity: 0.1 });
   scene.add(new THREE.Line(pathGeo, pathMat));
-
-  const pathPoints2 = [];
-  for (let i = 0; i <= 80; i++) {
-    const a = (i / 80) * Math.PI * 2;
-    pathPoints2.push(new THREE.Vector3(Math.cos(a) * 10, -18 + (Math.sin(a * 3) * 3), -30));
-  }
-
-  const pathGeo2 = new THREE.BufferGeometry().setFromPoints(pathPoints2);
-  const pathMat2 = new THREE.LineBasicMaterial({
-    color: 0x818cf8,
-    transparent: true,
-    opacity: 0.12
-  });
-  scene.add(new THREE.Line(pathGeo2, pathMat2));
 
   let mx = 0;
   let my = 0;
@@ -810,24 +953,53 @@ window.addEventListener('DOMContentLoaded', () => {
 
   function animate() {
     requestAnimationFrame(animate);
-    tick += 0.008;
+    tick += 0.01;
 
-    meshes.forEach(obj => {
-      obj.m.rotation.x += obj.rx;
-      obj.m.rotation.y += obj.ry;
+    // Fast rotation of spindle endmill
+    rotatingGroup.rotation.y += 0.35;
+
+    // Horizontally feed workpiece vice block under the cutter
+    const tableFeed = Math.sin(tick * 0.5) * 3.5;
+    workpieceTable.position.x = -15 + tableFeed;
+
+    // Gear slow torque rotation
+    gearGroup.rotation.z -= 0.004;
+
+    particles.rotation.y += 0.0003;
+
+    // High performance chips physics emitter
+    const isCutting = Math.abs(tableFeed) < 1.8;
+    const cutterTipWorld = new THREE.Vector3(-15, -1.4, -10);
+
+    chips.forEach(chip => {
+      if (chip.life <= 0) {
+        if (isCutting) {
+          chip.mesh.position.copy(cutterTipWorld);
+          chip.velocity.set(
+            (Math.random() - 0.2) * 6,
+            Math.random() * 5 + 3,
+            (Math.random() - 0.5) * 4
+          );
+          chip.life = 0.4 + Math.random() * 0.4;
+          chip.mesh.visible = true;
+        } else {
+          chip.mesh.visible = false;
+        }
+      } else {
+        chip.life -= 0.016;
+        chip.velocity.y -= 0.2; // gravity factor
+        chip.mesh.position.addScaledVector(chip.velocity, 0.016);
+        chip.mesh.rotation.x += 0.15;
+        chip.mesh.rotation.y += 0.2;
+        if (chip.life <= 0) {
+          chip.mesh.visible = false;
+        }
+      }
     });
 
-    particles.rotation.y += 0.0005;
-    gear.position.y = Math.sin(tick * 0.7) * 2 - 5;
-    spindle.position.y = Math.sin(tick * 0.5) * 1.5;
-    drillGroup.position.y = 8 + Math.sin(tick * 3) * 3;
-
-    bl.position.x = Math.sin(tick * 0.6) * 35;
-    bl2.position.x = Math.cos(tick * 0.4) * 30;
-
-    camera.position.x += (mx * 6 - camera.position.x) * 0.035;
-    camera.position.y += (my * 3 + 8 - camera.position.y) * 0.035;
-    camera.lookAt(0, 0, 0);
+    camera.position.x += (mx * 8 - camera.position.x) * 0.03;
+    camera.position.y += (my * 4 + 6 - camera.position.y) * 0.03;
+    camera.lookAt(0, 0, -8);
 
     renderer.render(scene, camera);
   }
