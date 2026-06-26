@@ -1457,10 +1457,10 @@ function generateSiemensTurningCode() {
     
     // Add contour definition
     g += `CONTOUR1: (START OF PROFILE GEOMETRY)\n`;
-    g += `G01 X0.0 Z0.0 F${rFeed} (START POINT AT CENTER)\n`;
+    g += `G01 X${target.toFixed(3)} Z2.000 F${rFeed} (START POINT AT TARGET DIA, SAFE Z CLEARANCE)\n`;
+    g += `G01 X${target.toFixed(3)} Z0.000 (TOUCH FACE)\n`;
     
     if (profile === "straight") {
-        g += `G01 X${target.toFixed(3)} Z0.0 (FACE PLUNGE)\n`;
         g += `G01 X${target.toFixed(3)} Z-${length.toFixed(3)} (STRAIGHT CYLINDER CUT)\n`;
     } else if (profile === "step") {
         let stepMidDiaVal = stepDia;
@@ -1475,12 +1475,10 @@ function generateSiemensTurningCode() {
         }
         const stepZ = stepLenVal.toFixed(3);
         
-        g += `G01 X${target.toFixed(3)} Z0.0 (FACE PLUNGE)\n`;
         g += `G01 X${target.toFixed(3)} Z-${stepZ} (FIRST STEP CUT)\n`;
         g += `G01 X${stepMidDia} Z-${stepZ} (SECOND FACE PLUNGE)\n`;
         g += `G01 X${stepMidDia} Z-${length.toFixed(3)} (SECOND STEP CUT)\n`;
     } else if (profile === "taper") {
-        g += `G01 X${target.toFixed(3)} Z0.0 (FACE AT CENTER)\n`;
         g += `G01 X${blank.toFixed(3)} Z-${length.toFixed(3)} (TAPER PROFILE)\n`;
     } else {
         // profiled curves
@@ -1490,7 +1488,6 @@ function generateSiemensTurningCode() {
         }
         const straightZ = stepLenVal.toFixed(3);
         const filRad = Math.min(10, length - stepLenVal).toFixed(3);
-        g += `G01 X${target.toFixed(3)} Z0.0\n`;
         g += `G01 X${target.toFixed(3)} Z-${straightZ}\n`;
         g += `G02 X${blank.toFixed(3)} Z-${length.toFixed(3)} CR=${filRad} (ROUNDED PROFILE)\n`;
     }
