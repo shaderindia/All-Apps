@@ -572,7 +572,7 @@ ${arcLine(pl, "#6", true, "N29")}
 IF[#15 GT #2] GOTO 29 ;
 IF[#12 EQ 0] GOTO 35 ;
 ${arcLine(pl, "#6", false, "N35")}
-N35 G01 G40 ${pl.u}0 ${pl.v}0 ;
+N35 G90 G01 G40 ${pl.u}0 ${pl.v}0 ;
 ${retractBlock(pl)}
 G52 ${pl.u}0 ${pl.v}0 ${pl.d}0 ;
 M5 ;
@@ -730,6 +730,12 @@ ${p.endCode} ;
             // Draw full circular cut CCW (G03)
             ctx.beginPath();
             ctx.arc(canvas.width / 2, canvas.height / 2, rCenter * scale, -Math.PI / 2, 1.5 * Math.PI, true);
+            ctx.stroke();
+
+            // ponytail: Draw line back to center to match absolute center-retract in G-code
+            ctx.beginPath();
+            ctx.moveTo(toCanvasX(0), toCanvasY(rCenter));
+            ctx.lineTo(toCanvasX(0), toCanvasY(0));
             ctx.stroke();
 
             // Draw directional arrow on circle path (left side)
