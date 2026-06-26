@@ -276,124 +276,7 @@
       display: none !important;
     }
 
-    /* Premium 3D Sliding Carousel Button Container */
-    .hero-button-container {
-      perspective: 1200px;
-      width: 440px;
-      max-width: 100%;
-      height: 76px; /* Bigger button height */
-      position: relative;
-      display: inline-block;
-      vertical-align: middle;
-      overflow: visible; /* preserve 3D perspective without clipping */
-    }
-    .carousel-btn {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: flex-start; /* Arrange preview image and text cleanly */
-      padding: 0 1.5rem;
-      white-space: nowrap;
-      text-decoration: none;
-      box-shadow: 0 20px 45px -8px rgba(15, 23, 42, 0.22);
-      backface-visibility: hidden;
-      -webkit-backface-visibility: hidden;
-      transform-style: preserve-3d;
-      border-radius: 9999px; /* Premium pill-shaped design */
-      
-      /* Smooth 4-second transition for 3D trajectory and blur filter */
-      transition: transform 4s cubic-bezier(0.25, 1, 0.5, 1), 
-                  opacity 4s cubic-bezier(0.25, 1, 0.5, 1), 
-                  filter 4s cubic-bezier(0.25, 1, 0.5, 1), 
-                  border-color 0.3s, 
-                  background 0.3s,
-                  box-shadow 0.3s;
-    }
-    
-    /* 3D Entry State (Right) - blurred, scaled, faded, unclickable */
-    .carousel-btn.state-enter {
-      transform: translateX(125%) translateZ(-400px) rotateY(-50deg) scale(0.85);
-      opacity: 0.45; /* clear visibility, but beautiful depth */
-      filter: blur(2.5px); /* gentle, visible out-of-focus background effect */
-      pointer-events: none;
-      cursor: default;
-    }
-    
-    /* 3D Center State (Active) - sharp, in-focus, fully clickable */
-    .carousel-btn.state-center {
-      transform: translateX(0) translateZ(0) rotateY(0deg) scale(1);
-      opacity: 1;
-      filter: blur(0); /* sharp in-focus active center state */
-      pointer-events: auto;
-      cursor: pointer;
-      z-index: 2;
-    }
-    
-    /* 3D Exit State (Left) - blurred, scaled, faded, unclickable */
-    .carousel-btn.state-exit {
-      transform: translateX(-125%) translateZ(-400px) rotateY(50deg) scale(0.85);
-      opacity: 0.45; /* clear visibility, but beautiful depth */
-      filter: blur(2.5px); /* gentle, visible out-of-focus background effect */
-      pointer-events: none;
-      cursor: default;
-      z-index: 1;
-    }
 
-    /* Responsive layout scaling for navigation arrows and margins */
-    @media (max-width: 640px) {
-      #carousel-prev-btn, #carousel-next-btn {
-        width: 40px !important;
-        height: 40px !important;
-        margin-left: 0.25rem !important;
-        margin-right: 0.25rem !important;
-      }
-      #carousel-prev-btn svg, #carousel-next-btn svg {
-        width: 16px !important;
-        height: 16px !important;
-        stroke-width: 3.5;
-      }
-      .hero-button-container {
-        margin-left: 0.5rem !important;
-        margin-right: 0.5rem !important;
-      }
-    }
-
-    /* Mobile responsiveness for the dynamic button to prevent screen overflow */
-    @media (max-width: 480px) {
-      .hero-button-container {
-        width: 320px;
-        height: 64px;
-      }
-      .carousel-btn {
-        padding: 0 1rem;
-      }
-      .carousel-btn img {
-        width: 36px !important;
-        height: 36px !important;
-        margin-right: 0.65rem !important;
-      }
-      .carousel-btn span[style*="font-size: 10px"] {
-        font-size: 8px !important;
-      }
-      .carousel-btn span.text-sm {
-        font-size: 11px !important;
-      }
-      /* Reduce translation on mobile to keep entry/exit previews visible inside bounds */
-      .carousel-btn.state-enter {
-        transform: translateX(110%) translateZ(-300px) rotateY(-45deg) scale(0.8);
-      }
-      .carousel-btn.state-exit {
-        transform: translateX(-110%) translateZ(-300px) rotateY(45deg) scale(0.8);
-      }
-    }
-    .carousel-btn i {
-      display: inline-block;
-      width: 1.25em;
-      text-align: center;
-    }
   </style>
   <!-- Tailwind CSS inlined — eliminates render-blocking network request -->
 
@@ -442,6 +325,14 @@
       background: rgba(255, 255, 255, 0.98) !important;
       backdrop-filter: blur(20px) !important;
       border-bottom: 1px solid rgba(15, 23, 42, 0.08) !important;
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: max-height 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease-out;
+    }
+    #mobile-menu.active {
+      max-height: 350px;
+      opacity: 1;
     }
     #mobile-menu a { color: #1e293b !important; }
 
@@ -651,16 +542,7 @@
       box-shadow: 0 2px 8px rgba(37, 99, 235, 0.06) !important;
     }
 
-    /* ── CAROUSEL CARDS ── */
-    .carousel-btn {
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(241, 245, 249, 0.95)) !important;
-      border: 1px solid rgba(15, 23, 42, 0.07) !important;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255,255,255,0.9) !important;
-      backdrop-filter: blur(12px) !important;
-      transition: transform 4s cubic-bezier(0.25, 1, 0.5, 1), opacity 4s cubic-bezier(0.25, 1, 0.5, 1), filter 4s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s, background 0.3s;
-    }
-    .carousel-btn .text-sm { color: #0f172a !important; }
-    .carousel-btn svg { fill: #0f172a !important; color: #0f172a !important; }
+
 
     /* ── BADGE PILLS ── */
     .bg-indigo-100 { background: rgba(37, 99, 235, 0.08) !important; } .text-indigo-800 { color: #1e40af !important; }
@@ -791,7 +673,7 @@
       </div>
     </div>
 
-    <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 shadow-lg">
+    <div id="mobile-menu" class="md:hidden bg-white border-t border-gray-100 shadow-lg">
       <a href="#tools" class="mobile-link block px-5 py-3 text-gray-800 hover:bg-indigo-50 font-semibold">Tools</a>
       <a href="cnc-machinist/" class="mobile-link block px-5 py-3 text-gray-800 hover:bg-indigo-50 font-semibold">CNC Hub</a>
       <a href="blog.html" class="mobile-link block px-5 py-3 text-gray-800 hover:bg-indigo-50 font-semibold">Blog</a>
@@ -806,48 +688,13 @@
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
 
-      <!-- Glowing Location Clock & Date Badge -->
-      <div class="inline-flex flex-col md:flex-row items-center gap-3 md:gap-4 bg-slate-200/50 border border-slate-300/60 px-5 py-2.5 rounded-3xl text-sm font-semibold text-slate-700 mb-7 shadow-lg backdrop-blur">
-        <div class="flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-amber-600">
-            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-          </svg>
-          <span>Free tools • No signup • Fast results</span>
-        </div>
-        <span class="hidden md:inline text-slate-400">|</span>
-        <div class="flex items-center gap-3 text-slate-800">
-          <span class="flex items-center gap-1.5 text-slate-700">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4 text-blue-600">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-9-6h.008v.008H12v-.008zM12 15h.008v.008H12V15zm0 2.25h.008v.008H12v-.008zM9.75 15h.008v.008H9.75V15zm0 2.25h.008v.008H9.75v-.008zM7.5 15h.008v.008H7.5V15zm0 2.25h.008v.008H7.5v-.008zm6.75-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V15zm0 2.25h.008v.008h-.008v-.008zm2.25-4.5h.008v.008H16.5v-.008zm0 2.25h.008v.008H16.5V15z" />
-            </svg>
-            <span id="hero-date-text">Loading...</span>
-          </span>
-          <span class="text-slate-300">|</span>
-          <span class="flex items-center gap-1.5 font-mono font-bold tracking-tight bg-slate-100 border border-slate-300/50 rounded-lg px-2.5 py-0.5 text-xs shadow-inner text-slate-800">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5 text-blue-500 animate-pulse">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span id="hero-time-text">00:00:00</span>
-          </span>
-        </div>
+      <!-- Professional Feature Badge -->
+      <div class="inline-flex items-center gap-2 bg-slate-200/50 border border-slate-300/60 px-5 py-2.5 rounded-3xl text-sm font-semibold text-slate-700 mb-7 shadow-lg backdrop-blur">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-600">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+        </svg>
+        <span>Free Tools • No Signup Required • Secure & Browser-Based</span>
       </div>
-      <script>
-        (function() {
-          try {
-            const now = new Date();
-            const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            const formattedDate = now.toLocaleDateString(undefined, dateOptions);
-            const hDate = document.getElementById("hero-date-text");
-            if (hDate) hDate.textContent = formattedDate;
-            
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const seconds = String(now.getSeconds()).padStart(2, '0');
-            const hTime = document.getElementById("hero-time-text");
-            if (hTime) hTime.textContent = hours + ":" + minutes + ":" + seconds;
-          } catch(e) {}
-        })();
-      </script>
 
       <h1 class="text-4xl md:text-6xl font-black tracking-tight mb-6 leading-tight">
         Professional Tools for
@@ -862,109 +709,47 @@
         <strong>Free to use. No registration required.</strong>
       </p>
 
-      <div class="flex flex-col items-center justify-center gap-4">
-        <a href="#tools" class="hero-button px-8 py-3 rounded-full bg-blue-600 text-white font-bold hover:bg-blue-700 transition shadow-xl">
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a href="#tools" class="hero-button px-8 py-4 rounded-full bg-blue-600 text-white font-bold hover:bg-blue-700 transition shadow-xl text-center">
           Explore Tools
         </a>
-
-        <a href="cnc-machinist/" class="hero-button px-8 py-3 rounded-full bg-orange-700 hover:bg-orange-850 text-white font-bold transition shadow-xl border border-orange-500">
-          Enter CNC Machinist Section
+        <a href="cnc-machinist/" class="hero-button px-8 py-4 rounded-full bg-slate-800 text-white font-bold hover:bg-slate-900 transition shadow-xl border border-slate-700 text-center">
+          CNC Machinist Hub
         </a>
-
-        <!-- Sleek Interactive Carousel Wrapper with Manual Controls -->
-        <div class="relative flex items-center justify-center w-full max-w-2xl mx-auto mt-4 px-4">
-          <!-- Prev Arrow Button -->
-          <button id="carousel-prev-btn" class="flex-shrink-0 z-10 flex items-center justify-center w-12 h-12 rounded-full bg-white/70 backdrop-blur hover:bg-white/90 text-slate-700 transition-all duration-300 transform hover:scale-110 active:scale-95 shadow-lg border border-slate-200 focus:outline-none" aria-label="Previous tool">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3.5" stroke="currentColor" class="w-6 h-6">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-            </svg>
-          </button>
-
-          <!-- Premium 3D Sliding Carousel Button Container -->
-          <div class="hero-button-container mx-4">
-            <!-- Button A (active initially in the center) -->
-            <a href="photocompressor/" id="carousel-btn-a" class="carousel-btn state-center hero-button border-2 border-slate-200 text-slate-900 font-bold hover:bg-slate-50 transition duration-300">
-              <img src="screenshots/photo-compressor-app-thumb.webp" alt="Photo Compressor Preview" class="w-12 h-12 rounded-full object-cover border-2 border-white/50 mr-4 shadow-sm" style="width: 48px; height: 48px; min-width: 48px;" width="48" height="48" fetchpriority="high">
-              <div class="flex flex-col text-left">
-                <span style="font-size: 10px; opacity: 0.8; font-weight: 600; text-transform: uppercase; tracking-wider; color: #475569; margin-bottom: 2px;">Photo & Image</span>
-                <span class="text-sm font-bold text-slate-900 flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style="display:inline-block;width:1em;height:1em;vertical-align:-0.125em;fill:currentColor;margin-right:0.5rem"><path d="M160 64c0-17.7-14.3-32-32-32s-32 14.3-32 32v64H32c-17.7 0-32 14.3-32 32s14.3 32 32 32h96c17.7 0 32-14.3 32-32V64zm128 0v64h96c17.7 0 32 14.3 32 32s-14.3 32-32 32H288c-17.7 0-32-14.3-32-32V64c0-17.7 14.3-32 32-32s32 14.3 32 32zM32 320c-17.7 0-32 14.3-32 32s14.3 32 32 32H96v64c0 17.7 14.3 32 32 32s32-14.3 32-32V352c0-17.7-14.3-32-32-32H32zm288 64v64c0 17.7 14.3 32 32 32s32-14.3 32-32V352H320c-17.7 0-32-14.3-32-32s14.3-32 32-32h96c17.7 0 32 14.3 32 32v96c0 17.7-14.3 32-32 32s-32-14.3-32-32z"/></svg> Open Photo Compressor
-                </span>
-              </div>
-            </a>
-            <!-- Button B (waiting on the right initially) -->
-            <a href="photopassportsizepro/" id="carousel-btn-b" class="carousel-btn state-enter hero-button border-2 border-slate-200 text-slate-900 font-bold hover:bg-slate-50 transition duration-300">
-              <img src="screenshots/passport-photo-app-thumb.webp" alt="Passport Photo PRO Preview" class="w-12 h-12 rounded-full object-cover border-2 border-white/50 mr-4 shadow-sm" style="width: 48px; height: 48px; min-width: 48px;" width="48" height="48" loading="eager">
-              <div class="flex flex-col text-left">
-                <span style="font-size: 10px; opacity: 0.8; font-weight: 600; text-transform: uppercase; tracking-wider; color: #1d4ed8; margin-bottom: 2px;">Biometric ID</span>
-                <span class="text-sm font-bold text-slate-900 flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="display:inline-block;width:1em;height:1em;vertical-align:-0.125em;fill:currentColor;margin-right:0.5rem"><path d="M149.1 64.8L138.7 96H64C28.7 96 0 124.7 0 160V416c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V160c0-35.3-28.7-64-64-64H373.3L362.9 64.8C356.4 45.2 338.1 32 317.4 32H194.6c-20.7 0-39 13.2-45.5 32.8zM256 192a96 96 0 1 1 0 192 96 96 0 1 1 0-192z"/></svg> Open Passport Photo PRO
-                </span>
-              </div>
-            </a>
-            <!-- Button C (waiting on the left initially) -->
-            <a href="berofchat/" id="carousel-btn-c" class="carousel-btn state-exit hero-button border-2 border-slate-200 text-slate-900 font-bold hover:bg-slate-50 transition duration-300">
-              <img src="screenshots/p2p-chat-app-thumb.webp" alt="Private Chat Preview" class="w-12 h-12 rounded-full object-cover border-2 border-white/50 mr-4 shadow-sm" style="width: 48px; height: 48px; min-width: 48px;" width="48" height="48" loading="eager">
-              <div class="flex flex-col text-left">
-                <span style="font-size: 10px; opacity: 0.8; font-weight: 600; text-transform: uppercase; tracking-wider; color: #0d9488; margin-bottom: 2px;">P2P Messaging</span>
-                <span class="text-sm font-bold text-slate-900 flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" style="display:inline-block;width:1em;height:1em;vertical-align:-0.125em;fill:currentColor;margin-right:0.5rem"><path d="M208 352c114.9 0 208-78.8 208-176S322.9 0 208 0S0 78.8 0 176c0 38.6 14.7 74.3 39.6 103.4c-3.5 9.4-8.7 17.7-14.8 25.4c-4.8 6.2-9.7 12-14.8 17.8c-2.6 3-2 7.5 1.3 9.7c12.3 7.4 26.5 11.7 41.7 11.7c30.9 0 58.6-13.3 78.2-34.8C149.6 349 178.3 352 208 352zm272-96c17.5 0 34.1-2.2 49.8-6.2c-29.6-23.6-47.8-55.8-47.8-91.8c0-55.2 32.5-103.5 81.3-133.5c-22.1-8-46.3-12.5-71.3-12.5c-114.9 0-208 78.8-208 176c0 42.6 16.3 81.7 43.3 112.7C327.8 299.5 344 272 344 240z"/></svg> Open Private Chat
-                </span>
-              </div>
-            </a>
-          </div>
-
-          <!-- Next Arrow Button -->
-          <button id="carousel-next-btn" class="flex-shrink-0 z-10 flex items-center justify-center w-12 h-12 rounded-full bg-white/70 backdrop-blur hover:bg-white/90 text-slate-700 transition-all duration-300 transform hover:scale-110 active:scale-95 shadow-lg border border-slate-200 focus:outline-none" aria-label="Next tool">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3.5" stroke="currentColor" class="w-6 h-6">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-            </svg>
-          </button>
-        </div>
       </div>
 
-      <div class="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto">
-        <div class="flex flex-col items-center p-4">
-          <div class="w-12 h-12 bg-indigo-50 border border-indigo-100 rounded-full flex items-center justify-center shadow-sm mb-2" aria-hidden="true">
+      <div class="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl mx-auto">
+        <div class="flex flex-col items-center p-6 bg-white/60 backdrop-blur rounded-2xl border border-slate-200/50 shadow-sm">
+          <div class="w-12 h-12 bg-indigo-50 border border-indigo-100 rounded-full flex items-center justify-center shadow-sm mb-3" aria-hidden="true">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-600">
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
               <path d="M7 11V7a5 5 0 0 1 9.9-1"></path>
             </svg>
           </div>
-          <div class="text-sm font-semibold text-slate-700 mt-1">No forced signup</div>
+          <div class="text-base font-bold text-slate-900">No Forced Signup</div>
+          <p class="text-xs text-slate-500 text-center mt-1">Start using any tool immediately without an account.</p>
         </div>
 
-        <div class="flex flex-col items-center p-4">
-          <div class="w-12 h-12 bg-emerald-50 border border-emerald-100 rounded-full flex items-center justify-center shadow-sm mb-2" aria-hidden="true">
+        <div class="flex flex-col items-center p-6 bg-white/60 backdrop-blur rounded-2xl border border-slate-200/50 shadow-sm">
+          <div class="w-12 h-12 bg-emerald-50 border border-emerald-100 rounded-full flex items-center justify-center shadow-sm mb-3" aria-hidden="true">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-600">
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
               <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
             </svg>
           </div>
-          <div class="text-sm font-semibold text-slate-700 mt-1">Browser-first tools</div>
+          <div class="text-base font-bold text-slate-900">Browser-First</div>
+          <p class="text-xs text-slate-500 text-center mt-1">Tools run locally in your browser for maximum privacy.</p>
         </div>
 
-        <div class="flex flex-col items-center p-4">
-          <div class="w-12 h-12 bg-amber-50 border border-amber-100 rounded-full flex items-center justify-center shadow-sm mb-2" aria-hidden="true">
+        <div class="flex flex-col items-center p-6 bg-white/60 backdrop-blur rounded-2xl border border-slate-200/50 shadow-sm">
+          <div class="w-12 h-12 bg-amber-50 border border-amber-100 rounded-full flex items-center justify-center shadow-sm mb-3" aria-hidden="true">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-amber-600">
               <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
             </svg>
           </div>
-          <div class="text-sm font-semibold text-slate-700 mt-1">Instant results</div>
+          <div class="text-base font-bold text-slate-900">Instant Results</div>
+          <p class="text-xs text-slate-500 text-center mt-1">Generate files, calculations, and images in seconds.</p>
         </div>
-      </div>
-
-      <div class="mt-12 flex flex-col items-center justify-center glass p-6 rounded-2xl max-w-xl mx-auto shadow-xl">
-        <p class="text-sm md:text-base text-slate-700 font-semibold mb-4 flex items-center justify-center gap-2 text-center">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" class="text-pink-600 animate-pulse">
-            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
-          </svg>
-          Help keep Shader7 free, useful, and growing.
-        </p>
-
-        <a href="contact.html" class="px-6 py-3 rounded-full bg-pink-600 hover:bg-pink-700 text-white font-bold transition shadow-md text-center">
-          Sponsor, Donate, or Support
-        </a>
       </div>
 
     </div>
@@ -1078,20 +863,25 @@
 
     <div id="toolsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 
-      <!-- Passport Photo Pro -->
-      <article data-tool="passport photo pro id photo ai crop" data-category="photo" class="tool-card overflow-hidden relative">
+      <!-- Passport Photo Suite -->
+      <article data-tool="passport photo pro id photo ai crop classic print size" data-category="photo" class="tool-card overflow-hidden relative">
         <div class="absolute top-0 right-0 bg-yellow-400 text-yellow-950 text-xs font-black px-3 py-1 rounded-bl-xl shadow-sm z-10">POPULAR</div>
         
-        <img src="photopassportsizepro/banner.webp" alt="Passport Photo PRO Banner" class="w-full h-48 object-contain bg-black" style="height: 192px; object-fit: contain; background-color: #010005;" width="800" height="320" loading="lazy">
+        <img src="photopassportsizepro/banner.webp" alt="Passport Photo Suite Banner" class="w-full h-48 object-contain bg-black" style="height: 192px; object-fit: contain; background-color: #010005;" width="800" height="320" loading="lazy">
 
         <div class="p-8">
-          <h3 class="text-xl font-black text-gray-900 mb-2">Passport Photo PRO</h3>
+          <h3 class="text-xl font-black text-gray-900 mb-2">Passport Photo Suite</h3>
           <p class="text-gray-700 mb-6 text-sm leading-relaxed">
-            Create professional passport and ID photos with precise cropping, clean output, and print-ready layouts.
+            Create biometric passport and ID photos. Use **PRO** for automatic AI-powered cropping, or **Classic** for manual sizing and layouts.
           </p>
-          <a href="photopassportsizepro/" class="block w-full text-center py-3 bg-indigo-700 hover:bg-indigo-800 text-white font-bold rounded-xl transition shadow-sm">
-            Launch Tool
-          </a>
+          <div class="grid grid-cols-2 gap-3">
+            <a href="photopassportsizepro/" class="block text-center py-3 bg-indigo-700 hover:bg-indigo-800 text-white font-bold rounded-xl transition shadow-sm text-sm">
+              Launch PRO
+            </a>
+            <a href="passportsizephoto/" class="block text-center py-3 bg-white border-2 border-indigo-700 text-indigo-700 hover:bg-indigo-50 font-bold rounded-xl transition text-sm">
+              Launch Classic
+            </a>
+          </div>
         </div>
       </article>
 
@@ -1241,19 +1031,7 @@
         </div>
       </article>
 
-      <!-- Classic Passport Tool -->
-      <article data-tool="classic passport photo id photo size print" data-category="photo" class="tool-card overflow-hidden">
-        <div class="p-8">
-          <img src="passport-logo.webp" alt="Passport Photo Classic Logo" class="w-14 h-14 rounded-2xl object-cover mb-5 shadow-md" style="width: 56px; height: 56px; object-fit: cover;" width="56" height="56" loading="lazy">
-          <h3 class="text-xl font-black text-gray-900 mb-2">Passport Photo Classic</h3>
-          <p class="text-gray-700 mb-6 text-sm leading-relaxed">
-            Use the classic passport photo tool for quick ID photo creation and basic photo formatting.
-          </p>
-          <a href="passportsizephoto/" class="block w-full text-center py-3 bg-gray-100 hover:bg-gray-200 text-gray-950 font-bold rounded-xl transition border border-gray-300">
-            Open Classic Tool
-          </a>
-        </div>
-      </article>
+
 
     </div>
   </main>
@@ -1522,7 +1300,7 @@
     function closeMobileMenu() {
       if (!mobileMenu || !mobileMenuBtn) return;
 
-      mobileMenu.classList.add("hidden");
+      mobileMenu.classList.remove("active");
       mobileMenuBtn.setAttribute("aria-expanded", "false");
 
       if (menuIconOpen && menuIconClose) {
@@ -1533,12 +1311,12 @@
 
     if (mobileMenuBtn && mobileMenu) {
       mobileMenuBtn.addEventListener("click", function () {
-        const isOpen = !mobileMenu.classList.contains("hidden");
+        const isOpen = mobileMenu.classList.contains("active");
 
         if (isOpen) {
           closeMobileMenu();
         } else {
-          mobileMenu.classList.remove("hidden");
+          mobileMenu.classList.add("active");
           mobileMenuBtn.setAttribute("aria-expanded", "true");
 
           if (menuIconOpen && menuIconClose) {
@@ -1708,299 +1486,6 @@
         }
       });
     }
-
-    // Premium 3D Sliding Carousel Button Script
-    const toolsList = [
-      { 
-        name: "Photo Compressor", 
-        url: "/photocompressor/", 
-        category: "Photo & Image",
-        img: "/screenshots/photo-compressor-app-thumb.webp",
-        icon: "fa-solid fa-compress fa-beat mr-2", 
-        style: "border-slate-200 text-slate-900 hover:bg-slate-50" 
-      },
-      { 
-        name: "Passport Photo PRO", 
-        url: "/photopassportsizepro/", 
-        category: "Biometric ID",
-        img: "/screenshots/passport-photo-app-thumb.webp",
-        icon: "fa-solid fa-camera-retro fa-bounce mr-2", 
-        style: "border-slate-200 text-slate-900 hover:bg-slate-50" 
-      },
-      { 
-        name: "Resume Builder", 
-        url: "/cvbanao/", 
-        category: "Resume & Career",
-        img: "/screenshots/resume-builder-app-thumb.webp",
-        icon: "fa-solid fa-file-invoice fa-shake mr-2", 
-        style: "border-slate-200 text-slate-900 hover:bg-slate-50" 
-      },
-      { 
-        name: "Salary Calculator", 
-        url: "/hourlysalarycalculator/", 
-        category: "Finance & Income",
-        img: "/screenshots/salary-calculator-app-thumb.webp",
-        icon: "fa-solid fa-calculator fa-flip mr-2", 
-        style: "border-slate-200 text-slate-900 hover:bg-slate-50" 
-      },
-      { 
-        name: "Receipt Maker", 
-        url: "/receiptpro/", 
-        category: "Business Invoice",
-        img: "/screenshots/receipt-maker-app-thumb.webp",
-        icon: "fa-solid fa-receipt fa-bounce mr-2", 
-        style: "border-slate-200 text-slate-900 hover:bg-slate-50" 
-      },
-      { 
-        name: "FairShare Splitter", 
-        url: "/fairshare/", 
-        category: "Expense Split",
-        img: "/screenshots/expense-splitter-app-thumb.webp",
-        icon: "fa-solid fa-scale-balanced fa-shake mr-2", 
-        style: "border-slate-200 text-slate-900 hover:bg-slate-50" 
-      },
-      { 
-        name: "Private Chat", 
-        url: "/berofchat/", 
-        category: "P2P Messaging",
-        img: "/screenshots/p2p-chat-app-thumb.webp",
-        icon: "fa-solid fa-comments fa-beat-fade mr-2", 
-        style: "border-slate-200 text-slate-900 hover:bg-slate-50" 
-      }
-    ];
-
-    let activeIndex = 0;
-    const btnA = document.getElementById("carousel-btn-a");
-    const btnB = document.getElementById("carousel-btn-b");
-    const btnC = document.getElementById("carousel-btn-c");
-    
-    let centerBtn = btnA;
-    let rightBtn = btnB;
-    let leftBtn = btnC;
-    let transitionInProgress = false;
-    let autoRotateInterval;
-    
-    // Function to generate the premium inner HTML for the button
-    // SVG icons for carousel (replaces FontAwesome — no external CSS needed)
-    const ICON_SVGS = {
-      "fa-solid fa-compress fa-beat mr-2":        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style="display:inline-block;width:1em;height:1em;vertical-align:-0.125em;fill:currentColor;margin-right:0.5rem"><path d="M160 64c0-17.7-14.3-32-32-32s-32 14.3-32 32v64H32c-17.7 0-32 14.3-32 32s14.3 32 32 32h96c17.7 0 32-14.3 32-32V64zm128 0v64h96c17.7 0 32 14.3 32 32s-14.3 32-32 32H288c-17.7 0-32-14.3-32-32V64c0-17.7 14.3-32 32-32s32 14.3 32 32zM32 320c-17.7 0-32 14.3-32 32s14.3 32 32 32H96v64c0 17.7 14.3 32 32 32s32-14.3 32-32V352c0-17.7-14.3-32-32-32H32zm288 64v64c0 17.7 14.3 32 32 32s32-14.3 32-32V352H320c-17.7 0-32-14.3-32-32s14.3-32 32-32h96c17.7 0 32 14.3 32 32v96c0 17.7-14.3 32-32 32s-32-14.3-32-32z"/></svg>',
-      "fa-solid fa-camera-retro fa-bounce mr-2":  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="display:inline-block;width:1em;height:1em;vertical-align:-0.125em;fill:currentColor;margin-right:0.5rem"><path d="M149.1 64.8L138.7 96H64C28.7 96 0 124.7 0 160V416c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V160c0-35.3-28.7-64-64-64H373.3L362.9 64.8C356.4 45.2 338.1 32 317.4 32H194.6c-20.7 0-39 13.2-45.5 32.8zM256 192a96 96 0 1 1 0 192 96 96 0 1 1 0-192z"/></svg>',
-      "fa-solid fa-comments fa-beat-fade mr-2":   '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" style="display:inline-block;width:1em;height:1em;vertical-align:-0.125em;fill:currentColor;margin-right:0.5rem"><path d="M208 352c114.9 0 208-78.8 208-176S322.9 0 208 0S0 78.8 0 176c0 38.6 14.7 74.3 39.6 103.4c-3.5 9.4-8.7 17.7-14.8 25.4c-4.8 6.2-9.7 12-14.8 17.8c-2.6 3-2 7.5 1.3 9.7c12.3 7.4 26.5 11.7 41.7 11.7c30.9 0 58.6-13.3 78.2-34.8C149.6 349 178.3 352 208 352zm272-96c17.5 0 34.1-2.2 49.8-6.2c-29.6-23.6-47.8-55.8-47.8-91.8c0-55.2 32.5-103.5 81.3-133.5c-22.1-8-46.3-12.5-71.3-12.5c-114.9 0-208 78.8-208 176c0 42.6 16.3 81.7 43.3 112.7C327.8 299.5 344 272 344 240z"/></svg>',
-      "fa-solid fa-file-invoice fa-shake mr-2":   '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" style="display:inline-block;width:1em;height:1em;vertical-align:-0.125em;fill:currentColor;margin-right:0.5rem"><path d="M64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V160H256c-17.7 0-32-14.3-32-32V0H64zM256 0V128H384L256 0zM80 64H240c8.8 0 16 7.2 16 16s-7.2 16-16 16H80c-8.8 0-16-7.2-16-16s7.2-16 16-16zm0 64H176c8.8 0 16 7.2 16 16s-7.2 16-16 16H80c-8.8 0-16-7.2-16-16s7.2-16 16-16zm96 104c8.8 0 16 7.2 16 16v17.3c8.5 1.2 16.7 3.1 24.1 5.1c8.5 2.3 13.6 11 11.3 19.6s-11 13.6-19.6 11.3c-11.1-3-22-4.6-32.1-4.7c-16 0-34.8 6.3-34.8 26.3c0 8.7 3.8 15.3 19.8 22.6l27.1 11.9c24 10.5 47.4 26.8 47.4 60.4c0 35.9-27.5 53.7-61.9 57.2V432c0 8.8-7.2 16-16 16s-16-7.2-16-16V414.8c-11.3-1.9-22.3-5.1-32.1-8.9c-8.3-3.2-12.4-12.5-9.2-20.8s12.5-12.4 20.8-9.2c12.6 4.8 26.3 7.5 40.2 7.5c20.3 0 38.3-6.7 38.3-28.4c0-10.1-4.4-17.9-23.7-26.7l-23.4-10.3C99.7 321.1 80 303.3 80 272.4c0-34.4 26.6-52.2 59.6-55.8V240c0-8.8 7.2-16 16-16z"/></svg>',
-      "fa-solid fa-calculator fa-flip mr-2":      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" style="display:inline-block;width:1em;height:1em;vertical-align:-0.125em;fill:currentColor;margin-right:0.5rem"><path d="M64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V64c0-35.3-28.7-64-64-64H64zM96 64H288c17.7 0 32 14.3 32 32v64c0 17.7-14.3 32-32 32H96c-17.7 0-32-14.3-32-32V96c0-17.7 14.3-32 32-32zm32 160a32 32 0 1 1 0 64 32 32 0 1 1 0-64zm-32 96a32 32 0 1 1 64 0 32 32 0 1 1 -64 0zm160-96a32 32 0 1 1 0 64 32 32 0 1 1 0-64zm-32 96a32 32 0 1 1 64 0 32 32 0 1 1 -64 0zM192 288a32 32 0 1 1 0 64 32 32 0 1 1 0-64zm-32 96a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg>',
-      "fa-solid fa-receipt fa-bounce mr-2":       '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" style="display:inline-block;width:1em;height:1em;vertical-align:-0.125em;fill:currentColor;margin-right:0.5rem"><path d="M14.1 0H17c.5 0 .9 .4 .9 .9V28.8l5.8-5.8c.9-.9 2.3-.9 3.2 0l5.8 5.8V.9c0-.5 .4-.9 .9-.9h2.9C40.7 0 44.8 4.1 44.8 9.1v.9H.9C.4 10 0 9.6 0 9.1V0h14.1zM0 64C0 28.7 28.7 0 64 0H320c35.3 0 64 28.7 64 64V448c0 9.7-4.4 18.4-11.4 24.2L256 384l-73.7 57.8c-9.3 7.3-22.3 7.3-31.6 0L77 384 11.4 472.2C4.4 466.4 0 457.7 0 448V64zm96 96c-8.8 0-16 7.2-16 16s7.2 16 16 16H288c8.8 0 16-7.2 16-16s-7.2-16-16-16H96zm0 96c-8.8 0-16 7.2-16 16s7.2 16 16 16H288c8.8 0 16-7.2 16-16s-7.2-16-16-16H96zm0 96c-8.8 0-16 7.2-16 16s7.2 16 16 16H160c8.8 0 16-7.2 16-16s-7.2-16-16-16H96z"/></svg>',
-      "fa-solid fa-scale-balanced fa-shake mr-2": '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" style="display:inline-block;width:1em;height:1em;vertical-align:-0.125em;fill:currentColor;margin-right:0.5rem"><path d="M96 64c0-17.7 14.3-32 32-32H512c17.7 0 32 14.3 32 32s-14.3 32-32 32H336V480c0 17.7-14.3 32-32 32s-32-14.3-32-32V96H128c-17.7 0-32-14.3-32-32zM.4 232.3C3 223.8 10.9 218 19.8 218H236.2c8.9 0 16.8 5.8 19.4 14.3l56 184H320 264 240c-8.8 0-16 7.2-16 16s7.2 16 16 16h48H344h48c8.8 0 16-7.2 16-16s-7.2-16-16-16H372l56-184c2.6-8.5 10.5-14.3 19.4-14.3H664.2c8.9 0 16.8 5.8 19.4 14.3l56 184H756h-48-24c-8.8 0-16 7.2-16 16s7.2 16 16 16h24 72 24c8.8 0 16-7.2 16-16s-7.2-16-16-16H780l56-184zM224 218H20l102 168L224 218zm432 0H452l102 168 102-168z"/></svg>',
-    };
-
-    function createButtonHTML(tool, categoryColor) {
-      const iconSvg = ICON_SVGS[tool.icon] || "";
-      return `
-        <img src="${tool.img}" alt="${tool.name} Preview" class="w-12 h-12 rounded-full object-cover border-2 border-white/50 mr-4 shadow-sm" style="width: 48px; height: 48px; min-width: 48px;" width="48" height="48" loading="eager">
-        <div class="flex flex-col text-left">
-          <span style="font-size: 10px; opacity: 0.8; font-weight: 600; text-transform: uppercase; tracking-wider; color: ${categoryColor}; margin-bottom: 2px;">${tool.category}</span>
-          <span class="text-sm font-bold text-slate-900 flex items-center">
-            ${iconSvg} Open ${tool.name}
-          </span>
-        </div>
-      `;
-    }
-
-    // Helper to determine the custom premium category tag color based on URL path
-    function getCategoryColor(tool) {
-      if (tool.url.includes("passport")) return "#1d4ed8"; // indigo/blue
-      if (tool.url.includes("cvbanao")) return "#db2777"; // pink/rose
-      if (tool.url.includes("salary")) return "#059669"; // emerald
-      if (tool.url.includes("receipt")) return "#7e22ce"; // purple
-      if (tool.url.includes("fairshare")) return "#1e40af"; // blue
-      if (tool.url.includes("chat")) return "#0d9488"; // teal
-      return "#475569"; // default / grey (photo compressor)
-    }
-
-    function performTransition(nextIndex, direction, isManual) {
-      if (transitionInProgress) return;
-      transitionInProgress = true;
-
-      const duration = isManual ? "0.4s" : "4s";
-      const ms = isManual ? 400 : 4000;
-
-      if (direction === "next") {
-        // Forward Transition (Next):
-        // 1. Calculate the tool that will appear instantly on the right: (nextIndex + 1) % toolsList.length
-        const rightToolIndex = (nextIndex + 1) % toolsList.length;
-        const rightTool = toolsList[rightToolIndex];
-        const rightCatColor = getCategoryColor(rightTool);
-
-        // 2. Teleport the current leftBtn to the right (state-enter) instantly (0s)
-        // Set transition to none and opacity to 0 to prevent visual flashing during the layout change frame
-        leftBtn.style.transition = "none";
-        leftBtn.style.opacity = "0";
-        leftBtn.classList.remove("state-exit", "state-center");
-        leftBtn.classList.add("state-enter");
-        leftBtn.href = rightTool.url;
-        leftBtn.className = "carousel-btn state-enter hero-button border-2 font-bold " + rightTool.style;
-        leftBtn.innerHTML = createButtonHTML(rightTool, rightCatColor);
-
-        // Capture local variables for asynchronous rAF execution closure
-        const animCenter = centerBtn;
-        const animRight = rightBtn;
-        const animLeft = leftBtn;
-
-        // 3. Set transition duration and trigger transitions asynchronously in the next animation frames
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            animCenter.style.transition = `transform ${duration} cubic-bezier(0.25, 1, 0.5, 1), opacity ${duration} cubic-bezier(0.25, 1, 0.5, 1), filter ${duration} cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s, background 0.3s`;
-            animRight.style.transition = `transform ${duration} cubic-bezier(0.25, 1, 0.5, 1), opacity ${duration} cubic-bezier(0.25, 1, 0.5, 1), filter ${duration} cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s, background 0.3s`;
-            animLeft.style.transition = `transform ${duration} cubic-bezier(0.25, 1, 0.5, 1), opacity ${duration} cubic-bezier(0.25, 1, 0.5, 1), filter ${duration} cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s, background 0.3s`;
-
-            // 4. Trigger 3D slide transitions
-            animCenter.classList.remove("state-center");
-            animCenter.classList.add("state-exit"); // slides left
-
-            animRight.classList.remove("state-enter");
-            animRight.classList.add("state-center"); // slides center
-
-            // Restore the opacity to let the style sheet's state-enter rules apply and transition smoothly
-            animLeft.style.opacity = "";
-          });
-        });
-
-        // 5. Update references immediately (synchronously)
-        const oldLeft = leftBtn;
-        const oldCenter = centerBtn;
-        const oldRight = rightBtn;
-
-        leftBtn = oldCenter;   // old center is now on the left
-        centerBtn = oldRight;  // old right is now in the center
-        rightBtn = oldLeft;    // old left (teleported) is now on the right
-
-      } else {
-        // Backward Transition (Prev):
-        // 1. Calculate the tool that will appear instantly on the left: (nextIndex - 1 + toolsList.length) % toolsList.length
-        const leftToolIndex = (nextIndex - 1 + toolsList.length) % toolsList.length;
-        const leftTool = toolsList[leftToolIndex];
-        const leftCatColor = getCategoryColor(leftTool);
-
-        // 2. Teleport the current rightBtn to the left (state-exit) instantly (0s)
-        // Set transition to none and opacity to 0 to prevent visual flashing during the layout change frame
-        rightBtn.style.transition = "none";
-        rightBtn.style.opacity = "0";
-        rightBtn.classList.remove("state-enter", "state-center");
-        rightBtn.classList.add("state-exit");
-        rightBtn.href = leftTool.url;
-        rightBtn.className = "carousel-btn state-exit hero-button border-2 font-bold " + leftTool.style;
-        rightBtn.innerHTML = createButtonHTML(leftTool, leftCatColor);
-
-        // Capture local variables for asynchronous rAF execution closure
-        const animCenter = centerBtn;
-        const animLeft = leftBtn;
-        const animRight = rightBtn;
-
-        // 3. Set transition duration and trigger transitions asynchronously in the next animation frames
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            animCenter.style.transition = `transform ${duration} cubic-bezier(0.25, 1, 0.5, 1), opacity ${duration} cubic-bezier(0.25, 1, 0.5, 1), filter ${duration} cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s, background 0.3s`;
-            animLeft.style.transition = `transform ${duration} cubic-bezier(0.25, 1, 0.5, 1), opacity ${duration} cubic-bezier(0.25, 1, 0.5, 1), filter ${duration} cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s, background 0.3s`;
-            animRight.style.transition = `transform ${duration} cubic-bezier(0.25, 1, 0.5, 1), opacity ${duration} cubic-bezier(0.25, 1, 0.5, 1), filter ${duration} cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s, background 0.3s`;
-
-            // 4. Trigger 3D slide transitions
-            animCenter.classList.remove("state-center");
-            animCenter.classList.add("state-enter"); // slides right
-
-            animLeft.classList.remove("state-exit");
-            animLeft.classList.add("state-center"); // slides center
-
-            // Restore the opacity to let the style sheet's state-exit rules apply and transition smoothly
-            animRight.style.opacity = "";
-          });
-        });
-
-        // 5. Update references
-        const oldLeft = leftBtn;
-        const oldCenter = centerBtn;
-        const oldRight = rightBtn;
-
-        rightBtn = oldCenter;  // old center is now on the right
-        centerBtn = oldLeft;   // old left is now in the center
-        leftBtn = oldRight;    // old right (teleported) is now on the left
-      }
-
-      activeIndex = nextIndex;
-
-      // Unlock after transition finishes (400ms for manual snaps, 4s for auto glides)
-      setTimeout(function() {
-        transitionInProgress = false;
-      }, ms);
-    }
-
-    function startAutoRotate() {
-      if (autoRotateInterval) {
-        clearInterval(autoRotateInterval);
-      }
-      autoRotateInterval = setInterval(function() {
-        const nextIndex = (activeIndex + 1) % toolsList.length;
-        performTransition(nextIndex, "next", false);
-      }, 14000); // 10s stay + 4s transition = 14s total cycle
-    }
-
-    if (btnA && btnB && btnC) {
-      // Initialize waiting button C (left side) with Private Chat (index 6, which is last)
-      const lastTool = toolsList[toolsList.length - 1];
-      leftBtn.href = lastTool.url;
-      leftBtn.className = "carousel-btn state-exit hero-button border-2 font-bold transition " + lastTool.style;
-      leftBtn.innerHTML = createButtonHTML(lastTool, "#99f6e4");
-
-      // Set up button event listeners
-      const prevBtn = document.getElementById("carousel-prev-btn");
-      const nextBtn = document.getElementById("carousel-next-btn");
-
-      if (prevBtn) {
-        prevBtn.addEventListener("click", function(e) {
-          e.preventDefault();
-          if (transitionInProgress) return;
-          const prevIndex = (activeIndex - 1 + toolsList.length) % toolsList.length;
-          performTransition(prevIndex, "prev", true);
-          startAutoRotate(); // restart interval timer on manual click
-        });
-      }
-
-      if (nextBtn) {
-        nextBtn.addEventListener("click", function(e) {
-          e.preventDefault();
-          if (transitionInProgress) return;
-          const nextIndex = (activeIndex + 1) % toolsList.length;
-          performTransition(nextIndex, "next", true);
-          startAutoRotate(); // restart interval timer on manual click
-        });
-      }
-
-      // Begin automatic rotation loop
-      startAutoRotate();
-    }
-
-    // Ticking live location timezone clock (24h format) & date calendar
-    let lastDateString = "";
-    function updateClock() {
-      const now = new Date();
-      
-      const dateKey = now.toDateString();
-      if (dateKey !== lastDateString) {
-        lastDateString = dateKey;
-        const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        const formattedDate = now.toLocaleDateString(undefined, dateOptions);
-        const hDate = document.getElementById("hero-date-text");
-        if (hDate) hDate.textContent = formattedDate;
-      }
-      
-      const hours = String(now.getHours()).padStart(2, '0');
-      const minutes = String(now.getMinutes()).padStart(2, '0');
-      const seconds = String(now.getSeconds()).padStart(2, '0');
-      const formattedTime = `${hours}:${minutes}:${seconds}`;
-
-      const hTime = document.getElementById("hero-time-text");
-      if (hTime) hTime.textContent = formattedTime;
-    }
-    setInterval(updateClock, 1000);
-    updateClock(); // execute instantly on load
 
     document.addEventListener("keydown", function (event) {
       if (event.key === "Escape") {
