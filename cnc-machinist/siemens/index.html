@@ -1797,9 +1797,9 @@ function updateMaterialCutMove(zStart, xStart, zEnd, xEnd) {
     const minZ = Math.min(zStart, zEnd);
     const maxZ = Math.max(zStart, zEnd);
     
-    // ponytail: capture pre-cut boundary radii to insert sharp step transitions just outside the cut limits
-    const oldRadiusLeft = getProfileRadiusAt(minZ);
-    const oldRadiusRight = getProfileRadiusAt(maxZ);
+    // ponytail: capture pre-cut boundary radii just outside the cut limits to preserve sharp step transitions
+    const oldRadiusLeft = getProfileRadiusAt(minZ - 0.001);
+    const oldRadiusRight = getProfileRadiusAt(maxZ + 0.001);
     
     insertProfileNode(minZ - 0.001, oldRadiusLeft);
     insertProfileNode(maxZ + 0.001, oldRadiusRight);
