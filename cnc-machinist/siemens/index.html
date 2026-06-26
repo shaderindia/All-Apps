@@ -1571,10 +1571,21 @@ function calculateToolpathSteps(blank, target, length, infeed, allowX, allowZ, p
         toolpathSteps.push({ x: target, z: 0, type: 'feed', desc: 'FACE CONTACT' });
         toolpathSteps.push({ x: blank, z: -length, type: 'feed', desc: 'TAPER PROFILE CUT' });
     } else {
-        // profile
+        // profile (high-fidelity segmented curve interpolation to match G02 arc)
         toolpathSteps.push({ x: target, z: 0, type: 'feed', desc: 'FACE CONTACT' });
         toolpathSteps.push({ x: target, z: -length * 0.6, type: 'feed', desc: 'STRAIGHT OD PROFILE' });
-        toolpathSteps.push({ x: blank, z: -length, type: 'feed', desc: 'CIRCULAR INTERPOLATION FILLET' });
+        
+        const startZ = -length * 0.6;
+        const endZ = -length;
+        const startX = target;
+        const endX = blank;
+        
+        for (let j = 1; j <= 5; j++) {
+            const t = j / 5;
+            const currZ = startZ + t * (endZ - startZ);
+            const currX = startX + (t * t) * (endX - startX); // quadratic curve path tracking
+            toolpathSteps.push({ x: currX, z: currZ, type: 'feed', desc: `FILLET CONTOUR STEP ${j}/5` });
+        }
     }
     
     // Clear contour out
@@ -1615,10 +1626,15 @@ function resetTurningSim() {
         toolZ = 5;
     }
     
-    // Reset material profile to full high-resolution cylinder blank (every 1mm)
+    // Reset material profile to full high-resolution cylinder blank (every 1mm, bounds guaranteed)
     materialCutProfile = [];
-    for (let z = -visualLen; z <= 0; z += 1) {
-        materialCutProfile.push({ z: z, x: visualBlankDia / 2 });
+    const lenInt = Math.ceil(visualLen);
+    for (let z = -lenInt; z <= 0; z++) {
+        const zCoord = z === -lenInt ? -visualLen : z;
+        materialCutProfile.push({ z: zCoord, x: visualBlankDia / 2 });
+    }
+    if (materialCutProfile.length > 0 && materialCutProfile[materialCutProfile.length - 1].z !== 0) {
+        materialCutProfile.push({ z: 0, x: visualBlankDia / 2 });
     }
 
     drawTurningFrame();
@@ -2056,6 +2072,14 @@ function renderSetupToolsList() {
 window.addEventListener('load', () => {
     suggestToolParameters();
     renderSetupToolsList();
+});
+
+// Handle responsive canvas redraw on window resize
+window.addEventListener('resize', () => {
+    const turningView = document.getElementById('turning-view');
+    if (turningView && turningView.classList.contains('active')) {
+        initTurningCanvas();
+    }
 });
 </script>
 
