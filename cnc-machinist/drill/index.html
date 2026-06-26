@@ -1504,7 +1504,21 @@ function calculate(){
     const D = parseFloat(diaEl.value);
     const tool = document.getElementById("toolMaterial").value;
     const mat = document.getElementById("workMaterial").value;
-    const depth = parseFloat(document.getElementById("depth").value) || 0;
+    
+    const depthInput = document.getElementById("depth");
+    let depth = parseFloat(depthInput.value) || 0;
+    if (depth < 0) {
+        depth = Math.abs(depth);
+        depthInput.value = depth;
+    }
+    
+    const blockInput = document.getElementById("blockSize");
+    let blockSize = parseFloat(blockInput.value) || 50;
+    if (blockSize <= 0) {
+        alert("Please enter a valid positive block thickness.");
+        blockInput.focus();
+        return;
+    }
 
     // Reject Zero, Negative, or Empty numbers
     if(!D || D <= 0){ 
@@ -1535,7 +1549,6 @@ function calculate(){
     const rpmMinRaw = rpmStdRaw * 0.6;
     const rpmMaxRaw = rpmStdRaw * 1.2;
 
-    let html = "";
     let stdRpmVal = 0;
     let stdFeedVal = 0;
     let pitchVal = 0;
@@ -1543,6 +1556,15 @@ function calculate(){
     let minTap = { r: 0, f: 0 };
     let stdTap = { r: 0, f: 0 };
     let maxTap = { r: 0, f: 0 };
+
+    // 1. Workpiece Table Collision Warning (for both drill and tap)
+    if (depth > 0 && depth >= blockSize) {
+        peckWarning += `
+        <div class="info-box warning" style="margin-top: 15px; border-left-color: var(--danger); background: rgba(239, 68, 68, 0.05); color: #fee2e2;">
+            <div class="info-box-title" style="color: var(--danger);">⚠️ Table Collision Crash Risk</div>
+            <p style="font-size: 0.82rem; margin-top: 2px;">Hole Z-depth (${depth}mm) is greater than or equal to workpiece thickness (${blockSize}mm). The tool will drill completely through the workpiece. Ensure clearance spacers or parallels are in place under the stock to prevent severe damage to the machine table or vice.</p>
+        </div>`;
+    }
 
     if(op === "drill"){
         const f_rev = drillFeedPerRev(D);
@@ -1556,63 +1578,13 @@ function calculate(){
         stdFeedVal = Math.round(rpmStd * f_rev);
         pitchVal = f_rev;
 
-        peckWarning = "";
         if (depth >= (D * 3)) {
-            peckWarning = `
+            peckWarning += `
             <div class="info-box warning" style="margin-top: 15px;">
                 <div class="info-box-title">⚠️ Peck Drilling Advised</div>
                 <p style="font-size: 0.82rem; margin-top: 2px;">Hole Z-depth is &ge; 3x tool diameter. Standard G83 deep peck or G73 chip breaker cycles are strongly advised to safely evacuate metal shavings.</p>
             </div>`;
         }
-
-        html = `
-        <h3 class="results-header">Drilling Results</h3>
-        
-        <div class="hud-grid">
-            <!-- Min Card -->
-            <div class="hud-card min">
-                <div class="hud-left">
-                    <h4>Minimum</h4>
-                    <p>${rpmMin} <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">RPM</span></p>
-                </div>
-                <div class="hud-right">
-                    <span>Feed Rate</span>
-                    <span>${Math.round(rpmMin*f_rev)} <span style="font-size:0.75rem; font-weight:500;">mm/min</span></span>
-                </div>
-            </div>
-
-            <!-- Standard Card -->
-            <div class="hud-card std">
-                <div class="hud-left">
-                    <h4>Standard (Recommended)</h4>
-                    <p>${rpmStd} <span style="font-size: 0.8rem; color: var(--primary); font-weight: 600;">RPM</span></p>
-                </div>
-                <div class="hud-right">
-                    <span>Feed Rate</span>
-                    <span>${stdFeedVal} <span style="font-size:0.75rem; font-weight:600;">mm/min</span></span>
-                </div>
-            </div>
-
-            <!-- Max Safe Card -->
-            <div class="hud-card max">
-                <div class="hud-left">
-                    <h4>Max Safe</h4>
-                    <p>${rpmMax} <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">RPM</span></p>
-                </div>
-                <div class="hud-right">
-                    <span>Feed Rate</span>
-                    <span>${Math.round(rpmMax*f_rev)} <span style="font-size:0.75rem; font-weight:500;">mm/min</span></span>
-                </div>
-            </div>
-        </div>
-
-        <div class="detail-row" style="margin-top:15px; background: rgba(255,255,255,0.01); border:1px solid var(--border); border-radius:10px; padding:12px 16px;">
-            <span style="font-size:0.8rem; font-weight:700; color:var(--text-label); text-transform:uppercase;">Calculated Feed/Rev</span>
-            <span style="font-family:var(--font-mono); font-weight:700; color:var(--primary);">${f_rev} mm/rev</span>
-        </div>
-        
-        ${peckWarning}
-        `;
     } else {
         // Handle custom pitch or fallback
         let pitch = parseFloat(pitchEl.value);
@@ -1631,52 +1603,11 @@ function calculate(){
         stdRpmVal = stdTap.r;
         stdFeedVal = stdTap.f;
 
-        html = `
-        <h3 class="results-header">Tapping Results (M${D} x ${pitch})</h3>
-        
-        <div class="hud-grid">
-            <!-- Min Card -->
-            <div class="hud-card min">
-                <div class="hud-left">
-                    <h4>Minimum</h4>
-                    <p>${minTap.r} <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">RPM</span></p>
-                </div>
-                <div class="hud-right">
-                    <span>Feed Rate</span>
-                    <span>${minTap.f} <span style="font-size:0.75rem; font-weight:500;">mm/min</span></span>
-                </div>
-            </div>
-
-            <!-- Standard Card -->
-            <div class="hud-card std">
-                <div class="hud-left">
-                    <h4>Standard (Recommended)</h4>
-                    <p>${stdTap.r} <span style="font-size: 0.8rem; color: var(--primary); font-weight: 600;">RPM</span></p>
-                </div>
-                <div class="hud-right">
-                    <span>Feed Rate</span>
-                    <span>${stdFeedVal} <span style="font-size:0.75rem; font-weight:600;">mm/min</span></span>
-                </div>
-            </div>
-
-            <!-- Max Safe Card -->
-            <div class="hud-card max">
-                <div class="hud-left">
-                    <h4>Max Safe</h4>
-                    <p>${maxTap.r} <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">RPM</span></p>
-                </div>
-                <div class="hud-right">
-                    <span>Feed Rate</span>
-                    <span>${maxTap.f} <span style="font-size:0.75rem; font-weight:500;">mm/min</span></span>
-                </div>
-            </div>
-        </div>
-
+        peckWarning += `
         <div class="info-box" style="margin-top: 15px;">
             <div class="info-box-title">⚡ Smart Sync Active</div>
             <p style="font-size: 0.82rem; margin-top: 2px;">Values are perfectly synchronized for Rigid Tapping cycles (G84). Feed Rate is a perfect whole integer where <strong>Feed = RPM &times; Pitch</strong> to prevent thread stripping.</p>
-        </div>
-        `;
+        </div>`;
     }
 
     // Save simulation parameters globally
