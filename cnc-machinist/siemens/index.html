@@ -1092,7 +1092,8 @@ M17</pre>
                 <div class="form-group">
                     <label for="contourStyle">Profile Geometry Shape</label>
                     <select id="contourStyle" onchange="resetTurningResults()">
-                        <option value="step">Stepped Shaft (Straight Cylindrical)</option>
+                        <option value="straight" selected>Straight Cylinder (Single Diameter)</option>
+                        <option value="step">Stepped Shaft (Two-Step Shoulder)</option>
                         <option value="taper">Tapered Shaft (Conical Angle)</option>
                         <option value="profile">Profiled Curved (Stepped with Radius fillet)</option>
                     </select>
@@ -1436,7 +1437,10 @@ function generateSiemensTurningCode() {
     g += `CONTOUR1: (START OF PROFILE GEOMETRY)\n`;
     g += `G01 X0.0 Z0.0 F${rFeed} (START POINT AT CENTER)\n`;
     
-    if (profile === "step") {
+    if (profile === "straight") {
+        g += `G01 X${target.toFixed(3)} Z0.0 (FACE PLUNGE)\n`;
+        g += `G01 X${target.toFixed(3)} Z-${length.toFixed(3)} (STRAIGHT CYLINDER CUT)\n`;
+    } else if (profile === "step") {
         const stepMidDia = (target + (blank - target) * 0.4).toFixed(3);
         const stepZ = (length * 0.5).toFixed(3);
         g += `G01 X${stepMidDia} Z0.0 (FACE PLUNGE)\n`;
@@ -1528,7 +1532,9 @@ function calculateToolpathSteps(blank, target, length, infeed, allowX, allowZ, p
         // Cut longitudinal feed in Z
         // Compute correct non-gouging intersection Z coordinate for this roughing pass diameter
         let cutEndZ = -length;
-        if (profile === 'step') {
+        if (profile === 'straight') {
+            cutEndZ = -length; // straight goes all the way
+        } else if (profile === 'step') {
             const stepMidDia = target + (blank - target) * 0.4;
             if (currentX < stepMidDia) {
                 cutEndZ = -length * 0.5; // stepped cut ends early at the shoulder
@@ -1560,7 +1566,10 @@ function calculateToolpathSteps(blank, target, length, infeed, allowX, allowZ, p
     // 3. Finishing pass (tracks the actual profile contour exactly)
     toolpathSteps.push({ x: target, z: 2, type: 'rapid', desc: 'RAPID DOWN FOR FINISHING PASS' });
     
-    if (profile === 'step') {
+    if (profile === 'straight') {
+        toolpathSteps.push({ x: target, z: 0, type: 'feed', desc: 'FACE CONTACT' });
+        toolpathSteps.push({ x: target, z: -length, type: 'feed', desc: 'STRAIGHT PROFILE CUT' });
+    } else if (profile === 'step') {
         const stepMidDia = target + (blank - target) * 0.4;
         const stepZ = length * 0.5;
         toolpathSteps.push({ x: target, z: 0, type: 'feed', desc: 'FACE CONTACT' });
@@ -1839,7 +1848,10 @@ function drawTurningFrame() {
     ctx.beginPath();
     ctx.moveTo(z0_x, center_y);
     
-    if (profileStyle === 'step') {
+    if (profileStyle === 'straight') {
+        ctx.lineTo(z0_x, center_y - (visualFinishDia / 2) * xScale);
+        ctx.lineTo(z0_x - visualLen * zScale, center_y - (visualFinishDia / 2) * xScale);
+    } else if (profileStyle === 'step') {
         const stepMidDia = visualFinishDia + (visualBlankDia - visualFinishDia) * 0.4;
         const stepZ = visualLen * 0.5;
         
