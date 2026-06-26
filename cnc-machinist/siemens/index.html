@@ -1376,12 +1376,22 @@ function generateSiemensTurningCode() {
     const profile = document.getElementById("contourStyle").value;
 
     if (!blank || blank <= 0 || !target || target <= 0 || !length || length <= 0) {
-        alert("Please enter valid positive dimensions.");
+        alert("Please enter valid positive dimensions for blank diameter, finished diameter, and length.");
         return;
     }
 
     if (target >= blank) {
         alert("Target Finished Diameter must be smaller than Blank Diameter.");
+        return;
+    }
+
+    if (!infeed || infeed <= 0) {
+        alert("Depth of cut (ap) must be a positive number.");
+        return;
+    }
+
+    if (!feed || feed <= 0) {
+        alert("Feedrate must be a positive number.");
         return;
     }
 
@@ -1516,10 +1526,28 @@ function calculateToolpathSteps(blank, target, length, infeed, allowX, allowZ, p
         toolpathSteps.push({ x: currentX, z: 2, type: 'rapid', desc: `RAPID TO CUT DEPTH DIA ${currentX.toFixed(2)}` });
         
         // Cut longitudinal feed in Z
+        // Compute correct non-gouging intersection Z coordinate for this roughing pass diameter
         let cutEndZ = -length;
-        if (profile === 'step' && currentX > (target + (blank - target) * 0.4)) {
-            cutEndZ = -length * 0.5; // stepped cut ends early
+        if (profile === 'step') {
+            const stepMidDia = target + (blank - target) * 0.4;
+            if (currentX < stepMidDia) {
+                cutEndZ = -length * 0.5; // stepped cut ends early at the shoulder
+            } else {
+                cutEndZ = -length; // outer step goes all the way
+            }
+        } else if (profile === 'taper') {
+            // Taper intersection formula: Z = -((currentX - target) / (blank - target)) * length
+            const ratio = (currentX - target) / (blank - target);
+            cutEndZ = -ratio * length;
+        } else {
+            // profile (curved fillet) intersection formula
+            const ratio = (currentX - target) / (blank - target);
+            const curveZ = -length * 0.6 - (ratio * ratio) * (length * 0.4);
+            cutEndZ = Math.max(-length, curveZ);
         }
+        
+        // Retract safeguard: account for finishing Z allowance
+        cutEndZ = Math.min(0, cutEndZ + allowZ);
         toolpathSteps.push({ x: currentX, z: cutEndZ, type: 'feed', desc: `LONGITUDINAL CUT TO Z ${cutEndZ.toFixed(1)}` });
         
         // Retract tool diagonally
@@ -1587,11 +1615,11 @@ function resetTurningSim() {
         toolZ = 5;
     }
     
-    // Reset material profile to full cylinder blank
-    materialCutProfile = [
-        { z: -visualLen - 15, x: visualBlankDia / 2 },
-        { z: 0, x: visualBlankDia / 2 }
-    ];
+    // Reset material profile to full high-resolution cylinder blank (every 1mm)
+    materialCutProfile = [];
+    for (let z = -visualLen; z <= 0; z += 1) {
+        materialCutProfile.push({ z: z, x: visualBlankDia / 2 });
+    }
 
     drawTurningFrame();
     
@@ -1630,6 +1658,8 @@ function toggleTurningSim() {
             }
             
             const step = toolpathSteps[activeStepIndex];
+            const prevX = toolX;
+            const prevZ = toolZ;
             
             // Move tool towards step target
             toolX = step.x;
@@ -1642,10 +1672,9 @@ function toggleTurningSim() {
                 monText.textContent = `${cmdCode} X${toolX.toFixed(2)} Z${toolZ.toFixed(2)} (${step.desc})`;
             }
             
-            // Perform simulated metal removal!
-            // If feeding, we subtract material at active tool X depth
-            if (step.type === 'feed' && toolZ < 0) {
-                updateMaterialCut(toolZ, toolX / 2);
+            // Perform simulated metal removal over the motion range if feeding!
+            if (step.type === 'feed') {
+                updateMaterialCutMove(prevZ, prevX / 2, toolZ, toolX / 2);
             }
             
             drawTurningFrame();
@@ -1655,23 +1684,42 @@ function toggleTurningSim() {
 }
 
 function updateMaterialCut(z, xRadius) {
-    // Traverse materialCutProfile and insert cutting node
     let inserted = false;
     for (let i = 0; i < materialCutProfile.length; i++) {
         const node = materialCutProfile[i];
-        if (Math.abs(node.z - z) < 1.0) {
-            // update existing diameter depth
+        if (Math.abs(node.z - z) < 0.5) {
             node.x = Math.min(node.x, xRadius);
             inserted = true;
             break;
         }
     }
     
-    if (!inserted) {
+    if (!inserted && z <= 0 && z >= -visualLen - 10) {
         materialCutProfile.push({ z: z, x: xRadius });
-        // sort profile by Z coordinate ascending
         materialCutProfile.sort((a, b) => a.z - b.z);
     }
+}
+
+// Advanced metal cutting interpolator for multi-pass roughing/profiling
+function updateMaterialCutMove(zStart, xStart, zEnd, xEnd) {
+    const minZ = Math.min(zStart, zEnd);
+    const maxZ = Math.max(zStart, zEnd);
+    
+    // Update existing nodes in the Z range with interpolated values
+    materialCutProfile.forEach(node => {
+        if (node.z >= minZ - 0.1 && node.z <= maxZ + 0.1) {
+            let t = 0;
+            if (Math.abs(zEnd - zStart) > 0.01) {
+                t = (node.z - zStart) / (zEnd - zStart);
+            }
+            const interpolatedX = xStart + t * (xEnd - xStart);
+            node.x = Math.min(node.x, interpolatedX);
+        }
+    });
+    
+    // Always guarantee boundary nodes are updated/inserted
+    updateMaterialCut(zStart, xStart);
+    updateMaterialCut(zEnd, xEnd);
 }
 
 function drawTurningFrame() {
@@ -1694,28 +1742,30 @@ function drawTurningFrame() {
     ctx.stroke();
     ctx.setLineDash([]); // Reset
     
-    // Draw visual lathe chuck jaws on the left
-    ctx.fillStyle = "#1e294b";
-    ctx.fillRect(0, h/2 - 60, 45, 120);
-    ctx.strokeStyle = "rgba(10, 163, 181, 0.4)";
-    ctx.lineWidth = 2;
-    ctx.strokeRect(0, h/2 - 60, 45, 120);
-    
-    // Coordinate mapping scales:
-    // Z coordinate runs along Z axis (horizontal, Z0 at w - 120, Z-60 at w - 120 - scaled)
-    // X coordinate is radial/diameter (vertical, X0 at h/2, X80 at h/2 - scaled)
-    const zScale = 3.2; // pixels per mm
-    const xScale = 1.3; // pixels per mm radial
+    // Dynamic scaling based on canvas size and workpiece dimensions
+    const zScale = Math.min(4.5, ((w - 180) * 0.75) / visualLen);
+    const xScale = Math.min(2.5, ((h / 2) * 0.55) / (visualBlankDia / 2));
     
     const z0_x = w - 100;
     const center_y = h / 2;
+    const chuckFaceX = Math.max(50, z0_x - (visualLen + 25) * zScale);
+    
+    // Draw visual lathe chuck jaws on the left extending to the blank start face
+    ctx.fillStyle = "#1e294b";
+    ctx.fillRect(0, center_y - 65, chuckFaceX, 130);
+    ctx.strokeStyle = "rgba(10, 163, 181, 0.4)";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(0, center_y - 65, chuckFaceX, 130);
     
     // 1. Draw remaining metallic workpiece blank (symmetric top/bottom)
     ctx.fillStyle = "#334155";
     ctx.beginPath();
     
     // Top profile path
-    ctx.moveTo(45, center_y);
+    ctx.moveTo(chuckFaceX, center_y);
+    ctx.lineTo(chuckFaceX, center_y - (visualBlankDia / 2) * xScale); // vertical left end at chuck
+    ctx.lineTo(z0_x - visualLen * zScale, center_y - (visualBlankDia / 2) * xScale); // straight line to start of cut profile
+    
     for (let i = 0; i < materialCutProfile.length; i++) {
         const node = materialCutProfile[i];
         const px = z0_x + node.z * zScale;
@@ -1734,7 +1784,9 @@ function drawTurningFrame() {
         ctx.lineTo(px, py);
     }
     
-    ctx.lineTo(45, center_y);
+    ctx.lineTo(z0_x - visualLen * zScale, center_y + (visualBlankDia / 2) * xScale);
+    ctx.lineTo(chuckFaceX, center_y + (visualBlankDia / 2) * xScale); // straight line to chuck
+    ctx.lineTo(chuckFaceX, center_y);
     ctx.closePath();
     ctx.fill();
     
@@ -1743,7 +1795,8 @@ function drawTurningFrame() {
     ctx.lineWidth = 1.5;
     ctx.beginPath();
     // Top Outline
-    ctx.moveTo(45, center_y - (visualBlankDia/2)*xScale);
+    ctx.moveTo(chuckFaceX, center_y - (visualBlankDia/2)*xScale);
+    ctx.lineTo(z0_x - visualLen * zScale, center_y - (visualBlankDia/2)*xScale);
     for (let i = 0; i < materialCutProfile.length; i++) {
         const node = materialCutProfile[i];
         ctx.lineTo(z0_x + node.z * zScale, center_y - node.x * xScale);
