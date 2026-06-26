@@ -1459,7 +1459,7 @@ function generateSiemensTurningCode() {
         g += `G02 X${blank.toFixed(3)} Z-${length.toFixed(3)} CR=${filRad} (ROUNDED PROFILE PROFILE)\n`;
     }
     
-    g += `G01 X${blank.toFixed(3)} Z-${(length + 5).toFixed(3)} (CLEARING CUT)\n`;
+    g += `G01 X${blank.toFixed(3)} Z-${length.toFixed(3)} (FACE RETRACT TO BLANK)\n`;
     g += `M17 (END OF CONTOUR)\n`;
 
     turningCode = g;
@@ -1598,7 +1598,7 @@ function calculateToolpathSteps(blank, target, length, infeed, allowX, allowZ, p
     }
     
     // Clear contour out
-    toolpathSteps.push({ x: blank, z: -length - 3, type: 'feed', desc: 'GEOMETRY RUNOUT CLEAR' });
+    toolpathSteps.push({ x: blank, z: -length, type: 'feed', desc: 'FACE RETRACT TO BLANK' });
     
     // Retract G40 safe
     toolpathSteps.push({ x: blank + 12, z: 20, type: 'rapid', desc: 'CANCEL RADIUS COMP & RETRACT' });
