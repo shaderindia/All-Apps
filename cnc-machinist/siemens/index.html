@@ -826,6 +826,9 @@
             letter-spacing: 0.5px;
             color: var(--primary);
         }
+        .hidden {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
@@ -1091,12 +1094,20 @@ M17</pre>
 
                 <div class="form-group">
                     <label for="contourStyle">Profile Geometry Shape</label>
-                    <select id="contourStyle" onchange="resetTurningResults()">
+                    <select id="contourStyle" onchange="toggleProfileInputs(); resetTurningResults();">
                         <option value="straight" selected>Straight Cylinder (Single Diameter)</option>
                         <option value="step">Stepped Shaft (Two-Step Shoulder)</option>
                         <option value="taper">Tapered Shaft (Conical Angle)</option>
                         <option value="profile">Profiled Curved (Stepped with Radius fillet)</option>
                     </select>
+                </div>
+
+                <div class="form-group hidden" id="stepDiaGroup">
+                    <label for="stepDia">Step Cut Diameter</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="stepDia" value="60" step="1" oninput="resetTurningResults()">
+                        <div class="input-suffix">mm</div>
+                    </div>
                 </div>
 
                 <button class="action-btn" onclick="generateSiemensTurningCode()">
@@ -1396,8 +1407,9 @@ function generateSiemensTurningCode() {
         return;
     }
 
+    const stepDia = parseFloat(document.getElementById("stepDia").value) || 0;
     // Build toolpath steps for animation
-    calculateToolpathSteps(blank, target, length, infeed, allowX, allowZ, profile);
+    calculateToolpathSteps(blank, target, length, infeed, allowX, allowZ, profile, stepDia);
 
     // Build G-code
     let g = `; SHADER7 SIEMENS SINUMERIK TURNING CODE\n`;
@@ -1441,7 +1453,11 @@ function generateSiemensTurningCode() {
         g += `G01 X${target.toFixed(3)} Z0.0 (FACE PLUNGE)\n`;
         g += `G01 X${target.toFixed(3)} Z-${length.toFixed(3)} (STRAIGHT CYLINDER CUT)\n`;
     } else if (profile === "step") {
-        const stepMidDia = (target + (blank - target) * 0.4).toFixed(3);
+        let stepMidDiaVal = stepDia;
+        if (!stepMidDiaVal || stepMidDiaVal <= target || stepMidDiaVal >= blank) {
+            stepMidDiaVal = target + (blank - target) * 0.5;
+        }
+        const stepMidDia = stepMidDiaVal.toFixed(3);
         const stepZ = (length * 0.5).toFixed(3);
         g += `G01 X${stepMidDia} Z0.0 (FACE PLUNGE)\n`;
         g += `G01 X${stepMidDia} Z-${stepZ} (FIRST STEP CUT)\n`;
@@ -1513,7 +1529,7 @@ function copyTurningGCode() {
     });
 }
 
-function calculateToolpathSteps(blank, target, length, infeed, allowX, allowZ, profile) {
+function calculateToolpathSteps(blank, target, length, infeed, allowX, allowZ, profile, stepDia) {
     toolpathSteps = [];
     
     // 1. Safe start position
@@ -1522,6 +1538,11 @@ function calculateToolpathSteps(blank, target, length, infeed, allowX, allowZ, p
     // 2. Compute roughing passes
     let currentX = blank;
     const finalX = target + allowX; // roughing final diameter
+
+    let resolvedStepDia = stepDia;
+    if (!resolvedStepDia || resolvedStepDia <= target || resolvedStepDia >= blank) {
+        resolvedStepDia = target + (blank - target) * 0.5;
+    }
 
     while (currentX > finalX) {
         currentX = Math.max(finalX, currentX - infeed * 2); // turning cuts infeed on radius, so dia decreases by 2*infeed
@@ -1535,8 +1556,7 @@ function calculateToolpathSteps(blank, target, length, infeed, allowX, allowZ, p
         if (profile === 'straight') {
             cutEndZ = -length; // straight goes all the way
         } else if (profile === 'step') {
-            const stepMidDia = target + (blank - target) * 0.4;
-            if (currentX < stepMidDia) {
+            if (currentX < resolvedStepDia) {
                 cutEndZ = -length * 0.5; // stepped cut ends early at the shoulder
             } else {
                 cutEndZ = -length; // outer step goes all the way
@@ -1570,12 +1590,11 @@ function calculateToolpathSteps(blank, target, length, infeed, allowX, allowZ, p
         toolpathSteps.push({ x: target, z: 0, type: 'feed', desc: 'FACE CONTACT' });
         toolpathSteps.push({ x: target, z: -length, type: 'feed', desc: 'STRAIGHT PROFILE CUT' });
     } else if (profile === 'step') {
-        const stepMidDia = target + (blank - target) * 0.4;
         const stepZ = length * 0.5;
         toolpathSteps.push({ x: target, z: 0, type: 'feed', desc: 'FACE CONTACT' });
         toolpathSteps.push({ x: target, z: -stepZ, type: 'feed', desc: 'TURN STEP 1' });
-        toolpathSteps.push({ x: stepMidDia, z: -stepZ, type: 'feed', desc: 'FACE PLUNGE' });
-        toolpathSteps.push({ x: stepMidDia, z: -length, type: 'feed', desc: 'TURN STEP 2' });
+        toolpathSteps.push({ x: resolvedStepDia, z: -stepZ, type: 'feed', desc: 'FACE PLUNGE' });
+        toolpathSteps.push({ x: resolvedStepDia, z: -length, type: 'feed', desc: 'TURN STEP 2' });
     } else if (profile === 'taper') {
         toolpathSteps.push({ x: target, z: 0, type: 'feed', desc: 'FACE CONTACT' });
         toolpathSteps.push({ x: blank, z: -length, type: 'feed', desc: 'TAPER PROFILE CUT' });
@@ -1852,13 +1871,17 @@ function drawTurningFrame() {
         ctx.lineTo(z0_x, center_y - (visualFinishDia / 2) * xScale);
         ctx.lineTo(z0_x - visualLen * zScale, center_y - (visualFinishDia / 2) * xScale);
     } else if (profileStyle === 'step') {
-        const stepMidDia = visualFinishDia + (visualBlankDia - visualFinishDia) * 0.4;
+        const stepDiaInput = parseFloat(document.getElementById("stepDia").value);
+        let resolvedStepDia = stepDiaInput;
+        if (!resolvedStepDia || resolvedStepDia <= visualFinishDia || resolvedStepDia >= visualBlankDia) {
+            resolvedStepDia = visualFinishDia + (visualBlankDia - visualFinishDia) * 0.5;
+        }
         const stepZ = visualLen * 0.5;
         
         ctx.lineTo(z0_x, center_y - (visualFinishDia / 2) * xScale);
         ctx.lineTo(z0_x - stepZ * zScale, center_y - (visualFinishDia / 2) * xScale);
-        ctx.lineTo(z0_x - stepZ * zScale, center_y - (stepMidDia / 2) * xScale);
-        ctx.lineTo(z0_x - visualLen * zScale, center_y - (stepMidDia / 2) * xScale);
+        ctx.lineTo(z0_x - stepZ * zScale, center_y - (resolvedStepDia / 2) * xScale);
+        ctx.lineTo(z0_x - visualLen * zScale, center_y - (resolvedStepDia / 2) * xScale);
     } else if (profileStyle === 'taper') {
         ctx.lineTo(z0_x, center_y - (visualFinishDia / 2) * xScale);
         ctx.lineTo(z0_x - visualLen * zScale, center_y - (visualBlankDia / 2) * xScale);
@@ -2090,10 +2113,29 @@ function renderSetupToolsList() {
     printTableBody.innerHTML = printHtml;
 }
 
+function toggleProfileInputs() {
+    const profile = document.getElementById("contourStyle").value;
+    const stepDiaGroup = document.getElementById("stepDiaGroup");
+    if (!stepDiaGroup) return;
+    
+    if (profile === "step") {
+        stepDiaGroup.classList.remove("hidden");
+        const blank = parseFloat(document.getElementById("blankDia").value) || 80;
+        const target = parseFloat(document.getElementById("finishDia").value) || 40;
+        const stepDiaInput = document.getElementById("stepDia");
+        if (stepDiaInput && (!stepDiaInput.value || stepDiaInput.value === "60")) {
+            stepDiaInput.value = Math.round(target + (blank - target) * 0.5);
+        }
+    } else {
+        stepDiaGroup.classList.add("hidden");
+    }
+}
+
 // Initial setup loads
 window.addEventListener('load', () => {
     suggestToolParameters();
     renderSetupToolsList();
+    toggleProfileInputs();
 });
 
 // Handle responsive canvas redraw on window resize
