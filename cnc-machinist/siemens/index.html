@@ -1762,21 +1762,37 @@ function toggleTurningSim() {
     }
 }
 
-function updateMaterialCut(z, xRadius) {
-    let inserted = false;
+// Get remaining workpiece radius at a given Z coordinate via linear interpolation
+function getProfileRadiusAt(z) {
+    if (materialCutProfile.length === 0) return visualBlankDia / 2;
+    if (z <= materialCutProfile[0].z) return materialCutProfile[0].x;
+    if (z >= materialCutProfile[materialCutProfile.length - 1].z) return materialCutProfile[materialCutProfile.length - 1].x;
+    
+    for (let i = 0; i < materialCutProfile.length - 1; i++) {
+        const n1 = materialCutProfile[i];
+        const n2 = materialCutProfile[i + 1];
+        if (z >= n1.z && z <= n2.z) {
+            const t = (z - n1.z) / (n2.z - n1.z);
+            return n1.x + t * (n2.x - n1.x);
+        }
+    }
+    return visualBlankDia / 2;
+}
+
+// Insert or update a node in the dynamic workpiece profile
+function insertProfileNode(z, x) {
+    if (z < -visualLen - 10 || z > 10) return;
+    
+    // ponytail: prevent redundant close nodes to keep sorting and drawing fast
     for (let i = 0; i < materialCutProfile.length; i++) {
-        const node = materialCutProfile[i];
-        if (Math.abs(node.z - z) < 0.5) {
-            node.x = Math.min(node.x, xRadius);
-            inserted = true;
-            break;
+        if (Math.abs(materialCutProfile[i].z - z) < 0.0001) {
+            materialCutProfile[i].x = Math.min(materialCutProfile[i].x, x);
+            return;
         }
     }
     
-    if (!inserted && z <= 0 && z >= -visualLen - 10) {
-        materialCutProfile.push({ z: z, x: xRadius });
-        materialCutProfile.sort((a, b) => a.z - b.z);
-    }
+    materialCutProfile.push({ z: z, x: x });
+    materialCutProfile.sort((a, b) => a.z - b.z);
 }
 
 // Advanced metal cutting interpolator for multi-pass roughing/profiling
@@ -1784,9 +1800,16 @@ function updateMaterialCutMove(zStart, xStart, zEnd, xEnd) {
     const minZ = Math.min(zStart, zEnd);
     const maxZ = Math.max(zStart, zEnd);
     
+    // ponytail: capture pre-cut boundary radii to insert sharp step transitions just outside the cut limits
+    const oldRadiusLeft = getProfileRadiusAt(minZ);
+    const oldRadiusRight = getProfileRadiusAt(maxZ);
+    
+    insertProfileNode(minZ - 0.001, oldRadiusLeft);
+    insertProfileNode(maxZ + 0.001, oldRadiusRight);
+    
     // Update existing nodes in the Z range with interpolated values
     materialCutProfile.forEach(node => {
-        if (node.z >= minZ - 0.1 && node.z <= maxZ + 0.1) {
+        if (node.z >= minZ - 0.0001 && node.z <= maxZ + 0.0001) {
             let t = 0;
             if (Math.abs(zEnd - zStart) > 0.01) {
                 t = (node.z - zStart) / (zEnd - zStart);
@@ -1796,9 +1819,9 @@ function updateMaterialCutMove(zStart, xStart, zEnd, xEnd) {
         }
     });
     
-    // Always guarantee boundary nodes are updated/inserted
-    updateMaterialCut(zStart, xStart);
-    updateMaterialCut(zEnd, xEnd);
+    // Always guarantee exact cut boundary points are updated/inserted
+    insertProfileNode(zStart, xStart);
+    insertProfileNode(zEnd, xEnd);
 }
 
 function drawTurningFrame() {
