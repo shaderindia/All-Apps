@@ -1597,7 +1597,7 @@ function calculateToolpathSteps(blank, target, length, infeed, allowX, allowZ, p
     activeStepIndex = 0;
 }
 
-function initTurningCanvas() {
+function initTurningCanvas(isResize = false) {
     turnCanvas = document.getElementById("turningCanvas");
     if (!turnCanvas) return;
     
@@ -1611,7 +1611,12 @@ function initTurningCanvas() {
     visualFinishDia = parseFloat(document.getElementById("finishDia").value) || 40;
     visualLen = parseFloat(document.getElementById("turnLen").value) || 60;
     
-    resetTurningSim();
+    // ponytail: avoid resetting simulation and workpiece profile during window resize
+    if (isResize) {
+        drawTurningFrame();
+    } else {
+        resetTurningSim();
+    }
 }
 
 function resetTurningSim() {
@@ -1662,6 +1667,11 @@ function toggleTurningSim() {
         stopTurningSim();
         playBtn.textContent = "▶ Run";
     } else {
+        // ponytail: automatically reset profile when starting from the beginning
+        if (activeStepIndex === 0 || activeStepIndex >= toolpathSteps.length) {
+            resetTurningSim();
+        }
+        
         simActive = true;
         playBtn.textContent = "⏸ Pause";
         
@@ -2078,7 +2088,7 @@ window.addEventListener('load', () => {
 window.addEventListener('resize', () => {
     const turningView = document.getElementById('turning-view');
     if (turningView && turningView.classList.contains('active')) {
-        initTurningCanvas();
+        initTurningCanvas(true);
     }
 });
 </script>
