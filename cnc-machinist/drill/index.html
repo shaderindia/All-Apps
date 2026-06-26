@@ -2098,7 +2098,7 @@ function toggleAccordion(header) {
 
 // ==================== HTML5 CANVAS CNC SIMULATOR ENGINE ====================
 
-function initSimCanvas() {
+function initSimCanvas(isResize = false) {
     simCanvas = document.getElementById("simCanvas");
     if (!simCanvas) return;
     
@@ -2109,7 +2109,11 @@ function initSimCanvas() {
     simCanvas.width = rect.width;
     simCanvas.height = rect.height;
     
-    resetSim();
+    if (isResize) {
+        drawSimFrame();
+    } else {
+        resetSim();
+    }
 }
 
 function resetSim() {
@@ -2342,6 +2346,7 @@ function toggleSimPlay() {
             simState = 'spindle_start';
             simDwellTime = 3.0; // 3 seconds spindle start hold
             simZ = -30.0; // Starts at safe retract height Z30
+            simMaxDepth = 0.0; // Reset hole depth for new run!
             simDirection = 'CW';
             chips = [];
             landedChips = [];
@@ -2386,9 +2391,16 @@ function loopSim() {
 function updateSim(dt) {
     simTime += dt;
     
-    // Spindle spinning speeds relative to calculated RPM
+    // Spindle spinning speeds relative to calculated RPM (dynamic acceleration & deceleration)
     // 7.2 degrees per second per 1 RPM (matches rigid geared tapping speed exactly)
-    const visualRpmSpeed = simRpm * 7.2;
+    let visualRpmSpeed = simRpm * 7.2;
+    if (simState === 'spindle_start') {
+        // Accelerate visual spin speed over the 3-second start phase
+        visualRpmSpeed = simRpm * 7.2 * Math.min(1.0, (3.0 - simDwellTime) / 2.0);
+    } else if (simState === 'boring_dwell') {
+        // Decelerate visual spin speed to zero over the 0.6-second G86 spindle stop phase
+        visualRpmSpeed = simRpm * 7.2 * Math.max(0, simDwellTime / 0.6);
+    }
     
     // Default spindle angle change (for non-sync states or drilling)
     let angleChange = 0;
@@ -2783,9 +2795,13 @@ function drawSimFrame() {
     const maxHoleZ = simState === 'idle' ? 0 : Math.max(0, simMaxDepth * 2.5);
     const tipHeight = simOp === 'drill' ? scaledDia * 0.3 : 0;
     
+    // ponytail: cap cylinder depth and features to prevent rendering holes/threads in thin air below the workpiece block
+    const holeCylinderH = Math.min(blockH, Math.max(0, maxHoleZ - tipHeight));
+    const visualHoleDepth = Math.min(blockH, maxHoleZ);
+    
     if (maxHoleZ > 0) {
         ctx.fillStyle = "#020408"; // dark hole interior (major diameter)
-        ctx.fillRect(holeX, blockY, scaledDia, maxHoleZ - tipHeight);
+        ctx.fillRect(holeX, blockY, scaledDia, holeCylinderH);
         
         if (simOp === 'tap') {
             // Render internal thread teeth on the side walls in the tapped section!
@@ -2800,7 +2816,7 @@ function drawSimFrame() {
             ctx.strokeStyle = "#94a3b8"; // crest highlight
             ctx.lineWidth = 1;
             
-            for (let ty = 0; ty < maxHoleZ - 2; ty += threadPitchY) {
+            for (let ty = 0; ty < holeCylinderH - 2; ty += threadPitchY) {
                 const yPos = blockY + ty;
                 
                 // Left internal thread tooth (triangle pointing right)
@@ -2822,17 +2838,21 @@ function drawSimFrame() {
                 ctx.stroke();
             }
             
-            // Bottom of tapped portion has flat taper lead-in
-            ctx.fillStyle = "#020408";
-            ctx.fillRect(holeX, blockY + maxHoleZ, scaledDia, 3);
+            // Bottom of tapped portion has flat taper lead-in (only if not fully through the workpiece)
+            if (holeCylinderH < blockH) {
+                ctx.fillStyle = "#020408";
+                ctx.fillRect(holeX, blockY + holeCylinderH, scaledDia, 3);
+            }
         } else if (simOp === 'drill') {
-            // Draw standard cutter angled point tip line at bottom of hole interior
-            ctx.beginPath();
-            ctx.moveTo(holeX, blockY + maxHoleZ - tipHeight);
-            ctx.lineTo(w / 2, blockY + maxHoleZ);
-            ctx.lineTo(holeX + scaledDia, blockY + maxHoleZ - tipHeight);
-            ctx.fillStyle = "#020408";
-            ctx.fill();
+            // Draw standard cutter angled point tip line at bottom of hole interior (only if tip is still cutting inside the block)
+            if (holeCylinderH < blockH) {
+                ctx.beginPath();
+                ctx.moveTo(holeX, blockY + holeCylinderH);
+                ctx.lineTo(w / 2, blockY + visualHoleDepth);
+                ctx.lineTo(holeX + scaledDia, blockY + holeCylinderH);
+                ctx.fillStyle = "#020408";
+                ctx.fill();
+            }
         }
     }
     
@@ -3408,6 +3428,13 @@ function drawArrowHead(ctx, x, y, isUp) {
     ctx.closePath();
     ctx.fill();
 }
+
+// Handle responsive canvas redraw on window resize
+window.addEventListener('resize', () => {
+    if (simCanvas) {
+        initSimCanvas(true);
+    }
+});
 </script>
 
 </body>
