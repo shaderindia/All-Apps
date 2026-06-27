@@ -1594,8 +1594,8 @@ function calculateToolpathSteps(blank, target, length, infeed, allowX, allowZ, p
             cutEndZ = Math.max(-length, curveZ);
         }
         
-        // Retract safeguard: account for finishing Z allowance
-        cutEndZ = Math.min(0, cutEndZ + allowZ);
+        // ponytail: roughing cuts to exact profile boundary in the simulation
+        // (the allowZ finishing offset is a CYCLE95 parameter, not a visual sim parameter)
         toolpathSteps.push({ x: currentX, z: cutEndZ, type: 'feed', desc: `LONGITUDINAL CUT TO Z ${cutEndZ.toFixed(1)}` });
         
         // Retract tool diagonally
@@ -1681,15 +1681,19 @@ function resetTurningSim() {
         toolZ = 5;
     }
     
-    // Reset material profile to full high-resolution cylinder blank (every 1mm, bounds guaranteed)
+    // ponytail: build material profile as a 0.5mm-resolution grid strictly within workpiece bounds [−visualLen, 0]
     materialCutProfile = [];
-    const lenInt = Math.ceil(visualLen);
-    for (let z = -lenInt; z <= 0; z++) {
-        const zCoord = z === -lenInt ? -visualLen : z;
-        materialCutProfile.push({ z: zCoord, x: visualBlankDia / 2 });
+    const blankR = visualBlankDia / 2;
+    const step = 0.5;
+    for (let z = -visualLen; z <= 0; z += step) {
+        materialCutProfile.push({ z: Math.round(z * 1000) / 1000, x: blankR });
     }
-    if (materialCutProfile.length > 0 && materialCutProfile[materialCutProfile.length - 1].z !== 0) {
-        materialCutProfile.push({ z: 0, x: visualBlankDia / 2 });
+    // guarantee exact endpoints
+    if (materialCutProfile.length === 0 || materialCutProfile[0].z > -visualLen) {
+        materialCutProfile.unshift({ z: -visualLen, x: blankR });
+    }
+    if (materialCutProfile[materialCutProfile.length - 1].z < 0) {
+        materialCutProfile.push({ z: 0, x: blankR });
     }
 
     drawTurningFrame();
@@ -1759,30 +1763,14 @@ function toggleTurningSim() {
     }
 }
 
-// Get remaining workpiece radius at a given Z coordinate via linear interpolation
-function getProfileRadiusAt(z) {
-    if (materialCutProfile.length === 0) return visualBlankDia / 2;
-    if (z <= materialCutProfile[0].z) return materialCutProfile[0].x;
-    if (z >= materialCutProfile[materialCutProfile.length - 1].z) return materialCutProfile[materialCutProfile.length - 1].x;
-    
-    for (let i = 0; i < materialCutProfile.length - 1; i++) {
-        const n1 = materialCutProfile[i];
-        const n2 = materialCutProfile[i + 1];
-        if (z >= n1.z && z <= n2.z) {
-            const t = (z - n1.z) / (n2.z - n1.z);
-            return n1.x + t * (n2.x - n1.x);
-        }
-    }
-    return visualBlankDia / 2;
-}
-
-// Insert or update a node in the dynamic workpiece profile
+// Insert or update a node in the workpiece profile, strictly within workpiece bounds
 function insertProfileNode(z, x) {
-    if (z < -visualLen - 10 || z > 10) return;
+    // ponytail: hard clamp to workpiece — no nodes outside material
+    if (z < -visualLen - 0.01 || z > 0.01) return;
+    z = Math.max(-visualLen, Math.min(0, z));
     
-    // ponytail: prevent redundant close nodes to keep sorting and drawing fast
     for (let i = 0; i < materialCutProfile.length; i++) {
-        if (Math.abs(materialCutProfile[i].z - z) < 0.0001) {
+        if (Math.abs(materialCutProfile[i].z - z) < 0.001) {
             materialCutProfile[i].x = Math.min(materialCutProfile[i].x, x);
             return;
         }
@@ -1792,33 +1780,45 @@ function insertProfileNode(z, x) {
     materialCutProfile.sort((a, b) => a.z - b.z);
 }
 
-// Advanced metal cutting interpolator for multi-pass roughing/profiling
+// Metal removal: clamp to workpiece, update grid nodes in cut range
 function updateMaterialCutMove(zStart, xStart, zEnd, xEnd) {
-    const minZ = Math.min(zStart, zEnd);
-    const maxZ = Math.max(zStart, zEnd);
+    // Clamp cut range to workpiece bounds
+    const rawMinZ = Math.min(zStart, zEnd);
+    const rawMaxZ = Math.max(zStart, zEnd);
+    const lo = Math.max(-visualLen, rawMinZ);
+    const hi = Math.min(0, rawMaxZ);
+    if (lo > hi) return; // entirely outside workpiece
     
-    // ponytail: capture pre-cut boundary radii just outside the cut limits to preserve sharp step transitions
-    const oldRadiusLeft = getProfileRadiusAt(minZ - 0.001);
-    const oldRadiusRight = getProfileRadiusAt(maxZ + 0.001);
+    // Compute clamped tool radii at the clamped Z boundaries
+    let xAtLo = xStart, xAtHi = xStart;
+    if (Math.abs(zEnd - zStart) > 0.001) {
+        const tLo = (lo - zStart) / (zEnd - zStart);
+        const tHi = (hi - zStart) / (zEnd - zStart);
+        xAtLo = xStart + tLo * (xEnd - xStart);
+        xAtHi = xStart + tHi * (xEnd - xStart);
+    } else {
+        // Constant Z move (face plunge) — use the smaller radius
+        xAtLo = Math.min(xStart, xEnd);
+        xAtHi = xAtLo;
+    }
     
-    insertProfileNode(minZ - 0.001, oldRadiusLeft);
-    insertProfileNode(maxZ + 0.001, oldRadiusRight);
-    
-    // Update existing nodes in the Z range with interpolated values
+    // Update existing nodes in the clamped Z range
     materialCutProfile.forEach(node => {
-        if (node.z >= minZ - 0.0001 && node.z <= maxZ + 0.0001) {
-            let t = 0;
-            if (Math.abs(zEnd - zStart) > 0.01) {
-                t = (node.z - zStart) / (zEnd - zStart);
+        if (node.z >= lo - 0.001 && node.z <= hi + 0.001) {
+            let cutRadius;
+            if (Math.abs(hi - lo) > 0.001) {
+                const t = (node.z - lo) / (hi - lo);
+                cutRadius = xAtLo + t * (xAtHi - xAtLo);
+            } else {
+                cutRadius = Math.min(xAtLo, xAtHi);
             }
-            const interpolatedX = xStart + t * (xEnd - xStart);
-            node.x = Math.min(node.x, interpolatedX);
+            node.x = Math.min(node.x, cutRadius);
         }
     });
     
-    // Always guarantee exact cut boundary points are updated/inserted
-    insertProfileNode(zStart, xStart);
-    insertProfileNode(zEnd, xEnd);
+    // Insert exact boundary nodes at clamped positions
+    insertProfileNode(lo, xAtLo);
+    insertProfileNode(hi, xAtHi);
 }
 
 function drawTurningFrame() {
@@ -1856,6 +1856,9 @@ function drawTurningFrame() {
     ctx.lineWidth = 2;
     ctx.strokeRect(0, center_y - 65, chuckFaceX, 130);
     
+    // ponytail: filter profile nodes to workpiece bounds to prevent drawing artifacts
+    const visibleProfile = materialCutProfile.filter(n => n.z >= -visualLen - 0.01 && n.z <= 0.01);
+    
     // 1. Draw remaining metallic workpiece blank (symmetric top/bottom)
     ctx.fillStyle = "#334155";
     ctx.beginPath();
@@ -1865,8 +1868,8 @@ function drawTurningFrame() {
     ctx.lineTo(chuckFaceX, center_y - (visualBlankDia / 2) * xScale); // vertical left end at chuck
     ctx.lineTo(z0_x - visualLen * zScale, center_y - (visualBlankDia / 2) * xScale); // straight line to start of cut profile
     
-    for (let i = 0; i < materialCutProfile.length; i++) {
-        const node = materialCutProfile[i];
+    for (let i = 0; i < visibleProfile.length; i++) {
+        const node = visibleProfile[i];
         const px = z0_x + node.z * zScale;
         const py = center_y - node.x * xScale;
         ctx.lineTo(px, py);
@@ -1876,8 +1879,8 @@ function drawTurningFrame() {
     ctx.lineTo(z0_x, center_y);
     
     // Bottom profile path (mirror)
-    for (let i = materialCutProfile.length - 1; i >= 0; i--) {
-        const node = materialCutProfile[i];
+    for (let i = visibleProfile.length - 1; i >= 0; i--) {
+        const node = visibleProfile[i];
         const px = z0_x + node.z * zScale;
         const py = center_y + node.x * xScale;
         ctx.lineTo(px, py);
@@ -1896,8 +1899,8 @@ function drawTurningFrame() {
     // Top Outline
     ctx.moveTo(chuckFaceX, center_y - (visualBlankDia/2)*xScale);
     ctx.lineTo(z0_x - visualLen * zScale, center_y - (visualBlankDia/2)*xScale);
-    for (let i = 0; i < materialCutProfile.length; i++) {
-        const node = materialCutProfile[i];
+    for (let i = 0; i < visibleProfile.length; i++) {
+        const node = visibleProfile[i];
         ctx.lineTo(z0_x + node.z * zScale, center_y - node.x * xScale);
     }
     ctx.lineTo(z0_x, center_y);
