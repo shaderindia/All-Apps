@@ -3,6 +3,7 @@ const CACHE_NAME = "shader7-quick-private-chat-v1";
 const APP_SHELL = [
   "./",
   "./index.html",
+  "./app.html",
   "./manifest.json",
   "./app.js"
 ];
