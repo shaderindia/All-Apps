@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Milling Speeds & Feeds Calculator</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Custom thin scrollbar for a cleaner interface */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-indigo-500 selection:text-white">
+
+  <!-- Header -->
+  <header class="border-b border-slate-900 bg-slate-900/50 backdrop-blur-md sticky top-0 z-50 py-4 px-6">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="p-2 bg-indigo-600/10 border border-indigo-500/30 rounded-xl text-indigo-400">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0/0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10.34 15.84c-.68-.34-1.44-.08-1.74.58l-1.11 2.45a3.75 3.75 0 1 1-5.69-4.22l1.62-1.9a3.75 3.75 0 0 1 5.3 0M10.34 15.84c.68.34 1.44.08 1.74-.58l1.11-2.45a3.75 3.75 0 1 1 5.69 4.22l-1.62 1.9a3.75 3.75 0 0 1-5.3 0M10.34 15.84l4.98-4.98" />
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-xl font-bold tracking-tight bg-gradient-to-r from-slate-100 to-slate-300 bg-clip-text text-transparent">Speeds & Feeds</h1>
+          <p class="text-xs text-slate-400">CNC Milling Optimization Engine</p>
+        </div>
+      </div>
+      <button id="btn-reset" class="text-xs font-semibold px-4 py-2 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-300 hover:text-white border border-slate-700/50 hover:border-slate-600 rounded-lg transition-all duration-200 flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+        </svg>
+        Reset Defaults
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <main class="flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+    
+    <!-- Inputs Panel (Left) -->
+    <section class="lg:col-span-7 space-y-6">
+      <div class="bg-slate-900 border border-slate-800/80 rounded-2xl shadow-xl p-6 relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-1 h-full bg-indigo-500"></div>
+        <h2 class="text-lg font-bold text-slate-100 mb-6 flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-indigo-400">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
+          </svg>
+          Milling Parameters
+        </h2>
+
+        <div class="space-y-5">
+          <!-- Preset Selector -->
+          <div>
+            <label for="material" class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5 block">Workpiece Material Preset</label>
+            <div class="relative">
+              <select id="material" class="w-full bg-slate-800/90 border border-slate-700 hover:border-slate-600 focus:border-indigo-500 text-slate-100 rounded-xl px-4 py-3 appearance-none focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all duration-200 cursor-pointer">
+                <option value="aluminum">Aluminum Alloys (Vc = 400, fz = 0.20)</option>
+                <option value="mild_steel" selected>Mild / Structural Steel (Vc = 180, fz = 0.15)</option>
+                <option value="alloy_steel">Alloy / Tool Steel (Vc = 120, fz = 0.12)</option>
+                <option value="stainless">Stainless Steel (304/316) (Vc = 90, fz = 0.10)</option>
+                <option value="custom">Custom Material (Manual Override)</option>
+              </select>
+              <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-400">
+                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cutting Speed & Feed Per Tooth -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="vc" class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5 block">Cutting Speed (Vc) <span class="text-slate-500 font-normal">[m/min]</span></label>
+              <input type="number" id="vc" value="180" min="1" step="any" class="w-full bg-slate-800/50 border border-slate-700/80 focus:border-indigo-500 text-slate-100 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all">
+            </div>
+            <div>
+              <label for="fz" class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5 block">Feed per Tooth (fz) <span class="text-slate-500 font-normal">[mm/tooth]</span></label>
+              <input type="number" id="fz" value="0.15" min="0.001" step="0.01" class="w-full bg-slate-800/50 border border-slate-700/80 focus:border-indigo-500 text-slate-100 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all">
+            </div>
+          </div>
+
+          <hr class="border-slate-800/60 my-2">
+
+          <!-- Cutter Configuration -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="diameter" class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5 block">Cutter Diameter (D) <span class="text-slate-500 font-normal">[mm]</span></label>
+              <input type="number" id="diameter" value="200" min="1" step="any" class="w-full bg-slate-800/50 border border-slate-700/80 focus:border-indigo-500 text-slate-100 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all">
+            </div>
+            <div>
+              <label for="inserts" class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5 block">Number of Teeth (z) <span class="text-slate-500 font-normal">[pcs]</span></label>
+              <input type="number" id="inserts" value="12" min="1" step="1" class="w-full bg-slate-800/50 border border-slate-700/80 focus:border-indigo-500 text-slate-100 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all">
+            </div>
+          </div>
+
+          <!-- Depths of Cut -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="ap" class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5 block">Axial Depth of Cut (ap) <span class="text-slate-500 font-normal">[mm]</span></label>
+              <input type="number" id="ap" value="10" min="0" step="any" class="w-full bg-slate-800/50 border border-slate-700/80 focus:border-indigo-500 text-slate-100 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all">
+            </div>
+            <div>
+              <label for="ae" class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5 block">Radial Side Depth of Cut (ae) <span class="text-slate-500 font-normal">[mm]</span></label>
+              <input type="number" id="ae" value="10" min="0" step="any" class="w-full bg-slate-800/50 border border-slate-700/80 focus:border-indigo-500 text-slate-100 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all">
+            </div>
+          </div>
+
+          <hr class="border-slate-800/60 my-2">
+
+          <!-- Milling Style Selector -->
+          <div>
+            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 block">Milling Strategy Style</span>
+            <div class="grid grid-cols-2 gap-2 p-1 bg-slate-950 rounded-xl border border-slate-800">
+              <button type="button" id="style-climb" class="py-2.5 px-4 rounded-lg text-sm font-semibold transition-all duration-200 bg-indigo-600 text-white shadow-md focus:outline-none">
+                Climb (Downmilling)
+              </button>
+              <button type="button" id="style-conventional" class="py-2.5 px-4 rounded-lg text-sm font-semibold transition-all duration-200 text-slate-400 hover:text-slate-200 focus:outline-none">
+                Conventional (Upmilling)
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Results & Live Warnings Panel (Right) -->
+    <section class="lg:col-span-5 flex flex-col gap-6">
+      <!-- Calculated Output Display Card -->
+      <div class="bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-900 border border-indigo-500/20 rounded-2xl p-6 shadow-2xl relative overflow-hidden">
+        <div class="absolute -right-16 -top-16 w-36 h-36 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <h2 class="text-lg font-bold text-indigo-300 mb-6 flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+          </svg>
+          Calculated Outputs
+        </h2>
+
+        <!-- Calculations Metrics Stack -->
+        <div class="space-y-5">
+          <!-- Spindle Speed -->
+          <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex items-center justify-between hover:border-slate-700/50 transition-all">
+            <div>
+              <span class="text-xs text-slate-400 font-semibold uppercase tracking-wider block">Spindle Speed</span>
+              <span class="text-2xl font-extrabold text-white tracking-tight" id="out-rpm">0</span>
+              <span class="text-sm font-semibold text-slate-500 ml-1">RPM</span>
+            </div>
+            <div class="text-slate-700 p-2">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+              </svg>
+            </div>
+          </div>
+
+          <!-- Table Feed Rate -->
+          <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex items-center justify-between hover:border-slate-700/50 transition-all">
+            <div>
+              <span class="text-xs text-slate-400 font-semibold uppercase tracking-wider block">Table Feed Rate</span>
+              <div class="flex items-baseline gap-1">
+                <span class="text-2xl font-extrabold text-white tracking-tight" id="out-feed">0</span>
+                <span class="text-sm font-semibold text-slate-500">mm/min</span>
+              </div>
+            </div>
+            <div class="text-slate-700 p-2">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 7.5L7.5 3m0 0L12 7.5M7.5 3v13.5m13.5 0L16.5 21m0 0L12 16.5m4.5 4.5V7.5" />
+              </svg>
+            </div>
+          </div>
+
+          <!-- Material Removal Rate -->
+          <div class="bg-indigo-950/30 border border-indigo-500/20 rounded-xl p-4 flex items-center justify-between hover:border-indigo-500/30 transition-all">
+            <div>
+              <span class="text-xs text-indigo-300 font-semibold uppercase tracking-wider block">Material Removal Rate</span>
+              <div class="flex items-baseline gap-1">
+                <span class="text-2xl font-extrabold text-indigo-400 tracking-tight" id="out-mrr">0</span>
+                <span class="text-sm font-semibold text-slate-500">cm³/min</span>
+              </div>
+            </div>
+            <div class="text-slate-700 p-2">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Dynamic Warnings Section -->
+      <div class="bg-slate-900 border border-slate-800/80 rounded-2xl p-6 shadow-xl space-y-4">
+        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Dynamic Warning System</h3>
+        <div id="warnings-container" class="space-y-3">
+          <!-- Climb Strategy Notice (Default Green) -->
+          <div id="notice-climb" class="p-4 rounded-xl bg-emerald-950/20 border border-emerald-500/30 text-emerald-300 text-xs leading-relaxed flex gap-3 transition-opacity duration-300">
+            <span class="text-lg">✅</span>
+            <div>
+              <p class="font-bold mb-1">Optimal Strategy</p>
+              <p>Climb milling provides ideal chip formation and pushes the workpiece down into the fixture securely.</p>
+            </div>
+          </div>
+
+          <!-- Conventional Strategy Warning (Default Hidden) -->
+          <div id="notice-conventional" class="p-4 rounded-xl bg-amber-950/20 border border-amber-500/30 text-amber-300 text-xs leading-relaxed hidden gap-3 transition-opacity duration-300">
+            <span class="text-lg">⚠️</span>
+            <div>
+              <p class="font-bold mb-1">Friction Warning</p>
+              <p>Conventional upmilling causes tool rubbing at entry. Expect reduced tool life and ensure heavy workholding to prevent workpiece lifting.</p>
+            </div>
+          </div>
+
+          <!-- Heavy Cut High Load Warning (Default Visible due to Default ap/ae=10) -->
+          <div id="notice-heavy" class="p-4 rounded-xl bg-yellow-950/20 border border-yellow-500/30 text-yellow-300 text-xs leading-relaxed hidden gap-3 transition-opacity duration-300">
+            <span class="text-lg">⚠️</span>
+            <div>
+              <p class="font-bold mb-1">High Load Cut</p>
+              <p>Ensure your machine has adequate spindle horsepower (40/50 Taper or high kW CNC) and rigid fixtures for this depth.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="mt-auto border-t border-slate-900 bg-slate-900/20 py-4 text-center text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <p>&copy; 2026 Speeds & Feeds Optimization Tool.</p>
+      <p class="text-slate-600">Calculations adjusted dynamically for Conventional & Climb strategies.</p>
+    </div>
+  </footer>
+
+  <!-- Vanilla JS Logical Code -->
+  <script>
+    // Config Preset Data
+    const PRESETS = {
+      aluminum: { vc: 400, fz: 0.20 },
+      mild_steel: { vc: 180, fz: 0.15 },
+      alloy_steel: { vc: 120, fz: 0.12 },
+      stainless: { vc: 90, fz: 0.10 }
+    };
+
+    // DOM Elements
+    const elMaterial = document.getElementById('material');
+    const elVc = document.getElementById('vc');
+    const elFz = document.getElementById('fz');
+    const elDiameter = document.getElementById('diameter');
+    const elInserts = document.getElementById('inserts');
+    const elAp = document.getElementById('ap');
+    const elAe = document.getElementById('ae');
+    
+    // Toggles
+    const elStyleClimb = document.getElementById('style-climb');
+    const elStyleConv = document.getElementById('style-conventional');
+    let millingStyle = 'climb'; // default
+
+    // Outputs
+    const outRpm = document.getElementById('out-rpm');
+    const outFeed = document.getElementById('out-feed');
+    const outMrr = document.getElementById('out-mrr');
+
+    // Warning Elements
+    const noticeClimb = document.getElementById('notice-climb');
+    const noticeConv = document.getElementById('notice-conventional');
+    const noticeHeavy = document.getElementById('notice-heavy');
+
+    const btnReset = document.getElementById('btn-reset');
+
+    // Calculate Speeds and Feeds
+    function calculate() {
+      // Inputs Parser
+      const Vc = Math.max(0, parseFloat(elVc.value) || 0);
+      const fz = Math.max(0, parseFloat(elFz.value) || 0);
+      const D = Math.max(0, parseFloat(elDiameter.value) || 0);
+      const z = Math.max(0, parseInt(elInserts.value, 10) || 0);
+      const ap = Math.max(0, parseFloat(elAp.value) || 0);
+      const ae = Math.max(0, parseFloat(elAe.value) || 0);
+
+      // Calculations Logic
+      // 1. Spindle Speed (RPM)
+      let n = 0;
+      if (D > 0) {
+        n = (Vc * 1000) / (Math.PI * D);
+      }
+
+      // 2. Base Table Feed Rate (Vf_base)
+      const Vf_base = n * z * fz;
+
+      // 3. Modifier based on style toggle
+      let Vf = Vf_base;
+      if (millingStyle === 'conventional') {
+        Vf = Vf_base * 0.825; // Apply a 17.5% penalty reduction
+      }
+
+      // 4. Material Removal Rate (MRR in cm3/min)
+      const mrr = (ap * ae * Vf) / 1000;
+
+      // DOM Updates - Outputs formatted rounded nicely
+      outRpm.textContent = Math.round(n).toLocaleString();
+      outFeed.textContent = Math.round(Vf).toLocaleString();
+      outMrr.textContent = Math.round(mrr).toLocaleString();
+
+      // Dynamic Warnings Logic
+      // Heavy Cut Warning: ap * ae >= 100
+      if ((ap * ae) >= 100) {
+        noticeHeavy.classList.remove('hidden');
+        noticeHeavy.classList.add('flex');
+      } else {
+        noticeHeavy.classList.remove('flex');
+        noticeHeavy.classList.add('hidden');
+      }
+
+      // Toggles Strategy Warnings
+      if (millingStyle === 'climb') {
+        noticeClimb.classList.remove('hidden');
+        noticeClimb.classList.add('flex');
+        noticeConv.classList.remove('flex');
+        noticeConv.classList.add('hidden');
+      } else {
+        noticeClimb.classList.remove('flex');
+        noticeClimb.classList.add('hidden');
+        noticeConv.classList.remove('hidden');
+        noticeConv.classList.add('flex');
+      }
+    }
+
+    // Material Dropdown Event Listener
+    elMaterial.addEventListener('change', () => {
+      const selection = elMaterial.value;
+      if (selection !== 'custom' && PRESETS[selection]) {
+        elVc.value = PRESETS[selection].vc;
+        elFz.value = PRESETS[selection].fz;
+      }
+      calculate();
+    });
+
+    // Auto Custom Override Detection
+    function checkPresetOverride() {
+      if (elMaterial.value !== 'custom') {
+        const selection = elMaterial.value;
+        const currentVc = parseFloat(elVc.value);
+        const currentFz = parseFloat(elFz.value);
+        
+        // If values mismatch selected preset config, force Dropdown to Custom
+        if (PRESETS[selection] && (currentVc !== PRESETS[selection].vc || currentFz !== PRESETS[selection].fz)) {
+          elMaterial.value = 'custom';
+        }
+      }
+      calculate();
+    }
+
+    // Input Listeners
+    elVc.addEventListener('input', checkPresetOverride);
+    elFz.addEventListener('input', checkPresetOverride);
+    elDiameter.addEventListener('input', calculate);
+    elInserts.addEventListener('input', calculate);
+    elAp.addEventListener('input', calculate);
+    elAe.addEventListener('input', calculate);
+
+    // Style Switcher Segment Control Elements Event Listeners
+    elStyleClimb.addEventListener('click', () => {
+      millingStyle = 'climb';
+      // Adjust UI Styling
+      elStyleClimb.className = "py-2.5 px-4 rounded-lg text-sm font-semibold transition-all duration-200 bg-indigo-600 text-white shadow-md focus:outline-none";
+      elStyleConv.className = "py-2.5 px-4 rounded-lg text-sm font-semibold transition-all duration-200 text-slate-400 hover:text-slate-200 focus:outline-none";
+      calculate();
+    });
+
+    elStyleConv.addEventListener('click', () => {
+      millingStyle = 'conventional';
+      // Adjust UI Styling
+      elStyleConv.className = "py-2.5 px-4 rounded-lg text-sm font-semibold transition-all duration-200 bg-indigo-600 text-white shadow-md focus:outline-none";
+      elStyleClimb.className = "py-2.5 px-4 rounded-lg text-sm font-semibold transition-all duration-200 text-slate-400 hover:text-slate-200 focus:outline-none";
+      calculate();
+    });
+
+    // Reset Defaults Action Handler
+    btnReset.addEventListener('click', () => {
+      elMaterial.value = 'mild_steel';
+      elVc.value = PRESETS['mild_steel'].vc;
+      elFz.value = PRESETS['mild_steel'].fz;
+      elDiameter.value = 200;
+      elInserts.value = 12;
+      elAp.value = 10;
+      elAe.value = 10;
+      
+      // Reset Climb Toggle state
+      elStyleClimb.click();
+    });
+
+    // Initial Execution
+    calculate();
+  </script>
+</body>
+</html>
