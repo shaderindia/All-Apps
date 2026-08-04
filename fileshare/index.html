@@ -50,7 +50,7 @@
         <div id="stage-role" class="space-y-4 pt-4">
             <h2 class="text-center text-lg font-bold text-white mb-6">What would you like to do?</h2>
             
-            <button onclick="startSenderFlow()" class="w-full flex items-center gap-4 p-6 bg-slate-900 border border-slate-700 hover:border-blue-500 rounded-2xl transition group relative overflow-hidden text-left">
+            <button onclick="startSenderFlow()" class="w-full flex items-center gap-4 p-6 bg-slate-900 border border-slate-700 hover:border-blue-500 rounded-2xl transition group relative overflow-hidden text-left shadow-lg">
                 <div class="p-4 bg-blue-600/20 text-blue-400 rounded-full group-hover:scale-110 transition-transform">
                     <i data-lucide="send" class="w-8 h-8"></i>
                 </div>
@@ -60,7 +60,7 @@
                 </div>
             </button>
 
-            <button onclick="startReceiverFlow()" class="w-full flex items-center gap-4 p-6 bg-slate-900 border border-slate-700 hover:border-emerald-500 rounded-2xl transition group relative overflow-hidden text-left">
+            <button onclick="startReceiverFlow()" class="w-full flex items-center gap-4 p-6 bg-slate-900 border border-slate-700 hover:border-emerald-500 rounded-2xl transition group relative overflow-hidden text-left shadow-lg">
                 <div class="p-4 bg-emerald-500/20 text-emerald-400 rounded-full group-hover:scale-110 transition-transform">
                     <i data-lucide="download" class="w-8 h-8"></i>
                 </div>
@@ -72,21 +72,21 @@
         </div>
 
         <!-- Stage 2A: Sender Prep (Hotspot) -->
-        <div id="stage-sender-prep" class="hidden bg-slate-900 border border-slate-800 rounded-2xl p-8 text-center space-y-6">
+        <div id="stage-sender-prep" class="hidden bg-slate-900 border border-slate-800 rounded-2xl p-8 text-center space-y-6 shadow-lg">
             <div class="w-20 h-20 bg-blue-500/10 text-blue-400 rounded-full flex items-center justify-center mx-auto">
                 <i data-lucide="wifi" class="w-10 h-10"></i>
             </div>
             <div>
                 <h3 class="text-xl font-bold text-white">Step 1: Turn on Hotspot</h3>
-                <p class="text-slate-400 text-sm mt-2">To transfer 1GB+ without using cellular data, turn on this phone's <strong>Mobile Hotspot (Tethering)</strong> in your system settings.</p>
+                <p class="text-slate-400 text-sm mt-2">To transfer 1GB+ offline, turn on your <strong>Mobile Hotspot (Tethering)</strong>. Ensure your cellular data is active so devices can establish the handshake.</p>
             </div>
             <button onclick="initializePeerAsSender()" class="w-full px-6 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition shadow-lg shadow-blue-500/20">
-                I've turned it on
+                Hotspot is Active
             </button>
         </div>
 
         <!-- Stage 2B: Receiver Prep (Wi-Fi) -->
-        <div id="stage-receiver-prep" class="hidden bg-slate-900 border border-slate-800 rounded-2xl p-8 text-center space-y-6">
+        <div id="stage-receiver-prep" class="hidden bg-slate-900 border border-slate-800 rounded-2xl p-8 text-center space-y-6 shadow-lg">
             <div class="w-20 h-20 bg-emerald-500/10 text-emerald-400 rounded-full flex items-center justify-center mx-auto">
                 <i data-lucide="smartphone" class="w-10 h-10"></i>
             </div>
@@ -125,9 +125,9 @@
         </div>
 
         <!-- Stage 4: Transfer Mode -->
-        <div id="stage-transfer" class="hidden bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6">
+        <div id="stage-transfer" class="hidden bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6 shadow-xl">
             <div class="flex items-center justify-between border-b border-slate-800 pb-4">
-                <h3 class="text-white font-bold text-sm">Paired via Wi-Fi</h3>
+                <h3 class="text-white font-bold text-sm">Paired via Local Bridge</h3>
                 <button onclick="resetApp()" class="text-xs text-red-400 font-bold bg-slate-950 border border-slate-800 hover:bg-slate-800 px-4 py-2 rounded-lg transition">Disconnect</button>
             </div>
 
@@ -138,7 +138,7 @@
                     <i data-lucide="upload-cloud" class="w-8 h-8"></i>
                 </div>
                 <p class="font-bold text-slate-200 text-lg">Select File (1GB+)</p>
-                <p class="text-xs text-slate-500 mt-2">Ready to blast over local network.</p>
+                <p class="text-xs text-slate-500 mt-2">Ready to blast directly to receiver.</p>
             </div>
 
             <!-- Receiver Waiting State -->
@@ -181,12 +181,12 @@
         lucide.createIcons();
 
         /* ================= STATE & GLOBALS ================= */
-        const APP_PREFIX = 'airbeam-pro-v2-';
+        const APP_PREFIX = 'airbeam-pro-v5-';
         let myPin = Math.floor(1000 + Math.random() * 9000).toString();
         let peer = null;
         let activeConnection = null;
 
-        let role = null; // 'sender' or 'receiver'
+        let role = null; 
         let fileToSend = null;
         let fileMeta = null;
         
@@ -195,8 +195,9 @@
         
         let lastReportedBytes = 0;
         let speedInterval = null;
-        const CHUNK_SIZE = 64 * 1024; // 64KB for maximum native stability
-        let chunkIndex = 0;
+        
+        // WebRTC Golden Standard: 64KB chunks to prevent DataChannel overflow on iOS Safari
+        const CHUNK_SIZE = 64 * 1024; 
 
         let wakeLock = null;
 
@@ -223,9 +224,7 @@
 
         /* ================= PIN SANITIZATION ================= */
         function sanitizePinInput(inputElement) {
-            // Strip any non-numeric characters (spaces, dashes, letters)
             inputElement.value = inputElement.value.replace(/[^0-9]/g, '').slice(0, 4);
-            // Enable pair button only if 4 digits are present
             const btn = document.getElementById('btn-pair');
             btn.disabled = inputElement.value.length !== 4;
         }
@@ -246,6 +245,8 @@
                 showStage('stage-transfer');
                 document.getElementById('transfer-file-selector').classList.remove('hidden');
             });
+
+            peer.on('error', (err) => alert("Connection Error: " + err.message));
         }
 
         /* ================= PEERJS & PAIRING (RECEIVER) ================= */
@@ -253,62 +254,39 @@
             const targetPin = document.getElementById('target-pin').value;
             document.getElementById('btn-pair').innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Pairing...`;
             
-            // Receiver generates random ID, connects to Sender's PIN
             peer = new Peer();
             
             peer.on('open', () => {
-                // Bug Fix 1: Omitted { reliable: true } to enforce native WebRTC handling
-                activeConnection = peer.connect(APP_PREFIX + targetPin);
+                // By enforcing 'none', we completely disable PeerJS internal chunking/JSON bloat.
+                activeConnection = peer.connect(APP_PREFIX + targetPin, { serialization: 'none' });
                 setupConnectionHandlers();
+            });
+
+            peer.on('error', (err) => {
+                alert("Pairing Error: " + err.message);
+                resetApp();
             });
         }
 
-        /* ================= SHARED CONNECTION HANDLERS ================= */
+        /* ================= NATIVE WEBRTC INJECTION ================= */
         function setupConnectionHandlers() {
             activeConnection.on('open', () => {
                 document.getElementById('status-badge').innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]"></span> Paired`;
                 
-                // Configure backpressure thresholds on native data channel
                 if (activeConnection.dataChannel) {
-                    activeConnection.dataChannel.bufferedAmountLowThreshold = 1024 * 1024; // 1MB Buffer threshold
+                    activeConnection.dataChannel.bufferedAmountLowThreshold = 1024 * 1024; // 1MB Outbound Buffer
+                    activeConnection.dataChannel.binaryType = 'arraybuffer'; // Ensure raw binary
                 }
 
                 if (role === 'receiver') {
                     showStage('stage-transfer');
                     document.getElementById('receiver-waiting').classList.remove('hidden');
+                    
+                    // Attach single, unified raw DataChannel listener for both Meta and Chunks
+                    activeConnection.dataChannel.addEventListener('message', handleNativeDataChannelMessage);
                 }
                 
-                // Prevent Screen Sleep
                 requestWakeLock();
-            });
-
-            activeConnection.on('data', async (data) => {
-                if (typeof data === 'string') {
-                    // Metadata Header Received
-                    const msg = JSON.parse(data);
-                    if (msg.type === 'meta') {
-                        fileMeta = msg.data;
-                        await initIndexedDB(); // Prepare hidden storage engine
-                        
-                        document.getElementById('receiver-waiting').classList.add('hidden');
-                        document.getElementById('active-transfer-box').classList.remove('hidden');
-                        document.getElementById('transfer-filename').textContent = fileMeta.name;
-                        document.getElementById('transfer-status').textContent = 'Receiving to Phone Storage...';
-                        
-                        receivedBytes = 0;
-                        chunkIndex = 0;
-                        startSpeedTracker();
-                    }
-                } else {
-                    // Binary Chunk Arrived
-                    await storeChunkInDB(chunkIndex++, data); // Direct to SSD, bypasses RAM
-                    receivedBytes += data.byteLength || data.length;
-                    updateTransferUI(receivedBytes, fileMeta.size);
-
-                    if (receivedBytes >= fileMeta.size) {
-                        assembleFileFromDB();
-                    }
-                }
             });
 
             activeConnection.on('close', () => {
@@ -317,39 +295,56 @@
             });
         }
 
-        function resetApp() {
+        async function resetApp() {
             if (activeConnection) activeConnection.close();
-            if (wakeLock) wakeLock.release();
+            try { if (wakeLock) { await wakeLock.release(); wakeLock = null; } } catch(e) {}
+            
+            // Aggressive database cleanup on reset (Ensuring lock is released first)
+            if (db) {
+                db.close();
+                db = null;
+            }
+            indexedDB.deleteDatabase('AirBeamDB');
             location.reload();
         }
 
-        /* ================= INDEXEDDB (STORAGE ENGINE FOR 1GB+ FILES) ================= */
+        /* ================= INDEXEDDB (10MB BATCHING ENGINE) ================= */
         let db = null;
+        let ramBuffer = [];
+        let ramBufferSize = 0;
+        let dbChunkIndex = 0;
+        const FLUSH_LIMIT = 10 * 1024 * 1024; // 10MB RAM buffer limit before disk write
 
         function initIndexedDB() {
             return new Promise((resolve, reject) => {
-                const request = indexedDB.open('AirBeamDB', 1);
-                request.onupgradeneeded = (e) => {
-                    db = e.target.result;
-                    if (!db.objectStoreNames.contains('chunks')) {
+                // Release active locks first
+                if (db) {
+                    db.close();
+                    db = null;
+                }
+                
+                // Ensure absolute zero ghost data from previous crashed sessions
+                const req = indexedDB.deleteDatabase('AirBeamDB');
+                req.onsuccess = () => {
+                    const openReq = indexedDB.open('AirBeamDB', 1);
+                    openReq.onupgradeneeded = (e) => {
+                        db = e.target.result;
                         db.createObjectStore('chunks');
-                    }
+                    };
+                    openReq.onsuccess = (e) => {
+                        db = e.target.result;
+                        resolve();
+                    };
+                    openReq.onerror = reject;
                 };
-                request.onsuccess = (e) => {
-                    db = e.target.result;
-                    // Clear previous aborted transfers
-                    const tx = db.transaction('chunks', 'readwrite');
-                    tx.objectStore('chunks').clear();
-                    tx.oncomplete = () => resolve();
-                };
-                request.onerror = reject;
+                req.onerror = reject;
             });
         }
 
-        function storeChunkInDB(index, buffer) {
+        function storeChunkInDB(index, arrayBufferData) {
             return new Promise((resolve, reject) => {
                 const tx = db.transaction('chunks', 'readwrite');
-                tx.objectStore('chunks').put(buffer, index);
+                tx.objectStore('chunks').put(arrayBufferData, index);
                 tx.oncomplete = resolve;
                 tx.onerror = reject;
             });
@@ -364,32 +359,44 @@
             });
         }
 
-        /* ================= SENDING LOGIC (WITH BACKPRESSURE) ================= */
+        /* ================= SENDING LOGIC (NATIVE INJECTION) ================= */
         function handleFileSelect(event) {
             fileToSend = event.target.files[0];
             if (!fileToSend) return;
             
+            // Allow the user to select the same file again later if needed
+            event.target.value = '';
+
             fileMeta = { name: fileToSend.name, size: fileToSend.size, type: fileToSend.type || 'application/octet-stream' };
             
             document.getElementById('transfer-file-selector').classList.add('hidden');
             document.getElementById('active-transfer-box').classList.remove('hidden');
             document.getElementById('transfer-filename').textContent = fileMeta.name;
             
-            // Send Meta as JSON string to trigger receiver DB setup
-            activeConnection.send(JSON.stringify({ type: 'meta', data: fileMeta }));
+            // Bypass PeerJS for metadata, manually stringify and send via raw WebRTC channel
+            activeConnection.dataChannel.send(JSON.stringify({ type: 'meta', data: fileMeta }));
+            
+            // Safety Catch: 0-byte configuration files
+            if (fileMeta.size === 0) {
+                completeSenderUI();
+                return;
+            }
+
             startSpeedTracker();
             sendFileInChunks();
         }
 
         function sendFileInChunks() {
-            document.getElementById('transfer-status').textContent = 'Blasting data over Wi-Fi...';
+            document.getElementById('transfer-status').textContent = 'Blasting pure binary over Wi-Fi...';
             senderOffsetTracker = 0;
             const reader = new FileReader();
+            const nativeDataChannel = activeConnection.dataChannel;
 
             reader.onload = (e) => {
                 const chunk = e.target.result;
                 try {
-                    activeConnection.send(chunk);
+                    // Direct ArrayBuffer WebRTC payload
+                    nativeDataChannel.send(chunk);
                 } catch (err) {
                     console.error("Buffer overflow");
                     return;
@@ -401,23 +408,17 @@
                 if (senderOffsetTracker < fileMeta.size) {
                     readNextChunk();
                 } else {
-                    document.getElementById('transfer-status').textContent = 'Transfer Complete!';
-                    document.getElementById('transfer-status').classList.add('text-emerald-400');
-                    clearInterval(speedInterval);
-                    document.getElementById('transfer-speed').textContent = "Done";
-                    if (wakeLock) wakeLock.release();
+                    completeSenderUI();
                 }
             };
 
             function readNextChunk() {
-                // Bug Fix 3: Strict Network Backpressure
-                const rawChannel = activeConnection.dataChannel;
-                if (rawChannel && rawChannel.bufferedAmount > 1024 * 1024 * 2) { // 2MB max outbound buffer
+                if (nativeDataChannel.bufferedAmount > 1024 * 1024 * 2) { // 2MB Outbound Backpressure
                     const onLow = () => {
-                        rawChannel.removeEventListener('bufferedamountlow', onLow);
+                        nativeDataChannel.removeEventListener('bufferedamountlow', onLow);
                         readSlice();
                     };
-                    rawChannel.addEventListener('bufferedamountlow', onLow);
+                    nativeDataChannel.addEventListener('bufferedamountlow', onLow);
                 } else {
                     readSlice();
                 }
@@ -431,49 +432,136 @@
             readSlice();
         }
 
-        /* ================= RECEIVING LOGIC (ASSEMBLY) ================= */
-        async function assembleFileFromDB() {
-            clearInterval(speedInterval);
-            document.getElementById('transfer-status').textContent = 'Assembling final file...';
-            document.getElementById('transfer-speed').textContent = "Done";
-
-            // Stitch chunks together. Blob constructor optimizes massive arrays efficiently.
-            const chunkArray = [];
-            for (let i = 0; i < chunkIndex; i++) {
-                const chunkData = await getChunkFromDB(i);
-                chunkArray.push(chunkData);
-            }
-
-            const blob = new Blob(chunkArray, { type: fileMeta.type });
-            
-            // Free database space immediately
-            const tx = db.transaction('chunks', 'readwrite');
-            tx.objectStore('chunks').clear();
-
-            // Update UI
+        function completeSenderUI() {
+            updateTransferUI(fileMeta.size, fileMeta.size);
             document.getElementById('transfer-status').textContent = 'Transfer Complete!';
             document.getElementById('transfer-status').classList.add('text-emerald-400');
-            document.getElementById('transfer-bar').classList.remove('from-blue-500', 'to-cyan-400');
-            document.getElementById('transfer-bar').classList.add('bg-emerald-500');
+            if (speedInterval) clearInterval(speedInterval);
+            document.getElementById('transfer-speed').textContent = "Done";
+            try { if (wakeLock) { wakeLock.release(); wakeLock = null; } } catch(e){}
+        }
 
-            const downloadUrl = URL.createObjectURL(blob);
-            const actionContainer = document.getElementById('transfer-complete-actions');
-            actionContainer.classList.remove('hidden');
+        /* ================= RECEIVING LOGIC (BATCH PROCESSING) ================= */
+        async function handleNativeDataChannelMessage(event) {
+            const data = event.data;
             
-            actionContainer.innerHTML = `
-                <a href="${downloadUrl}" download="${fileMeta.name}" class="w-full flex items-center justify-center gap-2 px-6 py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl transition shadow-lg shadow-emerald-600/20 text-lg">
-                    <i data-lucide="download" class="w-6 h-6"></i>
-                    Save File to Device
-                </a>
-            `;
-            lucide.createIcons();
+            // Handle Initial Metadata
+            if (typeof data === 'string') {
+                const msg = JSON.parse(data);
+                if (msg.type === 'meta') {
+                    fileMeta = msg.data;
+                    await initIndexedDB(); 
+                    
+                    document.getElementById('receiver-waiting').classList.add('hidden');
+                    document.getElementById('active-transfer-box').classList.remove('hidden');
+                    document.getElementById('transfer-filename').textContent = fileMeta.name;
+                    document.getElementById('transfer-status').textContent = 'Buffering to Storage...';
+                    
+                    receivedBytes = 0;
+                    ramBuffer = [];
+                    ramBufferSize = 0;
+                    dbChunkIndex = 0;
+                    
+                    if (fileMeta.size === 0) {
+                        assembleFileFromDB();
+                    } else {
+                        startSpeedTracker();
+                    }
+                }
+                return;
+            }
             
-            if (wakeLock) wakeLock.release();
+            // Handle Binary Chunk
+            ramBuffer.push(data);
+            ramBufferSize += data.byteLength || data.length;
+            receivedBytes += data.byteLength || data.length;
+            
+            updateTransferUI(receivedBytes, fileMeta.size);
+
+            // Capture state synchronously to mathematically prevent Race Conditions on the final chunk
+            const isFinalChunk = (receivedBytes >= fileMeta.size);
+            const shouldFlush = (ramBufferSize >= FLUSH_LIMIT || isFinalChunk);
+
+            if (shouldFlush) {
+                // Combine array of ArrayBuffers into a single Uint8Array to prevent Safari Clone Errors
+                const combinedArray = new Uint8Array(ramBufferSize);
+                let offset = 0;
+                for (let buf of ramBuffer) {
+                    combinedArray.set(new Uint8Array(buf), offset);
+                    offset += buf.byteLength || buf.length;
+                }
+                
+                // Free JS RAM immediately before yielding to slow disk write
+                ramBuffer = []; 
+                ramBufferSize = 0;
+                
+                try {
+                    await storeChunkInDB(dbChunkIndex++, combinedArray.buffer);
+                } catch (err) {
+                    console.error("Storage failed:", err);
+                    alert("Storage Write Failed. Is your phone out of storage space?");
+                    resetApp();
+                    return;
+                }
+            }
+
+            if (isFinalChunk) {
+                assembleFileFromDB();
+            }
+        }
+
+        async function assembleFileFromDB() {
+            try {
+                if (speedInterval) clearInterval(speedInterval);
+                document.getElementById('transfer-status').textContent = 'Stitching data from storage...';
+                document.getElementById('transfer-speed').textContent = "Done";
+
+                // Stitch Blob cumulatively. This completely prevents the 1GB Safari RAM explosion.
+                let finalFile = new Blob([], { type: fileMeta.type });
+                for (let i = 0; i < dbChunkIndex; i++) {
+                    const buffer = await getChunkFromDB(i);
+                    finalFile = new Blob([finalFile, buffer], { type: fileMeta.type });
+                }
+                
+                // CRITICAL FIX: Explicitly close DB lock before requesting deletion
+                if (db) {
+                    db.close();
+                    db = null;
+                }
+                
+                // Delete the database to reclaim phone physical storage space
+                indexedDB.deleteDatabase('AirBeamDB');
+
+                // Final UI Update
+                document.getElementById('transfer-status').textContent = 'Transfer Complete!';
+                document.getElementById('transfer-status').classList.add('text-emerald-400');
+                document.getElementById('transfer-bar').classList.remove('from-blue-500', 'to-cyan-400');
+                document.getElementById('transfer-bar').classList.add('bg-emerald-500');
+                updateTransferUI(fileMeta.size, fileMeta.size);
+
+                const downloadUrl = URL.createObjectURL(finalFile);
+                const actionContainer = document.getElementById('transfer-complete-actions');
+                actionContainer.classList.remove('hidden');
+                
+                actionContainer.innerHTML = `
+                    <a href="${downloadUrl}" download="${fileMeta.name}" class="w-full flex items-center justify-center gap-2 px-6 py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl transition shadow-lg shadow-emerald-600/20 text-lg">
+                        <i data-lucide="download" class="w-6 h-6"></i>
+                        Save File to Device
+                    </a>
+                `;
+                lucide.createIcons();
+                
+                try { if (wakeLock) { wakeLock.release(); wakeLock = null; } } catch(e){}
+
+            } catch (err) {
+                console.error("Assembly failed:", err);
+                alert("File assembly failed.");
+                resetApp();
+            }
         }
 
         /* ================= UTILS & PREVENT SCREEN SLEEP ================= */
         
-        // Bug Fix 2: Screen Wake Lock API
         async function requestWakeLock() {
             try {
                 if ('wakeLock' in navigator) {
@@ -484,7 +572,6 @@
             }
         }
         
-        // Re-acquire wake lock if user tabs out and tabs back in
         document.addEventListener('visibilitychange', () => {
             if (wakeLock !== null && document.visibilityState === 'visible') {
                 requestWakeLock();
@@ -492,13 +579,14 @@
         });
 
         function updateTransferUI(current, total) {
-            const pct = Math.round((current / total) * 100);
+            const pct = total === 0 ? 100 : Math.round((current / total) * 100);
             document.getElementById('transfer-pct').textContent = `${pct}%`;
             document.getElementById('transfer-bar').style.width = `${pct}%`;
             document.getElementById('transfer-meta').textContent = `${formatBytes(current)} / ${formatBytes(total)}`;
         }
 
         function startSpeedTracker() {
+            if (speedInterval) clearInterval(speedInterval);
             lastReportedBytes = 0;
             speedInterval = setInterval(() => {
                 const currentBytes = role === 'sender' ? senderOffsetTracker : receivedBytes;
