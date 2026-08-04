@@ -106,8 +106,9 @@
 
             <!-- Stage: Show QR -->
             <div id="stage-show-qr" class="hidden flex flex-col items-center bg-slate-900 border border-slate-800 rounded-2xl p-6">
-                <div class="bg-white p-4 rounded-xl shadow-lg mb-6">
-                    <canvas id="qr-canvas" class="w-64 h-64"></canvas>
+                <!-- Bug 1 Fix: Changed canvas to img to prevent Tailwind dimension conflicts -->
+                <div class="bg-white p-3 rounded-xl shadow-lg mb-6 w-64 h-64 flex items-center justify-center">
+                    <img id="qr-image" class="w-full h-full object-contain" src="" alt="Awaiting QR Data..." />
                 </div>
                 <p id="qr-instruction" class="text-center text-sm text-slate-300 font-medium mb-4">Scan this QR code with the receiving device.</p>
                 <!-- Sender button to move to scanning answer -->
@@ -172,19 +173,42 @@
         let fileMeta = null;
         let receiveBuffer = [];
         let receivedBytes = 0;
+        let senderOffsetTracker = 0; // Fixed speed tracker bug
         
         let mediaStream = null;
         let scanAnimId = null;
         
-        let transferStartTime = 0;
         let lastReportedBytes = 0;
         let speedInterval = null;
 
-        // CHUNK_SIZE must be manageable by RTCDataChannel. 64KB is optimal for speed/stability.
         const CHUNK_SIZE = 64 * 1024; 
+        const rtcConfig = { iceServers: [] }; // Forces local network candidates only
 
-        // We use an empty ICE server array to force local network host candidates.
-        const rtcConfig = { iceServers: [] };
+        /* ================= UTILS & PROMISES ================= */
+        
+        // Bug 2 Fix: Safely wait for local network IPs to be gathered before generating QR
+        async function waitForIceGathering(pc) {
+            return new Promise((resolve) => {
+                if (pc.iceGatheringState === 'complete') {
+                    resolve();
+                } else {
+                    const checkState = () => {
+                        if (pc.iceGatheringState === 'complete') {
+                            pc.removeEventListener('icegatheringstatechange', checkState);
+                            resolve();
+                        }
+                    };
+                    pc.addEventListener('icegatheringstatechange', checkState);
+                    
+                    // Fallback timeout: Resolve after 2 seconds even if not "complete" 
+                    // because local IPs are usually gathered instantly.
+                    setTimeout(() => {
+                        pc.removeEventListener('icegatheringstatechange', checkState);
+                        resolve();
+                    }, 2000);
+                }
+            });
+        }
 
         /* ================= UI NAVIGATION ================= */
         function showStage(stageId, title, desc) {
@@ -216,43 +240,43 @@
                 type: fileToSend.type || 'application/octet-stream'
             };
 
-            showStage('stage-show-qr', 'Step 2: Generate Handshake', 'Generating local network routing keys...');
+            showStage('stage-show-qr', 'Step 2: Generate Handshake', 'Gathering local network routing keys...');
             await setupSenderWebRTC();
         }
 
         async function setupSenderWebRTC() {
             peerConnection = new RTCPeerConnection(rtcConfig);
             
-            // Create Data Channel for the file transfer
-            dataChannel = peerConnection.createDataChannel('fileTransfer', {
-                ordered: true
-            });
+            dataChannel = peerConnection.createDataChannel('fileTransfer', { ordered: true });
             dataChannel.binaryType = 'arraybuffer';
-            setupDataChannelEvents();
+            
+            // Bug 3 Fix: Explicitly configure backpressure thresholds
+            dataChannel.bufferedAmountLowThreshold = 1024 * 1024; // 1MB
 
-            // Wait for all local ICE candidates to be gathered
-            peerConnection.onicegatheringstatechange = () => {
-                if (peerConnection.iceGatheringState === 'complete') {
-                    generateOfferQR();
-                }
-            };
+            setupDataChannelEvents();
 
             const offer = await peerConnection.createOffer();
             await peerConnection.setLocalDescription(offer);
             
-            // Fallback if ICE gathering finishes instantly
-            if (peerConnection.iceGatheringState === 'complete') {
-                generateOfferQR();
-            }
+            // Wait for ICE candidates
+            await waitForIceGathering(peerConnection);
+            generateOfferQR();
         }
 
         function generateOfferQR() {
-            // Compress the local description (SDP + ICE candidates) to make it scannable
             const payload = JSON.stringify(peerConnection.localDescription);
             const compressed = LZString.compressToEncodedURIComponent(payload);
             
-            const qrCanvas = document.getElementById('qr-canvas');
-            QRCode.toCanvas(qrCanvas, "OFFER:" + compressed, { width: 300, errorCorrectionLevel: 'L' });
+            // Render QR to Image Tag to fix Canvas UI bug
+            QRCode.toDataURL("OFFER:" + compressed, { 
+                width: 350, 
+                margin: 1, 
+                errorCorrectionLevel: 'L' 
+            })
+            .then(url => {
+                document.getElementById('qr-image').src = url;
+            })
+            .catch(err => alert("QR Generation Error. File mapping too dense."));
             
             showStage('stage-show-qr', 'Step 2: Share Connection', 'Show this QR code to the receiver to initiate the Wi-Fi bridge.');
             
@@ -265,7 +289,7 @@
         }
 
         async function handleScannedAnswer(data) {
-            if (!data.startsWith('ANSWER:')) return false; // Keep scanning if invalid
+            if (!data.startsWith('ANSWER:')) return false; 
             stopCamera();
             
             try {
@@ -293,7 +317,7 @@
         }
 
         async function handleScannedOffer(data) {
-            if (!data.startsWith('OFFER:')) return false; // Keep scanning
+            if (!data.startsWith('OFFER:')) return false; 
             stopCamera();
 
             try {
@@ -319,32 +343,31 @@
                 setupDataChannelEvents();
             };
 
-            peerConnection.onicegatheringstatechange = () => {
-                if (peerConnection.iceGatheringState === 'complete') {
-                    generateAnswerQR();
-                }
-            };
-
             await peerConnection.setRemoteDescription(new RTCSessionDescription(offerDesc));
             const answer = await peerConnection.createAnswer();
             await peerConnection.setLocalDescription(answer);
 
-            if (peerConnection.iceGatheringState === 'complete') {
-                generateAnswerQR();
-            }
+            await waitForIceGathering(peerConnection);
+            generateAnswerQR();
         }
 
         function generateAnswerQR() {
             const payload = JSON.stringify(peerConnection.localDescription);
             const compressed = LZString.compressToEncodedURIComponent(payload);
             
-            const qrCanvas = document.getElementById('qr-canvas');
-            QRCode.toCanvas(qrCanvas, "ANSWER:" + compressed, { width: 300, errorCorrectionLevel: 'L' });
+            QRCode.toDataURL("ANSWER:" + compressed, { 
+                width: 350, 
+                margin: 1, 
+                errorCorrectionLevel: 'L' 
+            })
+            .then(url => {
+                document.getElementById('qr-image').src = url;
+            })
+            .catch(err => alert("QR Generation Error. File mapping too dense."));
             
             showStage('stage-show-qr', 'Step 2: Show Sender', 'Show this code back to the Sender to finalize the Wi-Fi bridge.');
-            document.getElementById('btn-scan-answer').classList.add('hidden'); // Sender only
+            document.getElementById('btn-scan-answer').classList.add('hidden');
             
-            // Prepare UI for incoming transfer
             setTimeout(() => {
                 document.getElementById('step-title').textContent = "Waiting for Sender...";
                 document.getElementById('step-desc').textContent = "Keep this QR visible until the transfer starts automatically.";
@@ -360,7 +383,6 @@
                 showStage('stage-transfer', 'Step 3: Transferring', 'Direct Wi-Fi connection established.');
                 
                 if (role === 'sender') {
-                    // Send Metadata first, then start binary stream
                     dataChannel.send(JSON.stringify({ type: 'meta', data: fileMeta }));
                     startSpeedTracker();
                     sendFileInChunks();
@@ -371,7 +393,6 @@
 
             dataChannel.onmessage = (event) => {
                 if (typeof event.data === 'string') {
-                    // Receive Metadata
                     const msg = JSON.parse(event.data);
                     if (msg.type === 'meta') {
                         fileMeta = msg.data;
@@ -382,10 +403,8 @@
                         document.getElementById('transfer-status').textContent = 'Receiving...';
                     }
                 } else {
-                    // Receive Binary Chunks
                     receiveBuffer.push(event.data);
                     receivedBytes += event.data.byteLength;
-                    
                     updateTransferUI(receivedBytes, fileMeta.size);
 
                     if (receivedBytes === fileMeta.size) {
@@ -399,11 +418,10 @@
             };
         }
 
-        /* ================= SEND LOOP WITH BACKPRESSURE ================= */
-        // Backpressure prevents the browser from crashing when reading a 1GB file into RAM faster than Wi-Fi can send it.
+        /* ================= SEND LOOP WITH SECURE BACKPRESSURE ================= */
         function sendFileInChunks() {
             document.getElementById('transfer-status').textContent = 'Sending...';
-            let offset = 0;
+            senderOffsetTracker = 0;
             const reader = new FileReader();
 
             reader.onload = (e) => {
@@ -415,10 +433,10 @@
                     return;
                 }
                 
-                offset += chunk.byteLength;
-                updateTransferUI(offset, fileMeta.size);
+                senderOffsetTracker += chunk.byteLength;
+                updateTransferUI(senderOffsetTracker, fileMeta.size);
 
-                if (offset < fileMeta.size) {
+                if (senderOffsetTracker < fileMeta.size) {
                     readNextChunk();
                 } else {
                     document.getElementById('transfer-status').textContent = 'Transfer Complete!';
@@ -428,23 +446,23 @@
             };
 
             function readNextChunk() {
-                // If WebRTC buffer gets over 1MB, pause reading file from disk until it drains
-                if (dataChannel.bufferedAmount > 1024 * 1024) {
-                    dataChannel.onbufferedamountlow = () => {
-                        dataChannel.onbufferedamountlow = null; // Unbind
+                // Bug 3 Fix: Halt reading if outgoing buffer hits 4MB
+                if (dataChannel.bufferedAmount > 1024 * 1024 * 4) {
+                    const onLow = () => {
+                        dataChannel.removeEventListener('bufferedamountlow', onLow);
                         readSlice();
                     };
+                    dataChannel.addEventListener('bufferedamountlow', onLow);
                 } else {
                     readSlice();
                 }
             }
 
             function readSlice() {
-                const slice = fileToSend.slice(offset, offset + CHUNK_SIZE);
+                const slice = fileToSend.slice(senderOffsetTracker, senderOffsetTracker + CHUNK_SIZE);
                 reader.readAsArrayBuffer(slice);
             }
 
-            // Start the loop
             readSlice();
         }
 
@@ -457,9 +475,8 @@
             document.getElementById('transfer-bar').classList.add('bg-emerald-500');
             document.getElementById('transfer-speed').textContent = "Done";
 
-            // Reconstruct the 1GB file in memory and offer download
             const blob = new Blob(receiveBuffer, { type: fileMeta.type });
-            receiveBuffer = []; // Free up RAM immediately
+            receiveBuffer = []; 
             
             const downloadUrl = URL.createObjectURL(blob);
             
@@ -483,11 +500,11 @@
         }
 
         function startSpeedTracker() {
-            transferStartTime = Date.now();
             lastReportedBytes = 0;
             
             speedInterval = setInterval(() => {
-                const currentBytes = role === 'sender' ? (fileMeta.size * (parseInt(document.getElementById('transfer-pct').textContent)/100)) : receivedBytes;
+                // Bug 4 Fix: Calculate speed strictly using actual byte processing numbers
+                const currentBytes = role === 'sender' ? senderOffsetTracker : receivedBytes;
                 const bytesInSecond = currentBytes - lastReportedBytes;
                 lastReportedBytes = currentBytes;
                 
@@ -524,7 +541,7 @@
         function scanFrame(video, callback) {
             if (!mediaStream) return;
             
-            if (video.readyState === video.HAVE_ENOUGH_DATA) {
+            if (video.readyState === video.HAVE_ENOUGH_DATA && video.videoWidth > 0) {
                 const canvas = document.getElementById('scan-canvas');
                 canvas.width = video.videoWidth;
                 canvas.height = video.videoHeight;
@@ -536,7 +553,7 @@
                 
                 if (code && code.data) {
                     const success = callback(code.data);
-                    if (success) return; // Stop scanning if callback accepts data
+                    if (success) return;
                 }
             }
             scanAnimId = requestAnimationFrame(() => scanFrame(video, callback));
@@ -552,7 +569,7 @@
 
         function stopCameraAndReset() {
             stopCamera();
-            location.reload(); // Hard reset for simplicity
+            location.reload();
         }
     </script>
 </body>
