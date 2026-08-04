@@ -30,7 +30,7 @@
     <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
       <div class="flex items-center gap-3">
         <div class="p-2 bg-indigo-600/10 border border-indigo-500/30 rounded-xl text-indigo-400">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0/0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
             <path stroke-linecap="round" stroke-linejoin="round" d="M10.34 15.84c-.68-.34-1.44-.08-1.74.58l-1.11 2.45a3.75 3.75 0 1 1-5.69-4.22l1.62-1.9a3.75 3.75 0 0 1 5.3 0M10.34 15.84c.68.34 1.44.08 1.74-.58l1.11-2.45a3.75 3.75 0 1 1 5.69 4.22l-1.62 1.9a3.75 3.75 0 0 1-5.3 0M10.34 15.84l4.98-4.98" />
           </svg>
         </div>
@@ -52,14 +52,14 @@
   <main class="flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
     
     <!-- Inputs Panel (Left) -->
-    <section class="lg:col-span-7 space-y-6">
+    <section class="lg:col-span-6 xl:col-span-5 space-y-6">
       <div class="bg-slate-900 border border-slate-800/80 rounded-2xl shadow-xl p-6 relative overflow-hidden">
         <div class="absolute top-0 left-0 w-1 h-full bg-indigo-500"></div>
         <h2 class="text-lg font-bold text-slate-100 mb-6 flex items-center gap-2">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-indigo-400">
             <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
           </svg>
-          Milling Parameters
+          Milling Parameters (Roughing Baseline)
         </h2>
 
         <div class="space-y-5">
@@ -113,7 +113,7 @@
               <input type="number" id="ap" value="10" min="0" step="any" class="w-full bg-slate-800/50 border border-slate-700/80 focus:border-indigo-500 text-slate-100 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all">
             </div>
             <div>
-              <label for="ae" class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5 block">Radial Side Depth of Cut (ae) <span class="text-slate-500 font-normal">[mm]</span></label>
+              <label for="ae" class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5 block">Radial Depth (ae) <span class="text-slate-500 font-normal">[mm]</span></label>
               <input type="number" id="ae" value="10" min="0" step="any" class="w-full bg-slate-800/50 border border-slate-700/80 focus:border-indigo-500 text-slate-100 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all">
             </div>
           </div>
@@ -137,64 +137,95 @@
     </section>
 
     <!-- Results & Live Warnings Panel (Right) -->
-    <section class="lg:col-span-5 flex flex-col gap-6">
+    <section class="lg:col-span-6 xl:col-span-7 flex flex-col gap-6">
       <!-- Calculated Output Display Card -->
       <div class="bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-900 border border-indigo-500/20 rounded-2xl p-6 shadow-2xl relative overflow-hidden">
         <div class="absolute -right-16 -top-16 w-36 h-36 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
-        <h2 class="text-lg font-bold text-indigo-300 mb-6 flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
-          </svg>
-          Calculated Outputs
-        </h2>
+        
+        <div class="flex justify-between items-start mb-6">
+          <h2 class="text-lg font-bold text-indigo-300 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+            </svg>
+            Calculated Outputs
+          </h2>
+        </div>
 
         <!-- Calculations Metrics Stack -->
-        <div class="space-y-5">
+        <div class="space-y-4">
           <!-- Spindle Speed -->
-          <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex items-center justify-between hover:border-slate-700/50 transition-all">
-            <div>
-              <span class="text-xs text-slate-400 font-semibold uppercase tracking-wider block">Spindle Speed</span>
-              <span class="text-2xl font-extrabold text-white tracking-tight" id="out-rpm">0</span>
-              <span class="text-sm font-semibold text-slate-500 ml-1">RPM</span>
+          <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex flex-col gap-3 hover:border-slate-700/50 transition-all">
+            <div class="flex items-center justify-between border-b border-slate-800/60 pb-2">
+              <span class="text-xs text-slate-400 font-semibold uppercase tracking-wider block">Spindle Speed (RPM)</span>
+              <div class="text-slate-600">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                </svg>
+              </div>
             </div>
-            <div class="text-slate-700 p-2">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
-              </svg>
+            <div class="grid grid-cols-3 gap-2 sm:gap-4 divide-x divide-slate-800">
+              <div>
+                <span class="text-[10px] text-slate-500 uppercase tracking-wider block mb-1">Roughing</span>
+                <span class="text-xl sm:text-2xl font-extrabold text-white tracking-tight" id="out-rpm-rough">0</span>
+              </div>
+              <div class="pl-2 sm:pl-4">
+                <span class="text-[10px] text-indigo-400/80 uppercase tracking-wider block mb-1">Finishing</span>
+                <span class="text-xl sm:text-2xl font-extrabold text-indigo-400 tracking-tight" id="out-rpm-finish">0</span>
+              </div>
+              <div class="pl-2 sm:pl-4">
+                <span class="text-[10px] text-rose-400/80 uppercase tracking-wider block mb-1">Max Safe</span>
+                <span class="text-xl sm:text-2xl font-extrabold text-rose-400 tracking-tight" id="out-rpm-max">0</span>
+              </div>
             </div>
           </div>
 
           <!-- Table Feed Rate -->
-          <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex items-center justify-between hover:border-slate-700/50 transition-all">
-            <div>
-              <span class="text-xs text-slate-400 font-semibold uppercase tracking-wider block">Table Feed Rate</span>
-              <div class="flex items-baseline gap-1">
-                <span class="text-2xl font-extrabold text-white tracking-tight" id="out-feed">0</span>
-                <span class="text-sm font-semibold text-slate-500">mm/min</span>
+          <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex flex-col gap-3 hover:border-slate-700/50 transition-all">
+            <div class="flex items-center justify-between border-b border-slate-800/60 pb-2">
+              <span class="text-xs text-slate-400 font-semibold uppercase tracking-wider block">Table Feed Rate (mm/min)</span>
+              <div class="text-slate-600">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 7.5L7.5 3m0 0L12 7.5M7.5 3v13.5m13.5 0L16.5 21m0 0L12 16.5m4.5 4.5V7.5" />
+                </svg>
               </div>
             </div>
-            <div class="text-slate-700 p-2">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3 7.5L7.5 3m0 0L12 7.5M7.5 3v13.5m13.5 0L16.5 21m0 0L12 16.5m4.5 4.5V7.5" />
-              </svg>
+            <div class="grid grid-cols-3 gap-2 sm:gap-4 divide-x divide-slate-800">
+              <div>
+                <span class="text-[10px] text-slate-500 uppercase tracking-wider block mb-1">Roughing</span>
+                <span class="text-xl sm:text-2xl font-extrabold text-white tracking-tight" id="out-feed-rough">0</span>
+              </div>
+              <div class="pl-2 sm:pl-4">
+                <span class="text-[10px] text-indigo-400/80 uppercase tracking-wider block mb-1">Finishing</span>
+                <span class="text-xl sm:text-2xl font-extrabold text-indigo-400 tracking-tight" id="out-feed-finish">0</span>
+              </div>
+              <div class="pl-2 sm:pl-4">
+                <span class="text-[10px] text-rose-400/80 uppercase tracking-wider block mb-1">Max Safe</span>
+                <span class="text-xl sm:text-2xl font-extrabold text-rose-400 tracking-tight" id="out-feed-max">0</span>
+              </div>
             </div>
           </div>
 
-          <!-- Material Removal Rate -->
+          <!-- Material Removal Rate (Roughing) -->
           <div class="bg-indigo-950/30 border border-indigo-500/20 rounded-xl p-4 flex items-center justify-between hover:border-indigo-500/30 transition-all">
             <div>
-              <span class="text-xs text-indigo-300 font-semibold uppercase tracking-wider block">Material Removal Rate</span>
+              <span class="text-[10px] text-indigo-400/80 font-semibold uppercase tracking-wider block mb-1">Roughing MRR</span>
               <div class="flex items-baseline gap-1">
                 <span class="text-2xl font-extrabold text-indigo-400 tracking-tight" id="out-mrr">0</span>
                 <span class="text-sm font-semibold text-slate-500">cm³/min</span>
               </div>
             </div>
-            <div class="text-slate-700 p-2">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
+            <div class="text-slate-600">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
               </svg>
             </div>
           </div>
+          
+          <div class="flex flex-col gap-1 mt-2 text-right">
+            <p class="text-[10px] text-slate-500">* Finishing passes are calculated using <strong>+25% Vc</strong> and <strong>-50% fz</strong></p>
+            <p class="text-[10px] text-slate-500">* Max Safe limits are calculated using <strong>+15% Vc</strong> and <strong>+15% fz</strong></p>
+          </div>
+
         </div>
       </div>
 
@@ -267,8 +298,14 @@
     let millingStyle = 'climb'; // default
 
     // Outputs
-    const outRpm = document.getElementById('out-rpm');
-    const outFeed = document.getElementById('out-feed');
+    const outRpmRough = document.getElementById('out-rpm-rough');
+    const outRpmFinish = document.getElementById('out-rpm-finish');
+    const outRpmMax = document.getElementById('out-rpm-max');
+    
+    const outFeedRough = document.getElementById('out-feed-rough');
+    const outFeedFinish = document.getElementById('out-feed-finish');
+    const outFeedMax = document.getElementById('out-feed-max');
+    
     const outMrr = document.getElementById('out-mrr');
 
     // Warning Elements
@@ -290,26 +327,49 @@
 
       // Calculations Logic
       // 1. Spindle Speed (RPM)
-      let n = 0;
+      let n_rough = 0;
+      let n_finish = 0;
+      let n_max = 0;
+      
       if (D > 0) {
-        n = (Vc * 1000) / (Math.PI * D);
+        // Roughing RPM
+        n_rough = (Vc * 1000) / (Math.PI * D);
+        // Finishing RPM assumes +25% Cutting Speed (Vc)
+        n_finish = ((Vc * 1.25) * 1000) / (Math.PI * D); 
+        // Max Safe RPM assumes +15% Cutting Speed (Vc)
+        n_max = ((Vc * 1.15) * 1000) / (Math.PI * D);
       }
 
       // 2. Base Table Feed Rate (Vf_base)
-      const Vf_base = n * z * fz;
+      const Vf_base_rough = n_rough * z * fz;
+      // Finishing feed assumes -50% feed per tooth (fz)
+      const Vf_base_finish = n_finish * z * (fz * 0.5); 
+      // Max Safe feed assumes +15% feed per tooth (fz)
+      const Vf_base_max = n_max * z * (fz * 1.15);
 
       // 3. Modifier based on style toggle
-      let Vf = Vf_base;
+      let Vf_rough = Vf_base_rough;
+      let Vf_finish = Vf_base_finish;
+      let Vf_max = Vf_base_max;
+      
       if (millingStyle === 'conventional') {
-        Vf = Vf_base * 0.825; // Apply a 17.5% penalty reduction
+        Vf_rough = Vf_base_rough * 0.825; // Apply a 17.5% penalty reduction
+        Vf_finish = Vf_base_finish * 0.825;
+        Vf_max = Vf_base_max * 0.825;
       }
 
-      // 4. Material Removal Rate (MRR in cm3/min)
-      const mrr = (ap * ae * Vf) / 1000;
+      // 4. Material Removal Rate (MRR in cm3/min) based on Roughing values
+      const mrr = (ap * ae * Vf_rough) / 1000;
 
       // DOM Updates - Outputs formatted rounded nicely
-      outRpm.textContent = Math.round(n).toLocaleString();
-      outFeed.textContent = Math.round(Vf).toLocaleString();
+      outRpmRough.textContent = Math.round(n_rough).toLocaleString();
+      outRpmFinish.textContent = Math.round(n_finish).toLocaleString();
+      outRpmMax.textContent = Math.round(n_max).toLocaleString();
+      
+      outFeedRough.textContent = Math.round(Vf_rough).toLocaleString();
+      outFeedFinish.textContent = Math.round(Vf_finish).toLocaleString();
+      outFeedMax.textContent = Math.round(Vf_max).toLocaleString();
+      
       outMrr.textContent = Math.round(mrr).toLocaleString();
 
       // Dynamic Warnings Logic
