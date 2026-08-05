@@ -237,7 +237,11 @@
             peer = new Peer(APP_PREFIX + myPin);
 
             peer.on('connection', (conn) => {
-                if (activeConnection) return;
+                // Bug Fix: Explicitly close secondary connections to prevent infinite UI hangs on receiver
+                if (activeConnection) {
+                    conn.close();
+                    return;
+                }
                 activeConnection = conn;
                 setupConnectionHandlers();
             });
@@ -248,7 +252,13 @@
         /* ================= PEERJS & PAIRING (RECEIVER) ================= */
         function connectToSender() {
             const targetPin = document.getElementById('target-pin').value;
-            document.getElementById('btn-pair').innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Pairing...`;
+            const btnPair = document.getElementById('btn-pair');
+            const inputPin = document.getElementById('target-pin');
+            
+            // Bug Fix: Hard-disable inputs immediately to prevent memory leaks from user double-clicks
+            btnPair.disabled = true;
+            inputPin.disabled = true;
+            btnPair.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Pairing...`;
             
             peer = new Peer();
             
@@ -279,13 +289,18 @@
                     activeConnection.dataChannel.addEventListener('message', handleNativeDataChannelMessage);
                 } 
                 else if (role === 'sender') {
-                    // Safe execution: Only show file picker once channel is natively OPEN.
                     showStage('stage-transfer');
                     document.getElementById('transfer-file-selector').classList.remove('hidden');
                     activeConnection.dataChannel.addEventListener('message', handleSenderNativeMessage);
                 }
                 
                 requestWakeLock();
+            });
+
+            // Bug Fix: Catch native WebRTC failures (like strict corporate Wi-Fi blocking P2P)
+            activeConnection.on('error', (err) => {
+                alert("Connection failed. Your router might be blocking P2P traffic (AP Isolation).");
+                resetApp();
             });
 
             activeConnection.on('close', () => {
@@ -369,7 +384,6 @@
             document.getElementById('transfer-filename').textContent = fileMeta.name;
             document.getElementById('transfer-status').textContent = 'Waiting for receiver to initialize storage...';
             
-            // Send Meta. Sender will NOT stream until receiver replies with 'ready'
             activeConnection.dataChannel.send(JSON.stringify({ type: 'meta', data: fileMeta }));
         }
 
