@@ -181,7 +181,7 @@
         lucide.createIcons();
 
         /* ================= STATE & GLOBALS ================= */
-        const APP_PREFIX = 'airbeam-pro-v5-';
+        const APP_PREFIX = 'airbeam-pro-v6-';
         let myPin = Math.floor(1000 + Math.random() * 9000).toString();
         let peer = null;
         let activeConnection = null;
@@ -196,7 +196,6 @@
         let lastReportedBytes = 0;
         let speedInterval = null;
         
-        // WebRTC Golden Standard: 64KB chunks to prevent DataChannel overflow on iOS Safari
         const CHUNK_SIZE = 64 * 1024; 
 
         let wakeLock = null;
@@ -241,9 +240,6 @@
                 if (activeConnection) return;
                 activeConnection = conn;
                 setupConnectionHandlers();
-                
-                showStage('stage-transfer');
-                document.getElementById('transfer-file-selector').classList.remove('hidden');
             });
 
             peer.on('error', (err) => alert("Connection Error: " + err.message));
@@ -257,7 +253,6 @@
             peer = new Peer();
             
             peer.on('open', () => {
-                // By enforcing 'none', we completely disable PeerJS internal chunking/JSON bloat.
                 activeConnection = peer.connect(APP_PREFIX + targetPin, { serialization: 'none' });
                 setupConnectionHandlers();
             });
@@ -275,15 +270,19 @@
                 
                 if (activeConnection.dataChannel) {
                     activeConnection.dataChannel.bufferedAmountLowThreshold = 1024 * 1024; // 1MB Outbound Buffer
-                    activeConnection.dataChannel.binaryType = 'arraybuffer'; // Ensure raw binary
+                    activeConnection.dataChannel.binaryType = 'arraybuffer'; 
                 }
 
                 if (role === 'receiver') {
                     showStage('stage-transfer');
                     document.getElementById('receiver-waiting').classList.remove('hidden');
-                    
-                    // Attach single, unified raw DataChannel listener for both Meta and Chunks
                     activeConnection.dataChannel.addEventListener('message', handleNativeDataChannelMessage);
+                } 
+                else if (role === 'sender') {
+                    // Safe execution: Only show file picker once channel is natively OPEN.
+                    showStage('stage-transfer');
+                    document.getElementById('transfer-file-selector').classList.remove('hidden');
+                    activeConnection.dataChannel.addEventListener('message', handleSenderNativeMessage);
                 }
                 
                 requestWakeLock();
@@ -299,7 +298,6 @@
             if (activeConnection) activeConnection.close();
             try { if (wakeLock) { await wakeLock.release(); wakeLock = null; } } catch(e) {}
             
-            // Aggressive database cleanup on reset (Ensuring lock is released first)
             if (db) {
                 db.close();
                 db = null;
@@ -317,13 +315,11 @@
 
         function initIndexedDB() {
             return new Promise((resolve, reject) => {
-                // Release active locks first
                 if (db) {
                     db.close();
                     db = null;
                 }
                 
-                // Ensure absolute zero ghost data from previous crashed sessions
                 const req = indexedDB.deleteDatabase('AirBeamDB');
                 req.onsuccess = () => {
                     const openReq = indexedDB.open('AirBeamDB', 1);
@@ -364,7 +360,6 @@
             fileToSend = event.target.files[0];
             if (!fileToSend) return;
             
-            // Allow the user to select the same file again later if needed
             event.target.value = '';
 
             fileMeta = { name: fileToSend.name, size: fileToSend.size, type: fileToSend.type || 'application/octet-stream' };
@@ -372,18 +367,24 @@
             document.getElementById('transfer-file-selector').classList.add('hidden');
             document.getElementById('active-transfer-box').classList.remove('hidden');
             document.getElementById('transfer-filename').textContent = fileMeta.name;
+            document.getElementById('transfer-status').textContent = 'Waiting for receiver to initialize storage...';
             
-            // Bypass PeerJS for metadata, manually stringify and send via raw WebRTC channel
+            // Send Meta. Sender will NOT stream until receiver replies with 'ready'
             activeConnection.dataChannel.send(JSON.stringify({ type: 'meta', data: fileMeta }));
-            
-            // Safety Catch: 0-byte configuration files
-            if (fileMeta.size === 0) {
-                completeSenderUI();
-                return;
-            }
+        }
 
-            startSpeedTracker();
-            sendFileInChunks();
+        function handleSenderNativeMessage(event) {
+            if (typeof event.data === 'string') {
+                const msg = JSON.parse(event.data);
+                if (msg.type === 'ready') {
+                    if (fileMeta.size === 0) {
+                        completeSenderUI();
+                        return;
+                    }
+                    startSpeedTracker();
+                    sendFileInChunks();
+                }
+            }
         }
 
         function sendFileInChunks() {
@@ -395,7 +396,6 @@
             reader.onload = (e) => {
                 const chunk = e.target.result;
                 try {
-                    // Direct ArrayBuffer WebRTC payload
                     nativeDataChannel.send(chunk);
                 } catch (err) {
                     console.error("Buffer overflow");
@@ -413,7 +413,7 @@
             };
 
             function readNextChunk() {
-                if (nativeDataChannel.bufferedAmount > 1024 * 1024 * 2) { // 2MB Outbound Backpressure
+                if (nativeDataChannel.bufferedAmount > 1024 * 1024 * 2) { 
                     const onLow = () => {
                         nativeDataChannel.removeEventListener('bufferedamountlow', onLow);
                         readSlice();
@@ -450,21 +450,25 @@
                 const msg = JSON.parse(data);
                 if (msg.type === 'meta') {
                     fileMeta = msg.data;
-                    await initIndexedDB(); 
-                    
                     document.getElementById('receiver-waiting').classList.add('hidden');
                     document.getElementById('active-transfer-box').classList.remove('hidden');
                     document.getElementById('transfer-filename').textContent = fileMeta.name;
-                    document.getElementById('transfer-status').textContent = 'Buffering to Storage...';
+                    document.getElementById('transfer-status').textContent = 'Formatting Storage...';
+                    
+                    await initIndexedDB(); 
                     
                     receivedBytes = 0;
                     ramBuffer = [];
                     ramBufferSize = 0;
                     dbChunkIndex = 0;
                     
+                    // Transmit Ready Handshake
+                    activeConnection.dataChannel.send(JSON.stringify({ type: 'ready' }));
+                    
                     if (fileMeta.size === 0) {
                         assembleFileFromDB();
                     } else {
+                        document.getElementById('transfer-status').textContent = 'Buffering to Storage...';
                         startSpeedTracker();
                     }
                 }
@@ -478,12 +482,10 @@
             
             updateTransferUI(receivedBytes, fileMeta.size);
 
-            // Capture state synchronously to mathematically prevent Race Conditions on the final chunk
             const isFinalChunk = (receivedBytes >= fileMeta.size);
             const shouldFlush = (ramBufferSize >= FLUSH_LIMIT || isFinalChunk);
 
             if (shouldFlush) {
-                // Combine array of ArrayBuffers into a single Uint8Array to prevent Safari Clone Errors
                 const combinedArray = new Uint8Array(ramBufferSize);
                 let offset = 0;
                 for (let buf of ramBuffer) {
@@ -491,7 +493,6 @@
                     offset += buf.byteLength || buf.length;
                 }
                 
-                // Free JS RAM immediately before yielding to slow disk write
                 ramBuffer = []; 
                 ramBufferSize = 0;
                 
@@ -516,20 +517,17 @@
                 document.getElementById('transfer-status').textContent = 'Stitching data from storage...';
                 document.getElementById('transfer-speed').textContent = "Done";
 
-                // Stitch Blob cumulatively. This completely prevents the 1GB Safari RAM explosion.
+                // Stitch Blob cumulatively
                 let finalFile = new Blob([], { type: fileMeta.type });
                 for (let i = 0; i < dbChunkIndex; i++) {
                     const buffer = await getChunkFromDB(i);
                     finalFile = new Blob([finalFile, buffer], { type: fileMeta.type });
                 }
                 
-                // CRITICAL FIX: Explicitly close DB lock before requesting deletion
                 if (db) {
                     db.close();
                     db = null;
                 }
-                
-                // Delete the database to reclaim phone physical storage space
                 indexedDB.deleteDatabase('AirBeamDB');
 
                 // Final UI Update
