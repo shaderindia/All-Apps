@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AirBeam Pro - 1GB Offline Transfer</title>
+    <title>AirBeam Pro - P2P File Sharing</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -28,7 +28,7 @@
     <!-- Header -->
     <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
         <div class="max-w-xl mx-auto px-4 py-3 flex items-center justify-between">
-            <div class="flex items-center gap-3">
+            <a href="../" class="flex items-center gap-3 hover:opacity-90 transition">
                 <div class="p-2 bg-blue-600/20 text-blue-400 rounded-xl border border-blue-500/30">
                     <i data-lucide="zap" class="w-6 h-6"></i>
                 </div>
@@ -36,7 +36,7 @@
                     <h1 class="font-bold text-lg leading-none text-white">AirBeam Pro</h1>
                     <p class="text-xs text-slate-400 mt-0.5">P2P Large File Bridge</p>
                 </div>
-            </div>
+            </a>
             <div id="status-badge" class="text-xs text-slate-400 font-medium bg-slate-800 px-3 py-1.5 rounded-full border border-slate-700 flex items-center gap-2">
                 <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-500"></i> Secure
             </div>
@@ -72,27 +72,33 @@
         </div>
 
         <!-- Stage 2A: Sender Prep (Hotspot) -->
-        <div id="stage-sender-prep" class="hidden bg-slate-900 border border-slate-800 rounded-2xl p-8 text-center space-y-6 shadow-lg">
-            <div class="w-20 h-20 bg-blue-500/10 text-blue-400 rounded-full flex items-center justify-center mx-auto">
+        <div id="stage-sender-prep" class="hidden bg-slate-900 border border-slate-800 rounded-2xl p-8 text-center space-y-6 shadow-lg relative">
+            <button onclick="showStage('stage-role')" class="absolute top-4 left-4 text-slate-400 hover:text-white text-xs font-semibold flex items-center gap-1">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i> Back
+            </button>
+            <div class="w-20 h-20 bg-blue-500/10 text-blue-400 rounded-full flex items-center justify-center mx-auto mt-2">
                 <i data-lucide="wifi" class="w-10 h-10"></i>
             </div>
             <div>
                 <h3 class="text-xl font-bold text-white">Step 1: Turn on Hotspot</h3>
-                <p class="text-slate-400 text-sm mt-2">To transfer 1GB+ offline, turn on your <strong>Mobile Hotspot (Tethering)</strong>. Ensure your cellular data is active so devices can establish the handshake.</p>
+                <p class="text-slate-400 text-sm mt-2">To transfer 1GB+ offline, turn on your <strong>Mobile Hotspot (Tethering)</strong> or ensure both devices are on the same Wi-Fi network.</p>
             </div>
             <button onclick="initializePeerAsSender()" class="w-full px-6 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition shadow-lg shadow-blue-500/20">
-                Hotspot is Active
+                Hotspot / Network Active
             </button>
         </div>
 
         <!-- Stage 2B: Receiver Prep (Wi-Fi) -->
-        <div id="stage-receiver-prep" class="hidden bg-slate-900 border border-slate-800 rounded-2xl p-8 text-center space-y-6 shadow-lg">
-            <div class="w-20 h-20 bg-emerald-500/10 text-emerald-400 rounded-full flex items-center justify-center mx-auto">
+        <div id="stage-receiver-prep" class="hidden bg-slate-900 border border-slate-800 rounded-2xl p-8 text-center space-y-6 shadow-lg relative">
+            <button onclick="showStage('stage-role')" class="absolute top-4 left-4 text-slate-400 hover:text-white text-xs font-semibold flex items-center gap-1">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i> Back
+            </button>
+            <div class="w-20 h-20 bg-emerald-500/10 text-emerald-400 rounded-full flex items-center justify-center mx-auto mt-2">
                 <i data-lucide="smartphone" class="w-10 h-10"></i>
             </div>
             <div>
                 <h3 class="text-xl font-bold text-white">Step 1: Connect to Sender</h3>
-                <p class="text-slate-400 text-sm mt-2">Open your Wi-Fi settings and connect to the <strong>Sender's Mobile Hotspot</strong> network.</p>
+                <p class="text-slate-400 text-sm mt-2">Open your Wi-Fi settings and connect to the <strong>Sender's Mobile Hotspot</strong> or Wi-Fi network.</p>
             </div>
             <button onclick="showReceiverPinEntry()" class="w-full px-6 py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl transition shadow-lg shadow-emerald-500/20">
                 I'm Connected
@@ -102,20 +108,26 @@
         <!-- Stage 3A: Sender PIN Display -->
         <div id="stage-sender-pin" class="hidden space-y-6">
             <div class="bg-slate-900 border border-slate-800 rounded-2xl p-8 text-center shadow-lg relative overflow-hidden">
+                <button onclick="resetApp()" class="absolute top-4 left-4 text-slate-400 hover:text-white text-xs font-semibold flex items-center gap-1">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i> Back
+                </button>
                 <div class="absolute -right-4 -top-4 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl"></div>
-                <h2 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-2">Your Device PIN</h2>
+                <h2 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-2 mt-4">Your Device PIN</h2>
                 <div id="my-pin" class="text-6xl font-black text-blue-400 tracking-widest my-4">----</div>
-                <p class="text-xs text-slate-500 max-w-xs mx-auto">Tell the receiver to enter this PIN.</p>
+                <p class="text-xs text-slate-400 max-w-xs mx-auto">Share this 4-digit PIN with the receiving device.</p>
             </div>
             <div class="text-center">
-                <i data-lucide="loader-2" class="w-6 h-6 text-slate-500 animate-spin mx-auto mb-2"></i>
+                <i data-lucide="loader-2" class="w-6 h-6 text-blue-400 animate-spin mx-auto mb-2"></i>
                 <p class="text-sm text-slate-400">Waiting for receiver to connect...</p>
             </div>
         </div>
 
         <!-- Stage 3B: Receiver PIN Entry -->
-        <div id="stage-receiver-pin" class="hidden bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-lg text-center space-y-6">
-            <h3 class="text-lg font-bold text-white mb-2">Enter Sender's PIN</h3>
+        <div id="stage-receiver-pin" class="hidden bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-lg text-center space-y-6 relative">
+            <button onclick="showStage('stage-receiver-prep')" class="absolute top-4 left-4 text-slate-400 hover:text-white text-xs font-semibold flex items-center gap-1">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i> Back
+            </button>
+            <h3 class="text-lg font-bold text-white mb-2 mt-4">Enter Sender's PIN</h3>
             
             <input type="text" id="target-pin" pattern="\d*" inputmode="numeric" maxlength="4" placeholder="0000" oninput="sanitizePinInput(this)" class="w-full max-w-[200px] mx-auto block bg-slate-950 border border-slate-700 rounded-xl px-4 py-4 text-white text-3xl tracking-widest text-center focus:outline-none focus:border-emerald-500 font-black shadow-inner">
             
@@ -137,13 +149,13 @@
                 <div class="p-4 bg-slate-900 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center group-hover:scale-110 transition-transform text-slate-400 group-hover:text-blue-400">
                     <i data-lucide="upload-cloud" class="w-8 h-8"></i>
                 </div>
-                <p class="font-bold text-slate-200 text-lg">Select File (1GB+)</p>
+                <p class="font-bold text-slate-200 text-lg">Select or Drop File</p>
                 <p class="text-xs text-slate-500 mt-2">Ready to blast directly to receiver.</p>
             </div>
 
             <!-- Receiver Waiting State -->
             <div id="receiver-waiting" class="hidden p-10 text-center text-slate-400">
-                <i data-lucide="inbox" class="w-12 h-12 mx-auto mb-4 opacity-50"></i>
+                <i data-lucide="inbox" class="w-12 h-12 mx-auto mb-4 opacity-50 text-emerald-400"></i>
                 <p class="font-bold text-slate-200">Waiting for Sender...</p>
                 <p class="text-xs mt-1">Keep this screen open.</p>
             </div>
@@ -237,16 +249,18 @@
             peer = new Peer(APP_PREFIX + myPin);
 
             peer.on('connection', (conn) => {
-                // Bug Fix: Explicitly close secondary connections to prevent infinite UI hangs on receiver
                 if (activeConnection) {
                     conn.close();
                     return;
                 }
                 activeConnection = conn;
+                conn.serialization = 'none';
                 setupConnectionHandlers();
             });
 
-            peer.on('error', (err) => alert("Connection Error: " + err.message));
+            peer.on('error', (err) => {
+                alert("Connection Error: " + err.message);
+            });
         }
 
         /* ================= PEERJS & PAIRING (RECEIVER) ================= */
@@ -255,11 +269,15 @@
             const btnPair = document.getElementById('btn-pair');
             const inputPin = document.getElementById('target-pin');
             
-            // Bug Fix: Hard-disable inputs immediately to prevent memory leaks from user double-clicks
             btnPair.disabled = true;
             inputPin.disabled = true;
             btnPair.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Pairing...`;
+            lucide.createIcons();
             
+            if (peer) {
+                try { peer.destroy(); } catch(e){}
+            }
+
             peer = new Peer();
             
             peer.on('open', () => {
@@ -268,18 +286,21 @@
             });
 
             peer.on('error', (err) => {
-                alert("Pairing Error: " + err.message);
-                resetApp();
+                alert("Pairing Error: Could not connect to PIN " + targetPin + " (" + err.message + ")");
+                btnPair.disabled = false;
+                inputPin.disabled = false;
+                btnPair.innerHTML = `<i data-lucide="link-2" class="w-5 h-5"></i> Pair Devices`;
+                lucide.createIcons();
             });
         }
 
-        /* ================= NATIVE WEBRTC INJECTION ================= */
+        /* ================= WEBRTC HANDLERS ================= */
         function setupConnectionHandlers() {
             activeConnection.on('open', () => {
                 document.getElementById('status-badge').innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]"></span> Paired`;
                 
                 if (activeConnection.dataChannel) {
-                    activeConnection.dataChannel.bufferedAmountLowThreshold = 1024 * 1024; // 1MB Outbound Buffer
+                    activeConnection.dataChannel.bufferedAmountLowThreshold = 1024 * 1024;
                     activeConnection.dataChannel.binaryType = 'arraybuffer'; 
                 }
 
@@ -297,35 +318,42 @@
                 requestWakeLock();
             });
 
-            // Bug Fix: Catch native WebRTC failures (like strict corporate Wi-Fi blocking P2P)
             activeConnection.on('error', (err) => {
-                alert("Connection failed. Your router might be blocking P2P traffic (AP Isolation).");
+                alert("Connection failed. Your router or mobile hotspot might be blocking P2P traffic.");
                 resetApp();
             });
 
             activeConnection.on('close', () => {
-                alert("Connection dropped. Resetting application.");
+                alert("Connection dropped by peer.");
                 resetApp();
             });
         }
 
         async function resetApp() {
-            if (activeConnection) activeConnection.close();
+            if (activeConnection) {
+                try { activeConnection.close(); } catch(e){}
+                activeConnection = null;
+            }
+            if (peer) {
+                try { peer.destroy(); } catch(e){}
+                peer = null;
+            }
             try { if (wakeLock) { await wakeLock.release(); wakeLock = null; } } catch(e) {}
             
             if (db) {
                 db.close();
                 db = null;
             }
-            indexedDB.deleteDatabase('AirBeamDB');
+            try { indexedDB.deleteDatabase('AirBeamDB'); } catch(e){}
             location.reload();
         }
 
-        /* ================= INDEXEDDB (10MB BATCHING ENGINE) ================= */
+        /* ================= INDEXEDDB BATCHING ENGINE ================= */
         let db = null;
         let ramBuffer = [];
         let ramBufferSize = 0;
         let dbChunkIndex = 0;
+        let writeQueue = Promise.resolve();
         const FLUSH_LIMIT = 10 * 1024 * 1024; // 10MB RAM buffer limit before disk write
 
         function initIndexedDB() {
@@ -354,6 +382,7 @@
 
         function storeChunkInDB(index, arrayBufferData) {
             return new Promise((resolve, reject) => {
+                if (!db) return resolve();
                 const tx = db.transaction('chunks', 'readwrite');
                 tx.objectStore('chunks').put(arrayBufferData, index);
                 tx.oncomplete = resolve;
@@ -361,8 +390,14 @@
             });
         }
 
+        function queueDBStore(index, arrayBufferData) {
+            writeQueue = writeQueue.then(() => storeChunkInDB(index, arrayBufferData));
+            return writeQueue;
+        }
+
         function getChunkFromDB(index) {
             return new Promise((resolve, reject) => {
+                if (!db) return resolve(null);
                 const tx = db.transaction('chunks', 'readonly');
                 const req = tx.objectStore('chunks').get(index);
                 req.onsuccess = () => resolve(req.result);
@@ -370,9 +405,9 @@
             });
         }
 
-        /* ================= SENDING LOGIC (NATIVE INJECTION) ================= */
+        /* ================= SENDING LOGIC ================= */
         function handleFileSelect(event) {
-            fileToSend = event.target.files[0];
+            fileToSend = event.target.files ? event.target.files[0] : null;
             if (!fileToSend) return;
             
             event.target.value = '';
@@ -389,20 +424,22 @@
 
         function handleSenderNativeMessage(event) {
             if (typeof event.data === 'string') {
-                const msg = JSON.parse(event.data);
-                if (msg.type === 'ready') {
-                    if (fileMeta.size === 0) {
-                        completeSenderUI();
-                        return;
+                try {
+                    const msg = JSON.parse(event.data);
+                    if (msg.type === 'ready') {
+                        if (fileMeta.size === 0) {
+                            completeSenderUI();
+                            return;
+                        }
+                        startSpeedTracker();
+                        sendFileInChunks();
                     }
-                    startSpeedTracker();
-                    sendFileInChunks();
-                }
+                } catch(e){}
             }
         }
 
         function sendFileInChunks() {
-            document.getElementById('transfer-status').textContent = 'Blasting pure binary over Wi-Fi...';
+            document.getElementById('transfer-status').textContent = 'Blasting data over WebRTC P2P...';
             senderOffsetTracker = 0;
             const reader = new FileReader();
             const nativeDataChannel = activeConnection.dataChannel;
@@ -412,7 +449,7 @@
                 try {
                     nativeDataChannel.send(chunk);
                 } catch (err) {
-                    console.error("Buffer overflow");
+                    console.error("Buffer overflow:", err);
                     return;
                 }
                 
@@ -461,38 +498,41 @@
             
             // Handle Initial Metadata
             if (typeof data === 'string') {
-                const msg = JSON.parse(data);
-                if (msg.type === 'meta') {
-                    fileMeta = msg.data;
-                    document.getElementById('receiver-waiting').classList.add('hidden');
-                    document.getElementById('active-transfer-box').classList.remove('hidden');
-                    document.getElementById('transfer-filename').textContent = fileMeta.name;
-                    document.getElementById('transfer-status').textContent = 'Formatting Storage...';
-                    
-                    await initIndexedDB(); 
-                    
-                    receivedBytes = 0;
-                    ramBuffer = [];
-                    ramBufferSize = 0;
-                    dbChunkIndex = 0;
-                    
-                    // Transmit Ready Handshake
-                    activeConnection.dataChannel.send(JSON.stringify({ type: 'ready' }));
-                    
-                    if (fileMeta.size === 0) {
-                        assembleFileFromDB();
-                    } else {
-                        document.getElementById('transfer-status').textContent = 'Buffering to Storage...';
-                        startSpeedTracker();
+                try {
+                    const msg = JSON.parse(data);
+                    if (msg.type === 'meta') {
+                        fileMeta = msg.data;
+                        document.getElementById('receiver-waiting').classList.add('hidden');
+                        document.getElementById('active-transfer-box').classList.remove('hidden');
+                        document.getElementById('transfer-filename').textContent = fileMeta.name;
+                        document.getElementById('transfer-status').textContent = 'Formatting Storage...';
+                        
+                        await initIndexedDB(); 
+                        
+                        receivedBytes = 0;
+                        ramBuffer = [];
+                        ramBufferSize = 0;
+                        dbChunkIndex = 0;
+                        writeQueue = Promise.resolve();
+                        
+                        activeConnection.dataChannel.send(JSON.stringify({ type: 'ready' }));
+                        
+                        if (fileMeta.size === 0) {
+                            assembleFileFromDB();
+                        } else {
+                            document.getElementById('transfer-status').textContent = 'Buffering to Storage...';
+                            startSpeedTracker();
+                        }
                     }
-                }
+                } catch(e){}
                 return;
             }
             
             // Handle Binary Chunk
             ramBuffer.push(data);
-            ramBufferSize += data.byteLength || data.length;
-            receivedBytes += data.byteLength || data.length;
+            const chunkSize = data.byteLength || data.length || 0;
+            ramBufferSize += chunkSize;
+            receivedBytes += chunkSize;
             
             updateTransferUI(receivedBytes, fileMeta.size);
 
@@ -504,20 +544,18 @@
                 let offset = 0;
                 for (let buf of ramBuffer) {
                     combinedArray.set(new Uint8Array(buf), offset);
-                    offset += buf.byteLength || buf.length;
+                    offset += buf.byteLength || buf.length || 0;
                 }
                 
                 ramBuffer = []; 
                 ramBufferSize = 0;
                 
-                try {
-                    await storeChunkInDB(dbChunkIndex++, combinedArray.buffer);
-                } catch (err) {
+                const targetIdx = dbChunkIndex++;
+                queueDBStore(targetIdx, combinedArray.buffer).catch(err => {
                     console.error("Storage failed:", err);
-                    alert("Storage Write Failed. Is your phone out of storage space?");
+                    alert("Storage Write Failed.");
                     resetApp();
-                    return;
-                }
+                });
             }
 
             if (isFinalChunk) {
@@ -527,24 +565,25 @@
 
         async function assembleFileFromDB() {
             try {
+                await writeQueue; // Guarantee all background disk writes are finished
                 if (speedInterval) clearInterval(speedInterval);
                 document.getElementById('transfer-status').textContent = 'Stitching data from storage...';
                 document.getElementById('transfer-speed').textContent = "Done";
 
-                // Stitch Blob cumulatively
-                let finalFile = new Blob([], { type: fileMeta.type });
+                const blobParts = [];
                 for (let i = 0; i < dbChunkIndex; i++) {
                     const buffer = await getChunkFromDB(i);
-                    finalFile = new Blob([finalFile, buffer], { type: fileMeta.type });
+                    if (buffer) blobParts.push(buffer);
                 }
+                
+                const finalFile = new Blob(blobParts, { type: fileMeta.type || 'application/octet-stream' });
                 
                 if (db) {
                     db.close();
                     db = null;
                 }
-                indexedDB.deleteDatabase('AirBeamDB');
+                try { indexedDB.deleteDatabase('AirBeamDB'); } catch(e){}
 
-                // Final UI Update
                 document.getElementById('transfer-status').textContent = 'Transfer Complete!';
                 document.getElementById('transfer-status').classList.add('text-emerald-400');
                 document.getElementById('transfer-bar').classList.remove('from-blue-500', 'to-cyan-400');
@@ -572,8 +611,35 @@
             }
         }
 
+        /* ================= DRAG & DROP SUPPORT ================= */
+        const dropZone = document.getElementById('transfer-file-selector');
+        if (dropZone) {
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropZone.classList.add('border-blue-500', 'bg-blue-950/30');
+                }, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropZone.classList.remove('border-blue-500', 'bg-blue-950/30');
+                }, false);
+            });
+
+            dropZone.addEventListener('drop', (e) => {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                if (files && files.length > 0) {
+                    handleFileSelect({ target: { files: files, value: '' } });
+                }
+            }, false);
+        }
+
         /* ================= UTILS & PREVENT SCREEN SLEEP ================= */
-        
         async function requestWakeLock() {
             try {
                 if ('wakeLock' in navigator) {
