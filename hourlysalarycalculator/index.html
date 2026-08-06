@@ -1,1014 +1,145 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
-  <link rel="preload" href="/fonts/Inter-Variable.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
-  <style>
-    @font-face {
-      font-family: 'Inter';
-      font-style: normal;
-      font-weight: 300 900;
-      font-display: optional;
-      src: url('/fonts/Inter-Variable.woff2') format('woff2');
-      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-    }
-  </style>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Advanced Hourly Salary Calculator | Night, C Shift, Weekend Pay & PDF Tool - SHADER7</title>
-  <meta name="description" content="Free advanced hourly salary calculator for monthly pay, night shift multiplier, C shift multiplier, weekend rates, daily work logs, RON to INR conversion, and downloadable PDF or JPG salary reports." />
-  <meta name="keywords" content="hourly salary calculator, salary calculator Romania, wage calculator, monthly salary calculator, weekend pay calculator, RON to INR converter, overtime calculator, night shift calculator, C shift salary calculator, SHADER7" />
-  <meta name="author" content="Nishikant Xalxo" />
-  <meta name="robots" content="index, follow, max-image-preview:large" />
-  <meta name="theme-color" content="#4361ee" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hourly to Salary Calculator | Paycheck & Overtime Income Tool</title>
+  <meta name="description" content="Calculate your yearly, monthly, weekly, and daily income from your hourly wage. Includes overtime rate, tax estimates, and paycheck breakdown by SHADER7." />
+  <meta name="keywords" content="hourly to salary calculator, wage calculator, paycheck estimator, overtime calculator, SHADER7" />
+  <meta name="author" content="SHADER7" />
+  <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://shader7.com/hourlysalarycalculator/" />
 
+  <!-- Open Graph -->
+  <meta property="og:title" content="Hourly to Salary Calculator | SHADER7" />
+  <meta property="og:description" content="Convert hourly rate to annual salary with tax and overtime estimation." />
   <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="Shader7" />
-  <meta property="og:locale" content="en_US" />
   <meta property="og:url" content="https://shader7.com/hourlysalarycalculator/" />
-  <meta property="og:title" content="Advanced Hourly Salary Calculator | Free Pay & Wage Tool" />
-  <meta property="og:description" content="Calculate hourly, monthly, and annual salary instantly. Track weekend pay, generate salary reports, and convert RON to INR." />
-  <meta property="og:image" content="https://shader7.com/og-image.jpg" />
-  <meta property="og:image:alt" content="Shader7 advanced salary calculator preview" />
 
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:site" content="@nishix_vamp" />
-  <meta name="twitter:creator" content="@nishix_vamp" />
-  <meta name="twitter:title" content="Advanced Hourly Salary Calculator | Free Pay & Wage Tool" />
-  <meta name="twitter:description" content="Calculate hourly, monthly, and annual salary instantly. Track weekend pay and generate PDF salary reports." />
-  <meta name="twitter:image" content="https://shader7.com/og-image.jpg" />
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" />
 
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-FCJR8H4DME"></script>
+  <!-- Global Theme Manager -->
+  <script src="../js/theme.js"></script>
+
   <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-FCJR8H4DME');
+    // ponytail: auto-redirect deep links to app interface
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('rate') || params.has('hours') || params.has('calc')) {
+      window.location.href = 'app.html' + window.location.search;
+    }
   </script>
-
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "WebApplication",
-        "name": "Shader7 Advanced Hourly Salary Calculator",
-        "url": "https://shader7.com/hourlysalarycalculator/",
-        "applicationCategory": "FinanceApplication",
-        "operatingSystem": "All",
-        "browserRequirements": "Requires JavaScript",
-        "isAccessibleForFree": true,
-        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-        "description": "A free online salary calculator for hourly, monthly, and annual salary estimates, weekend, night shift, and C shift multipliers, RON to INR conversion, saved monthly logs, and PDF/JPG report generation.",
-        "creator": { "@type": "Person", "name": "Nishikant Xalxo", "url": "https://instagram.com/nishix_vamp" }
-      },
-      {
-        "@type": "FAQPage",
-        "mainEntity": [
-          {
-            "@type": "Question",
-            "name": "How is my hourly rate calculated?",
-            "acceptedAnswer": { 
-              "@type": "Answer", 
-              "text": "Your hourly rate is calculated using the base salary and the fixed base hours you specify. The mathematical equation is: Hourly Rate = Base Salary / Fixed Base Hours." 
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "How do the weekend, night shift, and C shift multipliers work?",
-            "acceptedAnswer": { 
-              "@type": "Answer", 
-              "text": "Multipliers scale your base hourly rate for specific hours worked. Compounded rates apply when working specialized shifts on weekends (e.g., Weekend Rate * Night Shift Multiplier)." 
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "What are the standard hours and shift assumptions?",
-            "acceptedAnswer": { 
-              "@type": "Answer", 
-              "text": "A standard full-time work month assumes 160 to 168 hours of labor, translating to a standard 40-hour work week (8 hours per day, 5 days per week)." 
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Is my financial information safe with Shader7?",
-            "acceptedAnswer": { 
-              "@type": "Answer", 
-              "text": "Yes, absolutely. The salary calculator operates entirely on client-side technology. All data is processed in your local browser memory and saved in local storage." 
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "How does the live currency converter auto-calculate?",
-            "acceptedAnswer": { 
-              "@type": "Answer", 
-              "text": "The application integrates with the Frankfurter Exchange Rate API to pull live daily currency conversions. When enabled, your total monthly salary is automatically converted to Indian Rupees (INR) or other target currencies." 
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "How can I export and print my monthly salary report?",
-            "acceptedAnswer": { 
-              "@type": "Answer", 
-              "text": "Once you have completed your monthly log, click the 'Generate Report' button to preview and download a detailed billing statement as a PDF or high-resolution JPG image." 
-            }
-          }
-        ]
-      }
-    ]
-  }
-  </script>
-  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
-  <link 
-    rel="preload" 
-    href="/css/font-awesome.min.css" 
-    as="style" 
-    onload="this.onload=null;this.rel='stylesheet'" 
-    crossorigin="anonymous" 
-  />
-  <noscript><link rel="stylesheet" href="/css/font-awesome.min.css" crossorigin="anonymous" /></noscript>
-
-  <script defer src="../js/jspdf.umd.min.js"></script>
-  <script defer src="../js/html2canvas.min.js"></script>
 
   <style>
-    /* Premium Info Section for AdSense and SEO */
-    .app-info-section {
-        margin-top: 40px;
-        background: #1e293b !important;
-        border: 1px solid #334155 !important;
-        border-radius: 12px;
-        padding: 30px;
-        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
-        text-align: left !important;
-        color: #e2e8f0 !important;
-    }
-    .app-info-section h3 {
-        color: #3b82f6 !important;
-        font-size: 1.35rem !important;
-        margin-top: 25px !important;
-        margin-bottom: 12px !important;
-        border-bottom: 1px solid #334155 !important;
-        padding-bottom: 6px !important;
-        font-weight: 700 !important;
-        text-transform: none !important;
-        text-align: left !important;
-    }
-    .app-info-section h3:first-of-type {
-        margin-top: 0 !important;
-    }
-    .app-info-section p {
-        color: #cbd5e1 !important;
-        font-size: 0.95rem !important;
-        line-height: 1.7 !important;
-        margin-bottom: 15px !important;
-        text-align: left !important;
-    }
-    .app-info-section ul, .app-info-section ol {
-        margin-left: 24px !important;
-        margin-bottom: 15px !important;
-        color: #cbd5e1 !important;
-        text-align: left !important;
-    }
-    .app-info-section li {
-        margin-bottom: 6px !important;
-        font-size: 0.95rem !important;
-        line-height: 1.6 !important;
-    }
-    .app-info-section code {
-        background: #020617 !important;
-        padding: 2px 6px !important;
-        border-radius: 4px !important;
-        font-family: monospace !important;
-        color: #3b82f6 !important;
-        font-size: 0.9rem !important;
-    }
-    .app-info-section .guide-promo-box {
-        background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(168, 85, 247, 0.08)) !important;
-        border: 1px dashed rgba(139, 92, 246, 0.3) !important;
-        border-radius: 8px;
-        padding: 20px;
-        margin-top: 30px;
-        text-align: center !important;
-    }
-    .app-info-section .guide-promo-box p {
-        text-align: center !important;
-        margin-bottom: 12px !important;
-        font-weight: 600 !important;
-        color: #ffffff !important;
-    }
-    .app-info-section .promo-btn {
-        display: inline-block !important;
-        background: #6366f1 !important;
-        color: #ffffff !important;
-        padding: 10px 20px !important;
-        border-radius: 6px !important;
-        text-decoration: none !important;
-        font-weight: 700 !important;
-        transition: background 0.2s !important;
-        font-size: 0.9rem !important;
-        border: none !important;
-        cursor: pointer !important;
-    }
-    .app-info-section .promo-btn:hover {
-        background: #4f46e5 !important;
+    :root, [data-theme="light"] {
+      --bg: #f8fafc;
+      --bg-surface: #ffffff;
+      --primary: #d97706;
+      --primary-hover: #b45309;
+      --accent: #059669;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --border: rgba(15, 23, 42, 0.08);
+      --font-main: 'Outfit', sans-serif;
     }
 
-    :root {
-      --primary: #4361ee;
-      --primary-dark: #3f37c9;
-      --accent: #4895ef;
-      --bg: #f5f7ff;
-      --surface: #fff;
-      --soft: #f8fafc;
-      --text: #1f2937;
-      --muted: #64748b;
-      --border: #e5e7eb;
-      --danger: #ef4444;
-      --warning: #f59e0b;
-      --radius: 16px;
-      --shadow: 0 10px 30px rgba(15, 23, 42, .1);
-      --focus: 0 0 0 4px rgba(72, 149, 239, .24);
-    }
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      color: var(--text);
-      background: radial-gradient(circle at top left, #eaf0ff 0, var(--bg) 42%, #fff 100%);
-      line-height: 1.55;
-    }
-    a { color: inherit; }
-    button, input, select { font: inherit; }
-    button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible { outline: none; box-shadow: var(--focus); }
-    .page-shell { width: min(1120px, calc(100% - 28px)); margin: 0 auto; padding: 20px 0 36px; }
-    .hero {
-      position: relative;
-      overflow: hidden;
-      border-radius: 24px;
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: #fff;
-      box-shadow: var(--shadow);
-      padding: clamp(24px, 4vw, 42px);
-      margin-bottom: 22px;
-    }
-    .hero::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at 85% 15%, rgba(255,255,255,.22), transparent 35%);
-      pointer-events: none;
-    }
-    .home-link, .hero-content { position: relative; z-index: 1; }
-    .home-link { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; margin-bottom: 18px; opacity: .95; }
-    .hero-content { display: grid; gap: 10px; }
-    .hero h1 { font-size: clamp(1.9rem, 5vw, 3.3rem); line-height: 1.08; margin: 0; }
-    .hero p { max-width: 780px; margin: 0; opacity: .92; }
-    .hero-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
-    .badge { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.22); padding: 7px 11px; border-radius: 999px; font-size: .84rem; }
-    .card {
-      background: rgba(255,255,255,.94);
-      border: 1px solid rgba(226, 232, 240, .78);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: clamp(16px, 3vw, 28px);
-      margin-bottom: 20px;
-      backdrop-filter: blur(10px);
-    }
-    .top-row { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; flex-wrap: wrap; margin-bottom: 18px; }
-    .top-row h2 { margin: 0; font-size: clamp(1.35rem, 3vw, 1.8rem); }
-    .subtle { color: var(--muted); font-size: .94rem; }
-    .summary-strip { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 22px; }
-    .summary-item { background: var(--soft); border: 1px solid var(--border); border-radius: 14px; padding: 14px; }
-    .summary-item span { display: block; color: var(--muted); font-size: .8rem; }
-    .summary-item strong { display: block; margin-top: 3px; font-size: .98rem; word-break: break-word; }
-    .form-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
-    .form-group { display: grid; gap: 7px; }
-    label { font-weight: 600; color: #475569; font-size: .9rem; }
-    input, select {
-      width: 100%;
-      border: 1.8px solid var(--border);
-      border-radius: 12px;
-      background: #fff;
-      padding: 12px 13px;
-      color: var(--text);
-      min-height: 46px;
-      transition: border-color .2s ease, box-shadow .2s ease;
-    }
-    input:focus, select:focus { border-color: var(--accent); box-shadow: var(--focus); }
-    input.input-error, select.input-error { border-color: var(--danger); background: #fff7f7; box-shadow: 0 0 0 4px rgba(239, 68, 68, .12); }
-    .field-warning { display: none; color: var(--danger); font-size: .78rem; font-weight: 700; }
-    .field-warning.is-visible { display: block; }
-    .salary-alert { display: none; margin-top: 12px; border: 1px solid rgba(239, 68, 68, .26); background: #fff7f7; color: #b91c1c; border-radius: 12px; padding: 10px 12px; font-weight: 700; }
-    .salary-alert.is-visible { display: flex; align-items: center; gap: 8px; }
-    .actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 18px; }
-    .btn {
-      border: 0;
-      min-height: 44px;
-      border-radius: 12px;
-      padding: 11px 17px;
-      cursor: pointer;
-      display: inline-flex;
-      justify-content: center;
-      align-items: center;
-      gap: 8px;
-      color: #fff;
-      background: var(--primary);
-      font-weight: 700;
-      transition: transform .18s ease, box-shadow .18s ease, opacity .18s ease;
-    }
-    .btn:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(15,23,42,.16); }
-    .btn:disabled { opacity: .65; cursor: not-allowed; transform: none; }
-    .btn.secondary { background: var(--primary-dark); }
-    .btn.warning { background: var(--warning); }
-    .btn.neutral { background: #64748b; }
-    .btn.danger { background: var(--danger); }
-    .salary-panel { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 18px; }
-    .salary-box { background: linear-gradient(135deg, #f8fbff, #eef4ff); border: 1px solid #dbeafe; border-radius: 16px; padding: 16px; }
-    .salary-box span { display: block; color: var(--muted); font-size: .82rem; }
-    .salary-box strong { display: block; margin-top: 4px; color: var(--primary); font-size: clamp(1.05rem, 2.5vw, 1.4rem); }
-    .calendar-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 24px 0 10px; flex-wrap: wrap; }
-    .calendar-toolbar h3 { margin: 0; }
-    .calendar-wrapper { overflow-x: auto; border: 1px solid var(--border); border-radius: 16px; background: #fff; }
-    .calendar-table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 760px; }
-    .calendar-table th { position: sticky; top: 0; z-index: 2; background: #eef4ff; color: var(--primary-dark); padding: 11px 8px; font-size: .86rem; }
-    .calendar-table td { border-top: 1px solid var(--border); border-right: 1px solid var(--border); min-width: 106px; vertical-align: top; padding: 9px; background: #fff; }
-    .calendar-table td:last-child, .calendar-table th:last-child { border-right: 0; }
-    .calendar-day { display: grid; gap: 6px; }
-    .day-number { display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: .92rem; }
-    .weekend-label { color: var(--danger); font-size: .7rem; font-weight: 700; }
-    .weekend { background: #fff7f7 !important; }
-    .empty-day { background: #f8fafc !important; }
-    .day-inputs { display: grid; grid-template-columns: 1fr; gap: 6px; }
-    .day-inputs select { min-height: 34px; padding: 6px 7px; border-radius: 9px; font-size: .78rem; }
-    .currency-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-    .live-rates { background: #f0f5ff; border: 1px solid #dbeafe; border-radius: 16px; padding: 16px; }
-    .live-rates-title { display: flex; align-items: center; gap: 9px; font-weight: 800; color: var(--primary-dark); margin-bottom: 12px; }
-    .rates-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 9px; }
-    .rate-item { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 10px; text-align: center; }
-    .rate-item strong { display: block; }
-    .rate-item span { color: var(--primary); font-size: .86rem; }
-    .converter { display: grid; gap: 13px; }
-    .converter-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .converter-result { background: #eef6ff; border: 1px solid #dbeafe; color: var(--primary-dark); border-radius: 14px; padding: 14px; text-align: center; font-weight: 800; min-height: 52px; display: grid; place-items: center; }
-    .switch-line { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
-    .switch { position: relative; display: inline-block; width: 50px; height: 28px; flex: 0 0 auto; }
-    .switch input { opacity: 0; width: 0; height: 0; }
-    .slider { position: absolute; inset: 0; cursor: pointer; background: #cbd5e1; border-radius: 999px; transition: .2s; }
-    .slider::before { content: ''; position: absolute; width: 20px; height: 20px; left: 4px; top: 4px; background: #fff; border-radius: 50%; transition: .2s; box-shadow: 0 1px 4px rgba(0,0,0,.18); }
-    .switch input:checked + .slider { background: var(--primary); }
-    .switch input:checked + .slider::before { transform: translateX(22px); }
-    .hidden { display: none !important; }
-    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
-    .toast { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%) translateY(120%); background: #111827; color: #fff; padding: 12px 16px; border-radius: 999px; box-shadow: var(--shadow); z-index: 2000; opacity: 0; transition: .25s ease; max-width: calc(100% - 24px); text-align: center; font-size: .92rem; }
-    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-    .spinner { width: 18px; height: 18px; border: 3px solid rgba(67,97,238,.25); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .modal { position: fixed; inset: 0; z-index: 1000; background: rgba(15, 23, 42, .74); display: grid; grid-template-rows: auto 1fr; gap: 12px; padding: 14px; }
-    .report-controls { width: min(960px, 100%); margin: 0 auto; background: rgba(255,255,255,.96); border-radius: 16px; padding: 10px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; align-items: center; }
-    .zoom-controls { display: flex; gap: 6px; align-items: center; }
-    .zoom-controls span { min-width: 48px; text-align: center; font-weight: 800; }
-    .report-scroll { width: min(960px, 100%); margin: 0 auto; overflow: auto; display: flex; align-items: flex-start; justify-content: center; }
-    #report-preview-content { background: #fff; width: 210mm; min-height: 297mm; padding: 12mm; transform-origin: top center; transition: transform .18s ease; box-shadow: 0 10px 40px rgba(0,0,0,.35); font-size: 10pt; color: #333; position: relative; }
-    .report-company-name { text-align: center; font-size: 16pt; font-weight: 800; color: #1f2937; margin-bottom: 8pt; word-break: break-word; }
-    .report-header { text-align: center; margin-bottom: 14pt; }
-    .report-header h2 { margin: 0 0 3pt; font-size: 18pt; }
-    .report-details { display: grid; grid-template-columns: 1fr 1fr; gap: 12pt; margin-bottom: 12pt; }
-    .report-details p { margin: 0 0 4pt; }
-    .report-table-container { display: grid; grid-template-columns: 1fr 1fr; gap: 8pt; }
-    .report-table { width: 100%; border-collapse: collapse; }
-    .report-table th, .report-table td { border: 1px solid #ddd; padding: 5pt; text-align: left; font-size: 7.8pt; vertical-align: top; }
-    .report-table th { background: #f3f4f6; }
-    .report-footer { display: grid; grid-template-columns: 1fr 1fr; gap: 10pt; margin-top: 24pt; font-size: 9pt; }
-    .report-footer .right { text-align: right; }
-    .report-watermark { position: absolute; inset: 0; display: grid; place-items: center; transform: rotate(-35deg); font-size: 3rem; font-weight: 800; color: rgba(0,0,0,.045); pointer-events: none; user-select: none; white-space: nowrap; overflow: hidden; }
-    details { border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; background: #fff; margin-top: 10px; }
-    summary { cursor: pointer; }
-    .credits { text-align: center; color: var(--muted); font-size: .9rem; margin-top: 22px; }
-    @media (max-width: 900px) {
-      .summary-strip, .salary-panel { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .form-grid, .currency-grid { grid-template-columns: 1fr; }
-    }
-    @media (max-width: 620px) {
-      .page-shell { width: min(100% - 18px, 1120px); padding-top: 10px; }
-      .hero { border-radius: 18px; }
-      .summary-strip, .salary-panel, .converter-row { grid-template-columns: 1fr; }
-      .actions { display: grid; grid-template-columns: 1fr; }
-      .btn { width: 100%; }
-      .calendar-toolbar { align-items: flex-start; }
-      .calendar-table { min-width: 680px; }
-      .calendar-table td { min-width: 96px; padding: 7px; }
-      .modal { padding: 8px; }
-      .report-controls { justify-content: center; }
-      #report-preview-content { transform-origin: top center; }
+    [data-theme="dark"] {
+      --bg: #090d16;
+      --bg-surface: #111827;
+      --primary: #f59e0b;
+      --primary-hover: #d97706;
+      --accent: #10b981;
+      --text: #f9fafb;
+      --text-muted: #9ca3af;
+      --border: rgba(255, 255, 255, 0.1);
     }
 
-    /* Related resources cards for salary calculator */
-    .edu-resource-container {
-      margin-top: 20px;
-      padding-top: 20px;
-      border-top: 1px solid var(--border);
-    }
-    .edu-resource-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 16px;
-      margin-top: 14px;
-    }
-    .edu-resource-card {
-      background: #f8fafc;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 16px;
-      transition: all 0.2s ease;
-    }
-    .edu-resource-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-      border-color: var(--primary);
-    }
-    .edu-resource-card h4 {
-      margin: 0 0 6px;
-      font-size: 1rem;
-      color: #1e293b;
-      font-weight: 700;
-    }
-    .edu-resource-card p {
-      margin: 0 0 12px;
-      font-size: 0.82rem;
-      color: var(--muted);
-      line-height: 1.5;
-    }
-    .edu-resource-card .link-btn {
-      color: var(--primary);
-      font-size: 0.85rem;
-      font-weight: 700;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .edu-resource-card .link-btn:hover {
-      text-decoration: underline;
-    }
-    .salary-math-box {
-      background: #f1f5f9;
-      border-left: 4px solid var(--primary);
-      border-radius: 6px;
-      padding: 12px;
-      font-family: monospace;
-      font-size: 0.85rem;
-      margin: 8px 0;
-      color: #334155;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font-main); background: var(--bg); color: var(--text); line-height: 1.6; min-height: 100vh; display: flex; flex-direction: column; transition: background 0.2s, color 0.2s; }
+
+    .nav { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 2rem; max-width: 1200px; margin: 0 auto; width: 100%; border-bottom: 1px solid var(--border); }
+    .brand { font-size: 1.35rem; font-weight: 800; color: var(--text); text-decoration: none; display: flex; align-items: center; gap: 0.6rem; }
+    .brand i { color: var(--primary); }
+
+    .theme-toggle-btn { background: transparent; border: 1px solid var(--border); color: var(--text); padding: 0.55rem 0.85rem; border-radius: 12px; cursor: pointer; font-size: 1rem; transition: background 0.2s; }
+    .theme-toggle-btn:hover { background: rgba(125, 125, 125, 0.1); }
+
+    .btn-primary { background: linear-gradient(135deg, var(--primary), #dc2626); color: white !important; padding: 0.75rem 1.75rem; border-radius: 99px; text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 0.5rem; transition: transform 0.2s, box-shadow 0.2s; border: none; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(217, 119, 6, 0.35); }
+
+    .hero { text-align: center; padding: 5rem 1.5rem 3rem; max-width: 900px; margin: 0 auto; }
+    .badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(217, 119, 6, 0.12); color: var(--primary); border: 1px solid rgba(217, 119, 6, 0.3); padding: 0.4rem 1rem; border-radius: 99px; font-size: 0.85rem; font-weight: 600; margin-bottom: 1.5rem; }
+    .hero h1 { font-size: 3.25rem; font-weight: 800; line-height: 1.15; margin-bottom: 1.25rem; }
+    .hero p { font-size: 1.2rem; color: var(--text-muted); max-width: 680px; margin: 0 auto 2.5rem; }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; max-width: 1200px; margin: 3rem auto; padding: 0 1.5rem; }
+    .card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; transition: transform 0.2s, border-color 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+    .card:hover { transform: translateY(-4px); border-color: rgba(217, 119, 6, 0.4); }
+    .card-icon { width: 50px; height: 50px; border-radius: 12px; background: rgba(217, 119, 6, 0.15); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 1.25rem; }
+    .card h3 { font-size: 1.25rem; margin-bottom: 0.75rem; font-weight: 700; }
+    .card p { color: var(--text-muted); font-size: 0.95rem; }
+
+    .cta-banner { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 24px; padding: 3.5rem 2rem; text-align: center; max-width: 1000px; margin: 3rem auto; box-shadow: 0 10px 30px rgba(0,0,0,0.04); }
+    .cta-banner h2 { font-size: 2.25rem; font-weight: 800; margin-bottom: 1rem; }
+
+    footer { margin-top: auto; border-top: 1px solid var(--border); padding: 2rem; text-align: center; color: var(--text-muted); font-size: 0.9rem; }
+    footer a { color: var(--primary); text-decoration: none; }
   </style>
 </head>
 <body>
-  <main class="page-shell">
-    <header class="hero">
-      <a class="home-link" href="/" aria-label="Back to home"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Home</a>
-      <div class="hero-content">
-        <h1>Advanced Hourly Salary Calculator</h1>
-        <p>Calculate monthly pay from daily hours, weekend, night shift, and C shift multipliers, RON to INR conversion, saved monthly logs, and downloadable salary reports.</p>
-        <p id="motivational-message" aria-live="polite"></p>
-        <div class="hero-badges" aria-label="Features">
-          <span class="badge">Weekend rates</span>
-          <span class="badge">Night shift rates</span><span class="badge">C shift rates</span>
-          <span class="badge">PDF/JPG report</span>
-          <span class="badge">RON → INR</span>
-          <span class="badge">Mobile friendly</span>
-        </div>
-      </div>
-    </header>
 
-    <section id="app-section" class="card" aria-labelledby="calculator-title">
-      <div class="top-row">
-        <div>
-          <h2 id="calculator-title">Welcome, <span id="employee-display-name">Guest</span>!</h2>
-          <p class="subtle">Your saved month data stays locally in this browser.</p>
-        </div>
-      </div>
+  <header class="nav">
+    <a href="../" class="brand"><i class="fa-solid fa-calculator"></i> Hourly to Salary Calculator</a>
+    <div style="display: flex; gap: 1rem; align-items: center;">
+      <a href="../" style="color: var(--text-muted); text-decoration: none;">All Apps</a>
+      <button onclick="window.toggleShader7Theme()" class="theme-toggle-btn" aria-label="Toggle Theme" title="Toggle Theme">
+        <i class="fa-solid fa-moon"></i>
+      </button>
+      <a href="app.html" class="btn-primary">Calculate Income <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+  </header>
 
-      <div class="summary-strip" aria-label="Current summary">
-        <div class="summary-item"><span>Today</span><strong id="current-date">—</strong></div>
-        <div class="summary-item"><span>Employee</span><strong id="employee-info-display">N/A</strong></div>
-        <div class="summary-item"><span>Total Hours</span><strong id="summary-hours">0</strong></div>
-        <div class="summary-item"><span>Estimated Salary</span><strong id="summary-salary">0.00 RON</strong></div>
-      </div>
-
-      <form class="form-grid" onsubmit="return false;" autocomplete="on">
-        <div class="form-group"><label for="employee-name-input">Employee Name</label><input type="text" id="employee-name-input" placeholder="Your name" autocomplete="name" /></div>
-        <div class="form-group"><label for="company-name">Company Name</label><input type="text" id="company-name" placeholder="Company name" autocomplete="organization" /></div>
-        <div class="form-group"><label for="month-year-picker">Select Month and Year</label><input type="month" id="month-year-picker" /></div>
-        <div class="form-group"><label for="salary">Base Salary (RON)</label><input type="number" id="salary" min="0" step="0.01" inputmode="decimal" placeholder="Example: 4000" aria-describedby="salary-warning" /><small id="salary-warning" class="field-warning" aria-live="polite">⚠ Base salary is missing. Enter it to calculate salary correctly.</small></div>
-        <div class="form-group"><label for="fixedBaseHours">Fixed Base Hours per Month</label><input type="number" id="fixedBaseHours" min="1" step="0.5" inputmode="decimal" value="160" placeholder="Example: 160" /></div>
-        <div class="form-group"><label for="weekendRate">Weekend Rate Multiplier</label><select id="weekendRate"><option value="1">1x</option><option value="1.25">1.25x</option><option value="1.5">1.5x</option><option value="2">2x</option></select></div>
-        <div class="form-group"><label for="nightRate">Night Shift Multiplier</label><select id="nightRate"><option value="1">1x - No extra</option><option value="1.1">1.10x</option><option value="1.15">1.15x</option><option value="1.25" selected>1.25x</option><option value="1.5">1.5x</option><option value="2">2x</option></select><small class="subtle">Applies when shift is set to Night. Weekend + Night are multiplied together.</small></div>
-        <div class="form-group"><label for="cShiftRate">C Shift Multiplier</label><select id="cShiftRate"><option value="1">1x - No extra</option><option value="1.1">1.10x</option><option value="1.15">1.15x</option><option value="1.25" selected>1.25x</option><option value="1.5">1.5x</option><option value="2">2x</option></select><small class="subtle">Applies when shift is set to C. Weekend + C Shift are multiplied together.</small></div>
-      </form>
-
-      <div class="calendar-toolbar"><h3>Daily Work Log</h3><p class="subtle">Tip: choose a shift to auto-fill hours. Night Shift and C Shift use their own multipliers.</p></div>
-      <div id="calendar-container" class="calendar-wrapper" aria-live="polite"><p class="subtle" style="padding:16px;text-align:center;">Please select a month and year to generate the calendar.</p></div>
-
-      <div class="actions" aria-label="Actions">
-        <button class="btn warning" type="button" id="clear-hours-btn"><i class="fa-solid fa-trash" aria-hidden="true"></i> Remove All Hours</button>
-        <button class="btn" type="button" id="save-month-btn"><i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> Save This Month</button>
-        <button class="btn secondary" type="button" id="report-btn"><i class="fa-solid fa-eye" aria-hidden="true"></i> Generate Report</button>
-        <button class="btn neutral" type="button" id="share-btn"><i class="fa-solid fa-share-nodes" aria-hidden="true"></i> Share App</button>
-      </div>
-
-      <div class="salary-panel" aria-label="Calculated salary">
-        <div class="salary-box"><span>Hourly Rate</span><strong id="hourly-rate">0.00 RON</strong></div>
-        <div class="salary-box"><span>Total Monthly Salary</span><strong id="total-salary">0.00 RON</strong></div>
-        <div class="salary-box"><span>Approximate INR</span><strong id="total-salary-in-rupees">N/A</strong></div>
-      </div>
-      <div id="salary-alert" class="salary-alert" role="alert"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i><span>Please enter your Base Salary (RON). Calculations are currently showing 0.</span></div>
+  <main>
+    <section class="hero">
+      <div class="badge"><i class="fa-solid fa-wallet"></i> Instant Paycheck Breakdown</div>
+      <h1>Convert Hourly Wage to Yearly Salary Accurately</h1>
+      <p>Calculate your take-home pay, overtime multipliers, federal/state tax deductions, and daily earnings breakdown instantly.</p>
+      <a href="app.html" class="btn-primary" style="font-size: 1.1rem; padding: 0.9rem 2.2rem;"><i class="fa-solid fa-calculator"></i> Open Salary Calculator</a>
     </section>
 
-    <section class="card" aria-labelledby="currency-title">
-      <div class="top-row"><div><h2 id="currency-title">Currency Converter</h2><p class="subtle">Live rates use EUR as the API base. Salary INR conversion can be auto-updated or manually edited.</p></div><button class="btn neutral" type="button" id="refresh-rates"><i class="fa-solid fa-rotate" aria-hidden="true"></i> Refresh Rates</button></div>
-      <div class="currency-grid">
-        <div class="live-rates"><div class="live-rates-title"><i class="fa-solid fa-chart-line" aria-hidden="true"></i><span>Live Exchange Rates</span><span id="rate-loading" class="hidden" aria-label="Loading exchange rates"><span class="spinner"></span></span></div><div class="rates-grid" id="live-rates-grid"></div><p class="subtle" style="font-size:.78rem;margin:12px 0 0;">Rates from Frankfurter API, updated daily when available.</p></div>
-        <div class="converter">
-          <div class="form-group"><label for="amount-input">Amount to Convert</label><input type="number" id="amount-input" min="0" step="0.01" inputmode="decimal" placeholder="Enter amount" /></div>
-          <div class="converter-row"><div class="form-group"><label for="from-currency-select">From Currency</label><select id="from-currency-select"></select></div><div class="form-group"><label for="to-currency-select">To Currency</label><select id="to-currency-select"></select></div></div>
-          <div id="conversion-result" class="converter-result" aria-live="polite">Enter amount and select currencies.</div>
-          <div class="form-group"><label for="exchange-rate-manual">RON to INR Exchange Rate for Salary</label><input type="number" id="exchange-rate-manual" value="18.5" step="0.0001" min="0" inputmode="decimal" /><div class="switch-line"><label class="switch" aria-label="Auto-update RON to INR rate"><input type="checkbox" id="auto-update-rate" checked /><span class="slider"></span></label><span class="subtle">Auto-update RON to INR rate</span></div></div>
-        </div>
+    <section class="grid">
+      <div class="card">
+        <div class="card-icon"><i class="fa-solid fa-calendar-days"></i></div>
+        <h3>Multi-Frequency Conversion</h3>
+        <p>Instantly view hourly, daily, weekly, bi-weekly, monthly, and annual income equivalents.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-icon" style="color: var(--accent); background: rgba(5, 150, 105, 0.15);"><i class="fa-solid fa-clock-rotate-left"></i></div>
+        <h3>Overtime & Bonus Calculations</h3>
+        <p>Include 1.5x overtime hours, holiday bonuses, and commission rates in your overall gross earnings.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-icon" style="color: #2563eb; background: rgba(37, 99, 235, 0.15);"><i class="fa-solid fa-chart-pie"></i></div>
+        <h3>Interactive Income Charts</h3>
+        <p>Visualize income distribution between work hours, taxes, and net take-home salary.</p>
       </div>
     </section>
 
-    <section class="card" aria-labelledby="guide-title">
-      <h2 id="guide-title">Professional Income & Shift Calculations</h2>
-      <p class="subtle">Understand standard pay intervals, shift differential mechanics, and full-time hours equations.</p>
-      
-      <div style="margin-top: 16px; line-height: 1.6;">
-        <h3 style="font-size: 1.1rem; color: #1e293b; margin-bottom: 6px;">1. Pay Interval Conversions</h3>
-        <p style="font-size: 0.9rem; color: #475569; margin-bottom: 12px;">
-          Converting hourly wages to longer periods is essential for budgeting and evaluating job offers. Here are the standardized financial equations used:
-        </p>
-        <div class="salary-math-box">
-          Weekly Salary = Hourly Rate &times; Hours Worked per Week<br>
-          Yearly Salary = Weekly Salary &times; 52 weeks<br>
-          Monthly Salary = Yearly Salary &divide; 12 months
-        </div>
-        <p style="font-size: 0.9rem; color: #475569; margin-bottom: 14px;">
-          For a standard 40-hour work week, a $25/hour rate calculates to a weekly salary of $1,000, an annual salary of $52,000, and a monthly salary of exactly $4,333.33.
-        </p>
-
-        <h3 style="font-size: 1.1rem; color: #1e293b; margin-bottom: 6px;">2. Shift Differentials & Multipliers</h3>
-        <p style="font-size: 0.9rem; color: #475569; margin-bottom: 12px;">
-          Many industries (healthcare, manufacturing, IT operations) utilize shift multipliers to compensate employees for working less desirable hours, such as nights or weekends.
-        </p>
-        <p style="font-size: 0.9rem; color: #475569; margin-bottom: 12px;">
-          <b>Weekend Multiplier:</b> Multiplies weekend hours by a set rate (e.g., 1.5x or 2x) as standard premium pay.<br>
-          <b>Night Shift Multiplier:</b> Applies an additional differential (e.g., 1.25x or 25% extra) for overnight schedules. When shifts overlap (e.g., a weekend night shift), our advanced engine compounds these multipliers:
-        </p>
-        <div class="salary-math-box">
-          Effective Hourly Rate = Base Rate &times; Weekend Multiplier &times; Night Multiplier
-        </div>
-      </div>
+    <section class="cta-banner">
+      <h2>Calculate Your Paycheck Estimate Now</h2>
+      <p style="color: var(--text-muted); margin-bottom: 2rem;">100% free, browser-based, with zero advertisement clutter.</p>
+      <a href="app.html" class="btn-primary" style="font-size: 1.1rem; padding: 0.9rem 2.2rem;"><i class="fa-solid fa-rocket"></i> Launch Calculator App</a>
     </section>
-
-    <section class="card" aria-labelledby="faq-title">
-      <h2 id="faq-title">Salary Calculator FAQ</h2>
-      <details>
-        <summary><strong>How is my hourly rate calculated?</strong></summary>
-        <p>Your hourly rate is calculated using the base salary and the fixed base hours you specify. The mathematical equation is: Hourly Rate = Base Salary / Fixed Base Hours. For example, if your base salary is 4,000 RON and your fixed base hours are 160, your regular hourly rate is exactly 25.00 RON/hour.</p>
-      </details>
-      <details>
-        <summary><strong>How do the weekend, night shift, and C shift multipliers work?</strong></summary>
-        <p>Multipliers scale your base hourly rate for specific hours worked. The weekend multiplier (e.g., 1.5x or 2.0x) scales weekend hours. The night shift and C shift multipliers scale hours logged under those shift designations. Under our advanced billing engine, if you log night hours on a weekend, both multipliers are compounded together (e.g., Hourly Rate * Weekend Multiplier * Night Multiplier) to ensure accurate shift differential tracking.</p>
-      </details>
-      <details>
-        <summary><strong>What are the standard hours and shift assumptions?</strong></summary>
-        <p>By default, a standard full-time work month assumes 160 to 168 hours of labor, which translates to a standard 40-hour work week (8 hours per day, 5 days per week). If your company operates on custom monthly fixed hours, you can adjust the 'Fixed Base Hours' field, and all calculations will dynamically scale.</p>
-      </details>
-      <details>
-        <summary><strong>Where is my data stored and is it safe?</strong></summary>
-        <p>Absolutely. The salary calculator operates entirely on client-side technology. All data entered into the calendar, base salaries, shift schedules, and generated pdf templates are processed in your local browser memory and saved in your browser's private localStorage. None of your data is ever transmitted to external servers.</p>
-      </details>
-      <details>
-        <summary><strong>How does the live currency converter auto-calculate?</strong></summary>
-        <p>The application integrates with the Frankfurter Exchange Rate API to pull live daily currency conversions. When enabled, your total monthly salary is automatically converted to Indian Rupees (INR) or other target currencies. You can also manually adjust the currency conversion rate if you have a locked exchange agreement.</p>
-      </details>
-      <details>
-        <summary><strong>How can I export and print my monthly salary report?</strong></summary>
-        <p>Once you have completed your monthly log, click the 'Generate Report' button. The app compiles your logs, daily shifts, base rate, and exchange values into a clean statement sheet. You can then download this statement directly as a PDF or high-resolution JPG image for your personal tax ledgers.</p>
-      </details>
-
-      <div class="edu-resource-container">
-        <h3 style="font-size: 1.15rem; color: #1e293b; margin-bottom: 10px;">Related Expert Guides & Resources</h3>
-        <div class="edu-resource-grid">
-          <div class="edu-resource-card">
-            <h4>Hourly to Annual Salary Guide</h4>
-            <p>Learn the standard mathematical equations and step-by-step methods to convert hourly pay rates into weekly and annual values.</p>
-            <a href="../salary-calculator-hourly-to-yearly.html" class="link-btn">Read Expert Guide &rarr;</a>
-          </div>
-          <div class="edu-resource-card">
-            <h4>Simple Monthly Budgeting Guide</h4>
-            <p>Master the 50/30/20 budget framework, build a robust emergency fund, and learn how to manage dynamic shifting wages.</p>
-            <a href="../simple-monthly-budgeting-guide.html" class="link-btn">Read Expert Guide &rarr;</a>
-          </div>
-          <div class="edu-resource-card">
-            <h4>Online Tool Security & Privacy</h4>
-            <p>Understand how client-side javascript keeps your financial data 100% secure by processing numbers locally in your browser memory.</p>
-            <a href="../online-web-tools-data-security.html" class="link-btn">Read Expert Guide &rarr;</a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="app-info-section">
-        <h3>Wage Conversion Mathematics & Labor Standards</h3>
-        <p>Converting hourly compensation into annual salary requires factoring in standard working hours, paid vacation thresholds, shift differentials, and legal overtime multipliers under labor regulations like the Fair Labor Standards Act (FLSA). Our Hourly Salary Calculator helps professionals and employers perform exact gross salary conversions across various payroll intervals.</p>
-        
-        <p>The core mathematical equations used inside this calculator are:</p>
-        <ul>
-            <li><strong>Annual Gross Income (Standard):</strong> <code>A = Hourly Wage * H_weekly * 52</code>, where <code>H_weekly</code> represents weekly hours (typically 40).</li>
-            <li><strong>Overtime Pay Rate (FLSA):</strong> <code>R_ot = Wage_base * 1.5</code> for all hours worked exceeding 40 hours per workweek.</li>
-            <li><strong>Gross-to-Net Pay Deduction:</strong> <code>Net Pay = Gross Income - (T_federal + T_state + T_fica + D_pretax)</code>, which estimates the take-home pay after accounting for tax brackets and retirement allocations.</li>
-        </ul>
-
-        <h3>Understanding W2 Employee vs. 1099 Contractor Tax Models</h3>
-        <p>When comparing job offers, it is critical to distinguish between W2 employment and 1099 contracting, as their self-employment tax liabilities vary significantly:</p>
-        <ol>
-            <li><strong>W2 Employee:</strong> The employer is legally required to pay half of your FICA tax liabilities (7.65% representing Social Security and Medicare). You are also eligible for paid time off, health insurance, and retirement matching.</li>
-            <li><strong>1099 Independent Contractor:</strong> You are classified as self-employed. You must pay the full Self-Employment Tax rate of **15.3%** directly to the IRS (representing both employee and employer portions of FICA). Therefore, a 1099 hourly rate should be at least 30% higher than an equivalent W2 hourly wage to cover these additional overhead costs.</li>
-        </ol>
-
-        <h3>How Shift Differentials Compound</h3>
-        <p>Many specialized hourly roles (such as nursing, manufacturing, and security) pay a **shift differential** for working irregular shifts (night, weekend, or holiday). The differential can be a flat hourly rate increase (e.g. +$4.00/hour) or a compounding percentage multiplier (e.g., 1.1x base wage). Overtime multipliers must always apply to the final compounded base rate, not just the raw standard daytime wage, according to FLSA guidelines.</p>
-
-        <h3>Hourly Salary Calculator Frequently Asked Questions (FAQ)</h3>
-        <p><strong>Q: What is the difference between a bi-weekly and semi-monthly payout?</strong><br>
-        A: Bi-weekly pay occurs once every two weeks (resulting in 26 paychecks per year), meaning you receive three checks in two separate months. Semi-monthly pay occurs exactly twice per month (resulting in 24 paychecks per year, typical on the 1st and 15th).</p>
-        
-        <p><strong>Q: Are overtime payouts calculated on a daily or weekly basis?</strong><br>
-        A: Under federal FLSA standards, overtime is calculated on a 168-hour workweek basis (all hours exceeding 40). However, some jurisdictions (like California) enforce daily overtime rules, requiring 1.5x pay for any hours worked past 8 in a single day.</p>
-
-        <p><strong>Q: How does a pre-tax retirement contribution impact my take-home pay?</strong><br>
-        A: Pre-tax contributions (like standard 401k or HSA) are deducted from your gross income *before* federal and state tax percentages are applied. This lowers your taxable income, reducing your overall tax burden and keeping more of your hard-earned money working for you.</p>
-
-        <div class="guide-promo-box">
-            <p>Want to master pay bracket calculators, tax compound interest equations, and payroll deduction mechanics?</p>
-            <a href="/salary-calculator-hourly-to-yearly.html" class="promo-btn">Read the Ultimate Salary Conversion Guide (5,000+ Words) →</a>
-        </div>
-    </section>
-
-        <footer style="width: 100%; border-top: 1px solid #334155; background-color: #0f172a; padding: 30px 16px; text-align: center; color: #94a3b8; font-size: 0.85rem; font-family: 'Inter', system-ui, -apple-system, sans-serif; margin-top: 40px; border-radius: 12px; margin-bottom: 20px;">
-        <div style="max-width: 1120px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 15px;">
-            <p style="margin: 0;">&copy; <span id="copyright-year"></span> SHADER7 • Hourly Salary Calculator</p>
-            
-            <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 16px;">
-                <a href="/" style="color: #94a3b8; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">Main Site</a>
-                <a href="/about.html" style="color: #94a3b8; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">About Us</a>
-                <a href="/contact.html" style="color: #94a3b8; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">Contact Us</a>
-                <a href="/privacy-policy.html" style="color: #60a5fa; text-decoration: none; transition: color 0.2s; font-weight: bold;" onmouseover="this.style.color='#93c5fd'" onmouseout="this.style.color='#60a5fa'">Privacy Policy</a>
-                <a href="/terms.html" style="color: #94a3b8; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">Terms of Service</a>
-                <a href="/sitemap.html" style="color: #94a3b8; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">Sitemap</a>
-            </div>
-            
-        </div>
-    </footer>
   </main>
 
-  <div id="report-preview-modal" class="modal hidden" role="dialog" aria-modal="true" aria-label="Salary report preview">
-    <div class="report-controls">
-      <button class="btn secondary" id="modal-download-pdf-btn" type="button"><i class="fa-solid fa-file-pdf" aria-hidden="true"></i> Download PDF</button>
-      <div class="zoom-controls"><button class="btn neutral" type="button" id="zoom-out-btn" aria-label="Zoom out"><i class="fa-solid fa-magnifying-glass-minus" aria-hidden="true"></i></button><span id="zoom-level">100%</span><button class="btn neutral" type="button" id="zoom-in-btn" aria-label="Zoom in"><i class="fa-solid fa-magnifying-glass-plus" aria-hidden="true"></i></button></div>
-      <button class="btn secondary" id="modal-download-jpg-btn" type="button"><i class="fa-solid fa-file-image" aria-hidden="true"></i> Download JPG</button>
-      <button class="btn danger" id="modal-close-btn" type="button"><i class="fa-solid fa-xmark" aria-hidden="true"></i> Close</button>
-    </div>
-    <div id="report-scrollable-content" class="report-scroll"><div id="report-preview-content"></div></div>
-  </div>
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <footer>
+    <p>&copy; 2026 SHADER7 Suite. <a href="../">View All Apps</a></p>
+  </footer>
 
-  <script>
-    'use strict';
-    const state = { currentZoom: 1, exchangeRates: {}, availableCurrencies: {}, autoUpdateRate: true, lastSalary: { hourlyRate: 0, totalWeekdayHours: 0, totalWeekendHours: 0, totalNightHours: 0, totalCShiftHours: 0, totalHours: 0, calculatedSalary: 0, salaryInINR: 0 } };
-    const $ = (selector, root = document) => root.querySelector(selector);
-    const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
-
-    function escapeHTML(value) { return String(value ?? '').replace(/[&<>'"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char])); }
-    function formatNumber(value, decimals = 2) { return Number(value || 0).toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals }); }
-    function showToast(message) { const toast = $('#toast'); toast.textContent = message; toast.classList.add('show'); clearTimeout(showToast.timer); showToast.timer = setTimeout(() => toast.classList.remove('show'), 2600); }
-    function updateDate() { const now = new Date(); $('#current-date').textContent = now.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }); $('#copyright-year').textContent = now.getFullYear(); }
-    function displayMotivationalMessage() { const messages = ["Believe you can and you're halfway there. - Theodore Roosevelt", "The future belongs to those who believe in the beauty of their dreams. - Eleanor Roosevelt", "The only way to do great work is to love what you do. - Steve Jobs", "Strive not to be a success, but rather to be of value. - Albert Einstein", "Keep pushing forward. Your consistency matters.", "Your dedication today shapes your success tomorrow."]; $('#motivational-message').textContent = messages[Math.floor(Math.random() * messages.length)]; }
-    function updateEmployeeInfo() { const employeeName = $('#employee-name-input').value.trim(); const companyName = $('#company-name').value.trim(); $('#employee-display-name').textContent = employeeName || 'Guest'; $('#employee-info-display').textContent = employeeName && companyName ? `${employeeName} / ${companyName}` : employeeName || (companyName ? `Company: ${companyName}` : 'N/A'); }
-    function getDateSuffix(day) { if (day > 3 && day < 21) return 'th'; return ['th', 'st', 'nd', 'rd'][day % 10] || 'th'; }
-    function getMonthKey() { return $('#month-year-picker').value || null; }
-
-    function generateCalendarAndLoadData() {
-      const monthYearValue = getMonthKey(); const container = $('#calendar-container');
-      if (!monthYearValue) { container.innerHTML = '<p class="subtle" style="padding:16px;text-align:center;">Please select a month and year to generate the calendar.</p>'; recalculateSalary(); return; }
-      const [yearStr, monthStr] = monthYearValue.split('-'); const year = Number(yearStr); const month = Number(monthStr); const daysInMonth = new Date(year, month, 0).getDate(); const firstDayOfMonth = new Date(year, month - 1, 1).getDay();
-      let hoursOptions = '<option value="">Hrs</option>'; for (let h = 0; h <= 16; h += 0.5) hoursOptions += `<option value="${h}">${h}</option>`;
-      const shiftOptions = '<option value="">Shift</option><option value="8">8 hrs</option><option value="12">12 hrs</option><option value="0">Off</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="Day">Day</option><option value="Night">Night Shift</option><option value="OT">OT</option>';
-      let html = '<table class="calendar-table"><thead><tr>'; ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(day => html += `<th scope="col">${day}</th>`); html += '</tr></thead><tbody><tr>';
-      for (let i = 0; i < firstDayOfMonth; i++) html += '<td class="empty-day" aria-hidden="true"></td>';
-      for (let day = 1; day <= daysInMonth; day++) {
-        const weekday = new Date(year, month - 1, day).getDay(); const isWeekend = weekday === 0 || weekday === 6;
-        html += `<td class="${isWeekend ? 'weekend' : ''}"><div class="calendar-day"><div class="day-number"><span>${day}${getDateSuffix(day)}</span>${isWeekend ? '<span class="weekend-label">Weekend</span>' : ''}</div><div class="day-inputs"><label class="sr-only" for="hours-${day}">Hours for day ${day}</label><select id="hours-${day}" class="hours-select" data-day="${day}" data-is-weekend="${isWeekend}">${hoursOptions}</select><label class="sr-only" for="shift-${day}">Shift for day ${day}</label><select id="shift-${day}" class="shift-select" data-day="${day}">${shiftOptions}</select></div></div></td>`;
-        if ((firstDayOfMonth + day) % 7 === 0 && day < daysInMonth) html += '</tr><tr>';
-      }
-      const remainingCells = (7 - ((firstDayOfMonth + daysInMonth) % 7)) % 7; for (let i = 0; i < remainingCells; i++) html += '<td class="empty-day" aria-hidden="true"></td>'; html += '</tr></tbody></table>';
-      container.innerHTML = html; bindCalendarEvents(); loadMonthData();
-    }
-
-    function bindCalendarEvents() { $$('.hours-select').forEach(select => select.addEventListener('change', recalculateSalary)); $$('.shift-select').forEach(select => select.addEventListener('change', event => setHoursFromShift(event.currentTarget))); }
-    function setHoursFromShift(shiftSelectElement) { const selectedValue = shiftSelectElement.value; const hoursSelectElement = $(`#hours-${shiftSelectElement.dataset.day}`); const shiftHoursMap = { '8': '8', '12': '12', '0': '0', A: '8', B: '8', C: '8', Day: '12', Night: '12', OT: '' }; if (Object.prototype.hasOwnProperty.call(shiftHoursMap, selectedValue)) hoursSelectElement.value = shiftHoursMap[selectedValue]; recalculateSalary(); }
-    function collectMonthData() { const hours = {}; const shifts = {}; $$('.hours-select').forEach(select => { hours[select.dataset.day] = select.value; }); $$('.shift-select').forEach(select => { shifts[select.dataset.day] = select.value; }); return { hours, shifts, employeeName: $('#employee-name-input').value.trim(), companyName: $('#company-name').value.trim(), salary: $('#salary').value, fixedBaseHours: $('#fixedBaseHours').value, weekendRate: $('#weekendRate').value, nightRate: $('#nightRate').value, cShiftRate: $('#cShiftRate').value, savedDate: new Date().toISOString() }; }
-    
-    // BUG FIX: Removed strict block on Employee/Company name to allow local hours saving
-    function saveMonthData() { 
-        const monthKey = getMonthKey(); 
-        if (!monthKey) return showToast('Please select a month and year first.'); 
-        try { 
-            localStorage.setItem(`calendarData_${monthKey}`, JSON.stringify(collectMonthData())); 
-            showToast(`Data for ${monthKey} saved.`); 
-        } catch (error) { 
-            console.error(error); 
-            showToast('Could not save data. Browser storage may be full.'); 
-        } 
-    }
-    
-    function loadMonthData() { const monthKey = getMonthKey(); if (!monthKey) return; const storedData = localStorage.getItem(`calendarData_${monthKey}`); if (!storedData) { $$('.hours-select, .shift-select').forEach(select => { select.value = ''; }); recalculateSalary(); return; } try { const monthData = JSON.parse(storedData); const idMap = { employeeName: 'employee-name-input', companyName: 'company-name', salary: 'salary', fixedBaseHours: 'fixedBaseHours', weekendRate: 'weekendRate', nightRate: 'nightRate', cShiftRate: 'cShiftRate' }; Object.keys(idMap).forEach(key => { if (monthData[key] !== undefined) $(`#${idMap[key]}`).value = monthData[key]; }); $$('.hours-select').forEach(select => { select.value = monthData.hours?.[select.dataset.day] ?? ''; }); $$('.shift-select').forEach(select => { select.value = monthData.shifts?.[select.dataset.day] ?? ''; }); updateEmployeeInfo(); recalculateSalary(); } catch (error) { console.error(error); showToast('Saved data looks corrupted and could not be loaded.'); } }
-    function clearAllHours() { if (!confirm('Clear all hours and shifts for this selected month?')) return; $$('.hours-select, .shift-select').forEach(select => { select.value = ''; }); const monthKey = getMonthKey(); if (monthKey) localStorage.removeItem(`calendarData_${monthKey}`); recalculateSalary(); showToast('Hours cleared.'); }
-
-    function isNightShift(day) {
-      const shiftSelect = $(`#shift-${day}`);
-      return (shiftSelect?.value || '').toLowerCase() === 'night';
-    }
-
-    function isCShift(day) {
-      const shiftSelect = $(`#shift-${day}`);
-      return (shiftSelect?.value || '').toLowerCase() === 'c';
-    }
-
-    function updateSalaryValidation(totalHours = 0) {
-      const salaryInput = $('#salary');
-      const salaryWarning = $('#salary-warning');
-      const salaryAlert = $('#salary-alert');
-      const salary = parseFloat(salaryInput.value) || 0;
-      const shouldWarn = salary <= 0 && totalHours > 0;
-      salaryInput.classList.toggle('input-error', shouldWarn);
-      salaryInput.setAttribute('aria-invalid', shouldWarn ? 'true' : 'false');
-      salaryWarning?.classList.toggle('is-visible', shouldWarn);
-      salaryAlert?.classList.toggle('is-visible', shouldWarn);
-    }
-
-    function recalculateSalary() {
-      const salary = Math.max(0, parseFloat($('#salary').value) || 0);
-      const fixedBaseHours = Math.max(0, parseFloat($('#fixedBaseHours').value) || 0);
-      const weekendRateMultiplier = Math.max(0, parseFloat($('#weekendRate').value) || 1);
-      const nightRateMultiplier = Math.max(0, parseFloat($('#nightRate').value) || 1);
-      const cShiftRateMultiplier = Math.max(0, parseFloat($('#cShiftRate').value) || 1);
-      let totalWeekdayHours = 0;
-      let totalWeekendHours = 0;
-      let totalNightHours = 0;
-      let totalCShiftHours = 0;
-      let calculatedSalary = 0;
-      const hourlyRate = fixedBaseHours > 0 ? salary / fixedBaseHours : 0;
-
-      $$('.hours-select').forEach(select => {
-        const hours = Math.max(0, parseFloat(select.value) || 0);
-        const isWeekend = select.dataset.isWeekend === 'true';
-        const isNight = isNightShift(select.dataset.day);
-        const isC = isCShift(select.dataset.day);
-        if (isWeekend) totalWeekendHours += hours; else totalWeekdayHours += hours;
-        if (isNight) totalNightHours += hours;
-        if (isC) totalCShiftHours += hours;
-        const effectiveMultiplier = (isWeekend ? weekendRateMultiplier : 1) * (isNight ? nightRateMultiplier : 1) * (isC ? cShiftRateMultiplier : 1);
-        calculatedSalary += hours * hourlyRate * effectiveMultiplier;
-      });
-
-      const totalHours = totalWeekdayHours + totalWeekendHours;
-      const salaryInINR = convertSalaryToINR(calculatedSalary);
-      state.lastSalary = { hourlyRate, totalWeekdayHours, totalWeekendHours, totalNightHours, totalCShiftHours, totalHours, calculatedSalary, salaryInINR };
-      $('#hourly-rate').textContent = `${formatNumber(hourlyRate)} RON/hr`;
-      $('#total-salary').textContent = `${formatNumber(calculatedSalary)} RON`;
-      $('#summary-hours').textContent = `${formatNumber(totalHours, totalHours % 1 ? 1 : 0)} hrs`;
-      $('#summary-salary').textContent = `${formatNumber(calculatedSalary)} RON`;
-      $('#total-salary-in-rupees').textContent = `${formatNumber(salaryInINR)} INR`;
-      $('#hourly-rate').title = `Weekday: ${formatNumber(totalWeekdayHours, totalWeekdayHours % 1 ? 1 : 0)} hrs • Weekend: ${formatNumber(totalWeekendHours, totalWeekendHours % 1 ? 1 : 0)} hrs • Night: ${formatNumber(totalNightHours, totalNightHours % 1 ? 1 : 0)} hrs • C Shift: ${formatNumber(totalCShiftHours, totalCShiftHours % 1 ? 1 : 0)} hrs`;
-      updateSalaryValidation(totalHours);
-    }
-
-    async function fetchJSONWithTimeout(url, timeoutMs = 9000) {
-      const controller = new AbortController();
-      const timeout = window.setTimeout(() => controller.abort(), timeoutMs);
-      try {
-        const response = await fetch(url, { signal: controller.signal, cache: 'no-store', headers: { accept: 'application/json' } });
-        if (!response.ok) throw new Error(`${url} returned HTTP ${response.status}`);
-        return await response.json();
-      } finally {
-        window.clearTimeout(timeout);
-      }
-    }
-
-    function normalizeCurrencyName(value, code) {
-      if (typeof value === 'string') return value;
-      if (value && typeof value === 'object') return value.name || value.label || value.description || code;
-      return code;
-    }
-
-    function normalizeCurrencies(rawCurrencies, rateCodes) {
-      const normalized = {};
-      if (rawCurrencies && !Array.isArray(rawCurrencies) && typeof rawCurrencies === 'object') {
-        Object.entries(rawCurrencies).forEach(([code, value]) => { normalized[code] = normalizeCurrencyName(value, code); });
-      }
-      rateCodes.forEach(code => { if (!normalized[code]) normalized[code] = code; });
-      return normalized;
-    }
-
-    async function fetchExchangeRates() {
-      const loading = $('#rate-loading');
-      const grid = $('#live-rates-grid');
-      loading.classList.remove('hidden');
-      grid.innerHTML = '<p style="grid-column:1/-1;color:#475569;">Loading live rates...</p>';
-
-      const providers = [
-        {
-          name: 'Frankfurter v2',
-          ratesUrl: 'https://api.frankfurter.dev/v2/rates?base=EUR',
-          currenciesUrl: 'https://api.frankfurter.dev/v2/currencies'
-        },
-        {
-          name: 'Frankfurter v1',
-          ratesUrl: 'https://api.frankfurter.dev/v1/latest?base=EUR',
-          currenciesUrl: 'https://api.frankfurter.dev/v1/currencies'
-        },
-        {
-          name: 'Frankfurter legacy',
-          ratesUrl: 'https://api.frankfurter.app/latest?from=EUR',
-          currenciesUrl: 'https://api.frankfurter.app/currencies'
-        }
-      ];
-
-      let lastError = null;
-      for (const provider of providers) {
-        try {
-          const [ratesData, currenciesData] = await Promise.all([
-            fetchJSONWithTimeout(provider.ratesUrl),
-            fetchJSONWithTimeout(provider.currenciesUrl)
-          ]);
-
-          const rawRates = ratesData.rates || ratesData.data || {};
-          const parsedRates = {};
-          Object.entries(rawRates).forEach(([code, value]) => {
-            const numericValue = typeof value === 'number' ? value : Number(value?.value ?? value?.rate ?? value);
-            if (Number.isFinite(numericValue) && numericValue > 0) parsedRates[code] = numericValue;
-          });
-          parsedRates.EUR = 1;
-
-          if (!parsedRates.RON || !parsedRates.INR) throw new Error(`${provider.name} did not return RON/INR rates.`);
-
-          state.exchangeRates = parsedRates;
-          state.availableCurrencies = normalizeCurrencies(currenciesData, Object.keys(parsedRates));
-          state.exchangeRateSource = provider.name;
-          state.exchangeRateDate = ratesData.date || ratesData.updated || ratesData.time_last_update_utc || '';
-
-          populateCurrencySelects();
-          displayLiveRates();
-          convertCurrency();
-          if (state.autoUpdateRate) updateRONtoINRforSalary();
-          showToast(`Exchange rates updated from ${provider.name}.`);
-          return;
-        } catch (error) {
-          lastError = error;
-          console.warn(`Exchange rate provider failed: ${provider.name}`, error);
-        }
-      }
-
-      console.error(lastError);
-      grid.innerHTML = '<p style="color:#dc2626;grid-column:1/-1;">Live rates could not be loaded. Check internet/ad-block settings, or enter the RON to INR rate manually.</p>';
-      $('#conversion-result').textContent = 'Live currency data unavailable.';
-      showToast('Live exchange rates are unavailable right now. Manual salary rate still works.');
-    }
-
-    function populateCurrencySelects() {
-      const fromSelect = $('#from-currency-select');
-      const toSelect = $('#to-currency-select');
-      const previousFrom = fromSelect.value || 'RON';
-      const previousTo = toSelect.value || 'INR';
-      fromSelect.innerHTML = '';
-      toSelect.innerHTML = '';
-      Object.keys(state.exchangeRates).sort().forEach(code => {
-        const label = `${code} - ${state.availableCurrencies[code] || code}`;
-        fromSelect.add(new Option(label, code));
-        toSelect.add(new Option(label, code));
-      });
-      fromSelect.value = state.exchangeRates[previousFrom] ? previousFrom : 'RON';
-      toSelect.value = state.exchangeRates[previousTo] ? previousTo : 'INR';
-    }
-
-    function displayLiveRates() {
-      const ratesGrid = $('#live-rates-grid');
-      ratesGrid.innerHTML = '';
-      const meta = document.createElement('p');
-      meta.style.cssText = 'grid-column:1/-1;margin:0 0 4px;color:#64748b;font-size:.78rem;text-align:center;';
-      meta.textContent = `Source: ${state.exchangeRateSource || 'Frankfurter'}${state.exchangeRateDate ? ` • Date: ${state.exchangeRateDate}` : ''}`;
-      ratesGrid.appendChild(meta);
-      ['RON','USD','GBP','INR','JPY','AUD','CAD','CHF','CNY'].forEach(code => {
-        if (!state.exchangeRates[code]) return;
-        const item = document.createElement('div');
-        item.className = 'rate-item';
-        item.innerHTML = `<strong>${code}</strong><span>1 EUR = ${formatNumber(state.exchangeRates[code], 4)}</span>`;
-        ratesGrid.appendChild(item);
-      });
-    }
-    function convertCurrency() { const amount = parseFloat($('#amount-input').value) || 0; const fromCurrency = $('#from-currency-select').value; const toCurrency = $('#to-currency-select').value; const resultElement = $('#conversion-result'); if (!amount || !state.exchangeRates[fromCurrency] || !state.exchangeRates[toCurrency]) { resultElement.textContent = 'Enter amount and select currencies.'; return; } const amountInEUR = amount / state.exchangeRates[fromCurrency]; const convertedAmount = amountInEUR * state.exchangeRates[toCurrency]; resultElement.textContent = `${formatNumber(amount)} ${fromCurrency} = ${formatNumber(convertedAmount)} ${toCurrency}`; }
-    function convertSalaryToINR(ronAmount) { let ronToInrRate = parseFloat($('#exchange-rate-manual').value) || 0; if (state.autoUpdateRate && state.exchangeRates.RON && state.exchangeRates.INR) { ronToInrRate = state.exchangeRates.INR / state.exchangeRates.RON; $('#exchange-rate-manual').value = ronToInrRate.toFixed(4); } const inrAmount = ronToInrRate > 0 ? ronAmount * ronToInrRate : 0; $('#total-salary-in-rupees').textContent = ronToInrRate > 0 ? `${formatNumber(inrAmount)} INR` : 'N/A'; return inrAmount; }
-    function updateRONtoINRforSalary() { if (state.autoUpdateRate && state.exchangeRates.RON && state.exchangeRates.INR) $('#exchange-rate-manual').value = (state.exchangeRates.INR / state.exchangeRates.RON).toFixed(4); recalculateSalary(); }
-
-    function validateReportInputs() { if (!$('#employee-name-input').value.trim() || !$('#company-name').value.trim()) return 'Please enter both employee name and company name.'; if (!getMonthKey()) return 'Please select a month and year.'; if ((parseFloat($('#salary').value) || 0) <= 0) { updateSalaryValidation(1); $('#salary').focus(); return 'Please enter your base salary before generating the report.'; } if ((parseFloat($('#fixedBaseHours').value) || 0) <= 0) return 'Please enter valid fixed base hours.'; return ''; }
-    function showReportPreview() { const validationMessage = validateReportInputs(); if (validationMessage) return showToast(validationMessage); const hasHours = $$('.hours-select').some(select => (parseFloat(select.value) || 0) > 0); if (!hasHours && !confirm('No hours have been entered. Generate a report anyway?')) return; $('#report-preview-content').innerHTML = generateReportHTML(); $('#report-preview-modal').classList.remove('hidden'); resetZoom(); }
-
-    function generateReportHTML() {
-      const employeeName = escapeHTML($('#employee-name-input').value.trim() || 'N/A');
-      const companyName = escapeHTML($('#company-name').value.trim() || 'N/A');
-      const salary = Math.max(0, parseFloat($('#salary').value) || 0);
-      const fixedBaseHours = Math.max(0, parseFloat($('#fixedBaseHours').value) || 0);
-      const [yearStr, monthStr] = getMonthKey().split('-');
-      const year = Number(yearStr);
-      const month = Number(monthStr);
-      const weekendRate = Math.max(0, parseFloat($('#weekendRate').value) || 1);
-      const nightRate = Math.max(0, parseFloat($('#nightRate').value) || 1);
-      const cShiftRate = Math.max(0, parseFloat($('#cShiftRate').value) || 1);
-      const exchangeRate = Math.max(0, parseFloat($('#exchange-rate-manual').value) || 0);
-      const monthName = new Date(year, month - 1).toLocaleString('default', { month: 'long' });
-      const daysInMonth = new Date(year, month, 0).getDate();
-      const hourlyRate = fixedBaseHours > 0 ? salary / fixedBaseHours : 0;
-
-      let totalWeekdayHours = 0, totalWeekendHours = 0, totalNightHours = 0, totalCShiftHours = 0, daysWorked = 0, daysOff = 0, totalSalaryRON = 0;
-      const leftRows = [], rightRows = [];
-      for (let day = 1; day <= daysInMonth; day++) {
-        const dateObj = new Date(year, month - 1, day);
-        const hoursSelect = $(`#hours-${day}`);
-        const shiftSelect = $(`#shift-${day}`);
-        const hrs = Math.max(0, parseFloat(hoursSelect?.value) || 0);
-        const isWeekend = hoursSelect?.dataset.isWeekend === 'true';
-        const shiftValue = (shiftSelect?.value || '').toLowerCase();
-        const isNight = shiftValue === 'night';
-        const isC = shiftValue === 'c';
-        const shiftText = escapeHTML(shiftSelect?.options[shiftSelect.selectedIndex]?.text || 'N/A');
-        const effectiveMultiplier = (isWeekend ? weekendRate : 1) * (isNight ? nightRate : 1) * (isC ? cShiftRate : 1);
-        const dailyPay = hrs * hourlyRate * effectiveMultiplier;
-        totalSalaryRON += dailyPay;
-        if (isWeekend) totalWeekendHours += hrs; else totalWeekdayHours += hrs;
-        if (isNight) totalNightHours += hrs;
-        if (isC) totalCShiftHours += hrs;
-        if (hrs > 0) daysWorked++; else daysOff++;
-        const labels = [];
-        if (isWeekend) labels.push('Weekend');
-        if (isNight) labels.push(`Night x${nightRate}`);
-        if (isC) labels.push(`C Shift x${cShiftRate}`);
-        const hoursLabel = `${formatNumber(hrs, hrs % 1 ? 1 : 0)} hrs${labels.length ? ` (${labels.join(' + ')})` : ''}`;
-        const dateLabel = `${dateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })} (${dateObj.toLocaleDateString('en-GB', { weekday: 'short' })}) - ${shiftText}`;
-        const row = `<tr><td>${dateLabel}</td><td>${hoursLabel}</td><td>${formatNumber(dailyPay)} RON</td></tr>`;
-        if (day <= 15) leftRows.push(row); else rightRows.push(row);
-      }
-
-      const totalHours = totalWeekdayHours + totalWeekendHours;
-      const totalSalaryINR = totalSalaryRON * exchangeRate;
-      return `<div class="report-watermark">${companyName}</div><div class="report-company-name">${companyName}</div><div class="report-header"><h2>Salary Report</h2><p>For ${monthName} ${year}</p></div><div class="report-details"><div><p><strong>Employee:</strong> ${employeeName}</p><p><strong>Base Salary:</strong> ${formatNumber(salary)} RON</p><p><strong>Fixed Base Hours:</strong> ${formatNumber(fixedBaseHours, fixedBaseHours % 1 ? 1 : 0)}</p><p><strong>Hourly Rate:</strong> ${formatNumber(hourlyRate)} RON</p><p><strong>Weekend Multiplier:</strong> ${weekendRate}x</p><p><strong>Night Shift Multiplier:</strong> ${nightRate}x</p><p><strong>C Shift Multiplier:</strong> ${cShiftRate}x</p></div><div><p><strong>Total Hours:</strong> ${formatNumber(totalHours, totalHours % 1 ? 1 : 0)}</p><p><strong>Weekday Hours:</strong> ${formatNumber(totalWeekdayHours, totalWeekdayHours % 1 ? 1 : 0)}</p><p><strong>Weekend Hours:</strong> ${formatNumber(totalWeekendHours, totalWeekendHours % 1 ? 1 : 0)}</p><p><strong>Night Shift Hours:</strong> ${formatNumber(totalNightHours, totalNightHours % 1 ? 1 : 0)}</p><p><strong>C Shift Hours:</strong> ${formatNumber(totalCShiftHours, totalCShiftHours % 1 ? 1 : 0)}</p><p><strong>Days Worked:</strong> ${daysWorked} | <strong>Days Off:</strong> ${daysOff}</p><p><strong>Total Salary:</strong> ${formatNumber(totalSalaryRON)} RON</p><p><strong>Total Salary:</strong> ${formatNumber(totalSalaryINR)} INR</p></div></div><h3 style="text-align:center;margin:12pt 0 8pt;font-size:12pt;">Daily Work Log</h3><div class="report-table-container"><table class="report-table"><thead><tr><th>Date, Day & Shift</th><th>Hours</th><th>Daily Pay</th></tr></thead><tbody>${leftRows.join('')}</tbody></table><table class="report-table"><thead><tr><th>Date, Day & Shift</th><th>Hours</th><th>Daily Pay</th></tr></thead><tbody>${rightRows.join('')}</tbody></table></div><div class="report-footer"><div><p><strong>Employee Signature:</strong> ______________________________</p><p><strong>Date:</strong> ____________________</p></div><div class="right"><p><strong>Employer Signature:</strong> ______________________________</p><p><strong>Date:</strong> ____________________</p></div></div>`;
-    }
-
-    function hideReportPreview() { $('#report-preview-modal').classList.add('hidden'); }
-    function zoomReport(factor) { state.currentZoom = Math.max(.45, Math.min(2, state.currentZoom + factor)); $('#report-preview-content').style.transform = `scale(${state.currentZoom})`; $('#zoom-level').textContent = `${Math.round(state.currentZoom * 100)}%`; }
-    function resetZoom() { state.currentZoom = window.matchMedia('(max-width: 620px)').matches ? .55 : 1; $('#report-preview-content').style.transform = `scale(${state.currentZoom})`; $('#zoom-level').textContent = `${Math.round(state.currentZoom * 100)}%`; }
-
-    async function downloadReport(format) {
-      window.open("https://emotionallytonightintelligent.com/x8fvr0fu?key=a0df723f661db51d2b97818a0f27ea09", "_blank");
-      const reportElement = $('#report-preview-content'); const pdfBtn = $('#modal-download-pdf-btn'); const jpgBtn = $('#modal-download-jpg-btn'); const targetBtn = format === 'pdf' ? pdfBtn : jpgBtn; const originalText = targetBtn.innerHTML;
-      if (!window.html2canvas) return showToast('Report library is still loading. Try again in a moment.');
-      targetBtn.disabled = true; targetBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i> Generating ${format.toUpperCase()}...`;
-      const originalTransform = reportElement.style.transform;
-      try {
-        reportElement.style.transform = 'scale(1)';
-        const canvas = await html2canvas(reportElement, { scale: 3, useCORS: true, logging: false, backgroundColor: '#ffffff', windowWidth: reportElement.scrollWidth, windowHeight: reportElement.scrollHeight });
-        const safeName = ($('#employee-name-input').value.trim() || 'Employee').replace(/[^a-z0-9_-]+/gi, '_'); const safeCompany = ($('#company-name').value.trim() || 'Company').replace(/[^a-z0-9_-]+/gi, '_'); const filePrefix = `Salary_Report_${safeName}_${safeCompany}_${getMonthKey()}`;
-        if (format === 'pdf') {
-          if (!window.jspdf?.jsPDF) return showToast('PDF library is still loading. Try again in a moment.');
-          const { jsPDF } = window.jspdf; const pdf = new jsPDF('p', 'mm', 'a4'); const pageWidth = pdf.internal.pageSize.getWidth(); const pageHeight = pdf.internal.pageSize.getHeight(); const margin = 6; const usableWidth = pageWidth - margin * 2; const usableHeight = pageHeight - margin * 2; const imgWidth = canvas.width; const imgHeight = canvas.height; const pageCanvas = document.createElement('canvas'); const pageCtx = pageCanvas.getContext('2d'); const sliceHeight = Math.floor(imgWidth * (usableHeight / usableWidth)); pageCanvas.width = imgWidth;
-          let renderedHeight = 0; let pageIndex = 0;
-          while (renderedHeight < imgHeight) { const currentSliceHeight = Math.min(sliceHeight, imgHeight - renderedHeight); pageCanvas.height = currentSliceHeight; pageCtx.clearRect(0, 0, pageCanvas.width, pageCanvas.height); pageCtx.drawImage(canvas, 0, renderedHeight, imgWidth, currentSliceHeight, 0, 0, imgWidth, currentSliceHeight); const pageData = pageCanvas.toDataURL('image/png', 1); if (pageIndex > 0) pdf.addPage(); const drawnHeight = currentSliceHeight * usableWidth / imgWidth; pdf.addImage(pageData, 'PNG', margin, margin, usableWidth, drawnHeight, undefined, 'FAST'); renderedHeight += currentSliceHeight; pageIndex++; }
-          pdf.save(`${filePrefix}.pdf`);
-        } else { const link = document.createElement('a'); link.download = `${filePrefix}.jpg`; link.href = canvas.toDataURL('image/jpeg', .95); document.body.appendChild(link); link.click(); link.remove(); }
-        showToast(`${format.toUpperCase()} downloaded.`);
-      } catch (error) { console.error(error); showToast('Could not generate report. Please try again.'); }
-      finally { reportElement.style.transform = originalTransform; targetBtn.disabled = false; targetBtn.innerHTML = originalText; }
-    }
-
-    async function shareApp() { const shareData = { title: document.title, text: 'Check out this advanced salary calculator.', url: window.location.href }; if (navigator.share) { try { await navigator.share(shareData); } catch (error) { if (error.name !== 'AbortError') showToast('Sharing failed.'); } } else { try { await navigator.clipboard.writeText(window.location.href); showToast('Link copied to clipboard.'); } catch { showToast(`Copy this link: ${window.location.href}`); } } }
-
-    function bindStaticEvents() {
-      $('#employee-name-input').addEventListener('input', updateEmployeeInfo); $('#company-name').addEventListener('input', updateEmployeeInfo); $('#month-year-picker').addEventListener('change', generateCalendarAndLoadData); $('#salary').addEventListener('input', recalculateSalary); $('#salary').addEventListener('blur', () => updateSalaryValidation($$('.hours-select').some(select => (parseFloat(select.value) || 0) > 0) ? 1 : 0)); $('#fixedBaseHours').addEventListener('input', recalculateSalary); $('#weekendRate').addEventListener('change', recalculateSalary); $('#nightRate').addEventListener('change', recalculateSalary); $('#cShiftRate').addEventListener('change', recalculateSalary); $('#clear-hours-btn').addEventListener('click', clearAllHours); $('#save-month-btn').addEventListener('click', saveMonthData); $('#report-btn').addEventListener('click', showReportPreview); $('#share-btn').addEventListener('click', shareApp); $('#refresh-rates').addEventListener('click', fetchExchangeRates); $('#amount-input').addEventListener('input', convertCurrency); $('#from-currency-select').addEventListener('change', convertCurrency); $('#to-currency-select').addEventListener('change', convertCurrency); $('#exchange-rate-manual').addEventListener('input', () => { state.autoUpdateRate = false; $('#auto-update-rate').checked = false; recalculateSalary(); }); $('#auto-update-rate').addEventListener('change', event => { state.autoUpdateRate = event.currentTarget.checked; if (state.autoUpdateRate) updateRONtoINRforSalary(); else recalculateSalary(); }); $('#modal-close-btn').addEventListener('click', hideReportPreview); $('#zoom-out-btn').addEventListener('click', () => zoomReport(-.1)); $('#zoom-in-btn').addEventListener('click', () => zoomReport(.1)); $('#modal-download-pdf-btn').addEventListener('click', () => downloadReport('pdf')); $('#modal-download-jpg-btn').addEventListener('click', () => downloadReport('jpg')); $('#report-preview-modal').addEventListener('click', event => { if (event.target.id === 'report-preview-modal') hideReportPreview(); }); document.addEventListener('keydown', event => { if (event.key === 'Escape' && !$('#report-preview-modal').classList.contains('hidden')) hideReportPreview(); }); }
-
-    document.addEventListener('DOMContentLoaded', () => { bindStaticEvents(); updateDate(); displayMotivationalMessage(); updateEmployeeInfo(); const now = new Date(); $('#month-year-picker').value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`; generateCalendarAndLoadData(); fetchExchangeRates(); recalculateSalary(); });
-  </script>
 </body>
 </html>

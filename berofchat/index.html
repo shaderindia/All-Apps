@@ -29,20 +29,15 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   
-  <!-- FontAwesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" />
+  <!-- Global Theme Manager -->
+  <script src="../js/theme.js"></script>
 
-  <script>
-    // Redirect invite links (e.g. index.html?room=ABC123) to the separate app page
-    const params = new URLSearchParams(window.location.search);
-    if (params.has('room')) {
-      window.location.href = 'app.html' + window.location.search;
-    }
-  </script>
+  <!-- Real Lottie Web Component Player -->
+  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
 
   <style>
-    :root {
-      --bg-page: #f1f5f9;
+    :root, [data-theme="light"] {
+      --bg-page: #f8fafc;
       --bg-card: #ffffff;
       --bg-input: #ffffff;
       --primary: #1d4ed8; 
@@ -61,6 +56,21 @@
       --glass-border: rgba(29, 78, 216, 0.18);
       --shadow: 0 20px 40px rgba(15, 23, 42, 0.06);
       --grad-primary: linear-gradient(135deg, #1d4ed8, #6d28d9);
+    }
+
+    [data-theme="dark"] {
+      --bg-page: #090d16;
+      --bg-card: #111827;
+      --bg-input: #1f2937;
+      --primary: #3b82f6; 
+      --primary-glow: rgba(59, 130, 246, 0.1);
+      --primary-hover: #2563eb;
+      --accent-purple: #8b5cf6;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: rgba(255, 255, 255, 0.1);
+      --glass-bg: rgba(17, 24, 39, 0.85);
+      --shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
     }
 
     * {
@@ -555,6 +565,9 @@
       <nav class="header-nav">
         <a href="#webrtc-tech" class="nav-link">How it Works</a>
         <a href="#faq" class="nav-link">FAQ</a>
+        <button onclick="window.toggleShader7Theme()" class="theme-toggle-btn" style="background:transparent; border:1px solid var(--border); color:var(--text-main); padding:6px 12px; border-radius:12px; cursor:pointer;" aria-label="Toggle Theme" title="Toggle Theme">
+          <i class="fa-solid fa-moon"></i>
+        </button>
         <a href="app.html" class="btn primary-btn">Launch App <i class="fa-solid fa-arrow-right"></i></a>
       </nav>
     </header>
@@ -571,6 +584,12 @@
         <p class="hero-desc">
           An experimental, browser-based room chat tool with direct, serverless peer-to-peer text messaging and WebRTC voice & video. Maximum 4 users. Zero server logs.
         </p>
+
+        <!-- Real Web Lottie Encryption Animation -->
+        <div style="max-width: 320px; margin: 1.5rem auto; display: flex; justify-content: center;">
+          <lottie-player src="https://assets9.lottiefiles.com/packages/lf20_k9wtyx2a.json" background="transparent" speed="1" style="width: 260px; height: 180px;" loop autoplay></lottie-player>
+        </div>
+
         <div class="hero-ctas">
           <a href="app.html" class="btn primary-btn btn-lg"><i class="fa-solid fa-comments"></i> Start Private Room</a>
           <a href="#webrtc-tech" class="btn secondary-btn btn-lg"><i class="fa-solid fa-circle-info"></i> Learn the Tech</a>
