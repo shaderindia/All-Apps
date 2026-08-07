@@ -14,18 +14,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>SHADER7 CNC Machinist Toolkit | Motion Graphics Edition</title>
-<meta name="description" content="Professional online CNC calculators for Speeds & Feeds, PCD Coordinates, angle length calculation, G-Code generation, chamfer programming, 3D CAD, and precision machining workflows with interactive motion graphics toolpath simulator.">
-<meta name="keywords" content="CNC calculator, CNC machinist tools, speeds and feeds calculator, PCD coordinates calculator, angle length calculator, CNC angle calculator, G-code generator, chamfer calculator, circular interpolation, Shader7 CNC tools">
+<title>CNC Machinist Toolkit | Speeds, Feeds, G-Code & PCD Calculators</title>
+<meta name="description" content="Professional online CNC calculators for Speeds & Feeds, PCD Bolt Hole Circles, G-Code generation, Circular Interpolation, Angle Length, Chamfers, and 3D CAD Modeler by SHADER7.">
+<meta name="keywords" content="CNC calculator, CNC machinist tools, speeds and feeds calculator, PCD coordinates calculator, G-code generator, circular interpolation, 3D CAD modeler, Shader7 CNC tools">
 <meta name="author" content="Nishikant Xalxo">
-<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="robots" content="index, follow">
 <meta name="theme-color" content="#1d4ed8">
 <link rel="canonical" href="https://shader7.com/cnc-machinist/">
 
 <!-- Open Graph -->
 <meta property="og:type" content="website">
-<meta property="og:title" content="SHADER7 CNC Machinist Toolkit | Motion Graphics Edition">
-<meta property="og:description" content="Free CNC machinist calculators for drilling, PCD, angle length, interpolation, chamfer, macro programs, and 3D CAD with live interactive toolpath motion simulation.">
+<meta property="og:title" content="CNC Machinist Toolkit | SHADER7">
+<meta property="og:description" content="Free industrial CNC calculators for milling speeds, feeds, PCD hole circles, G-code generation, and 3D CAD modeling.">
 <meta property="og:url" content="https://shader7.com/cnc-machinist/">
 <meta property="og:site_name" content="SHADER7">
 
@@ -38,41 +38,36 @@
 <!-- Global Theme Manager -->
 <script src="../js/theme.js"></script>
 
-<!-- Real Web Animation Components (Spline 3D & Lottie) -->
-<script type="module" src="https://unpkg.com/@splinetool/viewer@1.9.0/build/spline-viewer.js"></script>
-<script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
-
 <style>
 :root, [data-theme="light"] {
   --bg-page: #f8fafc;
   --bg-card: #ffffff;
-  --bg-surface: #ffffff;
+  --bg-subtle: #f1f5f9;
   --text-main: #0f172a;
   --text-muted: #334155;
   --primary: #1d4ed8;
   --primary-hover: #1e40af;
-  --accent-cyan: #0284c7;
+  --accent-blue: #0284c7;
   --accent-orange: #ea580c;
   --accent-green: #059669;
   --border: rgba(15, 23, 42, 0.08);
-  --border-hover: rgba(29, 78, 216, 0.3);
+  --border-hover: rgba(29, 78, 216, 0.35);
   --shadow-sm: 0 4px 12px rgba(15, 23, 42, 0.04);
   --shadow-lg: 0 20px 40px rgba(15, 23, 42, 0.08);
   --glass-bg: rgba(255, 255, 255, 0.85);
-  --glass-border: rgba(29, 78, 216, 0.15);
-  --font-headings: 'Outfit', sans-serif;
+  --font-sans: 'Outfit', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 }
 
 [data-theme="dark"] {
   --bg-page: #090d16;
   --bg-card: #111827;
-  --bg-surface: #111827;
+  --bg-subtle: #1e293b;
   --text-main: #f8fafc;
   --text-muted: #94a3b8;
   --primary: #3b82f6;
   --primary-hover: #2563eb;
-  --accent-cyan: #38bdf8;
+  --accent-blue: #38bdf8;
   --accent-orange: #f97316;
   --accent-green: #10b981;
   --border: rgba(255, 255, 255, 0.1);
@@ -80,800 +75,235 @@
   --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.3);
   --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.5);
   --glass-bg: rgba(17, 24, 39, 0.85);
-  --glass-border: rgba(59, 130, 246, 0.2);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+body { font-family: var(--font-sans); background-color: var(--bg-page); color: var(--text-main); line-height: 1.6; overflow-x: hidden; transition: background 0.2s, color 0.2s; }
 
-body {
-  font-family: var(--font-headings);
-  background-color: var(--bg-page);
-  color: var(--text-main);
-  line-height: 1.6;
-  overflow-x: hidden;
-  position: relative;
-  transition: background-color 0.2s, color 0.2s;
-}
+header.top-bar { display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 2rem; background: var(--glass-bg); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); max-width: 1200px; margin: 0 auto; }
+.brand-link { font-size: 1.35rem; font-weight: 900; color: var(--text-main); text-decoration: none; display: flex; align-items: center; gap: 0.6rem; letter-spacing: -0.5px; }
+.brand-link i { color: var(--accent-orange); }
 
-/* Motion Background Canvas */
-#motion-bg {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 0;
-  pointer-events: none;
-  opacity: 0.6;
-}
-
-/* Navigation Header */
-header.top-bar {
-  position: relative;
-  z-index: 100;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.75rem 2rem;
-  background: var(--glass-bg);
-  backdrop-filter: blur(16px);
-  border-bottom: 1px solid var(--border);
-}
-
-.brand-link {
-  font-size: 1.25rem;
-  font-weight: 900;
-  color: var(--text-main);
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-}
-
-.brand-link i { color: var(--primary); }
-
-.top-actions {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.theme-toggle-btn {
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--text-main);
-  padding: 0.45rem 0.85rem;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 0.95rem;
-  transition: background 0.2s;
-}
+.top-actions { display: flex; align-items: center; gap: 1rem; }
+.theme-toggle-btn { background: transparent; border: 1px solid var(--border); color: var(--text-main); padding: 0.45rem 0.85rem; border-radius: 10px; cursor: pointer; font-size: 0.95rem; transition: background 0.2s; }
 .theme-toggle-btn:hover { background: rgba(125, 125, 125, 0.1); }
 
-.btn-primary {
-  background: linear-gradient(135deg, var(--primary), var(--accent-cyan));
-  color: white !important;
-  padding: 0.6rem 1.4rem;
-  border-radius: 99px;
-  text-decoration: none;
-  font-weight: 700;
-  font-size: 0.9rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: transform 0.2s, box-shadow 0.2s;
-  border: none;
-}
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(29, 78, 216, 0.35);
-}
+.btn-primary { background: linear-gradient(135deg, var(--primary), #1e40af); color: white !important; padding: 0.65rem 1.5rem; border-radius: 99px; text-decoration: none; font-weight: 700; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 0.5rem; transition: transform 0.2s, box-shadow 0.2s; border: none; cursor: pointer; }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(29, 78, 216, 0.35); }
 
-/* Hero Section */
-.hero {
-  position: relative;
-  z-index: 10;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 4rem 1.5rem 2rem;
-  text-align: center;
-}
+.hero { max-width: 1100px; margin: 0 auto; padding: 4rem 1.5rem 2rem; text-align: center; }
+.hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(234, 88, 12, 0.12); color: var(--accent-orange); border: 1px solid rgba(234, 88, 12, 0.3); padding: 0.4rem 1.2rem; border-radius: 99px; font-size: 0.82rem; font-weight: 800; letter-spacing: 0.5px; margin-bottom: 1.5rem; }
+.hero h1 { font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 900; line-height: 1.15; margin-bottom: 1.25rem; letter-spacing: -1px; }
+.hero h1 span { background: linear-gradient(135deg, var(--accent-orange), var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.hero p { font-size: 1.15rem; color: var(--text-muted); max-width: 720px; margin: 0 auto 2.5rem; }
 
-.hero-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: rgba(29, 78, 216, 0.1);
-  border: 1px solid rgba(29, 78, 216, 0.25);
-  color: var(--primary);
-  padding: 0.4rem 1.2rem;
-  border-radius: 99px;
-  font-size: 0.8rem;
-  font-weight: 800;
-  letter-spacing: 1px;
-  margin-bottom: 1.5rem;
-}
+/* Interactive Speeds & Feeds Live Preview Widget */
+.widget-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 24px; padding: 2rem; max-width: 880px; margin: 2rem auto 4rem; box-shadow: var(--shadow-lg); text-align: left; }
+.widget-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); }
+.widget-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem; }
+.input-group label { display: block; font-size: 0.82rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.4rem; }
+.input-group input, .input-group select { width: 100%; padding: 0.65rem 0.9rem; border-radius: 10px; border: 1px solid var(--border); background: var(--bg-page); color: var(--text-main); font-family: var(--font-mono); font-weight: 600; font-size: 0.92rem; }
 
-.hero h1 {
-  font-size: clamp(2.5rem, 6vw, 4.5rem);
-  font-weight: 900;
-  line-height: 1.1;
-  margin-bottom: 1.25rem;
-  letter-spacing: -1px;
-}
+.result-banner { background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 14px; padding: 1.25rem; display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 1rem; }
+.result-item { text-align: center; }
+.result-label { font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+.result-val { font-size: 1.5rem; font-weight: 900; color: var(--primary); font-family: var(--font-mono); }
 
-.hero h1 span {
-  background: linear-gradient(135deg, var(--primary), var(--accent-orange));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
+/* Category Sections */
+.cat-section { max-width: 1200px; margin: 3.5rem auto; padding: 0 1.5rem; }
+.cat-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.75rem; padding-bottom: 0.75rem; border-bottom: 2px solid var(--border); }
+.cat-header h2 { font-size: 1.6rem; font-weight: 800; }
+.cat-header i { font-size: 1.4rem; color: var(--primary); }
 
-.hero p {
-  font-size: 1.2rem;
-  color: var(--text-muted);
-  max-width: 720px;
-  margin: 0 auto 2.5rem;
-}
+.tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.75rem; }
+.tool-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 1.75rem; transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; }
+.tool-card:hover { transform: translateY(-5px); border-color: var(--border-hover); box-shadow: var(--shadow-lg); }
+.tool-card-icon { width: 50px; height: 50px; border-radius: 14px; background: rgba(29, 78, 216, 0.1); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.35rem; margin-bottom: 1.25rem; }
+.tool-card h3 { font-size: 1.25rem; font-weight: 800; margin-bottom: 0.6rem; }
+.tool-card p { color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.5rem; flex-grow: 1; }
 
-/* Motion Graphic Interactive Simulator Widget */
-.sim-container {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 24px;
-  padding: 1.5rem;
-  margin: 2rem auto;
-  max-width: 1000px;
-  box-shadow: var(--shadow-lg);
-  backdrop-filter: blur(16px);
-  position: relative;
-  overflow: hidden;
-}
-
-.sim-container::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
-  animation: laserSweep 6s infinite;
-  pointer-events: none;
-}
-
-@keyframes laserSweep {
-  0% { left: -100%; }
-  100% { left: 200%; }
-}
-
-.sim-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-bottom: 1rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid var(--border);
-}
-
-.sim-controls {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.sim-btn {
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--text-muted);
-  padding: 0.4rem 0.9rem;
-  border-radius: 8px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.sim-btn.active, .sim-btn:hover {
-  background: var(--primary);
-  color: white;
-  border-color: var(--primary);
-}
-
-.sim-stage {
-  display: grid;
-  grid-template-columns: 1fr 300px;
-  gap: 1rem;
-  align-items: center;
-}
-
-@media (max-width: 850px) {
-  .sim-stage { grid-template-columns: 1fr; }
-}
-
-#toolpath-canvas {
-  width: 100%;
-  height: 320px;
-  background: #080c14;
-  border-radius: 16px;
-  border: 1px solid rgba(255,255,255,0.1);
-  display: block;
-}
-
-.gcode-console {
-  background: #080c14;
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 16px;
-  padding: 1rem;
-  height: 320px;
-  font-family: var(--font-mono);
-  font-size: 0.82rem;
-  color: #38bdf8;
-  overflow-y: auto;
-  text-align: left;
-}
-
-.gcode-console .cmd-line {
-  margin-bottom: 0.35rem;
-  opacity: 0.85;
-}
-.gcode-console .cmd-line.active {
-  color: #f59e0b;
-  font-weight: 700;
-  opacity: 1;
-}
-
-/* Tools Grid */
-.grid-section {
-  position: relative;
-  z-index: 10;
-  max-width: 1200px;
-  margin: 4rem auto;
-  padding: 0 1.5rem;
-}
-
-.section-head {
-  text-align: center;
-  margin-bottom: 3rem;
-}
-
-.section-head h2 {
-  font-size: 2.25rem;
-  font-weight: 800;
-  margin-bottom: 0.5rem;
-}
-
-.tools-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 1.75rem;
-}
-
-.tool-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 2rem;
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
-  box-shadow: var(--shadow-sm);
-  display: flex;
-  flex-direction: column;
-}
-
-.tool-card:hover {
-  transform: translateY(-6px);
-  border-color: var(--border-hover);
-  box-shadow: var(--shadow-lg);
-}
-
-.tool-card-icon {
-  width: 52px;
-  height: 52px;
-  border-radius: 14px;
-  background: rgba(29, 78, 216, 0.12);
-  color: var(--primary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.4rem;
-  margin-bottom: 1.25rem;
-  transition: transform 0.3s;
-}
-
-.tool-card:hover .tool-card-icon {
-  transform: scale(1.1) rotate(5deg);
-}
-
-.tool-card h3 {
-  font-size: 1.35rem;
-  font-weight: 800;
-  margin-bottom: 0.75rem;
-}
-
-.tool-card p {
-  color: var(--text-muted);
-  font-size: 0.95rem;
-  margin-bottom: 1.5rem;
-  flex-grow: 1;
-}
-
-.tool-card-actions {
-  display: flex;
-  gap: 0.75rem;
-}
-
-.btn-secondary {
-  background: rgba(125,125,125,0.08);
-  border: 1px solid var(--border);
-  color: var(--text-main);
-  padding: 0.55rem 1.2rem;
-  border-radius: 10px;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 0.85rem;
-  transition: background 0.2s;
-}
-.btn-secondary:hover { background: rgba(125,125,125,0.18); }
-
-/* Gcode Ticker */
-.ticker-wrap {
-  position: relative;
-  z-index: 10;
-  overflow: hidden;
-  background: var(--bg-card);
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-  padding: 0.85rem 0;
-  margin: 3rem 0;
-}
-
-.ticker-content {
-  display: flex;
-  gap: 3rem;
-  white-space: nowrap;
-  animation: tickerSlide 25s linear infinite;
-  font-family: var(--font-mono);
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: var(--primary);
-}
-
-@keyframes tickerSlide {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-
-footer {
-  position: relative;
-  z-index: 10;
-  border-top: 1px solid var(--border);
-  padding: 2.5rem 1.5rem;
-  text-align: center;
-  color: var(--text-muted);
-  font-size: 0.9rem;
-}
-
+footer { border-top: 1px solid var(--border); padding: 2.5rem 1.5rem; text-align: center; color: var(--text-muted); font-size: 0.9rem; margin-top: 4rem; }
 footer a { color: var(--primary); text-decoration: none; }
 </style>
 </head>
 <body>
 
-  <!-- Motion Canvas Background -->
-  <canvas id="motion-bg"></canvas>
-
-  <!-- Top Header Navigation -->
   <header class="top-bar">
-    <a href="../" class="brand-link"><i class="fa-solid fa-gear fa-spin" style="--fa-animation-duration: 15s;"></i> SHADER7 CNC Toolkit</a>
+    <a href="../" class="brand-link"><i class="fa-solid fa-gear"></i> SHADER7 CNC Machinist</a>
     <div class="top-actions">
       <a href="../index.html#tools" style="color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 0.9rem;">All Apps</a>
       <button onclick="window.toggleShader7Theme()" class="theme-toggle-btn" aria-label="Toggle Theme" title="Toggle Theme">
         <i class="fa-solid fa-moon"></i>
       </button>
-      <a href="3DCADWEB/app.html" class="btn-primary">Launch 3D CAD Studio <i class="fa-solid fa-arrow-right"></i></a>
+      <a href="millingcalculation/index.html" class="btn-primary">Launch Feeds & Speeds <i class="fa-solid fa-arrow-right"></i></a>
     </div>
   </header>
 
   <main>
-    <!-- Hero Section -->
     <section class="hero">
-      <div class="hero-badge"><i class="fa-solid fa-circle-nodes"></i> Motion Graphics Edition • 60FPS Interactive Simulator</div>
-      <h1>Precision CNC Machining & <span>G-Code Suite</span></h1>
-      <p>Calculate speeds, feeds, pitch circle diameters, circular chamfers, and G-Code trajectories with real-time motion graphic visualization.</p>
+      <div class="hero-badge"><i class="fa-solid fa-industry"></i> Industrial Machining Suite • 100% Client-Side</div>
+      <h1>Precision CNC Machining <span>Calculators & 3D CAD</span></h1>
+      <p>Professional engineering tools for Speeds & Feeds, PCD Bolt Hole Circles, Circular Interpolation, G-Code Macro Generation, and 3D CAD Modeling.</p>
       
-      <!-- Interactive Toolpath Motion Simulator -->
-      <div class="sim-container">
-        <div class="sim-header">
+      <!-- Interactive Speeds & Feeds Demo Widget -->
+      <div class="widget-box">
+        <div class="widget-header">
           <div style="font-weight: 800; font-size: 1.05rem; display: flex; align-items: center; gap: 0.5rem;">
-            <i class="fa-solid fa-play" style="color: var(--accent-green);"></i> Interactive Toolpath Motion Graphic Simulator
+            <i class="fa-solid fa-calculator" style="color: var(--accent-orange);"></i> Speeds & Feeds Instant Calculator
           </div>
-          <div class="sim-controls">
-            <button class="sim-btn active" onclick="setSimMode('milling', this)">2D Milling</button>
-            <button class="sim-btn" onclick="setSimMode('pcd', this)">PCD Bolt Circle</button>
-            <button class="sim-btn" onclick="setSimMode('chamfer', this)">Circular Chamfer</button>
-            <button class="sim-btn" onclick="setSimMode('spiral', this)">Spiral Pocket</button>
+          <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); background: var(--glass-bg); padding: 4px 10px; border-radius: 99px; border: 1px solid var(--border);">Live Demo</span>
+        </div>
+
+        <div class="widget-grid">
+          <div class="input-group">
+            <label>Tool Diameter (mm)</label>
+            <input type="number" id="sf-dia" value="12" min="1" oninput="updateSFDemo()">
+          </div>
+          <div class="input-group">
+            <label>Cutting Speed Vc (m/min)</label>
+            <input type="number" id="sf-vc" value="150" min="10" oninput="updateSFDemo()">
+          </div>
+          <div class="input-group">
+            <label>Number of Flutes (Z)</label>
+            <input type="number" id="sf-flutes" value="4" min="1" oninput="updateSFDemo()">
+          </div>
+          <div class="input-group">
+            <label>Feed Per Tooth fz (mm)</label>
+            <input type="number" id="sf-fz" value="0.08" step="0.01" oninput="updateSFDemo()">
           </div>
         </div>
 
-        <div class="sim-stage">
-          <canvas id="toolpath-canvas" width="600" height="320"></canvas>
-          <div class="gcode-console" id="gcode-output">
-            <div class="cmd-line">(SHADER7 Motion Toolpath Stream)</div>
-            <div class="cmd-line">G90 G21 G17 G40 G80</div>
-            <div class="cmd-line">T01 M06 (6.0mm Carbide Endmill)</div>
-            <div class="cmd-line">M03 S12000 M08</div>
-            <div class="cmd-line active">G00 X0.000 Y0.000 Z5.000</div>
+        <div class="result-banner">
+          <div class="result-item">
+            <div class="result-label">Spindle RPM (n)</div>
+            <div class="result-val" id="res-sf-rpm" style="color: var(--accent-orange);">3,979 RPM</div>
           </div>
-        </div>
-      </div>
-
-      <!-- Real Interactive 3D Spline Scene Showcase -->
-      <div style="max-width: 1000px; margin: 2rem auto; border-radius: 24px; overflow: hidden; border: 1px solid var(--border); background: var(--bg-card); box-shadow: var(--shadow-lg); height: 420px; position: relative;">
-        <spline-viewer url="https://prod.spline.design/9f5b8706-bf32-440d-b35e-e6b7db9090e0/scene.splinecode" style="width: 100%; height: 100%; display: block;"></spline-viewer>
-        <div style="position: absolute; bottom: 14px; left: 18px; font-size: 0.82rem; font-weight: 700; color: var(--text-main); background: var(--glass-bg); padding: 6px 16px; border-radius: 99px; border: 1px solid var(--border); backdrop-filter: blur(8px);">
-          <i class="fa-solid fa-cube" style="color: var(--primary);"></i> Real 3D Interactive Model (Click & Drag Cursor to Rotate)
-        </div>
-      </div>
-      <!-- Scroll-Driven Motion Graphics Showcase -->
-      <div class="scroll-motion-card" style="max-width: 1000px; margin: 3rem auto; border-radius: 24px; overflow: hidden; border: 1px solid var(--border); background: var(--bg-card); box-shadow: var(--shadow-lg); position: relative; transition: transform 0.6s ease-out, opacity 0.6s ease-out;">
-        <img src="../screenshots/cnc_motion_banner.jpg" alt="CNC Precision Motion Graphics" style="width: 100%; height: 360px; object-fit: cover; display: block; filter: brightness(0.95);" />
-        <div style="position: absolute; inset: 0; background: linear-gradient(180deg, transparent 40%, rgba(9, 13, 22, 0.85) 100%); display: flex; flex-direction: column; justify-content: flex-end; padding: 2rem; text-align: left;">
-          <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(56, 189, 248, 0.2); border: 1px solid rgba(56, 189, 248, 0.4); color: #38bdf8; padding: 0.35rem 0.9rem; border-radius: 99px; font-size: 0.8rem; font-weight: 800; width: fit-content; margin-bottom: 0.75rem; backdrop-filter: blur(8px);">
-            <i class="fa-solid fa-film"></i> Real Motion Graphic Render
+          <div class="result-item">
+            <div class="result-label">Table Feed Rate (Vf)</div>
+            <div class="result-val" id="res-sf-feed" style="color: var(--primary);">1,273 mm/min</div>
           </div>
-          <h3 style="color: #ffffff; font-size: 1.75rem; font-weight: 900; margin-bottom: 0.5rem;">Precision G-Code Trajectory & Laser Milling Engine</h3>
-          <p style="color: #cbd5e1; font-size: 0.95rem; max-width: 680px;">Ultra-fast vector path rendering with real-time tool compensation and sub-micron spatial accuracy.</p>
         </div>
       </div>
     </section>
 
-    <!-- Ticker Stream -->
-    <div class="ticker-wrap" aria-hidden="true">
-      <div class="ticker-content">
-        <span>G00 RAPID POSITIONING</span> • <span>G01 LINEAR INTERPOLATION</span> • <span>G02 CIRCULAR CLOCKWISE</span> • <span>G03 CIRCULAR COUNTER-CLOCKWISE</span> • <span>G40 CUTTER COMP CANCEL</span> • <span>G43 TOOL LENGTH COMP</span> • <span>G80 CANNED CYCLE CANCEL</span> • <span>G81 DRILLING CYCLE</span> • <span>M03 SPINDLE CW</span> • <span>M08 COOLANT ON</span> • 
-        <span>G00 RAPID POSITIONING</span> • <span>G01 LINEAR INTERPOLATION</span> • <span>G02 CIRCULAR CLOCKWISE</span> • <span>G03 CIRCULAR COUNTER-CLOCKWISE</span> • <span>G40 CUTTER COMP CANCEL</span> • <span>G43 TOOL LENGTH COMP</span> • <span>G80 CANNED CYCLE CANCEL</span> • <span>G81 DRILLING CYCLE</span> • <span>M03 SPINDLE CW</span> • <span>M08 COOLANT ON</span>
-      </div>
-    </div>
-
-    <!-- Tools Grid -->
-    <section class="grid-section">
-      <div class="section-head">
-        <h2>Machinist Tooling Suite</h2>
-        <p style="color: var(--text-muted);">Explore our suite of specialized precision calculators and G-Code engines.</p>
+    <!-- Category 1: Speeds, Feeds & Machining Calculators -->
+    <section class="cat-section">
+      <div class="cat-header">
+        <i class="fa-solid fa-gauge-high"></i>
+        <h2>Speeds, Feeds & Machining Calculators</h2>
       </div>
 
       <div class="tools-grid">
-
-        <!-- 3D CAD Modeler -->
         <div class="tool-card">
-          <div class="tool-card-icon"><i class="fa-solid fa-cube"></i></div>
-          <h3>3D Parametric CAD Studio</h3>
-          <p>Browser-based 3D CSG modeling engine. Adjust parameters dynamically and export STL models for 3D printing and milling.</p>
-          <div class="tool-card-actions">
-            <a href="3DCADWEB/index.html" class="btn-secondary">Overview</a>
-            <a href="3DCADWEB/app.html" class="btn-primary">Launch App <i class="fa-solid fa-arrow-right"></i></a>
-          </div>
+          <div class="tool-card-icon"><i class="fa-solid fa-gauge"></i></div>
+          <h3>Milling Speeds & Feeds</h3>
+          <p>Calculate optimal Spindle RPM, Table Feed Rates, Material Removal Rate (MRR), and Chip Load for all milling cutters.</p>
+          <a href="millingcalculation/index.html" class="btn-primary">Launch Calculator <i class="fa-solid fa-arrow-right"></i></a>
         </div>
 
-        <!-- Speeds & Feeds -->
         <div class="tool-card">
-          <div class="tool-card-icon" style="color: var(--accent-orange); background: rgba(234, 88, 12, 0.12);"><i class="fa-solid fa-gauge-high"></i></div>
-          <h3>Speeds & Feeds Calculator</h3>
-          <p>Calculate optimal spindle RPM, surface speed (SFM/VC), feed rate (IPM/mm-min), and chip load for various materials.</p>
-          <div class="tool-card-actions">
-            <a href="millingcalculation/index.html" class="btn-secondary">Overview</a>
-            <a href="millingcalculation/index.html" class="btn-primary">Launch App <i class="fa-solid fa-arrow-right"></i></a>
-          </div>
+          <div class="tool-card-icon" style="color: var(--accent-blue); background: rgba(2, 132, 199, 0.1);"><i class="fa-solid fa-bore-hole"></i></div>
+          <h3>Drill Speeds & Feeds</h3>
+          <p>Compute drilling RPM, feed rates, peck depth intervals, and cycle times for HSS, Carbide, and Indexable drills.</p>
+          <a href="drill/index.html" class="btn-primary" style="background: linear-gradient(135deg, var(--accent-blue), #0369a1);">Launch Calculator <i class="fa-solid fa-arrow-right"></i></a>
         </div>
 
-        <!-- PCD Calculator -->
         <div class="tool-card">
-          <div class="tool-card-icon" style="color: var(--accent-green); background: rgba(5, 150, 105, 0.12);"><i class="fa-solid fa-circle-dot"></i></div>
-          <h3>PCD Bolt Hole Coordinates</h3>
-          <p>Generate precise (X,Y) coordinates for bolt hole patterns on pitch circles with automated Fanuc G81 G-code output.</p>
-          <div class="tool-card-actions">
-            <a href="pcd/index.html" class="btn-secondary">Overview</a>
-            <a href="pcd/index.html" class="btn-primary">Launch App <i class="fa-solid fa-arrow-right"></i></a>
-          </div>
+          <div class="tool-card-icon" style="color: var(--accent-orange); background: rgba(234, 88, 12, 0.1);"><i class="fa-solid fa-circle-notch"></i></div>
+          <h3>ID / OD Circular Interpolation</h3>
+          <p>Adjust effective feed rates for internal and external circular milling paths to prevent tool overload and gouging.</p>
+          <a href="idodinterpolation/index.html" class="btn-primary" style="background: linear-gradient(135deg, var(--accent-orange), #c2410c);">Launch Calculator <i class="fa-solid fa-arrow-right"></i></a>
         </div>
 
-        <!-- Circular Chamfer -->
         <div class="tool-card">
-          <div class="tool-card-icon" style="color: var(--accent-cyan); background: rgba(2, 132, 199, 0.12);"><i class="fa-solid fa-arrows-spin"></i></div>
-          <h3>Circular & Hole Chamfer Generator</h3>
-          <p>Calculate tool lead-in/lead-out arcs, Z-depth offsets, and generate G02/G03 circular interpolation G-code for chamfers.</p>
-          <div class="tool-card-actions">
-            <a href="CircularChamfer/index.html" class="btn-secondary">Overview</a>
-            <a href="CircularChamfer/index.html" class="btn-primary">Launch App <i class="fa-solid fa-arrow-right"></i></a>
-          </div>
+          <div class="tool-card-icon" style="color: var(--accent-green); background: rgba(5, 150, 105, 0.1);"><i class="fa-solid fa-ruler-combined"></i></div>
+          <h3>Angle & Length Trigonometry</h3>
+          <p>Solve right-angle triangles, tapers, side lengths, and chamfer angles instantly for CNC setup dimensions.</p>
+          <a href="angleslengthcalculator/index.html" class="btn-primary" style="background: linear-gradient(135deg, var(--accent-green), #047857);">Launch Calculator <i class="fa-solid fa-arrow-right"></i></a>
         </div>
 
-        <!-- Drill Chart & Tap Drill -->
         <div class="tool-card">
-          <div class="tool-card-icon" style="color: #7c3aed; background: rgba(124, 58, 237, 0.12);"><i class="fa-solid fa-bore-hole"></i></div>
-          <h3>Drill Chart & Tap Size Reference</h3>
-          <p>Interactive reference for metric, fractional, letter, and number drill sizes with recommended tap drill sizes for threads.</p>
-          <div class="tool-card-actions">
-            <a href="drill/index.html" class="btn-secondary">Overview</a>
-            <a href="drill/index.html" class="btn-primary">Launch App <i class="fa-solid fa-arrow-right"></i></a>
-          </div>
+          <div class="tool-card-icon" style="color: #7c3aed; background: rgba(124, 58, 237, 0.1);"><i class="fa-solid fa-bezier-curve"></i></div>
+          <h3>Mill / Drill Contour Calculator</h3>
+          <p>Compute tool path offsets, step-over increments, and profile milling coordinates for precision contouring.</p>
+          <a href="milldrillcontour/index.html" class="btn-primary" style="background: linear-gradient(135deg, #7c3aed, #6d28d9);">Launch Calculator <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Category 2: G-Code & Program Generators -->
+    <section class="cat-section">
+      <div class="cat-header">
+        <i class="fa-solid fa-code"></i>
+        <h2>G-Code & CNC Program Generators</h2>
+      </div>
+
+      <div class="tools-grid">
+        <div class="tool-card">
+          <div class="tool-card-icon"><i class="fa-solid fa-bullseye"></i></div>
+          <h3>PCD Bolt Hole Circle Generator</h3>
+          <p>Generate exact X/Y hole coordinates and G-Code drilling cycles (G81/G83) for Pitch Circle Diameters.</p>
+          <a href="pcd/index.html" class="btn-primary">Generate PCD G-Code <i class="fa-solid fa-arrow-right"></i></a>
         </div>
 
-        <!-- Angles & Length Calculator -->
         <div class="tool-card">
-          <div class="tool-card-icon" style="color: #db2777; background: rgba(219, 39, 119, 0.12);"><i class="fa-solid fa-ruler-combined"></i></div>
-          <h3>Trigonometry & Angle Length Calculator</h3>
-          <p>Solve right-angle triangles, chamfer tapers, and sine bar calculations instantly with high-precision decimal outputs.</p>
-          <div class="tool-card-actions">
-            <a href="angleslengthcalculator/index.html" class="btn-secondary">Overview</a>
-            <a href="angleslengthcalculator/index.html" class="btn-primary">Launch App <i class="fa-solid fa-arrow-right"></i></a>
-          </div>
+          <div class="tool-card-icon" style="color: var(--accent-blue); background: rgba(2, 132, 199, 0.1);"><i class="fa-solid fa-circle-dot"></i></div>
+          <h3>Circular Chamfer G-Code</h3>
+          <p>Program smooth circular chamfers and deburring paths on bore edges with custom tool offset compensation.</p>
+          <a href="CircularChamfer/index.html" class="btn-primary" style="background: linear-gradient(135deg, var(--accent-blue), #0369a1);">Generate Chamfer G-Code <i class="fa-solid fa-arrow-right"></i></a>
         </div>
 
+        <div class="tool-card">
+          <div class="tool-card-icon" style="color: var(--accent-orange); background: rgba(234, 88, 12, 0.1);"><i class="fa-solid fa-draw-polygon"></i></div>
+          <h3>XY Chamfer & Corner Radii</h3>
+          <p>Calculate corner chamfer offsets, blend arcs (G02/G03), and tool center paths for milled profiles.</p>
+          <a href="XYchamfer/index.html" class="btn-primary" style="background: linear-gradient(135deg, var(--accent-orange), #c2410c);">Generate XY G-Code <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+
+        <div class="tool-card">
+          <div class="tool-card-icon" style="color: #0284c7; background: rgba(2, 132, 199, 0.1);"><i class="fa-solid fa-microchip"></i></div>
+          <h3>Siemens Sinumerik CNC Helper</h3>
+          <p>Specialized Siemens 840D cycle parameter reference, CYCLE81/83 drill definitions, and ShopMill helper.</p>
+          <a href="siemens/index.html" class="btn-primary" style="background: linear-gradient(135deg, #0284c7, #0369a1);">Open Siemens Helper <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Category 3: 3D CAD & Geometry Studio -->
+    <section class="cat-section">
+      <div class="cat-header">
+        <i class="fa-solid fa-cube"></i>
+        <h2>3D CAD & Modeling Studio</h2>
+      </div>
+
+      <div class="tools-grid">
+        <div class="tool-card">
+          <div class="tool-card-icon" style="color: #7c3aed; background: rgba(124, 58, 237, 0.1);"><i class="fa-solid fa-cubes"></i></div>
+          <h3>3D CAD Studio Web Modeler</h3>
+          <p>Construct CSG solid geometry, extrude 3D parts, inspect bounding boxes, and visualize workpiece stock models.</p>
+          <a href="3DCADWEB/index.html" class="btn-primary" style="background: linear-gradient(135deg, #7c3aed, #6d28d9);">Launch 3D CAD Studio <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
       </div>
     </section>
   </main>
 
   <footer>
-    <p>&copy; 2026 SHADER7 CNC Toolkit. Designed for precision machinists & CNC programmers. <a href="../">View All Apps</a></p>
+    <p>&copy; 2026 SHADER7 CNC Machinist Toolkit. Designed for CNC Machinists & Manufacturing Engineers. <a href="../">View All Apps</a></p>
   </footer>
 
-  <!-- Motion Graphics Canvas Script -->
   <script>
-    // 1. Background Motion Particle Stream Canvas
-    const bgCanvas = document.getElementById('motion-bg');
-    const bgCtx = bgCanvas.getContext('2d');
-    let bgParticles = [];
+    function updateSFDemo() {
+      const dia = parseFloat(document.getElementById('sf-dia').value) || 1;
+      const vc = parseFloat(document.getElementById('sf-vc').value) || 0;
+      const flutes = parseInt(document.getElementById('sf-flutes').value) || 1;
+      const fz = parseFloat(document.getElementById('sf-fz').value) || 0;
 
-    function resizeBgCanvas() {
-      bgCanvas.width = window.innerWidth;
-      bgCanvas.height = window.innerHeight;
+      const rpm = (vc * 1000) / (Math.PI * dia);
+      const feed = rpm * flutes * fz;
+
+      document.getElementById('res-sf-rpm').textContent = Math.round(rpm).toLocaleString() + ' RPM';
+      document.getElementById('res-sf-feed').textContent = Math.round(feed).toLocaleString() + ' mm/min';
     }
-    window.addEventListener('resize', resizeBgCanvas);
-    resizeBgCanvas();
-
-    // ponytail: simple particle array for background motion graphics
-    for (let i = 0; i < 45; i++) {
-      bgParticles.push({
-        x: Math.random() * bgCanvas.width,
-        y: Math.random() * bgCanvas.height,
-        vx: (Math.random() - 0.5) * 0.8,
-        vy: (Math.random() - 0.5) * 0.8,
-        size: Math.random() * 2.5 + 1,
-        alpha: Math.random() * 0.5 + 0.2
-      });
-    }
-
-    function renderBgMotion() {
-      bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
-      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-      const color = isDark ? '59, 130, 246' : '29, 78, 216';
-
-      bgParticles.forEach(p => {
-        p.x += p.vx;
-        p.y += p.vy;
-        if (p.x < 0) p.x = bgCanvas.width;
-        if (p.x > bgCanvas.width) p.x = 0;
-        if (p.y < 0) p.y = bgCanvas.height;
-        if (p.y > bgCanvas.height) p.y = 0;
-
-        bgCtx.fillStyle = `rgba(${color}, ${p.alpha})`;
-        bgCtx.beginPath();
-        bgCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        bgCtx.fill();
-      });
-
-      requestAnimationFrame(renderBgMotion);
-    }
-    renderBgMotion();
-
-    // 2. Interactive Toolpath Motion Graphics Simulator Widget
-    const toolpathCanvas = document.getElementById('toolpath-canvas');
-    const toolpathCtx = toolpathCanvas.getContext('2d');
-    const consoleOutput = document.getElementById('gcode-output');
-
-    let simMode = 'milling';
-    let simProgress = 0;
-
-    window.setSimMode = function(mode, btnEl) {
-      simMode = mode;
-      simProgress = 0;
-      document.querySelectorAll('.sim-btn').forEach(btn => btn.classList.remove('active'));
-      if (btnEl) {
-        btnEl.classList.add('active');
-      } else if (window.event && window.event.target) {
-        window.event.target.classList.add('active');
-      }
-
-      // Update console
-      const modeNames = {
-        milling: 'G01 / G02 Milling Contour Profile',
-        pcd: 'G81 PCD Bolt Circle Drill Cycle',
-        chamfer: 'G03 Circular Lead-in Chamfer Pass',
-        spiral: 'G02 High Speed Trochoidal Spiral Pocket'
-      };
-      
-      consoleOutput.innerHTML = `
-        <div class="cmd-line">(Mode: ${modeNames[mode]})</div>
-        <div class="cmd-line">G90 G21 G17 G40 G80</div>
-        <div class="cmd-line">T01 M06 (Carbide Endmill)</div>
-        <div class="cmd-line">M03 S12000 M08</div>
-        <div class="cmd-line active">G00 X0.000 Y0.000 Z5.000</div>
-      `;
-    };
-
-    function drawToolpathSim() {
-      toolpathCtx.fillStyle = '#080c14';
-      toolpathCtx.fillRect(0, 0, toolpathCanvas.width, toolpathCanvas.height);
-
-      const cx = toolpathCanvas.width / 2;
-      const cy = toolpathCanvas.height / 2;
-
-      // Draw coordinate grid
-      toolpathCtx.strokeStyle = 'rgba(56, 189, 248, 0.12)';
-      toolpathCtx.lineWidth = 1;
-      for (let x = 0; x < toolpathCanvas.width; x += 40) {
-        toolpathCtx.beginPath();
-        toolpathCtx.moveTo(x, 0);
-        toolpathCtx.lineTo(x, toolpathCanvas.height);
-        toolpathCtx.stroke();
-      }
-      for (let y = 0; y < toolpathCanvas.height; y += 40) {
-        toolpathCtx.beginPath();
-        toolpathCtx.moveTo(0, y);
-        toolpathCtx.lineTo(toolpathCanvas.width, y);
-        toolpathCtx.stroke();
-      }
-
-      // Draw coordinate axes
-      toolpathCtx.strokeStyle = 'rgba(56, 189, 248, 0.3)';
-      toolpathCtx.beginPath();
-      toolpathCtx.moveTo(cx, 0); toolpathCtx.lineTo(cx, toolpathCanvas.height);
-      toolpathCtx.moveTo(0, cy); toolpathCtx.lineTo(toolpathCanvas.width, cy);
-      toolpathCtx.stroke();
-
-      simProgress += 0.015;
-      if (simProgress > 1) simProgress = 0;
-
-      if (simMode === 'milling') {
-        // Rounded rectangle toolpath
-        const w = 220, h = 130, r = 30;
-        toolpathCtx.strokeStyle = '#38bdf8';
-        toolpathCtx.lineWidth = 2.5;
-        toolpathCtx.beginPath();
-        toolpathCtx.roundRect(cx - w/2, cy - h/2, w, h, r);
-        toolpathCtx.stroke();
-
-        // Active cutter position along perimeter
-        const totalLen = 2 * (w + h) + (2 * Math.PI * r) - 8 * r;
-        const angle = simProgress * Math.PI * 2;
-        const px = cx + (w/2 - r) * Math.cos(angle);
-        const py = cy + (h/2 - r) * Math.sin(angle);
-
-        // Draw Cutter
-        toolpathCtx.fillStyle = '#f59e0b';
-        toolpathCtx.beginPath();
-        toolpathCtx.arc(px, py, 10, 0, Math.PI * 2);
-        toolpathCtx.fill();
-
-        // Spark trail
-        toolpathCtx.strokeStyle = 'rgba(245, 158, 11, 0.4)';
-        toolpathCtx.beginPath();
-        toolpathCtx.arc(px, py, 18 + Math.sin(simProgress * 20) * 4, 0, Math.PI * 2);
-        toolpathCtx.stroke();
-
-      } else if (simMode === 'pcd') {
-        // Bolt Circle
-        const radius = 90;
-        toolpathCtx.strokeStyle = '#38bdf8';
-        toolpathCtx.lineWidth = 1.5;
-        toolpathCtx.setLineDash([5, 5]);
-        toolpathCtx.beginPath();
-        toolpathCtx.arc(cx, cy, radius, 0, Math.PI * 2);
-        toolpathCtx.stroke();
-        toolpathCtx.setLineDash([]);
-
-        const holeCount = 8;
-        const activeIdx = Math.floor(simProgress * holeCount);
-
-        for (let i = 0; i < holeCount; i++) {
-          const a = (i / holeCount) * Math.PI * 2;
-          const hx = cx + radius * Math.cos(a);
-          const hy = cy + radius * Math.sin(a);
-
-          toolpathCtx.fillStyle = (i === activeIdx) ? '#10b981' : 'rgba(255,255,255,0.2)';
-          toolpathCtx.beginPath();
-          toolpathCtx.arc(hx, hy, 8, 0, Math.PI * 2);
-          toolpathCtx.fill();
-
-          if (i === activeIdx) {
-            toolpathCtx.strokeStyle = '#10b981';
-            toolpathCtx.beginPath();
-            toolpathCtx.arc(hx, hy, 16, 0, Math.PI * 2);
-            toolpathCtx.stroke();
-          }
-        }
-      } else if (simMode === 'chamfer') {
-        // Circular Chamfer Interpolation
-        const r1 = 60, r2 = 100;
-        toolpathCtx.strokeStyle = '#38bdf8';
-        toolpathCtx.lineWidth = 2;
-        toolpathCtx.beginPath();
-        toolpathCtx.arc(cx, cy, r1, 0, Math.PI * 2);
-        toolpathCtx.stroke();
-
-        const a = simProgress * Math.PI * 2;
-        const px = cx + r1 * Math.cos(a);
-        const py = cy + r1 * Math.sin(a);
-
-        toolpathCtx.strokeStyle = '#f59e0b';
-        toolpathCtx.lineWidth = 3;
-        toolpathCtx.beginPath();
-        toolpathCtx.arc(cx, cy, r1, 0, a);
-        toolpathCtx.stroke();
-
-        toolpathCtx.fillStyle = '#f59e0b';
-        toolpathCtx.beginPath();
-        toolpathCtx.arc(px, py, 9, 0, Math.PI * 2);
-        toolpathCtx.fill();
-
-      } else if (simMode === 'spiral') {
-        // Spiral Pocketing
-        toolpathCtx.strokeStyle = '#38bdf8';
-        toolpathCtx.lineWidth = 2;
-        toolpathCtx.beginPath();
-        const maxRadius = 110;
-        const turns = 5;
-        let lastPx = cx, lastPy = cy;
-
-        for (let t = 0; t < simProgress * Math.PI * 2 * turns; t += 0.1) {
-          const r = (t / (Math.PI * 2 * turns)) * maxRadius;
-          const px = cx + r * Math.cos(t);
-          const py = cy + r * Math.sin(t);
-          if (t === 0) toolpathCtx.moveTo(px, py);
-          else toolpathCtx.lineTo(px, py);
-          lastPx = px;
-          lastPy = py;
-        }
-        toolpathCtx.stroke();
-
-        toolpathCtx.fillStyle = '#10b981';
-        toolpathCtx.beginPath();
-        toolpathCtx.arc(lastPx, lastPy, 8, 0, Math.PI * 2);
-        toolpathCtx.fill();
-      }
-
-      requestAnimationFrame(drawToolpathSim);
-    }
-    drawToolpathSim();
-
-    // 3. Scroll Animation Intersection Observer
-    const scrollCards = document.querySelectorAll('.scroll-motion-card, .tool-card');
-    
-    // Safety fallback timeout to guarantee visibility if observer is slow or blocked
-    const safetyTimeout = setTimeout(() => {
-      scrollCards.forEach(card => {
-        card.style.opacity = '1';
-        card.style.transform = 'translateY(0) scale(1)';
-      });
-    }, 1500);
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.style.opacity = '1';
-          entry.target.style.transform = 'translateY(0) scale(1)';
-        }
-      });
-    }, { threshold: 0.05 });
-
-    scrollCards.forEach(card => {
-      card.style.opacity = '0';
-      card.style.transform = 'translateY(40px) scale(0.97)';
-      observer.observe(card);
-    });
   </script>
 
 </body>
