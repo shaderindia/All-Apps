@@ -54,19 +54,61 @@
     } catch (e) {}
   }
 
-  // ponytail: apply stored theme immediately before render with safety fallback
-  const initialTheme = getStoredTheme();
-  applyTheme(initialTheme);
+  // Handle URL previewOnly parameter for embedding clean resume paper previews
+  if (window.location.search.includes('previewOnly')) {
+    const injectPreviewStyle = function() {
+      const style = document.createElement('style');
+      style.textContent = `
+        header, .header-inner, .intro, .form-panel, .mobile-preview-button, footer, .controls-card, .font-picker-card, .top-bar {
+          display: none !important;
+        }
+        body {
+          background: transparent !important;
+          padding: 0 !important;
+          margin: 0 !important;
+          overflow: hidden !important;
+        }
+        .container, .builder-layout {
+          max-width: 100% !important;
+          padding: 0 !important;
+          margin: 0 !important;
+          display: block !important;
+        }
+        .preview-panel {
+          display: flex !important;
+          justify-content: center !important;
+          align-items: flex-start !important;
+          padding: 5px 0 !important;
+          width: 100% !important;
+        }
+        .resume-paper, .paper, #resumePaper, [id*="paper"], [class*="paper"], .preview-container {
+          transform: scale(0.65) !important;
+          transform-origin: top center !important;
+          margin: 0 auto !important;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.12) !important;
+        }
+      `;
+      if (document.head) {
+        document.head.appendChild(style);
+      } else {
+        document.addEventListener('DOMContentLoaded', () => document.head.appendChild(style));
+      }
+    };
+    injectPreviewStyle();
+  }
 
-  document.addEventListener('DOMContentLoaded', function() {
-    updateToggleButtonIcon(getStoredTheme());
-  });
-
+  // Sync theme changes across tabs
   try {
     window.addEventListener('storage', function(e) {
-      if (e && e.key === THEME_KEY) {
+      if (e.key === THEME_KEY) {
         applyTheme(e.newValue || 'light');
       }
     });
   } catch (e) {}
+
+  // Apply default theme immediately before body render
+  applyTheme(getStoredTheme());
+  document.addEventListener('DOMContentLoaded', function() {
+    applyTheme(getStoredTheme());
+  });
 })();
