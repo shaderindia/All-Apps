@@ -54,15 +54,18 @@
     } catch (e) {}
   }
 
-  // Handle URL previewOnly parameter for embedding clean resume paper previews
+  // Handle URL previewOnly parameter for embedding ONLY clean resume paper previews
   if (window.location.search.includes('previewOnly')) {
     const injectPreviewStyle = function() {
       const style = document.createElement('style');
+      style.id = 'preview-only-style-override';
       style.textContent = `
-        header, .header-inner, .intro, .form-panel, .mobile-preview-button, footer, .controls-card, .font-picker-card, .top-bar {
+        header, .header-inner, section.intro, section.form-panel, .mobile-preview-button, 
+        .resume-guide-section, footer, .controls-card, .font-picker-card, .top-bar, 
+        .action-buttons, .form-section, .btn, nav, .ad-banner, ins.adsbygoogle {
           display: none !important;
         }
-        body {
+        html, body {
           background: transparent !important;
           padding: 0 !important;
           margin: 0 !important;
@@ -73,19 +76,25 @@
           padding: 0 !important;
           margin: 0 !important;
           display: block !important;
+          background: transparent !important;
+          border: none !important;
+          box-shadow: none !important;
         }
         .preview-panel {
-          display: flex !important;
-          justify-content: center !important;
-          align-items: flex-start !important;
-          padding: 5px 0 !important;
+          display: block !important;
           width: 100% !important;
+          padding: 0 !important;
+          margin: 0 !important;
+          background: transparent !important;
+          border: none !important;
+          box-shadow: none !important;
         }
-        .resume-paper, .paper, #resumePaper, [id*="paper"], [class*="paper"], .preview-container {
-          transform: scale(0.65) !important;
+        #resumePreview, .resume-page, .resume-container {
+          display: block !important;
+          transform: scale(0.62) !important;
           transform-origin: top center !important;
           margin: 0 auto !important;
-          box-shadow: 0 10px 30px rgba(0,0,0,0.12) !important;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
         }
       `;
       if (document.head) {
