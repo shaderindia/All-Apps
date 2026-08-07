@@ -1,100 +1,137 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Client-Side Image Compressor & Format Converter | SHADER7 Tool</title>
-  <meta name="description" content="Compress JPG, PNG, WebP images locally in your browser. Up to 90% size reduction with zero quality loss and no server uploads by SHADER7." />
-  <meta name="keywords" content="image compressor, photo compressor, convert to webp, compress jpg online, client-side photo optimization, SHADER7" />
-  <meta name="author" content="SHADER7" />
-  <meta name="robots" content="index, follow" />
-  <link rel="canonical" href="https://shader7.com/photocompressor/" />
+<script>
+    // ponytail: Ensure trailing slash for proper relative path resolution
+    if (window.location.protocol.startsWith('http') && !window.location.pathname.endsWith('/')) {
+        const pathParts = window.location.pathname.split('/');
+        const lastPart = pathParts[pathParts.length - 1];
+        if (lastPart && !lastPart.includes('.')) {
+            window.location.replace(window.location.pathname + '/' + window.location.search + window.location.hash);
+        }
+    }
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Open Graph -->
-  <meta property="og:title" content="Client-Side Image Compressor | SHADER7" />
-  <meta property="og:description" content="Compress images up to 90% in your browser without uploading files to any server." />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://shader7.com/photocompressor/" />
+<title>Client-Side Image Compressor | Reduce Image Size Online Free</title>
+<meta name="description" content="Compress JPEG, PNG, and WebP images client-side without uploading to any server. Reduce file size up to 90% while keeping high visual quality by SHADER7.">
+<meta name="keywords" content="image compressor, compress PNG, reduce image KB size, WebP converter, client side image compression, SHADER7">
+<meta name="author" content="Nishikant Xalxo">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#2563eb">
+<link rel="canonical" href="https://shader7.com/photocompressor/">
 
-  <!-- Fonts & Icons -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" />
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Client-Side Image Compressor | SHADER7">
+<meta property="og:description" content="Reduce image file size up to 90% instantly inside your web browser. Zero server uploads, maximum privacy.">
+<meta property="og:url" content="https://shader7.com/photocompressor/">
+<meta property="og:site_name" content="SHADER7">
 
-  <!-- Global Theme Manager -->
-  <script src="../js/theme.js"></script>
+<!-- Fonts & Icons -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" />
 
-  <script>
+<!-- Global Theme Manager -->
+<script src="../js/theme.js"></script>
+
+<script>
     // ponytail: auto-redirect deep links to app interface
     const params = new URLSearchParams(window.location.search);
-    if (params.has('quality') || params.has('mode') || params.has('file')) {
-      window.location.href = 'app.html' + window.location.search;
+    if (params.has('quality') || params.has('mode') || params.has('file') || params.has('app')) {
+        window.location.href = 'app.html' + window.location.search;
     }
-  </script>
+</script>
 
-  <style>
-    :root, [data-theme="light"] {
-      --bg: #f8fafc;
-      --bg-surface: #ffffff;
-      --primary: #0891b2;
-      --primary-hover: #0e7490;
-      --accent: #2563eb;
-      --text: #0f172a;
-      --text-muted: #475569;
-      --border: rgba(15, 23, 42, 0.08);
-      --font-main: 'Outfit', sans-serif;
-    }
+<style>
+:root, [data-theme="light"] {
+  --bg-page: #f8fafc;
+  --bg-card: #ffffff;
+  --text-main: #0f172a;
+  --text-muted: #334155;
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --accent-green: #059669;
+  --border: rgba(15, 23, 42, 0.08);
+  --border-hover: rgba(37, 99, 235, 0.3);
+  --shadow-sm: 0 4px 12px rgba(15, 23, 42, 0.04);
+  --shadow-lg: 0 20px 40px rgba(15, 23, 42, 0.08);
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --font-sans: 'Outfit', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
 
-    [data-theme="dark"] {
-      --bg: #090d16;
-      --bg-surface: #111827;
-      --primary: #06b6d4;
-      --primary-hover: #0891b2;
-      --accent: #3b82f6;
-      --text: #f9fafb;
-      --text-muted: #9ca3af;
-      --border: rgba(255, 255, 255, 0.1);
-    }
+[data-theme="dark"] {
+  --bg-page: #090d16;
+  --bg-card: #111827;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --primary: #3b82f6;
+  --primary-hover: #2563eb;
+  --accent-green: #10b981;
+  --border: rgba(255, 255, 255, 0.1);
+  --border-hover: rgba(59, 130, 246, 0.4);
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.5);
+  --glass-bg: rgba(17, 24, 39, 0.85);
+}
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: var(--font-main); background: var(--bg); color: var(--text); line-height: 1.6; min-height: 100vh; display: flex; flex-direction: column; transition: background 0.2s, color 0.2s; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); background-color: var(--bg-page); color: var(--text-main); line-height: 1.6; overflow-x: hidden; transition: background 0.2s, color 0.2s; }
 
-    .nav { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 2rem; max-width: 1200px; margin: 0 auto; width: 100%; border-bottom: 1px solid var(--border); }
-    .brand { font-size: 1.35rem; font-weight: 800; color: var(--text); text-decoration: none; display: flex; align-items: center; gap: 0.6rem; }
-    .brand i { color: var(--primary); }
+header.top-bar { display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 2rem; background: var(--glass-bg); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); max-width: 1200px; margin: 0 auto; }
+.brand-link { font-size: 1.25rem; font-weight: 900; color: var(--text-main); text-decoration: none; display: flex; align-items: center; gap: 0.6rem; }
+.brand-link i { color: var(--primary); }
 
-    .theme-toggle-btn { background: transparent; border: 1px solid var(--border); color: var(--text); padding: 0.55rem 0.85rem; border-radius: 12px; cursor: pointer; font-size: 1rem; transition: background 0.2s; }
-    .theme-toggle-btn:hover { background: rgba(125, 125, 125, 0.1); }
+.top-actions { display: flex; align-items: center; gap: 1rem; }
+.theme-toggle-btn { background: transparent; border: 1px solid var(--border); color: var(--text-main); padding: 0.45rem 0.85rem; border-radius: 10px; cursor: pointer; font-size: 0.95rem; transition: background 0.2s; }
+.theme-toggle-btn:hover { background: rgba(125, 125, 125, 0.1); }
 
-    .btn-primary { background: linear-gradient(135deg, var(--primary), var(--accent)); color: white !important; padding: 0.75rem 1.75rem; border-radius: 99px; text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 0.5rem; transition: transform 0.2s, box-shadow 0.2s; border: none; }
-    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(8, 145, 178, 0.35); }
+.btn-primary { background: linear-gradient(135deg, var(--primary), #1d4ed8); color: white !important; padding: 0.65rem 1.5rem; border-radius: 99px; text-decoration: none; font-weight: 700; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 0.5rem; transition: transform 0.2s, box-shadow 0.2s; border: none; cursor: pointer; }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35); }
 
-    .hero { text-align: center; padding: 5rem 1.5rem 3rem; max-width: 900px; margin: 0 auto; }
-    .badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(8, 145, 178, 0.12); color: var(--primary); border: 1px solid rgba(8, 145, 178, 0.3); padding: 0.4rem 1rem; border-radius: 99px; font-size: 0.85rem; font-weight: 600; margin-bottom: 1.5rem; }
-    .hero h1 { font-size: 3.25rem; font-weight: 800; line-height: 1.15; margin-bottom: 1.25rem; }
-    .hero p { font-size: 1.2rem; color: var(--text-muted); max-width: 680px; margin: 0 auto 2.5rem; }
+.hero { max-width: 1100px; margin: 0 auto; padding: 4rem 1.5rem 2rem; text-align: center; }
+.hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(37, 99, 235, 0.12); color: var(--primary); border: 1px solid rgba(37, 99, 235, 0.3); padding: 0.4rem 1.2rem; border-radius: 99px; font-size: 0.82rem; font-weight: 800; letter-spacing: 0.5px; margin-bottom: 1.5rem; }
+.hero h1 { font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 900; line-height: 1.15; margin-bottom: 1.25rem; letter-spacing: -1px; }
+.hero h1 span { background: linear-gradient(135deg, var(--primary), var(--accent-green)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.hero p { font-size: 1.15rem; color: var(--text-muted); max-width: 700px; margin: 0 auto 2.5rem; }
 
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; max-width: 1200px; margin: 3rem auto; padding: 0 1.5rem; }
-    .card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; transition: transform 0.2s, border-color 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
-    .card:hover { transform: translateY(-4px); border-color: rgba(8, 145, 178, 0.4); }
-    .card-icon { width: 50px; height: 50px; border-radius: 12px; background: rgba(8, 145, 178, 0.15); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 1.25rem; }
-    .card h3 { font-size: 1.25rem; margin-bottom: 0.75rem; font-weight: 700; }
-    .card p { color: var(--text-muted); font-size: 0.95rem; }
+/* Compression Slider Demo Widget */
+.slider-widget { background: var(--bg-card); border: 1px solid var(--border); border-radius: 24px; padding: 2rem; max-width: 850px; margin: 2rem auto 4rem; box-shadow: var(--shadow-lg); text-align: left; }
+.slider-container { margin: 1.5rem 0; }
+.slider-container label { display: flex; justify-content: space-between; font-weight: 700; font-size: 0.9rem; margin-bottom: 0.5rem; }
+.slider-container input[type="range"] { width: 100%; height: 8px; border-radius: 4px; accent-color: var(--primary); cursor: pointer; }
 
-    .cta-banner { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 24px; padding: 3.5rem 2rem; text-align: center; max-width: 1000px; margin: 3rem auto; box-shadow: 0 10px 30px rgba(0,0,0,0.04); }
-    .cta-banner h2 { font-size: 2.25rem; font-weight: 800; margin-bottom: 1rem; }
+.compare-banner { background: rgba(5, 150, 105, 0.1); border: 1px solid rgba(5, 150, 105, 0.25); border-radius: 14px; padding: 1.25rem; display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 1rem; }
+.compare-item { text-align: center; }
+.compare-label { font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+.compare-val { font-size: 1.5rem; font-weight: 900; color: var(--primary); font-family: var(--font-mono); }
 
-    footer { margin-top: auto; border-top: 1px solid var(--border); padding: 2rem; text-align: center; color: var(--text-muted); font-size: 0.9rem; }
-    footer a { color: var(--primary); text-decoration: none; }
-  </style>
+/* Grid */
+.grid-section { max-width: 1200px; margin: 3rem auto; padding: 0 1.5rem; }
+.section-head { text-align: center; margin-bottom: 3rem; }
+.section-head h2 { font-size: 2.25rem; font-weight: 800; margin-bottom: 0.5rem; }
+
+.tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.75rem; }
+.tool-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 2rem; transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; }
+.tool-card:hover { transform: translateY(-6px); border-color: var(--border-hover); box-shadow: var(--shadow-lg); }
+.tool-card-icon { width: 52px; height: 52px; border-radius: 14px; background: rgba(37, 99, 235, 0.12); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 1.25rem; }
+.tool-card h3 { font-size: 1.3rem; font-weight: 800; margin-bottom: 0.75rem; }
+.tool-card p { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem; flex-grow: 1; }
+
+footer { border-top: 1px solid var(--border); padding: 2.5rem 1.5rem; text-align: center; color: var(--text-muted); font-size: 0.9rem; margin-top: 4rem; }
+footer a { color: var(--primary); text-decoration: none; }
+</style>
 </head>
 <body>
 
-  <header class="nav">
-    <a href="../" class="brand"><i class="fa-solid fa-file-image"></i> Photo Compressor</a>
-    <div style="display: flex; gap: 1rem; align-items: center;">
-      <a href="../" style="color: var(--text-muted); text-decoration: none;">All Apps</a>
+  <header class="top-bar">
+    <a href="../" class="brand-link"><i class="fa-solid fa-file-image"></i> Image Compressor</a>
+    <div class="top-actions">
+      <a href="../index.html#tools" style="color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 0.9rem;">All Apps</a>
       <button onclick="window.toggleShader7Theme()" class="theme-toggle-btn" aria-label="Toggle Theme" title="Toggle Theme">
         <i class="fa-solid fa-moon"></i>
       </button>
@@ -104,42 +141,95 @@
 
   <main>
     <section class="hero">
-      <div class="badge"><i class="fa-solid fa-shield"></i> 100% Client-Side Privacy — Zero Upload</div>
-      <h1>Ultra-Fast Browser Image Compression</h1>
-      <p>Reduce image sizes by up to 90% instantly without sacrificing visual clarity. Supports JPG, PNG, and WebP formats.</p>
-      <a href="app.html" class="btn-primary" style="font-size: 1.1rem; padding: 0.9rem 2.2rem;"><i class="fa-solid fa-file-arrow-down"></i> Open Compressor Tool</a>
+      <div class="hero-badge"><i class="fa-solid fa-shield-halved"></i> 100% Browser-Side • Zero Server Uploads</div>
+      <h1>Compress Images Instantly <span>Without Losing Quality</span></h1>
+      <p>Reduce image file sizes for WebP, PNG, and JPEG by up to 90% right in your browser. Maximum privacy and ultra-fast processing.</p>
+      
+      <!-- Compression Slider Interactive Demo Widget -->
+      <div class="slider-widget">
+        <div style="text-align: center; margin-bottom: 1rem;">
+          <div style="font-weight: 800; font-size: 1.05rem; display: inline-flex; align-items: center; gap: 0.5rem;">
+            <i class="fa-solid fa-sliders" style="color: var(--primary);"></i> Compression Ratio Simulator
+          </div>
+        </div>
+
+        <div class="slider-container">
+          <label>
+            <span>Target Quality / Compression</span>
+            <span id="quality-val" style="color: var(--primary); font-family: var(--font-mono);">75% Quality</span>
+          </label>
+          <input type="range" id="quality-range" min="10" max="95" value="75" oninput="updateCompressDemo()">
+        </div>
+
+        <div class="compare-banner">
+          <div class="compare-item">
+            <div class="compare-label">Original Size</div>
+            <div class="compare-val" style="color: var(--text-muted);">4.80 MB</div>
+          </div>
+          <div class="compare-item">
+            <div class="compare-label">Compressed Size</div>
+            <div class="compare-val" id="res-compressed" style="color: var(--accent-green);">620 KB</div>
+          </div>
+          <div class="compare-item">
+            <div class="compare-label">Saved Space</div>
+            <div class="compare-val" id="res-saved" style="color: var(--primary);">-87%</div>
+          </div>
+        </div>
+      </div>
     </section>
 
-    <section class="grid">
-      <div class="card">
-        <div class="card-icon"><i class="fa-solid fa-bolt"></i></div>
-        <h3>Instant Batch Processing</h3>
-        <p>Drop dozens of high-res photos at once and compress them concurrently directly inside your browser GPU.</p>
+    <!-- Grid -->
+    <section class="grid-section">
+      <div class="section-head">
+        <h2>Built For Speed & Web Optimization</h2>
+        <p style="color: var(--text-muted);">Optimize website graphics, email attachments, and online uploads.</p>
       </div>
 
-      <div class="card">
-        <div class="card-icon" style="color: var(--accent); background: rgba(37, 99, 235, 0.15);"><i class="fa-solid fa-repeat"></i></div>
-        <h3>Format Converter</h3>
-        <p>Convert heavy PNG/JPEG images to optimized next-gen WebP format with a single click.</p>
-      </div>
+      <div class="tools-grid">
+        <div class="tool-card">
+          <div class="tool-card-icon"><i class="fa-solid fa-bolt"></i></div>
+          <h3>Client-Side Canvas Processing</h3>
+          <p>Uses native browser HTML5 Canvas API to compress images instantly without network latency or cloud uploads.</p>
+          <a href="app.html" class="btn-primary" style="margin-top: auto;">Compress Files <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
 
-      <div class="card">
-        <div class="card-icon" style="color: #059669; background: rgba(5, 150, 105, 0.15);"><i class="fa-solid fa-user-lock"></i></div>
-        <h3>Absolute Privacy</h3>
-        <p>No backend server involved. Photos stay strictly on your device for unmatched privacy and security.</p>
-      </div>
-    </section>
+        <div class="tool-card">
+          <div class="tool-card-icon" style="color: var(--accent-green); background: rgba(5, 150, 105, 0.12);"><i class="fa-solid fa-file-code"></i></div>
+          <h3>WebP Format Conversion</h3>
+          <p>Convert heavy PNG and JPEG photos into next-gen WebP format for fast web page loading speeds.</p>
+          <a href="app.html" class="btn-primary" style="margin-top: auto; background: linear-gradient(135deg, var(--accent-green), #047857);">Convert to WebP <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
 
-    <section class="cta-banner">
-      <h2>Shrink Image File Sizes Now</h2>
-      <p style="color: var(--text-muted); margin-bottom: 2rem;">Free, unlimited usage with instant side-by-side quality preview comparison.</p>
-      <a href="app.html" class="btn-primary" style="font-size: 1.1rem; padding: 0.9rem 2.2rem;"><i class="fa-solid fa-rocket"></i> Launch Compressor App</a>
+        <div class="tool-card">
+          <div class="tool-card-icon" style="color: #7c3aed; background: rgba(124, 58, 237, 0.12);"><i class="fa-solid fa-images"></i></div>
+          <h3>Batch Image Compression</h3>
+          <p>Drop dozens of images simultaneously and download them all compressed in one click.</p>
+          <a href="app.html" class="btn-primary" style="margin-top: auto; background: linear-gradient(135deg, #7c3aed, #6d28d9);">Batch Compress <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+      </div>
     </section>
   </main>
 
   <footer>
-    <p>&copy; 2026 SHADER7 Suite. <a href="../">View All Apps</a></p>
+    <p>&copy; 2026 Image Compressor • SHADER7 Suite. <a href="../">View All Apps</a></p>
   </footer>
+
+  <script>
+    function updateCompressDemo() {
+      const q = parseInt(document.getElementById('quality-range').value);
+      document.getElementById('quality-val').textContent = q + '% Quality';
+
+      const originalMB = 4.8;
+      // Formula simulating compression curve
+      const compressedMB = originalMB * (0.05 + (q / 100) * 0.35);
+      const savedPct = Math.round((1 - (compressedMB / originalMB)) * 100);
+
+      const sizeStr = compressedMB < 1 ? Math.round(compressedMB * 1024) + ' KB' : compressedMB.toFixed(2) + ' MB';
+
+      document.getElementById('res-compressed').textContent = sizeStr;
+      document.getElementById('res-saved').textContent = '-' + savedPct + '%';
+    }
+  </script>
 
 </body>
 </html>

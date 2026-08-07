@@ -1,177 +1,244 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Trading Mastery & Financial Calculator | SHADER7 Suite</title>
-  <meta name="description" content="Master financial planning, trading psychology, price action, and risk management with the Trading Mastery platform by SHADER7. 100% free and client-side." />
-  <meta name="keywords" content="trading mastery, financial calculator, risk management, price action guide, trading psychology, budget calculator, SHADER7" />
-  <meta name="author" content="SHADER7" />
-  <meta name="robots" content="index, follow" />
-  <link rel="canonical" href="https://shader7.com/bcal/" />
+<script>
+    // ponytail: Ensure trailing slash for proper relative path resolution
+    if (window.location.protocol.startsWith('http') && !window.location.pathname.endsWith('/')) {
+        const pathParts = window.location.pathname.split('/');
+        const lastPart = pathParts[pathParts.length - 1];
+        if (lastPart && !lastPart.includes('.')) {
+            window.location.replace(window.location.pathname + '/' + window.location.search + window.location.hash);
+        }
+    }
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Open Graph -->
-  <meta property="og:title" content="Trading Mastery & Financial Calculator | SHADER7" />
-  <meta property="og:description" content="Comprehensive trading education, price action guides, and risk management tools right in your browser." />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://shader7.com/bcal/" />
-  <meta name="twitter:card" content="summary_large_image" />
+<title>Trading Mastery & Position Size Calculator | SHADER7</title>
+<meta name="description" content="Master price action trading, candlestick patterns, risk management, and position sizing with the Trading Mastery platform by SHADER7. 100% free and client-side.">
+<meta name="keywords" content="trading mastery, position size calculator, risk management, price action guide, trading psychology, budget calculator, SHADER7">
+<meta name="author" content="Nishikant Xalxo">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#1d4ed8">
+<link rel="canonical" href="https://shader7.com/bcal/">
 
-  <!-- Fonts & Icons -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" />
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Trading Mastery & Risk Calculator | SHADER7">
+<meta property="og:description" content="Comprehensive trading education, price action guides, and interactive risk management calculators right in your browser.">
+<meta property="og:url" content="https://shader7.com/bcal/">
+<meta property="og:site_name" content="SHADER7">
 
-  <!-- Global Theme Manager -->
-  <script src="../js/theme.js"></script>
+<!-- Fonts & Icons -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" />
 
-  <script>
+<!-- Global Theme Manager -->
+<script src="../js/theme.js"></script>
+
+<script>
     // ponytail: auto-redirect deep links to app interface
     const params = new URLSearchParams(window.location.search);
-    if (params.has('chapter') || params.has('view') || params.has('calc')) {
-      window.location.href = 'app.html' + window.location.search;
+    if (params.has('chapter') || params.has('view') || params.has('calc') || params.has('app')) {
+        window.location.href = 'app.html' + window.location.search;
     }
-  </script>
+</script>
 
-  <style>
-    :root, [data-theme="light"] {
-      --bg: #f8fafc;
-      --bg-surface: #ffffff;
-      --bg-card: #ffffff;
-      --primary: #1d4ed8;
-      --primary-hover: #1e40af;
-      --accent: #059669;
-      --accent-gold: #d97706;
-      --text: #0f172a;
-      --text-muted: #475569;
-      --border: rgba(15, 23, 42, 0.08);
-      --font-sans: 'Outfit', sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
-    }
+<style>
+:root, [data-theme="light"] {
+  --bg-page: #f8fafc;
+  --bg-card: #ffffff;
+  --text-main: #0f172a;
+  --text-muted: #334155;
+  --primary: #1d4ed8;
+  --primary-hover: #1e40af;
+  --accent-gold: #d97706;
+  --accent-green: #059669;
+  --border: rgba(15, 23, 42, 0.08);
+  --border-hover: rgba(29, 78, 216, 0.3);
+  --shadow-sm: 0 4px 12px rgba(15, 23, 42, 0.04);
+  --shadow-lg: 0 20px 40px rgba(15, 23, 42, 0.08);
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --font-sans: 'Outfit', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
 
-    [data-theme="dark"] {
-      --bg: #090d16;
-      --bg-surface: #111827;
-      --bg-card: #1f2937;
-      --primary: #3b82f6;
-      --primary-hover: #2563eb;
-      --accent: #10b981;
-      --accent-gold: #f59e0b;
-      --text: #f9fafb;
-      --text-muted: #9ca3af;
-      --border: rgba(255, 255, 255, 0.1);
-    }
+[data-theme="dark"] {
+  --bg-page: #090d16;
+  --bg-card: #111827;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --primary: #3b82f6;
+  --primary-hover: #2563eb;
+  --accent-gold: #f59e0b;
+  --accent-green: #10b981;
+  --border: rgba(255, 255, 255, 0.1);
+  --border-hover: rgba(59, 130, 246, 0.4);
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.5);
+  --glass-bg: rgba(17, 24, 39, 0.85);
+}
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: var(--font-sans); background: var(--bg); color: var(--text); line-height: 1.6; min-height: 100vh; display: flex; flex-direction: column; transition: background 0.2s, color 0.2s; }
-    
-    .nav { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 2rem; max-width: 1200px; margin: 0 auto; width: 100%; border-bottom: 1px solid var(--border); }
-    .brand { font-size: 1.35rem; font-weight: 800; color: var(--text); text-decoration: none; display: flex; align-items: center; gap: 0.6rem; }
-    .brand i { color: var(--accent-gold); }
-    .nav-links { display: flex; gap: 1.5rem; align-items: center; }
-    .nav-link { color: var(--text-muted); text-decoration: none; font-weight: 500; transition: color 0.2s; }
-    .nav-link:hover { color: var(--text); }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); background-color: var(--bg-page); color: var(--text-main); line-height: 1.6; overflow-x: hidden; transition: background 0.2s, color 0.2s; }
 
-    .theme-toggle-btn { background: transparent; border: 1px solid var(--border); color: var(--text); padding: 0.55rem 0.85rem; border-radius: 12px; cursor: pointer; font-size: 1rem; transition: background 0.2s; }
-    .theme-toggle-btn:hover { background: rgba(125, 125, 125, 0.1); }
+header.top-bar { display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 2rem; background: var(--glass-bg); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); max-width: 1200px; margin: 0 auto; }
+.brand-link { font-size: 1.25rem; font-weight: 900; color: var(--text-main); text-decoration: none; display: flex; align-items: center; gap: 0.6rem; }
+.brand-link i { color: var(--accent-gold); }
 
-    .btn-primary { background: linear-gradient(135deg, var(--primary), #1d4ed8); color: white !important; padding: 0.75rem 1.75rem; border-radius: 99px; text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 0.5rem; transition: transform 0.2s, box-shadow 0.2s; border: none; cursor: pointer; }
-    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(29, 78, 216, 0.35); }
+.top-actions { display: flex; align-items: center; gap: 1rem; }
+.theme-toggle-btn { background: transparent; border: 1px solid var(--border); color: var(--text-main); padding: 0.45rem 0.85rem; border-radius: 10px; cursor: pointer; font-size: 0.95rem; transition: background 0.2s; }
+.theme-toggle-btn:hover { background: rgba(125, 125, 125, 0.1); }
 
-    .hero { text-align: center; padding: 5rem 1.5rem 3rem; max-width: 900px; margin: 0 auto; }
-    .badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(245, 158, 11, 0.12); color: var(--accent-gold); border: 1px solid rgba(245, 158, 11, 0.3); padding: 0.4rem 1rem; border-radius: 99px; font-size: 0.85rem; font-weight: 600; margin-bottom: 1.5rem; }
-    .hero h1 { font-size: 3.25rem; font-weight: 800; line-height: 1.15; margin-bottom: 1.25rem; }
-    .hero p { font-size: 1.2rem; color: var(--text-muted); max-width: 680px; margin: 0 auto 2.5rem; }
+.btn-primary { background: linear-gradient(135deg, var(--primary), #1e40af); color: white !important; padding: 0.65rem 1.5rem; border-radius: 99px; text-decoration: none; font-weight: 700; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 0.5rem; transition: transform 0.2s, box-shadow 0.2s; border: none; cursor: pointer; }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(29, 78, 216, 0.35); }
 
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; max-width: 1200px; margin: 3rem auto; padding: 0 1.5rem; }
-    .card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; transition: transform 0.2s, border-color 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
-    .card:hover { transform: translateY(-4px); border-color: rgba(59, 130, 246, 0.4); }
-    .card-icon { width: 50px; height: 50px; border-radius: 12px; background: rgba(59, 130, 246, 0.15); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 1.25rem; }
-    .card h3 { font-size: 1.25rem; margin-bottom: 0.75rem; font-weight: 700; }
-    .card p { color: var(--text-muted); font-size: 0.95rem; }
+.hero { max-width: 1100px; margin: 0 auto; padding: 4rem 1.5rem 2rem; text-align: center; }
+.hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(245, 158, 11, 0.12); color: var(--accent-gold); border: 1px solid rgba(245, 158, 11, 0.3); padding: 0.4rem 1.2rem; border-radius: 99px; font-size: 0.82rem; font-weight: 800; letter-spacing: 0.5px; margin-bottom: 1.5rem; }
+.hero h1 { font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 900; line-height: 1.15; margin-bottom: 1.25rem; letter-spacing: -1px; }
+.hero h1 span { background: linear-gradient(135deg, var(--accent-gold), var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.hero p { font-size: 1.15rem; color: var(--text-muted); max-width: 700px; margin: 0 auto 2.5rem; }
 
-    .faq { max-width: 800px; margin: 4rem auto; padding: 0 1.5rem; }
-    .faq h2 { text-align: center; font-size: 2rem; margin-bottom: 2rem; }
-    .faq-item { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1rem; }
-    .faq-item h4 { font-size: 1.05rem; margin-bottom: 0.4rem; color: var(--text); }
-    .faq-item p { color: var(--text-muted); font-size: 0.9rem; }
+/* Interactive Position Size Preview Widget */
+.widget-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 24px; padding: 2rem; max-width: 850px; margin: 2rem auto 4rem; box-shadow: var(--shadow-lg); text-align: left; }
+.widget-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); }
+.widget-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem; }
+.input-group label { display: block; font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.4rem; }
+.input-group input { width: 100%; padding: 0.65rem 0.9rem; border-radius: 10px; border: 1px solid var(--border); background: var(--bg-page); color: var(--text-main); font-family: var(--font-mono); font-weight: 600; font-size: 0.95rem; }
+.result-banner { background: rgba(5, 150, 105, 0.1); border: 1px solid rgba(5, 150, 105, 0.25); border-radius: 14px; padding: 1.25rem; display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 1rem; }
+.result-item { text-align: center; }
+.result-label { font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+.result-val { font-size: 1.5rem; font-weight: 900; color: var(--accent-green); font-family: var(--font-mono); }
 
-    .cta-banner { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 24px; padding: 3.5rem 2rem; text-align: center; max-width: 1000px; margin: 3rem auto; box-shadow: 0 10px 30px rgba(0,0,0,0.04); }
-    .cta-banner h2 { font-size: 2.25rem; font-weight: 800; margin-bottom: 1rem; }
+/* Tools Grid */
+.grid-section { max-width: 1200px; margin: 3rem auto; padding: 0 1.5rem; }
+.section-head { text-align: center; margin-bottom: 3rem; }
+.section-head h2 { font-size: 2.25rem; font-weight: 800; margin-bottom: 0.5rem; }
 
-    footer { margin-top: auto; border-top: 1px solid var(--border); padding: 2rem; text-align: center; color: var(--text-muted); font-size: 0.9rem; }
-    footer a { color: var(--primary); text-decoration: none; }
+.tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.75rem; }
+.tool-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 2rem; transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; }
+.tool-card:hover { transform: translateY(-6px); border-color: var(--border-hover); box-shadow: var(--shadow-lg); }
+.tool-card-icon { width: 52px; height: 52px; border-radius: 14px; background: rgba(245, 158, 11, 0.12); color: var(--accent-gold); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 1.25rem; }
+.tool-card h3 { font-size: 1.3rem; font-weight: 800; margin-bottom: 0.75rem; }
+.tool-card p { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem; flex-grow: 1; }
 
-    @media (max-width: 768px) {
-      .hero h1 { font-size: 2.25rem; }
-      .nav { padding: 1rem; }
-    }
-  </style>
+footer { border-top: 1px solid var(--border); padding: 2.5rem 1.5rem; text-align: center; color: var(--text-muted); font-size: 0.9rem; margin-top: 4rem; }
+footer a { color: var(--primary); text-decoration: none; }
+</style>
 </head>
 <body>
 
-  <header class="nav">
-    <a href="../" class="brand"><i class="fa-solid fa-chart-line"></i> SHADER7 Trading Mastery</a>
-    <div class="nav-links">
-      <a href="../" class="nav-link">All Apps</a>
+  <header class="top-bar">
+    <a href="../" class="brand-link"><i class="fa-solid fa-chart-line"></i> SHADER7 Trading Mastery</a>
+    <div class="top-actions">
+      <a href="../index.html#tools" style="color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 0.9rem;">All Apps</a>
       <button onclick="window.toggleShader7Theme()" class="theme-toggle-btn" aria-label="Toggle Theme" title="Toggle Theme">
         <i class="fa-solid fa-moon"></i>
       </button>
-      <a href="app.html" class="btn-primary">Launch Platform <i class="fa-solid fa-arrow-right"></i></a>
+      <a href="app.html" class="btn-primary">Launch App <i class="fa-solid fa-arrow-right"></i></a>
     </div>
   </header>
 
   <main>
     <section class="hero">
-      <div class="badge"><i class="fa-solid fa-bolt"></i> 100% Free & Browser-Based</div>
-      <h1>Master Price Action, Risk Management & Trading Strategy</h1>
-      <p>An all-in-one educational workspace equipped with interactive guides, position sizing calculators, and risk discipline frameworks.</p>
-      <a href="app.html" class="btn-primary" style="font-size: 1.1rem; padding: 0.9rem 2.2rem;"><i class="fa-solid fa-play"></i> Open Interactive App</a>
+      <div class="hero-badge"><i class="fa-solid fa-shield-halved"></i> Risk Management Engine • Client-Side & Private</div>
+      <h1>Master Position Sizing & <span>Trading Strategy</span></h1>
+      <p>An all-in-one financial trading workspace equipped with price action e-books, automated lot-size calculators, and risk discipline frameworks.</p>
+      
+      <!-- Interactive Position Size Live Preview Widget -->
+      <div class="widget-box">
+        <div class="widget-header">
+          <div style="font-weight: 800; font-size: 1.05rem; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fa-solid fa-calculator" style="color: var(--accent-gold);"></i> Interactive Position Size Calculator
+          </div>
+          <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); background: var(--glass-bg); padding: 4px 10px; border-radius: 99px; border: 1px solid var(--border);">Live Demo</span>
+        </div>
+
+        <div class="widget-grid">
+          <div class="input-group">
+            <label>Account Balance ($)</label>
+            <input type="number" id="calc-acc" value="10000" oninput="updateDemoCalc()">
+          </div>
+          <div class="input-group">
+            <label>Risk Per Trade (%)</label>
+            <input type="number" id="calc-risk-pct" value="1.0" step="0.1" oninput="updateDemoCalc()">
+          </div>
+          <div class="input-group">
+            <label>Stop Loss (Pips / Points)</label>
+            <input type="number" id="calc-sl" value="25" oninput="updateDemoCalc()">
+          </div>
+        </div>
+
+        <div class="result-banner">
+          <div class="result-item">
+            <div class="result-label">Max Risk Amount</div>
+            <div class="result-val" id="res-risk-amt">$100.00</div>
+          </div>
+          <div class="result-item">
+            <div class="result-label">Recommended Units</div>
+            <div class="result-val" id="res-units" style="color: var(--primary);">40,000</div>
+          </div>
+          <div class="result-item">
+            <div class="result-label">Standard Lots</div>
+            <div class="result-val" id="res-lots" style="color: var(--accent-gold);">0.40</div>
+          </div>
+        </div>
+      </div>
     </section>
 
-    <section class="grid">
-      <div class="card">
-        <div class="card-icon"><i class="fa-solid fa-book-open"></i></div>
-        <h3>Comprehensive E-Book Reader</h3>
-        <p>Embedded structured guides covering candlestick patterns, market structure, trend confirmation, and discipline.</p>
+    <!-- Tools Grid -->
+    <section class="grid-section">
+      <div class="section-head">
+        <h2>Trading Mastery Modules</h2>
+        <p style="color: var(--text-muted);">Explore our structured trading education and capital preservation tools.</p>
       </div>
 
-      <div class="card">
-        <div class="card-icon" style="color: var(--accent); background: rgba(16, 185, 129, 0.15);"><i class="fa-solid fa-calculator"></i></div>
-        <h3>Risk & Position Size Calculator</h3>
-        <p>Calculate exact lot sizes and stop-loss levels to protect your trading capital before placing orders.</p>
-      </div>
+      <div class="tools-grid">
+        <div class="tool-card">
+          <div class="tool-card-icon"><i class="fa-solid fa-book-open"></i></div>
+          <h3>Structured E-Book Reader</h3>
+          <p>Interactive guides covering market structure, trend confirmations, supply/demand zones, and price action patterns.</p>
+          <a href="app.html?view=guide" class="btn-primary" style="margin-top: auto;">Explore Guides <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
 
-      <div class="card">
-        <div class="card-icon" style="color: var(--accent-gold); background: rgba(245, 158, 11, 0.15);"><i class="fa-solid fa-brain"></i></div>
-        <h3>Trading Psychology Framework</h3>
-        <p>Learn cognitive bias mitigation, emotional discipline, and execution checklists for consistent performance.</p>
-      </div>
-    </section>
+        <div class="tool-card">
+          <div class="tool-card-icon" style="color: var(--accent-green); background: rgba(5, 150, 105, 0.12);"><i class="fa-solid fa-scale-balanced"></i></div>
+          <h3>Risk & Position Size Engine</h3>
+          <p>Protect your trading account capital by calculating exact position sizes and stop-loss risk percentages before order entry.</p>
+          <a href="app.html?view=calculator" class="btn-primary" style="margin-top: auto; background: linear-gradient(135deg, var(--accent-green), #047857);">Launch Calculator <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
 
-    <section class="faq">
-      <h2>Frequently Asked Questions</h2>
-      <div class="faq-item">
-        <h4>Do I need to sign up or create an account?</h4>
-        <p>No account or registration is required. Everything runs locally inside your browser with complete privacy.</p>
+        <div class="tool-card">
+          <div class="tool-card-icon" style="color: var(--primary); background: rgba(29, 78, 216, 0.12);"><i class="fa-solid fa-brain"></i></div>
+          <h3>Trading Psychology Framework</h3>
+          <p>Checklists to eliminate emotional over-trading, FOMO, revenge trading, and maintain strict risk discipline.</p>
+          <a href="app.html?view=psychology" class="btn-primary" style="margin-top: auto;">Open Checklist <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
       </div>
-      <div class="faq-item">
-        <h4>Is this financial advice?</h4>
-        <p>No, this platform is an educational resource designed for learning market analysis, risk models, and calculation workflows.</p>
-      </div>
-    </section>
-
-    <section class="cta-banner">
-      <h2>Ready to Elevate Your Trading Skills?</h2>
-      <p style="color: var(--text-muted); margin-bottom: 2rem;">Access the full interactive toolkit instantly in your web browser.</p>
-      <a href="app.html" class="btn-primary" style="font-size: 1.1rem; padding: 0.9rem 2.2rem;"><i class="fa-solid fa-rocket"></i> Launch Trading Mastery App</a>
     </section>
   </main>
 
   <footer>
-    <p>&copy; 2026 SHADER7 Suite. Built for privacy, speed, and efficiency. <a href="../">View All Apps</a></p>
+    <p>&copy; 2026 SHADER7 Suite. Designed for traders & financial planners. <a href="../">View All Apps</a></p>
   </footer>
+
+  <script>
+    function updateDemoCalc() {
+      const acc = parseFloat(document.getElementById('calc-acc').value) || 0;
+      const riskPct = parseFloat(document.getElementById('calc-risk-pct').value) || 0;
+      const sl = parseFloat(document.getElementById('calc-sl').value) || 1;
+
+      const riskAmt = acc * (riskPct / 100);
+      const units = (riskAmt / sl) * 10000;
+      const lots = units / 100000;
+
+      document.getElementById('res-risk-amt').textContent = '$' + riskAmt.toFixed(2);
+      document.getElementById('res-units').textContent = Math.round(units).toLocaleString();
+      document.getElementById('res-lots').textContent = lots.toFixed(2);
+    }
+  </script>
 
 </body>
 </html>

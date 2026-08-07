@@ -1,6 +1,7 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
+  <script src="../../js/theme.js"></script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-FCJR8H4DME"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -850,13 +851,13 @@
     <!-- Tabbed Dashboard Selector -->
     <div class="dashboard-nav">
         <button class="dashboard-tab active" onclick="switchView('docs-view', this)">
-            ⚙️ Sinumerik Hub
+            âš™ï¸ Sinumerik Hub
         </button>
         <button class="dashboard-tab" onclick="switchView('turning-view', this)">
-            🌀 Turning WebApp (CYCLE95)
+            ðŸŒ€ Turning WebApp (CYCLE95)
         </button>
         <button class="dashboard-tab" onclick="switchView('tool-card-view', this)">
-            🗂️ Tool Offset Card
+            ðŸ—‚ï¸ Tool Offset Card
         </button>
     </div>
 
@@ -1306,7 +1307,7 @@ M17</pre>
 
 <footer style="width: 100%; border-top: 1px solid #334155; background-color: #0c1125; padding: 30px 16px; text-align: center; color: #94a3b8; font-size: 0.85rem; font-family: 'Inter', system-ui, -apple-system, sans-serif; margin-top: 40px; border-radius: 12px; margin-bottom: 20px;">
     <div style="max-width: 1120px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 15px;">
-        <p style="margin: 0;">&copy; <script>document.write(new Date().getFullYear())</script> SHADER7 • CNC Machinist Toolkit</p>
+        <p style="margin: 0;">&copy; <script>document.write(new Date().getFullYear())</script> SHADER7 â€¢ CNC Machinist Toolkit</p>
         <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 16px;">
             <a href="/" style="color: #94a3b8; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">Main Site</a>
             <a href="/about.html" style="color: #94a3b8; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">About Us</a>
@@ -1502,8 +1503,8 @@ function generateSiemensTurningCode() {
     container.innerHTML = `
         <div class="sim-controls-bar">
             <div class="sim-btn-group">
-                <button id="simPlayBtn" class="gcode-copy-btn" onclick="toggleTurningSim()" style="background: var(--primary); color: #01282c; border-color: var(--primary);">▶ Run</button>
-                <button class="gcode-copy-btn" onclick="resetTurningSim()">🔄 Reset</button>
+                <button id="simPlayBtn" class="gcode-copy-btn" onclick="toggleTurningSim()" style="background: var(--primary); color: #01282c; border-color: var(--primary);">â–¶ Run</button>
+                <button class="gcode-copy-btn" onclick="resetTurningSim()">ðŸ”„ Reset</button>
             </div>
             
             <div class="sim-block-monitor">
@@ -1681,7 +1682,7 @@ function resetTurningSim() {
         toolZ = 5;
     }
     
-    // ponytail: build material profile as a 0.5mm-resolution grid strictly within workpiece bounds [−visualLen, 0]
+    // ponytail: build material profile as a 0.5mm-resolution grid strictly within workpiece bounds [âˆ’visualLen, 0]
     materialCutProfile = [];
     const blankR = visualBlankDia / 2;
     const step = 0.5;
@@ -1699,7 +1700,7 @@ function resetTurningSim() {
     drawTurningFrame();
     
     const playBtn = document.getElementById("simPlayBtn");
-    if (playBtn) playBtn.textContent = "▶ Run";
+    if (playBtn) playBtn.textContent = "â–¶ Run";
     
     const monText = document.getElementById("simGCodeText");
     if (monText) monText.textContent = `G00 X${toolX.toFixed(2)} Z${toolZ.toFixed(2)}`;
@@ -1719,7 +1720,7 @@ function toggleTurningSim() {
 
     if (simActive) {
         stopTurningSim();
-        playBtn.textContent = "▶ Run";
+        playBtn.textContent = "â–¶ Run";
     } else {
         // ponytail: automatically reset profile when starting from the beginning
         if (activeStepIndex === 0 || activeStepIndex >= toolpathSteps.length) {
@@ -1727,12 +1728,12 @@ function toggleTurningSim() {
         }
         
         simActive = true;
-        playBtn.textContent = "⏸ Pause";
+        playBtn.textContent = "â¸ Pause";
         
         simInterval = setInterval(() => {
             if (activeStepIndex >= toolpathSteps.length) {
                 stopTurningSim();
-                playBtn.textContent = "▶ Run";
+                playBtn.textContent = "â–¶ Run";
                 activeStepIndex = 0;
                 return;
             }
@@ -1765,7 +1766,7 @@ function toggleTurningSim() {
 
 // Insert or update a node in the workpiece profile, strictly within workpiece bounds
 function insertProfileNode(z, x) {
-    // ponytail: hard clamp to workpiece — no nodes outside material
+    // ponytail: hard clamp to workpiece â€” no nodes outside material
     if (z < -visualLen - 0.01 || z > 0.01) return;
     z = Math.max(-visualLen, Math.min(0, z));
     
@@ -1797,7 +1798,7 @@ function updateMaterialCutMove(zStart, xStart, zEnd, xEnd) {
         xAtLo = xStart + tLo * (xEnd - xStart);
         xAtHi = xStart + tHi * (xEnd - xStart);
     } else {
-        // Constant Z move (face plunge) — use the smaller radius
+        // Constant Z move (face plunge) â€” use the smaller radius
         xAtLo = Math.min(xStart, xEnd);
         xAtHi = xAtLo;
     }
@@ -2226,3 +2227,4 @@ window.addEventListener('resize', () => {
 
 </body>
 </html>
+

@@ -1,145 +1,242 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FairShare | Smart Bill Splitter & Group Expense Calculator</title>
-  <meta name="description" content="Split group expenses, trips, dinners, and monthly rent effortlessly. 100% free client-side bill splitting app with minimal transactions settlement algorithm by SHADER7." />
-  <meta name="keywords" content="bill splitter, group expense calculator, splitwise alternative, trip expense calculator, FairShare, SHADER7" />
-  <meta name="author" content="SHADER7" />
-  <meta name="robots" content="index, follow" />
-  <link rel="canonical" href="https://shader7.com/fairshare/" />
+<script>
+    // ponytail: Ensure trailing slash for proper relative path resolution
+    if (window.location.protocol.startsWith('http') && !window.location.pathname.endsWith('/')) {
+        const pathParts = window.location.pathname.split('/');
+        const lastPart = pathParts[pathParts.length - 1];
+        if (lastPart && !lastPart.includes('.')) {
+            window.location.replace(window.location.pathname + '/' + window.location.search + window.location.hash);
+        }
+    }
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Open Graph -->
-  <meta property="og:title" content="FairShare | Smart Bill Splitter" />
-  <meta property="og:description" content="Calculate minimum balances and split group expenses without database registration." />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://shader7.com/fairshare/" />
+<title>FairShare | Free Group Expense & Bill Splitter Calculator</title>
+<meta name="description" content="Split group bills, restaurant checks, and shared expenses easily with friends. 100% free, client-side, zero signup by SHADER7.">
+<meta name="keywords" content="bill splitter, expense splitter, split group bills, FairShare, split restaurant check, SHADER7">
+<meta name="author" content="Nishikant Xalxo">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#2563eb">
+<link rel="canonical" href="https://shader7.com/fairshare/">
 
-  <!-- Fonts & Icons -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" />
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="FairShare | Group Expense & Bill Splitter">
+<meta property="og:description" content="Calculate equal or custom bill splits with tip adjustments right in your browser.">
+<meta property="og:url" content="https://shader7.com/fairshare/">
+<meta property="og:site_name" content="SHADER7">
 
-  <!-- Global Theme Manager -->
-  <script src="../js/theme.js"></script>
+<!-- Fonts & Icons -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" />
 
-  <script>
+<!-- Global Theme Manager -->
+<script src="../js/theme.js"></script>
+
+<script>
     // ponytail: auto-redirect deep links to app interface
     const params = new URLSearchParams(window.location.search);
-    if (params.has('group') || params.has('bill')) {
-      window.location.href = 'app.html' + window.location.search;
+    if (params.has('group') || params.has('bill') || params.has('app')) {
+        window.location.href = 'app.html' + window.location.search;
     }
-  </script>
+</script>
 
-  <style>
-    :root, [data-theme="light"] {
-      --bg: #f8fafc;
-      --bg-surface: #ffffff;
-      --primary: #059669;
-      --primary-hover: #047857;
-      --accent: #2563eb;
-      --text: #0f172a;
-      --text-muted: #475569;
-      --border: rgba(15, 23, 42, 0.08);
-      --font-main: 'Outfit', sans-serif;
-    }
+<style>
+:root, [data-theme="light"] {
+  --bg-page: #f8fafc;
+  --bg-card: #ffffff;
+  --text-main: #0f172a;
+  --text-muted: #334155;
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --accent-green: #059669;
+  --border: rgba(15, 23, 42, 0.08);
+  --border-hover: rgba(37, 99, 235, 0.3);
+  --shadow-sm: 0 4px 12px rgba(15, 23, 42, 0.04);
+  --shadow-lg: 0 20px 40px rgba(15, 23, 42, 0.08);
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --font-sans: 'Outfit', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
 
-    [data-theme="dark"] {
-      --bg: #090d16;
-      --bg-surface: #111827;
-      --primary: #10b981;
-      --primary-hover: #059669;
-      --accent: #3b82f6;
-      --text: #f9fafb;
-      --text-muted: #9ca3af;
-      --border: rgba(255, 255, 255, 0.1);
-    }
+[data-theme="dark"] {
+  --bg-page: #090d16;
+  --bg-card: #111827;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --primary: #3b82f6;
+  --primary-hover: #2563eb;
+  --accent-green: #10b981;
+  --border: rgba(255, 255, 255, 0.1);
+  --border-hover: rgba(59, 130, 246, 0.4);
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.5);
+  --glass-bg: rgba(17, 24, 39, 0.85);
+}
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: var(--font-main); background: var(--bg); color: var(--text); line-height: 1.6; min-height: 100vh; display: flex; flex-direction: column; transition: background 0.2s, color 0.2s; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); background-color: var(--bg-page); color: var(--text-main); line-height: 1.6; overflow-x: hidden; transition: background 0.2s, color 0.2s; }
 
-    .nav { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 2rem; max-width: 1200px; margin: 0 auto; width: 100%; border-bottom: 1px solid var(--border); }
-    .brand { font-size: 1.35rem; font-weight: 800; color: var(--text); text-decoration: none; display: flex; align-items: center; gap: 0.6rem; }
-    .brand i { color: var(--primary); }
+header.top-bar { display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 2rem; background: var(--glass-bg); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); max-width: 1200px; margin: 0 auto; }
+.brand-link { font-size: 1.25rem; font-weight: 900; color: var(--text-main); text-decoration: none; display: flex; align-items: center; gap: 0.6rem; }
+.brand-link i { color: var(--primary); }
 
-    .theme-toggle-btn { background: transparent; border: 1px solid var(--border); color: var(--text); padding: 0.55rem 0.85rem; border-radius: 12px; cursor: pointer; font-size: 1rem; transition: background 0.2s; }
-    .theme-toggle-btn:hover { background: rgba(125, 125, 125, 0.1); }
+.top-actions { display: flex; align-items: center; gap: 1rem; }
+.theme-toggle-btn { background: transparent; border: 1px solid var(--border); color: var(--text-main); padding: 0.45rem 0.85rem; border-radius: 10px; cursor: pointer; font-size: 0.95rem; transition: background 0.2s; }
+.theme-toggle-btn:hover { background: rgba(125, 125, 125, 0.1); }
 
-    .btn-primary { background: linear-gradient(135deg, var(--primary), var(--accent)); color: white !important; padding: 0.75rem 1.75rem; border-radius: 99px; text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 0.5rem; transition: transform 0.2s, box-shadow 0.2s; border: none; }
-    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(5, 150, 105, 0.35); }
+.btn-primary { background: linear-gradient(135deg, var(--primary), #1d4ed8); color: white !important; padding: 0.65rem 1.5rem; border-radius: 99px; text-decoration: none; font-weight: 700; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 0.5rem; transition: transform 0.2s, box-shadow 0.2s; border: none; cursor: pointer; }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35); }
 
-    .hero { text-align: center; padding: 5rem 1.5rem 3rem; max-width: 900px; margin: 0 auto; }
-    .badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(5, 150, 105, 0.12); color: var(--primary); border: 1px solid rgba(5, 150, 105, 0.3); padding: 0.4rem 1rem; border-radius: 99px; font-size: 0.85rem; font-weight: 600; margin-bottom: 1.5rem; }
-    .hero h1 { font-size: 3.25rem; font-weight: 800; line-height: 1.15; margin-bottom: 1.25rem; }
-    .hero p { font-size: 1.2rem; color: var(--text-muted); max-width: 680px; margin: 0 auto 2.5rem; }
+.hero { max-width: 1100px; margin: 0 auto; padding: 4rem 1.5rem 2rem; text-align: center; }
+.hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(37, 99, 235, 0.12); color: var(--primary); border: 1px solid rgba(37, 99, 235, 0.3); padding: 0.4rem 1.2rem; border-radius: 99px; font-size: 0.82rem; font-weight: 800; letter-spacing: 0.5px; margin-bottom: 1.5rem; }
+.hero h1 { font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 900; line-height: 1.15; margin-bottom: 1.25rem; letter-spacing: -1px; }
+.hero h1 span { background: linear-gradient(135deg, var(--primary), var(--accent-green)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.hero p { font-size: 1.15rem; color: var(--text-muted); max-width: 700px; margin: 0 auto 2.5rem; }
 
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; max-width: 1200px; margin: 3rem auto; padding: 0 1.5rem; }
-    .card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; transition: transform 0.2s, border-color 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
-    .card:hover { transform: translateY(-4px); border-color: rgba(5, 150, 105, 0.4); }
-    .card-icon { width: 50px; height: 50px; border-radius: 12px; background: rgba(5, 150, 105, 0.15); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 1.25rem; }
-    .card h3 { font-size: 1.25rem; margin-bottom: 0.75rem; font-weight: 700; }
-    .card p { color: var(--text-muted); font-size: 0.95rem; }
+/* Interactive Bill Split Demo Widget */
+.widget-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 24px; padding: 2rem; max-width: 850px; margin: 2rem auto 4rem; box-shadow: var(--shadow-lg); text-align: left; }
+.widget-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); }
+.widget-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem; }
+.input-group label { display: block; font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.4rem; }
+.input-group input { width: 100%; padding: 0.65rem 0.9rem; border-radius: 10px; border: 1px solid var(--border); background: var(--bg-page); color: var(--text-main); font-family: var(--font-mono); font-weight: 600; font-size: 0.95rem; }
+.result-banner { background: rgba(37, 99, 235, 0.1); border: 1px solid rgba(37, 99, 235, 0.25); border-radius: 14px; padding: 1.25rem; display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 1rem; }
+.result-item { text-align: center; }
+.result-label { font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+.result-val { font-size: 1.5rem; font-weight: 900; color: var(--primary); font-family: var(--font-mono); }
 
-    .cta-banner { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 24px; padding: 3.5rem 2rem; text-align: center; max-width: 1000px; margin: 3rem auto; box-shadow: 0 10px 30px rgba(0,0,0,0.04); }
-    .cta-banner h2 { font-size: 2.25rem; font-weight: 800; margin-bottom: 1rem; }
+/* Grid */
+.grid-section { max-width: 1200px; margin: 3rem auto; padding: 0 1.5rem; }
+.section-head { text-align: center; margin-bottom: 3rem; }
+.section-head h2 { font-size: 2.25rem; font-weight: 800; margin-bottom: 0.5rem; }
 
-    footer { margin-top: auto; border-top: 1px solid var(--border); padding: 2rem; text-align: center; color: var(--text-muted); font-size: 0.9rem; }
-    footer a { color: var(--primary); text-decoration: none; }
-  </style>
+.tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.75rem; }
+.tool-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 2rem; transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; }
+.tool-card:hover { transform: translateY(-6px); border-color: var(--border-hover); box-shadow: var(--shadow-lg); }
+.tool-card-icon { width: 52px; height: 52px; border-radius: 14px; background: rgba(37, 99, 235, 0.12); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 1.25rem; }
+.tool-card h3 { font-size: 1.3rem; font-weight: 800; margin-bottom: 0.75rem; }
+.tool-card p { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem; flex-grow: 1; }
+
+footer { border-top: 1px solid var(--border); padding: 2.5rem 1.5rem; text-align: center; color: var(--text-muted); font-size: 0.9rem; margin-top: 4rem; }
+footer a { color: var(--primary); text-decoration: none; }
+</style>
 </head>
 <body>
 
-  <header class="nav">
-    <a href="../" class="brand"><i class="fa-solid fa-scale-balanced"></i> FairShare</a>
-    <div style="display: flex; gap: 1rem; align-items: center;">
-      <a href="../" style="color: var(--text-muted); text-decoration: none;">All Apps</a>
+  <header class="top-bar">
+    <a href="../" class="brand-link"><i class="fa-solid fa-calculator"></i> FairShare Splitter</a>
+    <div class="top-actions">
+      <a href="../index.html#tools" style="color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 0.9rem;">All Apps</a>
       <button onclick="window.toggleShader7Theme()" class="theme-toggle-btn" aria-label="Toggle Theme" title="Toggle Theme">
         <i class="fa-solid fa-moon"></i>
       </button>
-      <a href="app.html" class="btn-primary">Split Bills Now <i class="fa-solid fa-arrow-right"></i></a>
+      <a href="app.html" class="btn-primary">Launch App <i class="fa-solid fa-arrow-right"></i></a>
     </div>
   </header>
 
   <main>
     <section class="hero">
-      <div class="badge"><i class="fa-solid fa-bolt"></i> Minimum Transaction Optimization</div>
-      <h1>Split Bills with Friends Easily & Accurately</h1>
-      <p>Calculates exact debt balances and minimizes repayment steps. Works 100% offline in your browser with zero logins.</p>
-      <a href="app.html" class="btn-primary" style="font-size: 1.1rem; padding: 0.9rem 2.2rem;"><i class="fa-solid fa-calculator"></i> Launch FairShare App</a>
+      <div class="hero-badge"><i class="fa-solid fa-users"></i> Instant Group Expense Calculator</div>
+      <h1>Split Bills & Shared Expenses <span>Fairly & Fast</span></h1>
+      <p>Calculate equal or custom bill splits, restaurant checks, tip percentages, and individual balances without account registration.</p>
+      
+      <!-- Interactive Bill Split Demo Widget -->
+      <div class="widget-box">
+        <div class="widget-header">
+          <div style="font-weight: 800; font-size: 1.05rem; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fa-solid fa-receipt" style="color: var(--primary);"></i> Live Bill Splitter Calculator
+          </div>
+          <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); background: var(--glass-bg); padding: 4px 10px; border-radius: 99px; border: 1px solid var(--border);">Live Demo</span>
+        </div>
+
+        <div class="widget-grid">
+          <div class="input-group">
+            <label>Total Bill ($)</label>
+            <input type="number" id="split-total" value="120.00" step="1" oninput="updateSplitDemo()">
+          </div>
+          <div class="input-group">
+            <label>Number of People</label>
+            <input type="number" id="split-people" value="4" min="1" oninput="updateSplitDemo()">
+          </div>
+          <div class="input-group">
+            <label>Tip (%)</label>
+            <input type="number" id="split-tip" value="15" step="1" oninput="updateSplitDemo()">
+          </div>
+        </div>
+
+        <div class="result-banner">
+          <div class="result-item">
+            <div class="result-label">Tip Amount</div>
+            <div class="result-val" id="res-tip-amt">$18.00</div>
+          </div>
+          <div class="result-item">
+            <div class="result-label">Total With Tip</div>
+            <div class="result-val" id="res-grand-total" style="color: var(--accent-green);">$138.00</div>
+          </div>
+          <div class="result-item">
+            <div class="result-label">Each Person Pays</div>
+            <div class="result-val" id="res-per-person" style="color: var(--primary);">$34.50</div>
+          </div>
+        </div>
+      </div>
     </section>
 
-    <section class="grid">
-      <div class="card">
-        <div class="card-icon"><i class="fa-solid fa-diagram-project"></i></div>
-        <h3>Smart Debt Simplification</h3>
-        <p>Advanced debt-matching algorithm reduces 10 separate group debts down to the fewest possible transactions.</p>
+    <!-- Grid -->
+    <section class="grid-section">
+      <div class="section-head">
+        <h2>Features Designed For Group Trips & Dinners</h2>
+        <p style="color: var(--text-muted);">Settle balances smoothly with zero awkward math.</p>
       </div>
 
-      <div class="card">
-        <div class="card-icon" style="color: var(--accent); background: rgba(37, 99, 235, 0.15);"><i class="fa-solid fa-coins"></i></div>
-        <h3>Multi-Currency Support</h3>
-        <p>Add expenses in any currency and calculate exact balances per person with itemized breakdown notes.</p>
-      </div>
+      <div class="tools-grid">
+        <div class="tool-card">
+          <div class="tool-card-icon"><i class="fa-solid fa-scale-balanced"></i></div>
+          <h3>Equal & Weighted Splitting</h3>
+          <p>Split checks evenly among friends or assign custom item amounts for individual menu choices.</p>
+          <a href="app.html" class="btn-primary" style="margin-top: auto;">Open App <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
 
-      <div class="card">
-        <div class="card-icon" style="color: #d97706; background: rgba(217, 119, 6, 0.15);"><i class="fa-solid fa-lock"></i></div>
-        <h3>100% Private</h3>
-        <p>Your expenses never get sent to a database server. Data stays strictly saved in your browser local storage.</p>
-      </div>
-    </section>
+        <div class="tool-card">
+          <div class="tool-card-icon" style="color: var(--accent-green); background: rgba(5, 150, 105, 0.12);"><i class="fa-solid fa-file-invoice-dollar"></i></div>
+          <h3>Tax & Tip Breakdown</h3>
+          <p>Automatically calculate proportioned tax and tip contributions per person accurately.</p>
+          <a href="app.html" class="btn-primary" style="margin-top: auto; background: linear-gradient(135deg, var(--accent-green), #047857);">Launch Calculator <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
 
-    <section class="cta-banner">
-      <h2>Settle Up Without the Stress</h2>
-      <p style="color: var(--text-muted); margin-bottom: 2rem;">Free forever, instant loading, and no account registration required.</p>
-      <a href="app.html" class="btn-primary" style="font-size: 1.1rem; padding: 0.9rem 2.2rem;"><i class="fa-solid fa-rocket"></i> Launch FairShare App</a>
+        <div class="tool-card">
+          <div class="tool-card-icon" style="color: #0284c7; background: rgba(2, 132, 199, 0.12);"><i class="fa-solid fa-share-nodes"></i></div>
+          <h3>Shareable Summary</h3>
+          <p>Generate clean receipt summaries to send directly over WhatsApp or private messages.</p>
+          <a href="app.html" class="btn-primary" style="margin-top: auto; background: linear-gradient(135deg, #0284c7, #0369a1);">Start Splitting <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+      </div>
     </section>
   </main>
 
   <footer>
-    <p>&copy; 2026 SHADER7 Suite. <a href="../">View All Apps</a></p>
+    <p>&copy; 2026 FairShare • SHADER7 Suite. <a href="../">View All Apps</a></p>
   </footer>
+
+  <script>
+    function updateSplitDemo() {
+      const total = parseFloat(document.getElementById('split-total').value) || 0;
+      const people = parseInt(document.getElementById('split-people').value) || 1;
+      const tipPct = parseFloat(document.getElementById('split-tip').value) || 0;
+
+      const tipAmt = total * (tipPct / 100);
+      const grandTotal = total + tipAmt;
+      const perPerson = grandTotal / Math.max(1, people);
+
+      document.getElementById('res-tip-amt').textContent = '$' + tipAmt.toFixed(2);
+      document.getElementById('res-grand-total').textContent = '$' + grandTotal.toFixed(2);
+      document.getElementById('res-per-person').textContent = '$' + perPerson.toFixed(2);
+    }
+  </script>
 
 </body>
 </html>

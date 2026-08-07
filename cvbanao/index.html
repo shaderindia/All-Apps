@@ -1,105 +1,142 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CV Banao | Free ATS Resume Builder & Professional CV Generator</title>
-  <meta name="description" content="Build ATS-friendly, professional resumes and CVs online in minutes. Free, zero registration, custom templates, and instant PDF download by SHADER7." />
-  <meta name="keywords" content="ATS resume builder, free CV generator, professional resume templates, ATS resume score, CV Banao, SHADER7" />
-  <meta name="author" content="SHADER7" />
-  <meta name="robots" content="index, follow" />
-  <link rel="canonical" href="https://shader7.com/cvbanao/" />
+<script>
+    // ponytail: Ensure trailing slash for proper relative path resolution
+    if (window.location.protocol.startsWith('http') && !window.location.pathname.endsWith('/')) {
+        const pathParts = window.location.pathname.split('/');
+        const lastPart = pathParts[pathParts.length - 1];
+        if (lastPart && !lastPart.includes('.')) {
+            window.location.replace(window.location.pathname + '/' + window.location.search + window.location.hash);
+        }
+    }
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Open Graph -->
-  <meta property="og:title" content="CV Banao | Free ATS Resume Builder" />
-  <meta property="og:description" content="Create ATS-optimized resumes with live preview, custom templates, and PDF export." />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://shader7.com/cvbanao/" />
+<title>CV Banao | Free ATS Resume Builder & Professional CV Maker</title>
+<meta name="description" content="Build modern, ATS-friendly resumes and CVs in minutes. 100% free, zero signup, instant PDF export with recruiter-approved templates by SHADER7.">
+<meta name="keywords" content="ATS resume builder, free CV maker, CV Banao, resume templates, ATS resume scanner, PDF resume export, SHADER7">
+<meta name="author" content="Nishikant Xalxo">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#4f46e5">
+<link rel="canonical" href="https://shader7.com/cvbanao/">
 
-  <!-- Fonts & Icons -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" />
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="CV Banao | Free ATS Resume Builder">
+<meta property="og:description" content="Create ATS-compliant resumes with instant PDF export and professional recruiter templates right in your browser.">
+<meta property="og:url" content="https://shader7.com/cvbanao/">
+<meta property="og:site_name" content="SHADER7">
 
-  <!-- Global Theme Manager -->
-  <script src="../js/theme.js"></script>
+<!-- Fonts & Icons -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" />
 
-  <!-- Real Lottie Web Component Player -->
-  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+<!-- Global Theme Manager -->
+<script src="../js/theme.js"></script>
 
-  <script>
+<!-- Real Lottie Component -->
+<script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+
+<script>
     // ponytail: auto-redirect deep links to app interface
     const params = new URLSearchParams(window.location.search);
-    if (params.has('template') || params.has('edit') || params.has('resumeId')) {
-      window.location.href = 'app.html' + window.location.search;
+    if (params.has('template') || params.has('edit') || params.has('resumeId') || params.has('app')) {
+        window.location.href = 'app.html' + window.location.search;
     }
-  </script>
+</script>
 
-  <style>
-    :root, [data-theme="light"] {
-      --bg: #f8fafc;
-      --bg-surface: #ffffff;
-      --primary: #4f46e5;
-      --primary-hover: #4338ca;
-      --accent: #0284c7;
-      --accent-green: #059669;
-      --text: #0f172a;
-      --text-muted: #475569;
-      --border: rgba(15, 23, 42, 0.08);
-      --font-main: 'Outfit', sans-serif;
-    }
+<style>
+:root, [data-theme="light"] {
+  --bg-page: #f8fafc;
+  --bg-card: #ffffff;
+  --text-main: #0f172a;
+  --text-muted: #334155;
+  --primary: #4f46e5;
+  --primary-hover: #4338ca;
+  --accent: #0284c7;
+  --border: rgba(15, 23, 42, 0.08);
+  --border-hover: rgba(79, 70, 229, 0.3);
+  --shadow-sm: 0 4px 12px rgba(15, 23, 42, 0.04);
+  --shadow-lg: 0 20px 40px rgba(15, 23, 42, 0.08);
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --font-sans: 'Outfit', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
 
-    [data-theme="dark"] {
-      --bg: #0b0f19;
-      --bg-surface: #131b2e;
-      --primary: #6366f1;
-      --primary-hover: #4f46e5;
-      --accent: #06b6d4;
-      --accent-green: #10b981;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
-      --border: rgba(255, 255, 255, 0.08);
-    }
+[data-theme="dark"] {
+  --bg-page: #090d16;
+  --bg-card: #111827;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --primary: #6366f1;
+  --primary-hover: #4f46e5;
+  --accent: #38bdf8;
+  --border: rgba(255, 255, 255, 0.1);
+  --border-hover: rgba(99, 102, 241, 0.4);
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.5);
+  --glass-bg: rgba(17, 24, 39, 0.85);
+}
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: var(--font-main); background: var(--bg); color: var(--text); line-height: 1.6; min-height: 100vh; display: flex; flex-direction: column; transition: background 0.2s, color 0.2s; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); background-color: var(--bg-page); color: var(--text-main); line-height: 1.6; overflow-x: hidden; transition: background 0.2s, color 0.2s; }
 
-    .nav { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 2rem; max-width: 1200px; margin: 0 auto; width: 100%; border-bottom: 1px solid var(--border); }
-    .brand { font-size: 1.35rem; font-weight: 800; color: var(--text); text-decoration: none; display: flex; align-items: center; gap: 0.6rem; }
-    .brand i { color: var(--primary); }
+header.top-bar { display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 2rem; background: var(--glass-bg); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); max-width: 1200px; margin: 0 auto; }
+.brand-link { font-size: 1.25rem; font-weight: 900; color: var(--text-main); text-decoration: none; display: flex; align-items: center; gap: 0.6rem; }
+.brand-link i { color: var(--primary); }
 
-    .theme-toggle-btn { background: transparent; border: 1px solid var(--border); color: var(--text); padding: 0.55rem 0.85rem; border-radius: 12px; cursor: pointer; font-size: 1rem; transition: background 0.2s; }
-    .theme-toggle-btn:hover { background: rgba(125, 125, 125, 0.1); }
+.top-actions { display: flex; align-items: center; gap: 1rem; }
+.theme-toggle-btn { background: transparent; border: 1px solid var(--border); color: var(--text-main); padding: 0.45rem 0.85rem; border-radius: 10px; cursor: pointer; font-size: 0.95rem; transition: background 0.2s; }
+.theme-toggle-btn:hover { background: rgba(125, 125, 125, 0.1); }
 
-    .btn-primary { background: linear-gradient(135deg, var(--primary), var(--accent)); color: white !important; padding: 0.75rem 1.75rem; border-radius: 99px; text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 0.5rem; transition: transform 0.2s, box-shadow 0.2s; border: none; }
-    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(79, 70, 229, 0.4); }
+.btn-primary { background: linear-gradient(135deg, var(--primary), #4338ca); color: white !important; padding: 0.65rem 1.5rem; border-radius: 99px; text-decoration: none; font-weight: 700; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 0.5rem; transition: transform 0.2s, box-shadow 0.2s; border: none; cursor: pointer; }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(79, 70, 229, 0.35); }
 
-    .hero { text-align: center; padding: 5rem 1.5rem 3rem; max-width: 900px; margin: 0 auto; }
-    .badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(2, 132, 199, 0.12); color: var(--accent); border: 1px solid rgba(2, 132, 199, 0.3); padding: 0.4rem 1rem; border-radius: 99px; font-size: 0.85rem; font-weight: 600; margin-bottom: 1.5rem; }
-    .hero h1 { font-size: 3.25rem; font-weight: 800; line-height: 1.15; margin-bottom: 1.25rem; }
-    .hero p { font-size: 1.2rem; color: var(--text-muted); max-width: 680px; margin: 0 auto 2.5rem; }
+.hero { max-width: 1100px; margin: 0 auto; padding: 4rem 1.5rem 2rem; text-align: center; }
+.hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(79, 70, 229, 0.12); color: var(--primary); border: 1px solid rgba(79, 70, 229, 0.3); padding: 0.4rem 1.2rem; border-radius: 99px; font-size: 0.82rem; font-weight: 800; letter-spacing: 0.5px; margin-bottom: 1.5rem; }
+.hero h1 { font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 900; line-height: 1.15; margin-bottom: 1.25rem; letter-spacing: -1px; }
+.hero h1 span { background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.hero p { font-size: 1.15rem; color: var(--text-muted); max-width: 700px; margin: 0 auto 2rem; }
 
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; max-width: 1200px; margin: 3rem auto; padding: 0 1.5rem; }
-    .card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; transition: transform 0.2s, border-color 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
-    .card:hover { transform: translateY(-4px); border-color: rgba(79, 70, 229, 0.4); }
-    .card-icon { width: 50px; height: 50px; border-radius: 12px; background: rgba(79, 70, 229, 0.15); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 1.25rem; }
-    .card h3 { font-size: 1.25rem; margin-bottom: 0.75rem; font-weight: 700; }
-    .card p { color: var(--text-muted); font-size: 0.95rem; }
+/* Interactive Template Switcher Widget */
+.template-widget { background: var(--bg-card); border: 1px solid var(--border); border-radius: 24px; padding: 2rem; max-width: 900px; margin: 2rem auto 4rem; box-shadow: var(--shadow-lg); text-align: left; }
+.widget-controls { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1.5rem; justify-content: center; }
+.tmpl-btn { background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 0.5rem 1.1rem; border-radius: 10px; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
+.tmpl-btn.active, .tmpl-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
 
-    .cta-banner { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 24px; padding: 3.5rem 2rem; text-align: center; max-width: 1000px; margin: 3rem auto; box-shadow: 0 10px 30px rgba(0,0,0,0.04); }
-    .cta-banner h2 { font-size: 2.25rem; font-weight: 800; margin-bottom: 1rem; }
+.preview-stage { background: #f1f5f9; border-radius: 16px; border: 1px solid var(--border); padding: 2rem; min-height: 280px; display: flex; gap: 1.5rem; transition: all 0.3s; }
+[data-theme="dark"] .preview-stage { background: #0b1120; }
+.preview-col { flex: 1; background: white; border-radius: 8px; padding: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); color: #1e293b; font-size: 0.75rem; }
+.preview-line { height: 8px; background: #cbd5e1; border-radius: 4px; margin-bottom: 8px; }
+.preview-line.title { height: 14px; background: #4f46e5; width: 60%; margin-bottom: 14px; }
+.preview-line.sub { height: 10px; background: #94a3b8; width: 40%; margin-bottom: 12px; }
 
-    footer { margin-top: auto; border-top: 1px solid var(--border); padding: 2rem; text-align: center; color: var(--text-muted); font-size: 0.9rem; }
-    footer a { color: var(--accent); text-decoration: none; }
-  </style>
+/* Grid */
+.grid-section { max-width: 1200px; margin: 3rem auto; padding: 0 1.5rem; }
+.section-head { text-align: center; margin-bottom: 3rem; }
+.section-head h2 { font-size: 2.25rem; font-weight: 800; margin-bottom: 0.5rem; }
+
+.tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.75rem; }
+.tool-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 2rem; transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; }
+.tool-card:hover { transform: translateY(-6px); border-color: var(--border-hover); box-shadow: var(--shadow-lg); }
+.tool-card-icon { width: 52px; height: 52px; border-radius: 14px; background: rgba(79, 70, 229, 0.12); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 1.25rem; }
+.tool-card h3 { font-size: 1.3rem; font-weight: 800; margin-bottom: 0.75rem; }
+.tool-card p { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem; flex-grow: 1; }
+
+footer { border-top: 1px solid var(--border); padding: 2.5rem 1.5rem; text-align: center; color: var(--text-muted); font-size: 0.9rem; margin-top: 4rem; }
+footer a { color: var(--primary); text-decoration: none; }
+</style>
 </head>
 <body>
 
-  <header class="nav">
-    <a href="../" class="brand"><i class="fa-solid fa-file-invoice"></i> CV Banao</a>
-    <div style="display: flex; gap: 1rem; align-items: center;">
-      <a href="../" style="color: var(--text-muted); text-decoration: none;">All Apps</a>
+  <header class="top-bar">
+    <a href="../" class="brand-link"><i class="fa-solid fa-file-invoice"></i> CV Banao ATS Builder</a>
+    <div class="top-actions">
+      <a href="../index.html#tools" style="color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 0.9rem;">All Apps</a>
       <button onclick="window.toggleShader7Theme()" class="theme-toggle-btn" aria-label="Toggle Theme" title="Toggle Theme">
         <i class="fa-solid fa-moon"></i>
       </button>
@@ -109,48 +146,118 @@
 
   <main>
     <section class="hero">
-      <div class="badge"><i class="fa-solid fa-shield-halved"></i> 100% Free & Private — No Signup</div>
-      <h1>Create ATS-Friendly Resumes That Get You Hired</h1>
+      <div class="hero-badge"><i class="fa-solid fa-shield-halved"></i> 100% Free & Client-Side • Zero Signup</div>
+      <h1>Create ATS-Friendly Resumes <span>That Land Interviews</span></h1>
       <p>Design modern, recruiter-approved CVs in minutes with automated layout engine, instant PDF export, and built-in ATS keyword guidelines.</p>
       
       <!-- Real Web Lottie Resume Document Scan Animation -->
-      <div style="max-width: 320px; margin: 1.5rem auto; display: flex; justify-content: center;">
-        <lottie-player src="https://assets8.lottiefiles.com/packages/lf20_1L4672.json" background="transparent" speed="1" style="width: 260px; height: 180px;" loop autoplay></lottie-player>
+      <div style="max-width: 320px; margin: 1rem auto; display: flex; justify-content: center;">
+        <lottie-player src="https://assets8.lottiefiles.com/packages/lf20_1L4672.json" background="transparent" speed="1" style="width: 260px; height: 160px;" loop autoplay></lottie-player>
       </div>
 
-      <a href="app.html" class="btn-primary" style="font-size: 1.1rem; padding: 0.9rem 2.2rem;"><i class="fa-solid fa-pen-to-square"></i> Open Resume Builder App</a>
+      <!-- Interactive Template Live Switcher Widget -->
+      <div class="template-widget">
+        <div style="text-align: center; margin-bottom: 1rem;">
+          <div style="font-weight: 800; font-size: 1.05rem; display: inline-flex; align-items: center; gap: 0.5rem;">
+            <i class="fa-solid fa-layer-group" style="color: var(--primary);"></i> Recruiter-Approved Layout Switcher
+          </div>
+        </div>
+
+        <div class="widget-controls">
+          <button class="tmpl-btn active" onclick="switchTemplate('modern', this)">Modern Single-Col</button>
+          <button class="tmpl-btn" onclick="switchTemplate('executive', this)">Executive Double-Col</button>
+          <button class="tmpl-btn" onclick="switchTemplate('minimal', this)">Minimalist Tech</button>
+        </div>
+
+        <div class="preview-stage" id="stage-box">
+          <div class="preview-col">
+            <div class="preview-line title"></div>
+            <div class="preview-line sub"></div>
+            <div class="preview-line" style="width: 90%;"></div>
+            <div class="preview-line" style="width: 80%;"></div>
+            <div class="preview-line" style="width: 85%;"></div>
+            <div class="preview-line" style="width: 70%;"></div>
+          </div>
+        </div>
+      </div>
     </section>
 
-    <section class="grid">
-      <div class="card">
-        <div class="card-icon"><i class="fa-solid fa-robot"></i></div>
-        <h3>ATS Optimization</h3>
-        <p>Clean single/double column structure engineered to pass Applicant Tracking Systems with high parsing accuracy.</p>
+    <!-- Features Grid -->
+    <section class="grid-section">
+      <div class="section-head">
+        <h2>Built For Recruiter ATS Systems</h2>
+        <p style="color: var(--text-muted);">Ensure your resume passes automated screening software with maximum compliance.</p>
       </div>
 
-      <div class="card">
-        <div class="card-icon" style="color: var(--accent); background: rgba(2, 132, 199, 0.15);"><i class="fa-solid fa-layer-group"></i></div>
-        <h3>5 Professional Templates</h3>
-        <p>Choose from Executive, Minimal, Modern, Tech, and Creative templates tailored for your industry.</p>
-      </div>
+      <div class="tools-grid">
+        <div class="tool-card">
+          <div class="tool-card-icon"><i class="fa-solid fa-robot"></i></div>
+          <h3>ATS Parsing Engine</h3>
+          <p>Clean structural HTML/PDF formatting engineered to parse seamlessly into Greenhouse, Lever, Workday, and Taleo.</p>
+          <a href="app.html?template=1" class="btn-primary" style="margin-top: auto;">Use Template 1 <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
 
-      <div class="card">
-        <div class="card-icon" style="color: var(--accent-green); background: rgba(5, 150, 105, 0.15);"><i class="fa-solid fa-file-pdf"></i></div>
-        <h3>Instant PDF Download</h3>
-        <p>Export pixel-perfect PDF documents straight from your browser without watermarks or subscription fees.</p>
-      </div>
-    </section>
+        <div class="tool-card">
+          <div class="tool-card-icon" style="color: #0284c7; background: rgba(2, 132, 199, 0.12);"><i class="fa-solid fa-file-pdf"></i></div>
+          <h3>Instant Vector PDF Export</h3>
+          <p>Download crisp, selectable vector PDF documents instantly directly from your browser without file loss.</p>
+          <a href="app.html?template=2" class="btn-primary" style="margin-top: auto; background: linear-gradient(135deg, #0284c7, #0369a1);">Use Template 2 <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
 
-    <section class="cta-banner">
-      <h2>Build Your Professional Resume Today</h2>
-      <p style="color: var(--text-muted); margin-bottom: 2rem;">No sign up, no hidden charges, 100% browser local storage security.</p>
-      <a href="app.html" class="btn-primary" style="font-size: 1.1rem; padding: 0.9rem 2.2rem;"><i class="fa-solid fa-rocket"></i> Launch CV Banao App</a>
+        <div class="tool-card">
+          <div class="tool-card-icon" style="color: #059669; background: rgba(5, 150, 105, 0.12);"><i class="fa-solid fa-lock"></i></div>
+          <h3>100% Private & Local Storage</h3>
+          <p>Your confidential work history, phone number, and address are stored strictly in your browser's local memory.</p>
+          <a href="app.html" class="btn-primary" style="margin-top: auto; background: linear-gradient(135deg, #059669, #047857);">Start Building <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+      </div>
     </section>
   </main>
 
   <footer>
-    <p>&copy; 2026 SHADER7 Suite. <a href="../">View All Apps</a></p>
+    <p>&copy; 2026 CV Banao • SHADER7 Suite. <a href="../">View All Apps</a></p>
   </footer>
+
+  <script>
+    function switchTemplate(type, btnEl) {
+      document.querySelectorAll('.tmpl-btn').forEach(b => b.classList.remove('active'));
+      if (btnEl) btnEl.classList.add('active');
+
+      const stage = document.getElementById('stage-box');
+      if (type === 'modern') {
+        stage.innerHTML = `
+          <div class="preview-col">
+            <div class="preview-line title"></div>
+            <div class="preview-line sub"></div>
+            <div class="preview-line" style="width: 90%;"></div>
+            <div class="preview-line" style="width: 80%;"></div>
+            <div class="preview-line" style="width: 85%;"></div>
+          </div>
+        `;
+      } else if (type === 'executive') {
+        stage.innerHTML = `
+          <div class="preview-col" style="flex: 0.35; background: #e2e8f0;">
+            <div class="preview-line title" style="width: 80%; background: #334155;"></div>
+            <div class="preview-line" style="width: 70%;"></div>
+            <div class="preview-line" style="width: 90%;"></div>
+          </div>
+          <div class="preview-col" style="flex: 0.65;">
+            <div class="preview-line title" style="width: 50%;"></div>
+            <div class="preview-line" style="width: 95%;"></div>
+            <div class="preview-line" style="width: 85%;"></div>
+          </div>
+        `;
+      } else if (type === 'minimal') {
+        stage.innerHTML = `
+          <div class="preview-col" style="border-top: 4px solid #4f46e5;">
+            <div class="preview-line title" style="width: 40%;"></div>
+            <div class="preview-line" style="width: 100%;"></div>
+            <div class="preview-line" style="width: 90%;"></div>
+          </div>
+        `;
+      }
+    }
+  </script>
 
 </body>
 </html>
