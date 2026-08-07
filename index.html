@@ -15,8 +15,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>SHADER7 | Free Client-Side Web Apps & CNC Machinist Toolkit</title>
-<meta name="description" content="Suite of free, privacy-first, client-side web applications: CNC Calculators, 3D CAD Modeler, ATS Resume Builder, P2P File Transfer, Receipt Generator, and Image Compressor. Zero server uploads.">
-<meta name="keywords" content="SHADER7 web apps, client side web tools, CNC machinist tools, P2P file share, ATS resume builder, image compressor, financial calculators">
+<meta name="description" content="Suite of free, privacy-first, client-side web applications: Passport Photo Studio Pro, CNC Calculators, 3D CAD Modeler, ATS Resume Builder, P2P File Transfer, Receipt Generator, and Image Compressor. Zero server uploads.">
+<meta name="keywords" content="SHADER7 web apps, passport photo pro, client side web tools, CNC machinist tools, P2P file share, ATS resume builder, image compressor, financial calculators">
 <meta name="author" content="Nishikant Xalxo">
 <meta name="robots" content="index, follow">
 <meta name="theme-color" content="#1d4ed8">
@@ -45,6 +45,7 @@
 :root, [data-theme="light"] {
   --bg-page: #f8fafc;
   --bg-card: #ffffff;
+  --bg-subtle: #f1f5f9;
   --text-main: #0f172a;
   --text-muted: #334155;
   --primary: #1d4ed8;
@@ -63,6 +64,7 @@
 [data-theme="dark"] {
   --bg-page: #090d16;
   --bg-card: #111827;
+  --bg-subtle: #1e293b;
   --text-main: #f8fafc;
   --text-muted: #94a3b8;
   --primary: #3b82f6;
@@ -109,14 +111,19 @@ header.top-bar { position: relative; z-index: 10; display: flex; justify-content
 /* Tools Grid */
 .grid-section { position: relative; z-index: 10; max-width: 1200px; margin: 0 auto 4rem; padding: 0 1.5rem; }
 .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.75rem; }
-.tool-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 22px; padding: 2rem; transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; }
+.tool-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 22px; padding: 1.5rem; transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; overflow: hidden; }
 .tool-card:hover { transform: translateY(-6px); border-color: var(--border-hover); box-shadow: var(--shadow-lg); }
+
+.tool-card-banner { width: 100%; height: 160px; border-radius: 14px; overflow: hidden; margin-bottom: 1.25rem; background: var(--bg-subtle); border: 1px solid var(--border); }
+.tool-card-banner img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
+.tool-card:hover .tool-card-banner img { transform: scale(1.05); }
+
 .tool-card-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.25rem; }
-.tool-card-icon { width: 54px; height: 54px; border-radius: 16px; background: rgba(29, 78, 216, 0.1); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.45rem; }
+.tool-card-icon { width: 50px; height: 50px; border-radius: 14px; background: rgba(29, 78, 216, 0.1); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.35rem; }
 .tool-category-badge { font-size: 0.72rem; font-weight: 800; color: var(--text-muted); background: rgba(125, 125, 125, 0.1); padding: 0.25rem 0.65rem; border-radius: 99px; text-transform: uppercase; }
 
-.tool-card h3 { font-size: 1.35rem; font-weight: 800; margin-bottom: 0.65rem; }
-.tool-card p { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem; flex-grow: 1; }
+.tool-card h3 { font-size: 1.3rem; font-weight: 800; margin-bottom: 0.65rem; }
+.tool-card p { color: var(--text-muted); font-size: 0.94rem; margin-bottom: 1.5rem; flex-grow: 1; }
 
 .btn-primary { background: linear-gradient(135deg, var(--primary), #1e40af); color: white !important; padding: 0.65rem 1.4rem; border-radius: 99px; text-decoration: none; font-weight: 700; font-size: 0.88rem; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; transition: transform 0.2s, box-shadow 0.2s; border: none; cursor: pointer; width: fit-content; }
 .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(29, 78, 216, 0.35); }
@@ -150,13 +157,13 @@ footer a { color: var(--primary); text-decoration: none; }
     <div class="search-filter-box" id="tools">
       <div class="search-input-wrap">
         <i class="fa-solid fa-magnifying-glass"></i>
-        <input type="text" id="app-search" placeholder="Search applications (e.g. CNC, Resume, File Share, Tax)..." oninput="filterApps()">
+        <input type="text" id="app-search" placeholder="Search applications (e.g. Passport Photo, CNC, Resume, File Share, Tax)..." oninput="filterApps()">
       </div>
       <div class="filter-tabs">
         <button class="filter-tab active" onclick="setCategory('all', this)">All Apps</button>
+        <button class="filter-tab" onclick="setCategory('media', this)">Media & Photo</button>
         <button class="filter-tab" onclick="setCategory('engineering', this)">Engineering & CNC</button>
         <button class="filter-tab" onclick="setCategory('productivity', this)">Productivity & Finance</button>
-        <button class="filter-tab" onclick="setCategory('media', this)">Media & Utilities</button>
       </div>
     </div>
 
@@ -164,8 +171,25 @@ footer a { color: var(--primary); text-decoration: none; }
     <section class="grid-section">
       <div class="tools-grid" id="apps-container">
 
-        <!-- CNC Machinist -->
+        <!-- 1ST POSITION: Passport Photo Studio Pro -->
+        <div class="tool-card" data-cat="media" data-name="passport photo studio pro 2x2 35x45 printable grid biometric background suit">
+          <div class="tool-card-banner">
+            <img src="photopassportsizepro/banner.jpg" alt="Passport Photo Studio Pro Banner" loading="lazy">
+          </div>
+          <div class="tool-card-head">
+            <div class="tool-card-icon" style="color: #2563eb; background: rgba(37, 99, 235, 0.1);"><i class="fa-solid fa-camera"></i></div>
+            <span class="tool-category-badge">Media & Photo</span>
+          </div>
+          <h3>Passport Photo Studio Pro</h3>
+          <p>Advanced biometric passport photo editor with background cleanup, digital suit overlays, and 4x6 print grid export.</p>
+          <a href="photopassportsizepro/index.html" class="btn-primary">Open Studio Pro <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+
+        <!-- CNC Machinist Toolkit -->
         <div class="tool-card" data-cat="engineering" data-name="cnc machinist speeds feeds pcd gcode 3d cad">
+          <div class="tool-card-banner">
+            <img src="cnc-machinist/banner.jpg" alt="CNC Machinist Toolkit Banner" loading="lazy">
+          </div>
           <div class="tool-card-head">
             <div class="tool-card-icon"><i class="fa-solid fa-gear"></i></div>
             <span class="tool-category-badge">Engineering</span>
@@ -177,17 +201,23 @@ footer a { color: var(--primary); text-decoration: none; }
 
         <!-- ATS Resume Builder -->
         <div class="tool-card" data-cat="productivity" data-name="cv banao ats resume builder cv maker pdf">
+          <div class="tool-card-banner">
+            <img src="cvbanao/banner.png" alt="CV Banao ATS Resume Builder Banner" loading="lazy">
+          </div>
           <div class="tool-card-head">
             <div class="tool-card-icon" style="color: #4f46e5; background: rgba(79, 70, 229, 0.1);"><i class="fa-solid fa-file-invoice"></i></div>
             <span class="tool-category-badge">Productivity</span>
           </div>
           <h3>CV Banao ATS Resume Builder</h3>
-          <p>Create modern, recruiter-approved ATS resumes in minutes with automated layout engines and instant PDF export.</p>
+          <p>Create modern, recruiter-approved ATS resumes in minutes with 5 real templates, live editor, and instant PDF export.</p>
           <a href="cvbanao/index.html" class="btn-primary" style="background: linear-gradient(135deg, #4f46e5, #4338ca);">Build Resume <i class="fa-solid fa-arrow-right"></i></a>
         </div>
 
         <!-- P2P File Share -->
         <div class="tool-card" data-cat="media" data-name="airbeam pro p2p file share webrtc serverless transfer">
+          <div class="tool-card-banner">
+            <img src="fileshare/banner.jpg" alt="AirBeam Pro P2P File Share Banner" loading="lazy">
+          </div>
           <div class="tool-card-head">
             <div class="tool-card-icon" style="color: #0284c7; background: rgba(2, 132, 199, 0.1);"><i class="fa-solid fa-share-nodes"></i></div>
             <span class="tool-category-badge">Media & P2P</span>
@@ -199,6 +229,9 @@ footer a { color: var(--primary); text-decoration: none; }
 
         <!-- Trading Mastery -->
         <div class="tool-card" data-cat="productivity" data-name="trading mastery financial calculator position size risk management">
+          <div class="tool-card-banner">
+            <img src="bcal/banner.jpg" alt="Trading Mastery Banner" loading="lazy">
+          </div>
           <div class="tool-card-head">
             <div class="tool-card-icon" style="color: #d97706; background: rgba(217, 119, 6, 0.1);"><i class="fa-solid fa-chart-line"></i></div>
             <span class="tool-category-badge">Finance</span>
@@ -210,6 +243,9 @@ footer a { color: var(--primary); text-decoration: none; }
 
         <!-- Image Compressor -->
         <div class="tool-card" data-cat="media" data-name="image compressor reduce file size webp png jpeg">
+          <div class="tool-card-banner">
+            <img src="photocompressor/banner.jpg" alt="Client-Side Image Compressor Banner" loading="lazy">
+          </div>
           <div class="tool-card-head">
             <div class="tool-card-icon" style="color: #059669; background: rgba(5, 150, 105, 0.1);"><i class="fa-solid fa-file-image"></i></div>
             <span class="tool-category-badge">Media</span>
@@ -221,6 +257,9 @@ footer a { color: var(--primary); text-decoration: none; }
 
         <!-- Hourly Paycheck Calculator -->
         <div class="tool-card" data-cat="productivity" data-name="hourly salary calculator paycheck wage tax converter">
+          <div class="tool-card-banner">
+            <img src="hourlysalarycalculator/banner.jpg" alt="Hourly to Salary Calculator Banner" loading="lazy">
+          </div>
           <div class="tool-card-head">
             <div class="tool-card-icon" style="color: #059669; background: rgba(5, 150, 105, 0.1);"><i class="fa-solid fa-sack-dollar"></i></div>
             <span class="tool-category-badge">Finance</span>
@@ -230,19 +269,11 @@ footer a { color: var(--primary); text-decoration: none; }
           <a href="hourlysalarycalculator/index.html" class="btn-primary" style="background: linear-gradient(135deg, #059669, #047857);">Calculate Salary <i class="fa-solid fa-arrow-right"></i></a>
         </div>
 
-        <!-- Passport Photo Studio Pro -->
-        <div class="tool-card" data-cat="media" data-name="passport photo studio pro 2x2 35x45 printable grid biometric background suit">
-          <div class="tool-card-head">
-            <div class="tool-card-icon" style="color: #2563eb; background: rgba(37, 99, 235, 0.1);"><i class="fa-solid fa-camera"></i></div>
-            <span class="tool-category-badge">Media</span>
-          </div>
-          <h3>Passport Photo Studio Pro</h3>
-          <p>Advanced biometric passport photo editor with background cleanup, digital suit overlays, and 4x6 print grid export.</p>
-          <a href="photopassportsizepro/index.html" class="btn-primary">Open Studio Pro <i class="fa-solid fa-arrow-right"></i></a>
-        </div>
-
         <!-- Invoice Receipt Maker -->
         <div class="tool-card" data-cat="productivity" data-name="receiptpro invoice maker payment voucher pdf gst">
+          <div class="tool-card-banner">
+            <img src="receiptpro/banner.jpg" alt="ReceiptPro Invoice Maker Banner" loading="lazy">
+          </div>
           <div class="tool-card-head">
             <div class="tool-card-icon" style="color: #2563eb; background: rgba(37, 99, 235, 0.1);"><i class="fa-solid fa-file-invoice-dollar"></i></div>
             <span class="tool-category-badge">Productivity</span>
@@ -254,6 +285,9 @@ footer a { color: var(--primary); text-decoration: none; }
 
         <!-- Group Bill Splitter -->
         <div class="tool-card" data-cat="productivity" data-name="fairshare group expense bill splitter restaurant tip">
+          <div class="tool-card-banner">
+            <img src="fairshare/banner.jpg" alt="FairShare Bill Splitter Banner" loading="lazy">
+          </div>
           <div class="tool-card-head">
             <div class="tool-card-icon" style="color: #2563eb; background: rgba(37, 99, 235, 0.1);"><i class="fa-solid fa-calculator"></i></div>
             <span class="tool-category-badge">Finance</span>
