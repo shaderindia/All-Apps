@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal Triangle Solver</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --panel-bg: #1e293b;
+            --input-bg: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #6366f1;
+            --accent-hover: #4f46e5;
+            --calculated-glow: #38bdf8;
+            --danger: #ef4444;
+            --danger-bg: #450a0a;
+            --warning: #f59e0b;
+            --border: #475569;
+            --radius: 8px;
+            --font: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font);
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            padding: 1.25rem 2rem;
+            background-color: var(--panel-bg);
+            border-bottom: 1px solid var(--border);
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.25rem;
+        }
+
+        .container {
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+            padding: 1.5rem;
+            gap: 1.5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        @media (min-width: 900px) {
+            .container {
+                flex-direction: row;
+            }
+            .panel {
+                flex: 1;
+            }
+        }
+
+        .panel {
+            background-color: var(--panel-bg);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        /* Controls & Toggles */
+        .toggles {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .toggle-group {
+            display: flex;
+            background-color: var(--input-bg);
+            border-radius: var(--radius);
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .toggle-group label {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: background-color 0.2s, color 0.2s;
+            user-select: none;
+        }
+
+        .toggle-group input[type="radio"] {
+            display: none;
+        }
+
+        .toggle-group input[type="radio"]:checked + label {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        /* Inputs Grid */
+        .input-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.25rem;
+        }
+
+        @media (max-width: 600px) {
+            .input-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .input-group label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper span {
+            position: absolute;
+            left: 12px;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.85rem;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 0.75rem 0.75rem 0.75rem 7.2rem;
+            background-color: var(--input-bg);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            border-radius: var(--radius);
+            font-family: var(--font);
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s, background-color 0.2s;
+        }
+
+        .angle-input input[type="number"] {
+            padding-left: 2.5rem;
+        }
+
+        input[type="number"]:focus {
+            border-color: var(--accent);
+        }
+
+        input[type="number"][data-calculated="true"] {
+            color: var(--calculated-glow);
+            border-color: rgba(56, 189, 248, 0.4);
+            background-color: #1a283d;
+        }
+
+        input[type="number"]:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background-color: #1e293b;
+        }
+
+        /* Results Summary Card */
+        .results-card {
+            background-color: var(--input-bg);
+            border-radius: var(--radius);
+            padding: 1rem;
+            border: 1px solid var(--border);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+            font-size: 0.9rem;
+        }
+
+        .results-card div span {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .results-card div strong {
+            color: var(--calculated-glow);
+            float: right;
+        }
+
+        /* Buttons */
+        .actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        button {
+            flex: 1;
+            padding: 0.875rem;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: var(--font);
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--input-bg);
+        }
+
+        /* Output / Canvas */
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .canvas-container {
+            flex: 1;
+            min-height: 380px;
+            background-color: var(--input-bg);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        canvas {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .placeholder-text {
+            position: absolute;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            pointer-events: none;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: var(--radius);
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+            line-height: 1.4;
+            display: block;
+        }
+
+        .alert.hidden {
+            display: none !important;
+        }
+
+        .alert.error {
+            background-color: var(--danger-bg);
+            color: #fca5a5;
+            border: 1px solid var(--danger);
+        }
+        
+        .alert.warning {
+            background-color: #451a03;
+            color: #fcd34d;
+            border: 1px solid var(--warning);
+        }
+
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Universal Triangle Solver</h1>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Calculate missing sides, angles, area, and perimeter</p>
+    </header>
+
+    <div class="container">
+        <!-- Left Panel: Controls & Inputs -->
+        <div class="panel">
+            <div class="toggles">
+                <div class="toggle-group" id="mode-toggle">
+                    <input type="radio" id="mode-general" name="mode" value="general" checked>
+                    <label for="mode-general">General Triangle</label>
+                    <input type="radio" id="mode-right" name="mode" value="right">
+                    <label for="mode-right">Right-Angled</label>
+                </div>
+                <div class="toggle-group" id="unit-toggle">
+                    <input type="radio" id="unit-deg" name="unit" value="deg" checked>
+                    <label for="unit-deg">Degrees</label>
+                    <input type="radio" id="unit-rad" name="unit" value="rad">
+                    <label for="unit-rad">Radians</label>
+                </div>
+            </div>
+
+            <div class="input-grid">
+                <!-- Sides -->
+                <div class="input-group">
+                    <label>Sides (Length)</label>
+                    <div class="input-wrapper">
+                        <span id="lbl-side-a">Side a</span>
+                        <input type="number" id="side-a" placeholder="e.g. 10" step="any">
+                    </div>
+                    <div class="input-wrapper">
+                        <span id="lbl-side-b">Side b</span>
+                        <input type="number" id="side-b" placeholder="e.g. 15" step="any">
+                    </div>
+                    <div class="input-wrapper">
+                        <span id="lbl-side-c">Side c</span>
+                        <input type="number" id="side-c" placeholder="e.g. 20" step="any">
+                    </div>
+                </div>
+                
+                <!-- Angles -->
+                <div class="input-group">
+                    <label>Angles (<span id="angle-unit-label">Degrees</span>)</label>
+                    <div class="input-wrapper angle-input">
+                        <span>A</span>
+                        <input type="number" id="angle-A" placeholder="Opposite (a)" step="any">
+                    </div>
+                    <div class="input-wrapper angle-input">
+                        <span>B</span>
+                        <input type="number" id="angle-B" placeholder="Opposite (b)" step="any">
+                    </div>
+                    <div class="input-wrapper angle-input">
+                        <span>C</span>
+                        <input type="number" id="angle-C" placeholder="Opposite (c)" step="any">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary Results Card -->
+            <div class="results-card" id="results-card">
+                <div><span>Area:</span> <strong id="res-area">-</strong></div>
+                <div><span>Perimeter:</span> <strong id="res-perimeter">-</strong></div>
+                <div><span>Semi-Perimeter:</span> <strong id="res-s">-</strong></div>
+                <div><span>Type:</span> <strong id="res-type">-</strong></div>
+            </div>
+
+            <div class="actions">
+                <button class="btn-secondary" id="btn-clear">Clear All</button>
+                <button class="btn-primary" id="btn-solve">Solve Triangle</button>
+            </div>
+        </div>
+
+        <!-- Right Panel: Visuals & Outputs -->
+        <div class="panel right-panel">
+            <div id="alert-box" class="alert hidden"></div>
+            
+            <div class="canvas-container" id="canvas-wrapper">
+                <span class="placeholder-text" id="canvas-placeholder">Enter inputs to draw triangle</span>
+                <canvas id="triangle-canvas"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- DOM Elements ---
+        const modeRadios = document.getElementsByName('mode');
+        const unitRadios = document.getElementsByName('unit');
+        const unitLabel = document.getElementById('angle-unit-label');
+        const lblSideA = document.getElementById('lbl-side-a');
+        const lblSideB = document.getElementById('lbl-side-b');
+        const lblSideC = document.getElementById('lbl-side-c');
+        const inputs = {
+            a: document.getElementById('side-a'),
+            b: document.getElementById('side-b'),
+            c: document.getElementById('side-c'),
+            A: document.getElementById('angle-A'),
+            B: document.getElementById('angle-B'),
+            C: document.getElementById('angle-C')
+        };
+        const solveBtn = document.getElementById('btn-solve');
+        const clearBtn = document.getElementById('btn-clear');
+        const alertBox = document.getElementById('alert-box');
+        const canvas = document.getElementById('triangle-canvas');
+        const ctx = canvas.getContext('2d');
+        const canvasWrapper = document.getElementById('canvas-wrapper');
+        const canvasPlaceholder = document.getElementById('canvas-placeholder');
+
+        // Results Summary DOM
+        const resArea = document.getElementById('res-area');
+        const resPerimeter = document.getElementById('res-perimeter');
+        const resS = document.getElementById('res-s');
+        const resType = document.getElementById('res-type');
+
+        // --- Math Helpers ---
+        const EPSILON = 1e-7;
+        const deg2rad = d => d * Math.PI / 180;
+        const rad2deg = r => r * 180 / Math.PI;
+        const clamp = v => Math.max(-1, Math.min(1, v));
+        const acosD = v => rad2deg(Math.acos(clamp(v)));
+        const asinD = v => rad2deg(Math.asin(clamp(v)));
+        const cosD = d => Math.cos(deg2rad(d));
+        const sinD = d => Math.sin(deg2rad(d));
+
+        // --- State ---
+        let currentUnit = 'deg';
+        let currentMode = 'general';
+        let lastResult = null;
+        let lastUserProvidedKeys = new Set();
+
+        function updateLabels() {
+            if (currentMode === 'right') {
+                lblSideA.innerText = "Height (a)";
+                lblSideB.innerText = "Base (b)";
+                lblSideC.innerText = "Hypotenuse (c)";
+                inputs.a.placeholder = "Height";
+                inputs.b.placeholder = "Base";
+                inputs.c.placeholder = "Hypotenuse";
+            } else {
+                lblSideA.innerText = "Side a";
+                lblSideB.innerText = "Side b";
+                lblSideC.innerText = "Side c";
+                inputs.a.placeholder = "e.g. 10";
+                inputs.b.placeholder = "e.g. 15";
+                inputs.c.placeholder = "e.g. 20";
+            }
+        }
+
+        // --- Event Listeners ---
+        modeRadios.forEach(r => r.addEventListener('change', (e) => {
+            currentMode = e.target.value;
+            updateLabels();
+            clearCalculatedFields();
+            if (currentMode === 'right') {
+                inputs.C.value = currentUnit === 'deg' ? '90' : (Math.PI / 2).toFixed(6);
+                inputs.C.disabled = true;
+                inputs.C.removeAttribute('data-calculated');
+            } else {
+                inputs.C.disabled = false;
+                inputs.C.value = '';
+            }
+            clearErrors();
+            clearCanvas();
+            autoSolveIfReady();
+        }));
+
+        unitRadios.forEach(r => r.addEventListener('change', (e) => {
+            const newUnit = e.target.value;
+            if (newUnit === currentUnit) return;
+            
+            currentUnit = newUnit;
+            unitLabel.innerText = currentUnit === 'deg' ? 'Degrees' : 'Radians';
+            
+            if (currentMode === 'right') {
+                inputs.C.value = currentUnit === 'deg' ? '90' : (Math.PI / 2).toFixed(6);
+            }
+
+            if (lastResult) {
+                updateInputsAndSummary(lastResult, lastUserProvidedKeys);
+                drawTriangle(lastResult);
+            } else {
+                ['A', 'B', 'C'].forEach(angle => {
+                    if (inputs[angle].value !== '') {
+                        let val = parseFloat(inputs[angle].value);
+                        if (!isNaN(val)) {
+                            if (newUnit === 'rad') {
+                                inputs[angle].value = deg2rad(val).toFixed(6);
+                            } else {
+                                inputs[angle].value = rad2deg(val).toFixed(6);
+                            }
+                        }
+                    }
+                });
+            }
+        }));
+
+        Object.keys(inputs).forEach(key => {
+            inputs[key].addEventListener('input', (e) => {
+                e.target.removeAttribute('data-calculated');
+                clearCalculatedFields();
+                autoSolveIfReady();
+            });
+        });
+
+        function clearCalculatedFields() {
+            Object.values(inputs).forEach(input => {
+                if (input.getAttribute('data-calculated') === 'true') {
+                    input.value = '';
+                    input.removeAttribute('data-calculated');
+                }
+            });
+        }
+
+        clearBtn.addEventListener('click', () => {
+            Object.values(inputs).forEach(input => {
+                if (!input.disabled) {
+                    input.value = '';
+                    input.removeAttribute('data-calculated');
+                }
+            });
+            clearErrors();
+            clearCanvas();
+            resetSummary();
+            lastResult = null;
+            lastUserProvidedKeys = new Set();
+        });
+
+        solveBtn.addEventListener('click', () => {
+            clearErrors();
+            processAndSolve();
+        });
+
+        function autoSolveIfReady() {
+            let count = 0;
+            let sides = 0;
+            for (const key in inputs) {
+                if (inputs[key].value.trim() !== '') {
+                    count++;
+                    if (['a', 'b', 'c'].includes(key)) sides++;
+                }
+            }
+            if (count >= 3 && sides >= 1) {
+                clearErrors();
+                processAndSolve(true);
+            }
+        }
+
+        function resizeCanvas() {
+            const rect = canvasWrapper.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.scale(dpr, dpr);
+            canvas.style.width = `${rect.width}px`;
+            canvas.style.height = `${rect.height}px`;
+        }
+        
+        window.addEventListener('resize', () => {
+            if (lastResult) {
+                resizeCanvas();
+                drawTriangle(lastResult); 
+            }
+        });
+
+        // --- Core Solver Engine ---
+        function processAndSolve(isSilent = false) {
+            let vals = {};
+            let userProvidedKeys = new Set();
+            let countTotal = 0;
+            let countSides = 0;
+
+            for (const key in inputs) {
+                let strVal = inputs[key].value.trim();
+                
+                if (currentMode === 'right' && key === 'C') {
+                    vals[key] = 90; 
+                    countTotal++;
+                    continue;
+                }
+
+                if (strVal !== '' && inputs[key].getAttribute('data-calculated') !== 'true') {
+                    let v = parseFloat(strVal);
+                    if (isNaN(v) || v <= 0) return !isSilent && showError(`Value for ${key} must be a valid number greater than 0.`);
+                    
+                    if (['A', 'B', 'C'].includes(key)) {
+                        v = (currentUnit === 'rad') ? rad2deg(v) : v;
+                    } else {
+                        countSides++;
+                    }
+                    vals[key] = v;
+                    userProvidedKeys.add(key);
+                    countTotal++;
+                } else {
+                    vals[key] = null;
+                }
+            }
+
+            if (countSides === 0) return !isSilent && showError("You must provide at least 1 side length.");
+            if (countTotal < 3) return !isSilent && showError("Provide at least 3 values.");
+
+            let result = solveTriangle(vals);
+            
+            if (result.error) {
+                return !isSilent && showError(result.error);
+            }
+
+            if (result.ambiguousWarning) {
+                showWarning("Ambiguous Case (SSA): Two valid triangles exist. Displaying primary acute solution.");
+            }
+
+            lastUserProvidedKeys = userProvidedKeys;
+            updateInputsAndSummary(result, userProvidedKeys);
+            lastResult = result;
+            
+            canvasPlaceholder.style.display = 'none';
+            resizeCanvas();
+            drawTriangle(result);
+        }
+
+        // Rigorous Geometric Solver
+        function solveTriangle(initialVals) {
+            let { a, b, c, A, B, C } = initialVals;
+
+            if ((A && A >= 180) || (B && B >= 180) || (C && C >= 180)) return { error: "Angles must be less than 180°." };
+            if (A && B && C && Math.abs(A + B + C - 180) > EPSILON) return { error: "Provided angles do not sum to 180°." };
+
+            let loops = 0;
+            let progress = true;
+            let ambiguousWarning = false;
+
+            while (progress && loops < 5) {
+                progress = false;
+                loops++;
+
+                // 1. Find 3rd Angle
+                if (A && B && !C) { C = 180 - A - B; progress = true; }
+                if (A && C && !B) { B = 180 - A - C; progress = true; }
+                if (B && C && !A) { A = 180 - B - C; progress = true; }
+
+                if ((A && A <= 0) || (B && B <= 0) || (C && C <= 0)) return { error: "Angles mathematically impossible (≤ 0°)." };
+
+                // 2. Law of Cosines (SSS)
+                if (a && b && c) {
+                    if (!A) { A = acosD((b*b + c*c - a*a) / (2*b*c)); progress = true; }
+                    if (!B) { B = acosD((a*a + c*c - b*b) / (2*a*c)); progress = true; }
+                    if (!C) { C = acosD((a*a + b*b - c*c) / (2*a*b)); progress = true; }
+                }
+
+                // 3. Law of Cosines (SAS)
+                if (b && c && A && !a) { a = Math.sqrt(b*b + c*c - 2*b*c*cosD(A)); progress = true; }
+                if (a && c && B && !b) { b = Math.sqrt(a*a + c*c - 2*a*c*cosD(B)); progress = true; }
+                if (a && b && C && !c) { c = Math.sqrt(a*a + b*b - 2*a*b*cosD(C)); progress = true; }
+
+                // 4. Law of Sines (ASA, AAS)
+                if (A && B && C) {
+                    let ratio = (a ? a/sinD(A) : (b ? b/sinD(B) : (c ? c/sinD(C) : null)));
+                    if (ratio) {
+                        if (!a) { a = ratio * sinD(A); progress = true; }
+                        if (!b) { b = ratio * sinD(B); progress = true; }
+                        if (!c) { c = ratio * sinD(C); progress = true; }
+                    }
+                }
+
+                // 5. Law of Sines (SSA Ambiguous Case)
+                if (!progress) {
+                    let ratios = [ {s:a, ang:A, name:'A'}, {s:b, ang:B, name:'B'}, {s:c, ang:C, name:'C'} ];
+                    let known = ratios.find(r => r.s && r.ang);
+                    
+                    if (known) {
+                        let ratioVal = known.s / sinD(known.ang);
+                        
+                        for (let unk of ratios) {
+                            if (unk.s && !unk.ang) {
+                                let sinUnk = unk.s / ratioVal;
+                                if (sinUnk > 1 + EPSILON) return { error: "Mathematically impossible configuration." };
+                                if (sinUnk > 1) sinUnk = 1;
+
+                                let ang1 = asinD(sinUnk);
+                                let ang2 = 180 - ang1;
+
+                                let otherSum = ratios.filter(r => r.ang && r.name !== unk.name).reduce((sum, r) => sum + r.ang, 0);
+                                let valid1 = (otherSum + ang1 < 180 - EPSILON);
+                                let valid2 = (otherSum + ang2 < 180 - EPSILON);
+
+                                if (valid1 && valid2 && Math.abs(ang1 - ang2) > EPSILON) {
+                                    ambiguousWarning = true;
+                                    unk.ang = ang1;
+                                    if (unk.name === 'A') A = ang1;
+                                    if (unk.name === 'B') B = ang1;
+                                    if (unk.name === 'C') C = ang1;
+                                    progress = true;
+                                } else if (valid1) {
+                                    if (unk.name === 'A') A = ang1;
+                                    if (unk.name === 'B') B = ang1;
+                                    if (unk.name === 'C') C = ang1;
+                                    progress = true;
+                                } else if (valid2) {
+                                    if (unk.name === 'A') A = ang2;
+                                    if (unk.name === 'B') B = ang2;
+                                    if (unk.name === 'C') C = ang2;
+                                    progress = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (!a || !b || !c || !A || !B || !C) return { error: "Not enough information to solve uniquely." };
+            if (a + b <= c + EPSILON || a + c <= b + EPSILON || b + c <= a + EPSILON) return { error: "Triangle Inequality Violation: Sum of two sides must exceed the third." };
+
+            return { a, b, c, A, B, C, ambiguousWarning };
+        }
+
+        function updateInputsAndSummary(result, userProvidedKeys = new Set()) {
+            const setField = (key, val, isAngle = false) => {
+                if (!userProvidedKeys.has(key)) {
+                    if (isAngle) {
+                        inputs[key].value = currentUnit === 'rad' ? +deg2rad(val).toFixed(6) : +val.toFixed(4);
+                    } else {
+                        inputs[key].value = +val.toFixed(4);
+                    }
+                    inputs[key].setAttribute('data-calculated', 'true');
+                }
+            };
+
+            setField('a', result.a);
+            setField('b', result.b);
+            setField('c', result.c);
+            setField('A', result.A, true);
+            setField('B', result.B, true);
+            if (currentMode !== 'right') setField('C', result.C, true);
+
+            // Compute Area & Perimeter
+            const perimeter = result.a + result.b + result.c;
+            const s = perimeter / 2;
+            const area = Math.sqrt(Math.max(0, s * (s - result.a) * (s - result.b) * (s - result.c)));
+
+            // Classification
+            let type = "";
+            const maxAng = Math.max(result.A, result.B, result.C);
+            if (Math.abs(maxAng - 90) < 0.1) type = "Right";
+            else if (maxAng > 90) type = "Obtuse";
+            else type = "Acute";
+
+            if (Math.abs(result.a - result.b) < EPSILON && Math.abs(result.b - result.c) < EPSILON) type += ", Equilateral";
+            else if (Math.abs(result.a - result.b) < EPSILON || Math.abs(result.b - result.c) < EPSILON || Math.abs(result.a - result.c) < EPSILON) type += ", Isosceles";
+            else type += ", Scalene";
+
+            resArea.innerText = area.toFixed(2);
+            resPerimeter.innerText = perimeter.toFixed(2);
+            resS.innerText = s.toFixed(2);
+            resType.innerText = type;
+        }
+
+        function resetSummary() {
+            resArea.innerText = "-";
+            resPerimeter.innerText = "-";
+            resS.innerText = "-";
+            resType.innerText = "-";
+        }
+
+        // --- Visual / Drawing Engine ---
+        function drawTriangle(vals) {
+            const { a, b, c, A, B, C } = vals;
+            const w = canvasWrapper.clientWidth;
+            const h = canvasWrapper.clientHeight;
+            
+            ctx.clearRect(0, 0, w, h);
+            
+            let ptA = { x: 0, y: 0 };
+            let ptC = { x: b, y: 0 };
+            let ptB = { x: b - a * cosD(C), y: -a * sinD(C) };
+
+            let minX = Math.min(ptA.x, ptB.x, ptC.x);
+            let maxX = Math.max(ptA.x, ptB.x, ptC.x);
+            let minY = Math.min(ptA.y, ptB.y, ptC.y);
+            let maxY = Math.max(ptA.y, ptB.y, ptC.y);
+
+            let triWidth = maxX - minX;
+            let triHeight = maxY - minY;
+
+            let padding = 75; 
+            let scale = Math.min((w - padding * 2) / triWidth, (h - padding * 2) / triHeight);
+
+            let offsetX = (w - (triWidth * scale)) / 2 - (minX * scale);
+            let offsetY = (h - (triHeight * scale)) / 2 - (minY * scale);
+
+            const tf = pt => ({
+                x: pt.x * scale + offsetX,
+                y: pt.y * scale + offsetY
+            });
+
+            let tA = tf(ptA);
+            let tB = tf(ptB);
+            let tC = tf(ptC);
+
+            // Draw Triangle
+            ctx.beginPath();
+            ctx.moveTo(tA.x, tA.y);
+            ctx.lineTo(tC.x, tC.y);
+            ctx.lineTo(tB.x, tB.y);
+            ctx.closePath();
+            
+            ctx.fillStyle = 'rgba(99, 102, 241, 0.15)';
+            ctx.fill();
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = '#6366f1';
+            ctx.stroke();
+
+            // Right-Angle Square Indicator Helper
+            const drawRightAngleIndicator = (targetVertex, v1, v2) => {
+                let sqSize = 16;
+                let dx1 = v1.x - targetVertex.x, dy1 = v1.y - targetVertex.y;
+                let len1 = Math.sqrt(dx1 * dx1 + dy1 * dy1) || 1;
+                let dir1 = { x: dx1 / len1, y: dy1 / len1 };
+
+                let dx2 = v2.x - targetVertex.x, dy2 = v2.y - targetVertex.y;
+                let len2 = Math.sqrt(dx2 * dx2 + dy2 * dy2) || 1;
+                let dir2 = { x: dx2 / len2, y: dy2 / len2 };
+
+                ctx.beginPath();
+                ctx.moveTo(targetVertex.x + dir1.x * sqSize, targetVertex.y + dir1.y * sqSize);
+                ctx.lineTo(targetVertex.x + dir1.x * sqSize + dir2.x * sqSize, targetVertex.y + dir1.y * sqSize + dir2.y * sqSize);
+                ctx.lineTo(targetVertex.x + dir2.x * sqSize, targetVertex.y + dir2.y * sqSize);
+                ctx.strokeStyle = '#f59e0b';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            };
+
+            // Render square at whichever angle equals 90°
+            if (Math.abs(C - 90) < 0.1) drawRightAngleIndicator(tC, tA, tB);
+            else if (Math.abs(A - 90) < 0.1) drawRightAngleIndicator(tA, tB, tC);
+            else if (Math.abs(B - 90) < 0.1) drawRightAngleIndicator(tB, tA, tC);
+
+            // Vertex Labels
+            ctx.font = '600 14px Inter, sans-serif';
+            ctx.fillStyle = '#f8fafc';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            const centroidX = (tA.x + tB.x + tC.x) / 3;
+            const centroidY = (tA.y + tB.y + tC.y) / 3;
+            
+            const drawLabel = (pt, text, dist) => {
+                let dx = pt.x - centroidX;
+                let dy = pt.y - centroidY;
+                let len = Math.sqrt(dx*dx + dy*dy) || 1;
+                ctx.fillText(text, pt.x + (dx/len) * dist, pt.y + (dy/len) * dist);
+            };
+
+            const degLabel = val => currentUnit === 'deg' ? `${val.toFixed(1)}°` : `${deg2rad(val).toFixed(2)} rad`;
+
+            drawLabel(tA, `A (${degLabel(A)})`, 30);
+            drawLabel(tB, `B (${degLabel(B)})`, 30);
+            drawLabel(tC, `C (${degLabel(C)})`, 30);
+
+            // Side Labels
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '500 14px Inter, sans-serif';
+            
+            const drawSideLabel = (p1, p2, val, label) => {
+                let midX = (p1.x + p2.x) / 2;
+                let midY = (p1.y + p2.y) / 2;
+                let dx = midX - centroidX;
+                let dy = midY - centroidY;
+                let len = Math.sqrt(dx*dx + dy*dy) || 1;
+                ctx.fillText(`${label} = ${val.toFixed(2)}`, midX + (dx/len) * 22, midY + (dy/len) * 22);
+            };
+
+            const labelA = currentMode === 'right' ? 'Height' : 'a';
+            const labelB = currentMode === 'right' ? 'Base' : 'b';
+            const labelC = currentMode === 'right' ? 'Hyp.' : 'c';
+
+            drawSideLabel(tC, tB, a, labelA);
+            drawSideLabel(tA, tC, b, labelB);
+            drawSideLabel(tA, tB, c, labelC);
+        }
+
+        // --- Notifications ---
+        function showError(msg) {
+            alertBox.className = 'alert error';
+            alertBox.innerText = msg;
+            clearCanvas();
+            resetSummary();
+        }
+
+        function showWarning(msg) {
+            alertBox.className = 'alert warning';
+            alertBox.innerText = msg;
+        }
+
+        function clearErrors() {
+            alertBox.className = 'alert hidden';
+            alertBox.innerText = '';
+        }
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            canvasPlaceholder.style.display = 'block';
+        }
+
+        // Initialize UI Labels
+        updateLabels();
+        
+    </script>
+</body>
+</html>
