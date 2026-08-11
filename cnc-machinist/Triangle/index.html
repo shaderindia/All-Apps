@@ -320,7 +320,7 @@
 
     <header>
         <h1>Universal Triangle Solver</h1>
-        <p style="color: var(--text-muted); font-size: 0.9rem;">Calculate missing sides, angles, area, and perimeter</p>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Calculate missing sides, angles, medians, area, and perimeter</p>
     </header>
 
     <div class="container">
@@ -381,6 +381,8 @@
             <div class="results-card" id="results-card">
                 <div><span>Area:</span> <strong id="res-area">-</strong></div>
                 <div><span>Perimeter:</span> <strong id="res-perimeter">-</strong></div>
+                <div><span>Hyp. Median (m_c):</span> <strong id="res-median">-</strong></div>
+                <div><span>Altitude (h_c):</span> <strong id="res-altitude">-</strong></div>
                 <div><span>Semi-Perimeter:</span> <strong id="res-s">-</strong></div>
                 <div><span>Type:</span> <strong id="res-type">-</strong></div>
             </div>
@@ -429,6 +431,8 @@
         // Results Summary DOM
         const resArea = document.getElementById('res-area');
         const resPerimeter = document.getElementById('res-perimeter');
+        const resMedian = document.getElementById('res-median');
+        const resAltitude = document.getElementById('res-altitude');
         const resS = document.getElementById('res-s');
         const resType = document.getElementById('res-type');
 
@@ -751,10 +755,16 @@
             setField('B', result.B, true);
             if (currentMode !== 'right') setField('C', result.C, true);
 
-            // Compute Area & Perimeter
+            // Compute Area, Perimeter, Median, and Altitude
             const perimeter = result.a + result.b + result.c;
             const s = perimeter / 2;
             const area = Math.sqrt(Math.max(0, s * (s - result.a) * (s - result.b) * (s - result.c)));
+            
+            // Median to side c (Hypotenuse in right triangle): m_c = 0.5 * sqrt(2a^2 + 2b^2 - c^2)
+            const medianC = 0.5 * Math.sqrt(Math.max(0, 2 * result.a * result.a + 2 * result.b * result.b - result.c * result.c));
+            
+            // Altitude to side c (Hypotenuse in right triangle): h_c = (2 * Area) / c
+            const altitudeC = (2 * area) / result.c;
 
             // Classification
             let type = "";
@@ -769,6 +779,8 @@
 
             resArea.innerText = area.toFixed(2);
             resPerimeter.innerText = perimeter.toFixed(2);
+            resMedian.innerText = medianC.toFixed(2);
+            resAltitude.innerText = altitudeC.toFixed(2);
             resS.innerText = s.toFixed(2);
             resType.innerText = type;
         }
@@ -776,6 +788,8 @@
         function resetSummary() {
             resArea.innerText = "-";
             resPerimeter.innerText = "-";
+            resMedian.innerText = "-";
+            resAltitude.innerText = "-";
             resS.innerText = "-";
             resType.innerText = "-";
         }
@@ -815,7 +829,7 @@
             let tB = tf(ptB);
             let tC = tf(ptC);
 
-            // Draw Triangle
+            // Draw Triangle Fill & Outline
             ctx.beginPath();
             ctx.moveTo(tA.x, tA.y);
             ctx.lineTo(tC.x, tC.y);
@@ -848,10 +862,28 @@
                 ctx.stroke();
             };
 
-            // Render square at whichever angle equals 90°
             if (Math.abs(C - 90) < 0.1) drawRightAngleIndicator(tC, tA, tB);
             else if (Math.abs(A - 90) < 0.1) drawRightAngleIndicator(tA, tB, tC);
             else if (Math.abs(B - 90) < 0.1) drawRightAngleIndicator(tB, tA, tC);
+
+            // Draw Dashed Median Line from 90° angle (C) to midpoint of Hypotenuse (AB)
+            if (currentMode === 'right' || Math.abs(C - 90) < 0.1) {
+                let midAB = { x: (tA.x + tB.x) / 2, y: (tA.y + tB.y) / 2 };
+                ctx.beginPath();
+                ctx.setLineDash([5, 5]);
+                ctx.moveTo(tC.x, tC.y);
+                ctx.lineTo(midAB.x, midAB.y);
+                ctx.strokeStyle = '#38bdf8';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                ctx.setLineDash([]); // Reset dash
+
+                // Midpoint dot
+                ctx.beginPath();
+                ctx.arc(midAB.x, midAB.y, 4, 0, 2 * Math.PI);
+                ctx.fillStyle = '#38bdf8';
+                ctx.fill();
+            }
 
             // Vertex Labels
             ctx.font = '600 14px Inter, sans-serif';
