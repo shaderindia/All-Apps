@@ -14,12 +14,14 @@
             --accent: #6366f1;
             --accent-hover: #4f46e5;
             --calculated-glow: #38bdf8;
+            --altitude-color: #ec4899;
+            --median-color: #06b6d4;
             --danger: #ef4444;
             --danger-bg: #450a0a;
             --warning: #f59e0b;
             --border: #475569;
             --radius: 8px;
-            --font: 'Inter', system-ui, -apple-system, sans-serif;
+            --font: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
         * {
@@ -199,7 +201,7 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 0.75rem;
-            font-size: 0.9rem;
+            font-size: 0.875rem;
         }
 
         .results-card div span {
@@ -210,6 +212,45 @@
         .results-card div strong {
             color: var(--calculated-glow);
             float: right;
+        }
+
+        .results-card div strong.altitude-val {
+            color: var(--altitude-color);
+        }
+
+        .results-card div strong.median-val {
+            color: var(--median-color);
+        }
+
+        /* Canvas Overlay Controls */
+        .canvas-options {
+            display: flex;
+            gap: 1.25rem;
+            flex-wrap: wrap;
+            padding: 0.5rem 0.25rem 0 0.25rem;
+            font-size: 0.85rem;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .canvas-options-left {
+            display: flex;
+            gap: 1.25rem;
+            flex-wrap: wrap;
+        }
+
+        .canvas-options label {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            cursor: pointer;
+            color: var(--text-muted);
+            user-select: none;
+        }
+
+        .canvas-options input[type="checkbox"] {
+            accent-color: var(--accent);
+            cursor: pointer;
         }
 
         /* Buttons */
@@ -250,7 +291,14 @@
             background-color: var(--input-bg);
         }
 
-        /* Output / Canvas */
+        .btn-sm {
+            padding: 0.45rem 0.85rem;
+            font-size: 0.825rem;
+            width: auto;
+            flex: none;
+        }
+
+        /* Canvas Panel */
         .right-panel {
             display: flex;
             flex-direction: column;
@@ -258,7 +306,7 @@
 
         .canvas-container {
             flex: 1;
-            min-height: 380px;
+            min-height: 480px;
             background-color: var(--input-bg);
             border-radius: var(--radius);
             border: 1px solid var(--border);
@@ -270,8 +318,9 @@
         }
 
         canvas {
-            max-width: 100%;
-            max-height: 100%;
+            display: block;
+            width: 100%;
+            height: 100%;
         }
 
         .placeholder-text {
@@ -320,7 +369,7 @@
 
     <header>
         <h1>Universal Triangle Solver</h1>
-        <p style="color: var(--text-muted); font-size: 0.9rem;">Calculate missing sides, angles, medians, area, and perimeter</p>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Calculate missing sides, angles, perpendicular altitude, medians & area</p>
     </header>
 
     <div class="container">
@@ -379,10 +428,12 @@
 
             <!-- Summary Results Card -->
             <div class="results-card" id="results-card">
+                <div><span>Perpendicular Altitude (h_c):</span> <strong class="altitude-val" id="res-altitude">-</strong></div>
+                <div><span>Hyp. Median (m_c):</span> <strong class="median-val" id="res-median">-</strong></div>
+                <div><span>Hyp. Segment p (AD):</span> <strong id="res-p">-</strong></div>
+                <div><span>Hyp. Segment q (DB):</span> <strong id="res-q">-</strong></div>
                 <div><span>Area:</span> <strong id="res-area">-</strong></div>
                 <div><span>Perimeter:</span> <strong id="res-perimeter">-</strong></div>
-                <div><span>Hyp. Median (m_c):</span> <strong id="res-median">-</strong></div>
-                <div><span>Altitude (h_c):</span> <strong id="res-altitude">-</strong></div>
                 <div><span>Semi-Perimeter:</span> <strong id="res-s">-</strong></div>
                 <div><span>Type:</span> <strong id="res-type">-</strong></div>
             </div>
@@ -401,6 +452,21 @@
                 <span class="placeholder-text" id="canvas-placeholder">Enter inputs to draw triangle</span>
                 <canvas id="triangle-canvas"></canvas>
             </div>
+
+            <!-- Canvas Display Options -->
+            <div class="canvas-options">
+                <div class="canvas-options-left">
+                    <label>
+                        <input type="checkbox" id="chk-altitude" checked>
+                        <span style="color: var(--altitude-color); font-weight: 600;">Perpendicular Altitude (h_c)</span>
+                    </label>
+                    <label>
+                        <input type="checkbox" id="chk-median" checked>
+                        <span style="color: var(--median-color); font-weight: 600;">Hypotenuse Median (m_c)</span>
+                    </label>
+                </div>
+                <button class="btn-secondary btn-sm" id="btn-copy-summary">Copy Summary</button>
+            </div>
         </div>
     </div>
 
@@ -412,6 +478,10 @@
         const lblSideA = document.getElementById('lbl-side-a');
         const lblSideB = document.getElementById('lbl-side-b');
         const lblSideC = document.getElementById('lbl-side-c');
+        const chkAltitude = document.getElementById('chk-altitude');
+        const chkMedian = document.getElementById('chk-median');
+        const btnCopySummary = document.getElementById('btn-copy-summary');
+
         const inputs = {
             a: document.getElementById('side-a'),
             b: document.getElementById('side-b'),
@@ -433,6 +503,8 @@
         const resPerimeter = document.getElementById('res-perimeter');
         const resMedian = document.getElementById('res-median');
         const resAltitude = document.getElementById('res-altitude');
+        const resP = document.getElementById('res-p');
+        const resQ = document.getElementById('res-q');
         const resS = document.getElementById('res-s');
         const resType = document.getElementById('res-type');
 
@@ -494,35 +566,41 @@
             
             currentUnit = newUnit;
             unitLabel.innerText = currentUnit === 'deg' ? 'Degrees' : 'Radians';
-            
-            if (currentMode === 'right') {
-                inputs.C.value = currentUnit === 'deg' ? '90' : (Math.PI / 2).toFixed(6);
-            }
 
             if (lastResult) {
                 updateInputsAndSummary(lastResult, lastUserProvidedKeys);
                 drawTriangle(lastResult);
             } else {
-                ['A', 'B', 'C'].forEach(angle => {
+                const anglesToConvert = currentMode === 'right' ? ['A', 'B'] : ['A', 'B', 'C'];
+                anglesToConvert.forEach(angle => {
                     if (inputs[angle].value !== '') {
                         let val = parseFloat(inputs[angle].value);
                         if (!isNaN(val)) {
-                            if (newUnit === 'rad') {
-                                inputs[angle].value = deg2rad(val).toFixed(6);
-                            } else {
-                                inputs[angle].value = rad2deg(val).toFixed(6);
-                            }
+                            inputs[angle].value = (currentUnit === 'rad') ? deg2rad(val).toFixed(6) : rad2deg(val).toFixed(4);
                         }
                     }
                 });
+
+                if (currentMode === 'right') {
+                    inputs.C.value = currentUnit === 'deg' ? '90' : (Math.PI / 2).toFixed(6);
+                }
             }
         }));
+
+        chkAltitude.addEventListener('change', () => { if (lastResult) drawTriangle(lastResult); });
+        chkMedian.addEventListener('change', () => { if (lastResult) drawTriangle(lastResult); });
 
         Object.keys(inputs).forEach(key => {
             inputs[key].addEventListener('input', (e) => {
                 e.target.removeAttribute('data-calculated');
                 clearCalculatedFields();
                 autoSolveIfReady();
+            });
+
+            inputs[key].addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    processAndSolve();
+                }
             });
         });
 
@@ -554,6 +632,33 @@
             processAndSolve();
         });
 
+        btnCopySummary.addEventListener('click', () => {
+            if (!lastResult) {
+                showWarning("Solve a triangle first to copy results.");
+                return;
+            }
+            const unitText = currentUnit === 'deg' ? '°' : ' rad';
+            const angA = currentUnit === 'rad' ? deg2rad(lastResult.A).toFixed(4) : lastResult.A.toFixed(2);
+            const angB = currentUnit === 'rad' ? deg2rad(lastResult.B).toFixed(4) : lastResult.B.toFixed(2);
+            const angC = currentUnit === 'rad' ? deg2rad(lastResult.C).toFixed(4) : lastResult.C.toFixed(2);
+
+            const summaryText = `--- Triangle Solution ---
+Sides: a = ${lastResult.a.toFixed(4)}, b = ${lastResult.b.toFixed(4)}, c = ${lastResult.c.toFixed(4)}
+Angles: A = ${angA}${unitText}, B = ${angB}${unitText}, C = ${angC}${unitText}
+Altitude (h_c): ${resAltitude.innerText}
+Median (m_c): ${resMedian.innerText}
+Segments: AD = ${resP.innerText}, DB = ${resQ.innerText}
+Area: ${resArea.innerText}
+Perimeter: ${resPerimeter.innerText}
+Type: ${resType.innerText}`;
+
+            navigator.clipboard.writeText(summaryText).then(() => {
+                const originalText = btnCopySummary.innerText;
+                btnCopySummary.innerText = "Copied!";
+                setTimeout(() => { btnCopySummary.innerText = originalText; }, 1800);
+            });
+        });
+
         function autoSolveIfReady() {
             let count = 0;
             let sides = 0;
@@ -572,11 +677,9 @@
         function resizeCanvas() {
             const rect = canvasWrapper.getBoundingClientRect();
             const dpr = window.devicePixelRatio || 1;
-            canvas.width = rect.width * dpr;
-            canvas.height = rect.height * dpr;
-            ctx.scale(dpr, dpr);
-            canvas.style.width = `${rect.width}px`;
-            canvas.style.height = `${rect.height}px`;
+            canvas.width = Math.floor(rect.width * dpr);
+            canvas.height = Math.floor(rect.height * dpr);
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         }
         
         window.addEventListener('resize', () => {
@@ -620,7 +723,7 @@
             }
 
             if (countSides === 0) return !isSilent && showError("You must provide at least 1 side length.");
-            if (countTotal < 3) return !isSilent && showError("Provide at least 3 values.");
+            if (countTotal < 3) return !isSilent && showError("Provide at least 3 valid parameters.");
 
             let result = solveTriangle(vals);
             
@@ -641,18 +744,17 @@
             drawTriangle(result);
         }
 
-        // Rigorous Geometric Solver
         function solveTriangle(initialVals) {
             let { a, b, c, A, B, C } = initialVals;
 
-            if ((A && A >= 180) || (B && B >= 180) || (C && C >= 180)) return { error: "Angles must be less than 180°." };
-            if (A && B && C && Math.abs(A + B + C - 180) > EPSILON) return { error: "Provided angles do not sum to 180°." };
+            if ((A && A >= 180) || (B && B >= 180) || (C && C >= 180)) return { error: "Angles must be strictly less than 180°." };
+            if (A && B && C && Math.abs(A + B + C - 180) > 0.01) return { error: "Provided angles do not sum to 180°." };
 
             let loops = 0;
             let progress = true;
             let ambiguousWarning = false;
 
-            while (progress && loops < 5) {
+            while (progress && loops < 6) {
                 progress = false;
                 loops++;
 
@@ -665,15 +767,18 @@
 
                 // 2. Law of Cosines (SSS)
                 if (a && b && c) {
+                    if (a + b <= c + EPSILON || a + c <= b + EPSILON || b + c <= a + EPSILON) {
+                        return { error: "Triangle Inequality Violation: The sum of any two sides must exceed the third." };
+                    }
                     if (!A) { A = acosD((b*b + c*c - a*a) / (2*b*c)); progress = true; }
                     if (!B) { B = acosD((a*a + c*c - b*b) / (2*a*c)); progress = true; }
                     if (!C) { C = acosD((a*a + b*b - c*c) / (2*a*b)); progress = true; }
                 }
 
                 // 3. Law of Cosines (SAS)
-                if (b && c && A && !a) { a = Math.sqrt(b*b + c*c - 2*b*c*cosD(A)); progress = true; }
-                if (a && c && B && !b) { b = Math.sqrt(a*a + c*c - 2*a*c*cosD(B)); progress = true; }
-                if (a && b && C && !c) { c = Math.sqrt(a*a + b*b - 2*a*b*cosD(C)); progress = true; }
+                if (b && c && A && !a) { a = Math.sqrt(Math.max(0, b*b + c*c - 2*b*c*cosD(A))); progress = true; }
+                if (a && c && B && !b) { b = Math.sqrt(Math.max(0, a*a + c*c - 2*a*c*cosD(B))); progress = true; }
+                if (a && b && C && !c) { c = Math.sqrt(Math.max(0, a*a + b*b - 2*a*b*cosD(C))); progress = true; }
 
                 // 4. Law of Sines (ASA, AAS)
                 if (A && B && C) {
@@ -687,22 +792,22 @@
 
                 // 5. Law of Sines (SSA Ambiguous Case)
                 if (!progress) {
-                    let ratios = [ {s:a, ang:A, name:'A'}, {s:b, ang:B, name:'B'}, {s:c, ang:C, name:'C'} ];
-                    let known = ratios.find(r => r.s && r.ang);
+                    let pairs = [ {s:a, ang:A, name:'A'}, {s:b, ang:B, name:'B'}, {s:c, ang:C, name:'C'} ];
+                    let known = pairs.find(p => p.s && p.ang);
                     
                     if (known) {
                         let ratioVal = known.s / sinD(known.ang);
                         
-                        for (let unk of ratios) {
+                        for (let unk of pairs) {
                             if (unk.s && !unk.ang) {
                                 let sinUnk = unk.s / ratioVal;
-                                if (sinUnk > 1 + EPSILON) return { error: "Mathematically impossible configuration." };
+                                if (sinUnk > 1 + EPSILON) return { error: "Impossible side/angle configuration." };
                                 if (sinUnk > 1) sinUnk = 1;
 
                                 let ang1 = asinD(sinUnk);
                                 let ang2 = 180 - ang1;
 
-                                let otherSum = ratios.filter(r => r.ang && r.name !== unk.name).reduce((sum, r) => sum + r.ang, 0);
+                                let otherSum = pairs.filter(p => p.ang && p.name !== unk.name).reduce((sum, p) => sum + p.ang, 0);
                                 let valid1 = (otherSum + ang1 < 180 - EPSILON);
                                 let valid2 = (otherSum + ang2 < 180 - EPSILON);
 
@@ -731,7 +836,9 @@
             }
 
             if (!a || !b || !c || !A || !B || !C) return { error: "Not enough information to solve uniquely." };
-            if (a + b <= c + EPSILON || a + c <= b + EPSILON || b + c <= a + EPSILON) return { error: "Triangle Inequality Violation: Sum of two sides must exceed the third." };
+            if (a + b <= c + EPSILON || a + c <= b + EPSILON || b + c <= a + EPSILON) {
+                return { error: "Triangle Inequality Violation: Sum of two sides must exceed the third." };
+            }
 
             return { a, b, c, A, B, C, ambiguousWarning };
         }
@@ -755,33 +862,32 @@
             setField('B', result.B, true);
             if (currentMode !== 'right') setField('C', result.C, true);
 
-            // Compute Area, Perimeter, Median, and Altitude
             const perimeter = result.a + result.b + result.c;
             const s = perimeter / 2;
             const area = Math.sqrt(Math.max(0, s * (s - result.a) * (s - result.b) * (s - result.c)));
-            
-            // Median to side c (Hypotenuse in right triangle): m_c = 0.5 * sqrt(2a^2 + 2b^2 - c^2)
+            const altitudeC = (2 * area) / result.c;
             const medianC = 0.5 * Math.sqrt(Math.max(0, 2 * result.a * result.a + 2 * result.b * result.b - result.c * result.c));
             
-            // Altitude to side c (Hypotenuse in right triangle): h_c = (2 * Area) / c
-            const altitudeC = (2 * area) / result.c;
+            const p = (result.b * result.b + result.c * result.c - result.a * result.a) / (2 * result.c);
+            const q = result.c - p;
 
-            // Classification
             let type = "";
             const maxAng = Math.max(result.A, result.B, result.C);
-            if (Math.abs(maxAng - 90) < 0.1) type = "Right";
+            if (Math.abs(maxAng - 90) < 0.05) type = "Right";
             else if (maxAng > 90) type = "Obtuse";
             else type = "Acute";
 
-            if (Math.abs(result.a - result.b) < EPSILON && Math.abs(result.b - result.c) < EPSILON) type += ", Equilateral";
-            else if (Math.abs(result.a - result.b) < EPSILON || Math.abs(result.b - result.c) < EPSILON || Math.abs(result.a - result.c) < EPSILON) type += ", Isosceles";
+            if (Math.abs(result.a - result.b) < 1e-4 && Math.abs(result.b - result.c) < 1e-4) type += ", Equilateral";
+            else if (Math.abs(result.a - result.b) < 1e-4 || Math.abs(result.b - result.c) < 1e-4 || Math.abs(result.a - result.c) < 1e-4) type += ", Isosceles";
             else type += ", Scalene";
 
-            resArea.innerText = area.toFixed(2);
-            resPerimeter.innerText = perimeter.toFixed(2);
-            resMedian.innerText = medianC.toFixed(2);
-            resAltitude.innerText = altitudeC.toFixed(2);
-            resS.innerText = s.toFixed(2);
+            resArea.innerText = area.toFixed(4);
+            resPerimeter.innerText = perimeter.toFixed(4);
+            resAltitude.innerText = altitudeC.toFixed(4);
+            resMedian.innerText = medianC.toFixed(4);
+            resP.innerText = p.toFixed(4);
+            resQ.innerText = q.toFixed(4);
+            resS.innerText = s.toFixed(4);
             resType.innerText = type;
         }
 
@@ -790,8 +896,138 @@
             resPerimeter.innerText = "-";
             resMedian.innerText = "-";
             resAltitude.innerText = "-";
+            resP.innerText = "-";
+            resQ.innerText = "-";
             resS.innerText = "-";
             resType.innerText = "-";
+        }
+
+        // --- Geometry Helpers for Outward Directions ---
+        function getEdgeOutwardNormal(p1, p2, oppositeVertex) {
+            let dx = p2.x - p1.x;
+            let dy = p2.y - p1.y;
+            let len = Math.hypot(dx, dy) || 1;
+            let nx = -dy / len;
+            let ny = dx / len;
+            let midX = (p1.x + p2.x) / 2;
+            let midY = (p1.y + p2.y) / 2;
+            let toMidX = midX - oppositeVertex.x;
+            let toMidY = midY - oppositeVertex.y;
+            if (nx * toMidX + ny * toMidY < 0) {
+                nx = -nx;
+                ny = -ny;
+            }
+            return { x: nx, y: ny };
+        }
+
+        function getVertexOutwardBisector(v, p1, p2) {
+            let d1x = p1.x - v.x, d1y = p1.y - v.y;
+            let len1 = Math.hypot(d1x, d1y) || 1;
+            let u1x = d1x / len1, u1y = d1y / len1;
+
+            let d2x = p2.x - v.x, d2y = p2.y - v.y;
+            let len2 = Math.hypot(d2x, d2y) || 1;
+            let u2x = d2x / len2, u2y = d2y / len2;
+
+            let sumX = u1x + u2x;
+            let sumY = u1y + u2y;
+            let sumLen = Math.hypot(sumX, sumY);
+
+            if (sumLen < 0.001) {
+                return { x: -u1y, y: u1x };
+            }
+            return { x: -sumX / sumLen, y: -sumY / sumLen };
+        }
+
+        // --- Streamlined Parallel & Upright Badge Drawers ---
+        function drawParallelBadge(text, p1, p2, offsetDist, outwardNormal, options = {}) {
+            const frac = options.frac !== undefined ? options.frac : 0.5;
+            const midX = p1.x + (p2.x - p1.x) * frac;
+            const midY = p1.y + (p2.y - p1.y) * frac;
+
+            const posX = midX + outwardNormal.x * offsetDist;
+            const posY = midY + outwardNormal.y * offsetDist;
+
+            // Compute angle of segment p1 -> p2
+            const dx = p2.x - p1.x;
+            const dy = p2.y - p1.y;
+            let angle = Math.atan2(dy, dx);
+
+            // Keep text always readable (-90deg to +90deg)
+            if (angle > Math.PI / 2) {
+                angle -= Math.PI;
+            } else if (angle <= -Math.PI / 2) {
+                angle += Math.PI;
+            }
+
+            ctx.save();
+            ctx.translate(posX, posY);
+            ctx.rotate(angle);
+
+            const font = options.font || '600 11px Inter, sans-serif';
+            ctx.font = font;
+            const metrics = ctx.measureText(text);
+            const textW = Math.ceil(metrics.width);
+            const textH = 11;
+            const padX = 5;
+            const padY = 2;
+            const radius = 3;
+
+            const rectX = -textW / 2 - padX;
+            const rectY = -textH / 2 - padY;
+            const rectW = textW + padX * 2;
+            const rectH = textH + padY * 2;
+
+            ctx.beginPath();
+            if (ctx.roundRect) {
+                ctx.roundRect(rectX, rectY, rectW, rectH, radius);
+            } else {
+                ctx.rect(rectX, rectY, rectW, rectH);
+            }
+            ctx.fillStyle = options.bgColor || 'rgba(15, 23, 42, 0.92)';
+            ctx.fill();
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = options.borderColor || 'rgba(71, 85, 105, 0.8)';
+            ctx.stroke();
+
+            ctx.fillStyle = options.color || '#f8fafc';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(text, 0, 0.5);
+
+            ctx.restore();
+        }
+
+        function drawUprightBadge(text, x, y, options = {}) {
+            const font = options.font || '700 11px Inter, sans-serif';
+            ctx.font = font;
+            const metrics = ctx.measureText(text);
+            const textW = Math.ceil(metrics.width);
+            const textH = 11;
+            const padX = 5;
+            const padY = 2;
+
+            const rectX = x - textW / 2 - padX;
+            const rectY = y - textH / 2 - padY;
+            const rectW = textW + padX * 2;
+            const rectH = textH + padY * 2;
+
+            ctx.beginPath();
+            if (ctx.roundRect) {
+                ctx.roundRect(rectX, rectY, rectW, rectH, 3);
+            } else {
+                ctx.rect(rectX, rectY, rectW, rectH);
+            }
+            ctx.fillStyle = options.bgColor || 'rgba(15, 23, 42, 0.92)';
+            ctx.fill();
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = options.borderColor || 'rgba(99, 102, 241, 0.8)';
+            ctx.stroke();
+
+            ctx.fillStyle = options.color || '#ffffff';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(text, x, y + 0.5);
         }
 
         // --- Visual / Drawing Engine ---
@@ -814,8 +1050,8 @@
             let triWidth = maxX - minX;
             let triHeight = maxY - minY;
 
-            let padding = 75; 
-            let scale = Math.min((w - padding * 2) / triWidth, (h - padding * 2) / triHeight);
+            let padding = 65; 
+            let scale = Math.min((w - padding * 2) / (triWidth || 1), (h - padding * 2) / (triHeight || 1));
 
             let offsetX = (w - (triWidth * scale)) / 2 - (minX * scale);
             let offsetY = (h - (triHeight * scale)) / 2 - (minY * scale);
@@ -829,104 +1065,184 @@
             let tB = tf(ptB);
             let tC = tf(ptC);
 
-            // Draw Triangle Fill & Outline
+            // 1. Draw Triangle Outline & Background
             ctx.beginPath();
             ctx.moveTo(tA.x, tA.y);
             ctx.lineTo(tC.x, tC.y);
             ctx.lineTo(tB.x, tB.y);
             ctx.closePath();
             
-            ctx.fillStyle = 'rgba(99, 102, 241, 0.15)';
+            ctx.fillStyle = 'rgba(99, 102, 241, 0.12)';
             ctx.fill();
-            ctx.lineWidth = 3;
+            ctx.lineWidth = 2.5;
             ctx.strokeStyle = '#6366f1';
             ctx.stroke();
 
-            // Right-Angle Square Indicator Helper
-            const drawRightAngleIndicator = (targetVertex, v1, v2) => {
-                let sqSize = 16;
+            // Right Angle Indicator
+            const drawRightAngleIndicator = (targetVertex, v1, v2, color = '#f59e0b') => {
+                let sqSize = 12;
                 let dx1 = v1.x - targetVertex.x, dy1 = v1.y - targetVertex.y;
-                let len1 = Math.sqrt(dx1 * dx1 + dy1 * dy1) || 1;
+                let len1 = Math.hypot(dx1, dy1) || 1;
                 let dir1 = { x: dx1 / len1, y: dy1 / len1 };
 
                 let dx2 = v2.x - targetVertex.x, dy2 = v2.y - targetVertex.y;
-                let len2 = Math.sqrt(dx2 * dx2 + dy2 * dy2) || 1;
+                let len2 = Math.hypot(dx2, dy2) || 1;
                 let dir2 = { x: dx2 / len2, y: dy2 / len2 };
 
                 ctx.beginPath();
                 ctx.moveTo(targetVertex.x + dir1.x * sqSize, targetVertex.y + dir1.y * sqSize);
                 ctx.lineTo(targetVertex.x + dir1.x * sqSize + dir2.x * sqSize, targetVertex.y + dir1.y * sqSize + dir2.y * sqSize);
                 ctx.lineTo(targetVertex.x + dir2.x * sqSize, targetVertex.y + dir2.y * sqSize);
-                ctx.strokeStyle = '#f59e0b';
-                ctx.lineWidth = 2;
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 1.5;
                 ctx.stroke();
             };
 
-            if (Math.abs(C - 90) < 0.1) drawRightAngleIndicator(tC, tA, tB);
-            else if (Math.abs(A - 90) < 0.1) drawRightAngleIndicator(tA, tB, tC);
-            else if (Math.abs(B - 90) < 0.1) drawRightAngleIndicator(tB, tA, tC);
+            if (Math.abs(C - 90) < 0.1) drawRightAngleIndicator(tC, tA, tB, '#f59e0b');
+            else if (Math.abs(A - 90) < 0.1) drawRightAngleIndicator(tA, tB, tC, '#f59e0b');
+            else if (Math.abs(B - 90) < 0.1) drawRightAngleIndicator(tB, tA, tC, '#f59e0b');
 
-            // Draw Dashed Median Line from 90° angle (C) to midpoint of Hypotenuse (AB)
-            if (currentMode === 'right' || Math.abs(C - 90) < 0.1) {
-                let midAB = { x: (tA.x + tB.x) / 2, y: (tA.y + tB.y) / 2 };
+            // 2. Foot of Altitude (D) & Midpoint (M) along side AB
+            let dxAB_m = ptB.x - ptA.x;
+            let dyAB_m = ptB.y - ptA.y;
+            let lenAB_sq = dxAB_m * dxAB_m + dyAB_m * dyAB_m;
+            let t_proj = ((ptC.x - ptA.x) * dxAB_m + (ptC.y - ptA.y) * dyAB_m) / (lenAB_sq || 1);
+            let ptD = { x: ptA.x + t_proj * dxAB_m, y: ptA.y + t_proj * dyAB_m };
+            let tD = tf(ptD);
+
+            let ptM = { x: (ptA.x + ptB.x) / 2, y: (ptA.y + ptB.y) / 2 };
+            let tM = tf(ptM);
+
+            let area = 0.5 * Math.abs(ptA.x * (ptC.y - ptB.y) + ptC.x * (ptB.y - ptA.y) + ptB.x * (ptA.y - ptC.y));
+            let altitudeVal = (2 * area) / c;
+            let medianVal = 0.5 * Math.sqrt(Math.max(0, 2 * a * a + 2 * b * b - c * c));
+
+            // 3. Draw Auxiliary Lines (Altitude & Median)
+            if (chkAltitude.checked) {
+                if (t_proj < 0) {
+                    ctx.beginPath();
+                    ctx.setLineDash([3, 3]);
+                    ctx.moveTo(tA.x, tA.y);
+                    ctx.lineTo(tD.x, tD.y);
+                    ctx.strokeStyle = '#64748b';
+                    ctx.lineWidth = 1.2;
+                    ctx.stroke();
+                } else if (t_proj > 1) {
+                    ctx.beginPath();
+                    ctx.setLineDash([3, 3]);
+                    ctx.moveTo(tB.x, tB.y);
+                    ctx.lineTo(tD.x, tD.y);
+                    ctx.strokeStyle = '#64748b';
+                    ctx.lineWidth = 1.2;
+                    ctx.stroke();
+                }
+
+                ctx.beginPath();
+                ctx.setLineDash([4, 4]);
+                ctx.moveTo(tC.x, tC.y);
+                ctx.lineTo(tD.x, tD.y);
+                ctx.strokeStyle = '#ec4899';
+                ctx.lineWidth = 1.8;
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Right angle square at foot D
+                let sqSize = 8;
+                let dirAlongAB = { 
+                    x: (tA.x - tB.x) / (Math.hypot(tA.x - tB.x, tA.y - tB.y) || 1), 
+                    y: (tA.y - tB.y) / (Math.hypot(tA.x - tB.x, tA.y - tB.y) || 1) 
+                };
+                let dirAlongDC = { 
+                    x: (tC.x - tD.x) / (Math.hypot(tC.x - tD.x, tC.y - tD.y) || 1), 
+                    y: (tC.y - tD.y) / (Math.hypot(tC.x - tD.x, tC.y - tD.y) || 1) 
+                };
+
+                ctx.beginPath();
+                ctx.moveTo(tD.x + dirAlongAB.x * sqSize, tD.y + dirAlongAB.y * sqSize);
+                ctx.lineTo(tD.x + dirAlongAB.x * sqSize + dirAlongDC.x * sqSize, tD.y + dirAlongAB.y * sqSize + dirAlongDC.y * sqSize);
+                ctx.lineTo(tD.x + dirAlongDC.x * sqSize, tD.y + dirAlongDC.y * sqSize);
+                ctx.strokeStyle = '#ec4899';
+                ctx.lineWidth = 1.2;
+                ctx.stroke();
+            }
+
+            if (chkMedian.checked) {
                 ctx.beginPath();
                 ctx.setLineDash([5, 5]);
                 ctx.moveTo(tC.x, tC.y);
-                ctx.lineTo(midAB.x, midAB.y);
-                ctx.strokeStyle = '#38bdf8';
-                ctx.lineWidth = 2;
+                ctx.lineTo(tM.x, tM.y);
+                ctx.strokeStyle = '#06b6d4';
+                ctx.lineWidth = 1.8;
                 ctx.stroke();
-                ctx.setLineDash([]); // Reset dash
+                ctx.setLineDash([]);
 
-                // Midpoint dot
                 ctx.beginPath();
-                ctx.arc(midAB.x, midAB.y, 4, 0, 2 * Math.PI);
-                ctx.fillStyle = '#38bdf8';
+                ctx.arc(tM.x, tM.y, 3.5, 0, 2 * Math.PI);
+                ctx.fillStyle = '#06b6d4';
                 ctx.fill();
             }
 
-            // Vertex Labels
-            ctx.font = '600 14px Inter, sans-serif';
-            ctx.fillStyle = '#f8fafc';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
+            // 4. Draw Clean, Compact Side Dimensions (Parallel)
+            const normA = getEdgeOutwardNormal(tB, tC, tA);
+            drawParallelBadge(`a = ${a.toFixed(2)}`, tB, tC, 16, normA, {
+                color: '#e2e8f0',
+                borderColor: 'rgba(71, 85, 105, 0.8)'
+            });
 
-            const centroidX = (tA.x + tB.x + tC.x) / 3;
-            const centroidY = (tA.y + tB.y + tC.y) / 3;
-            
-            const drawLabel = (pt, text, dist) => {
-                let dx = pt.x - centroidX;
-                let dy = pt.y - centroidY;
-                let len = Math.sqrt(dx*dx + dy*dy) || 1;
-                ctx.fillText(text, pt.x + (dx/len) * dist, pt.y + (dy/len) * dist);
-            };
+            const normB = getEdgeOutwardNormal(tA, tC, tB);
+            drawParallelBadge(`b = ${b.toFixed(2)}`, tA, tC, 16, normB, {
+                color: '#e2e8f0',
+                borderColor: 'rgba(71, 85, 105, 0.8)'
+            });
 
+            const normC = getEdgeOutwardNormal(tA, tB, tC);
+            drawParallelBadge(`c = ${c.toFixed(2)}`, tA, tB, 16, normC, {
+                color: '#e2e8f0',
+                borderColor: 'rgba(71, 85, 105, 0.8)'
+            });
+
+            // 5. Draw Auxiliary Dimensions (Parallel)
+            if (chkAltitude.checked) {
+                let dx = tD.x - tC.x, dy = tD.y - tC.y;
+                let len = Math.hypot(dx, dy) || 1;
+                let nx = -dy / len, ny = dx / len;
+                if (nx * (tM.x - tC.x) + ny * (tM.y - tC.y) > 0) {
+                    nx = -nx; ny = -ny;
+                }
+
+                drawParallelBadge(`h = ${altitudeVal.toFixed(2)}`, tC, tD, 12, { x: nx, y: ny }, {
+                    frac: 0.40,
+                    color: '#f472b6',
+                    borderColor: 'rgba(236, 72, 153, 0.7)'
+                });
+            }
+
+            if (chkMedian.checked) {
+                let dx = tM.x - tC.x, dy = tM.y - tC.y;
+                let len = Math.hypot(dx, dy) || 1;
+                let nx = -dy / len, ny = dx / len;
+                if (nx * (tD.x - tC.x) + ny * (tD.y - tC.y) > 0) {
+                    nx = -nx; ny = -ny;
+                }
+
+                drawParallelBadge(`m = ${medianVal.toFixed(2)}`, tC, tM, 12, { x: nx, y: ny }, {
+                    frac: 0.65,
+                    color: '#22d3ee',
+                    borderColor: 'rgba(6, 182, 212, 0.7)'
+                });
+            }
+
+            // 6. Draw Vertex Badges (Compact)
             const degLabel = val => currentUnit === 'deg' ? `${val.toFixed(1)}°` : `${deg2rad(val).toFixed(2)} rad`;
 
-            drawLabel(tA, `A (${degLabel(A)})`, 30);
-            drawLabel(tB, `B (${degLabel(B)})`, 30);
-            drawLabel(tC, `C (${degLabel(C)})`, 30);
+            const bisA = getVertexOutwardBisector(tA, tC, tB);
+            drawUprightBadge(`A: ${degLabel(A)}`, tA.x + bisA.x * 26, tA.y + bisA.y * 26);
 
-            // Side Labels
-            ctx.fillStyle = '#94a3b8';
-            ctx.font = '500 14px Inter, sans-serif';
-            
-            const drawSideLabel = (p1, p2, val, label) => {
-                let midX = (p1.x + p2.x) / 2;
-                let midY = (p1.y + p2.y) / 2;
-                let dx = midX - centroidX;
-                let dy = midY - centroidY;
-                let len = Math.sqrt(dx*dx + dy*dy) || 1;
-                ctx.fillText(`${label} = ${val.toFixed(2)}`, midX + (dx/len) * 22, midY + (dy/len) * 22);
-            };
+            const bisB = getVertexOutwardBisector(tB, tA, tC);
+            drawUprightBadge(`B: ${degLabel(B)}`, tB.x + bisB.x * 26, tB.y + bisB.y * 26);
 
-            const labelA = currentMode === 'right' ? 'Height' : 'a';
-            const labelB = currentMode === 'right' ? 'Base' : 'b';
-            const labelC = currentMode === 'right' ? 'Hyp.' : 'c';
-
-            drawSideLabel(tC, tB, a, labelA);
-            drawSideLabel(tA, tC, b, labelB);
-            drawSideLabel(tA, tB, c, labelC);
+            const bisC = getVertexOutwardBisector(tC, tB, tA);
+            drawUprightBadge(`C: ${degLabel(C)}`, tC.x + bisC.x * 26, tC.y + bisC.y * 26);
         }
 
         // --- Notifications ---
@@ -952,9 +1268,9 @@
             canvasPlaceholder.style.display = 'block';
         }
 
-        // Initialize UI Labels
+        // Initialize UI
         updateLabels();
-        
+        resizeCanvas();
     </script>
 </body>
 </html>
