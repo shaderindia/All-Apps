@@ -23,6 +23,7 @@
 <meta name="robots" content="index, follow">
 <meta name="theme-color" content="#1d4ed8">
 <link rel="canonical" href="https://shader7.com/photopassportsizepro/">
+<link rel="manifest" href="/manifest.json">
 
 <!-- Open Graph -->
 <meta property="og:type" content="website">
@@ -37,7 +38,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" />
 
-<!-- Global Theme Manager -->
+<!-- Global Theme Manager & PWA Engine -->
 <script src="../js/theme.js"></script>
 
 <!-- Structured Schema Markup for Search Engines -->
@@ -111,7 +112,10 @@ header.top-bar { display: flex; justify-content: space-between; align-items: cen
 .brand-link { font-size: 1.25rem; font-weight: 900; color: var(--text-main); text-decoration: none; display: flex; align-items: center; gap: 0.6rem; }
 .brand-link i { color: var(--primary); }
 
-.top-actions { display: flex; align-items: center; gap: 1rem; }
+.top-actions { display: flex; align-items: center; gap: 0.75rem; }
+.install-btn { background: linear-gradient(135deg, var(--primary), #1e40af); color: white; border: none; padding: 0.5rem 1.15rem; border-radius: 99px; font-weight: 700; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.45rem; transition: transform 0.2s, box-shadow 0.2s; }
+.install-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(29, 78, 216, 0.35); }
+
 .theme-toggle-btn { background: transparent; border: 1px solid var(--border); color: var(--text-main); padding: 0.45rem 0.85rem; border-radius: 10px; cursor: pointer; font-size: 0.95rem; transition: background 0.2s; }
 .theme-toggle-btn:hover { background: rgba(125, 125, 125, 0.1); }
 
@@ -122,7 +126,18 @@ header.top-bar { display: flex; justify-content: space-between; align-items: cen
 .hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(29, 78, 216, 0.12); color: var(--primary); border: 1px solid rgba(29, 78, 216, 0.3); padding: 0.45rem 1.2rem; border-radius: 99px; font-size: 0.85rem; font-weight: 800; letter-spacing: 0.5px; margin-bottom: 1.5rem; }
 .hero h1 { font-size: clamp(2.5rem, 5vw, 4.25rem); font-weight: 900; line-height: 1.15; margin-bottom: 1.25rem; letter-spacing: -1.5px; }
 .hero h1 span { background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.hero p { font-size: 1.2rem; color: var(--text-muted); max-width: 750px; margin: 0 auto 2.5rem; }
+.hero p { font-size: 1.2rem; color: var(--text-muted); max-width: 750px; margin: 0 auto 2rem; }
+
+/* Interactive Country Preset Selector Widget */
+.preset-widget { background: var(--bg-card); border: 1px solid var(--border); border-radius: 24px; padding: 2rem; max-width: 880px; margin: 2rem auto 4rem; box-shadow: var(--shadow-lg); text-align: left; }
+.preset-tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; margin-bottom: 1.5rem; }
+.preset-tab-btn { background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 0.5rem 1rem; border-radius: 12px; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
+.preset-tab-btn.active, .preset-tab-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
+
+.preset-preview-card { background: var(--bg-page); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem; }
+.preset-specs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; flex: 1; }
+.spec-item label { font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 0.25rem; }
+.spec-item strong { font-size: 1.1rem; color: var(--text-main); font-family: var(--font-mono); }
 
 /* Grid */
 .grid-section { max-width: 1200px; margin: 3rem auto; padding: 0 1.5rem; }
@@ -145,6 +160,9 @@ footer a { color: var(--primary); text-decoration: none; }
   <header class="top-bar">
     <a href="../" class="brand-link"><i class="fa-solid fa-camera-retro"></i> Passport Photo Studio Pro</a>
     <div class="top-actions">
+      <button id="pwa-install-btn" class="install-btn" style="display: none;" onclick="window.triggerPwaInstall()">
+        <i class="fa-solid fa-download"></i> Install App
+      </button>
       <a href="download.html" style="color: var(--primary); text-decoration: none; font-weight: 700; font-size: 0.9rem;"><i class="fa-brands fa-android"></i> Download Android App</a>
       <a href="../index.html#tools" style="color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 0.9rem;">All Apps</a>
       <button onclick="window.toggleShader7Theme()" class="theme-toggle-btn" aria-label="Toggle Theme" title="Toggle Theme">
@@ -159,9 +177,49 @@ footer a { color: var(--primary); text-decoration: none; }
       <div class="hero-badge"><i class="fa-solid fa-check-circle"></i> 100% Free Online Editor • Biometric Passport Specs</div>
       <h1>Create Passport Size Photo <span>Online Free</span></h1>
       <p>The ultimate <strong>passport size photo editor free</strong> online. Crop US 2x2", UK 35x45mm, and Schengen visa photos with background removal, digital suit overlays, and 4x6 print grid export.</p>
-      <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+      
+      <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2.5rem;">
         <a href="app.html" class="btn-primary" style="font-size: 1.1rem; padding: 0.9rem 2.2rem;"><i class="fa-solid fa-wand-magic-sparkles"></i> Create Passport Photo Free</a>
         <a href="download.html" class="btn-primary" style="font-size: 1.1rem; padding: 0.9rem 2.2rem; background: linear-gradient(135deg, #059669, #047857);"><i class="fa-brands fa-android"></i> Download Android App</a>
+      </div>
+
+      <!-- Interactive Biometric Standards Widget -->
+      <div class="preset-widget">
+        <div style="text-align: center; margin-bottom: 1.25rem;">
+          <div style="font-weight: 800; font-size: 1.05rem; display: inline-flex; align-items: center; gap: 0.5rem;">
+            <i class="fa-solid fa-earth-americas" style="color: var(--primary);"></i> Biometric Passport Standards & Requirements
+          </div>
+        </div>
+
+        <div class="preset-tabs">
+          <button class="preset-tab-btn active" onclick="selectPreset('us', this)">United States (2x2")</button>
+          <button class="preset-tab-btn" onclick="selectPreset('uk', this)">United Kingdom (35x45mm)</button>
+          <button class="preset-tab-btn" onclick="selectPreset('schengen', this)">Schengen Visa (35x45mm)</button>
+          <button class="preset-tab-btn" onclick="selectPreset('in', this)">India Passport (35x45mm)</button>
+          <button class="preset-tab-btn" onclick="selectPreset('ca', this)">Canada (50x70mm)</button>
+        </div>
+
+        <div class="preset-preview-card">
+          <div class="preset-specs-grid">
+            <div class="spec-item">
+              <label>Print Dimensions</label>
+              <strong id="spec-dim">2.00 &times; 2.00 in (51 &times; 51 mm)</strong>
+            </div>
+            <div class="spec-item">
+              <label>Resolution at 300 DPI</label>
+              <strong id="spec-res" style="color: var(--primary);">600 &times; 600 px</strong>
+            </div>
+            <div class="spec-item">
+              <label>Head Height</label>
+              <strong id="spec-head">50% - 69% of photo</strong>
+            </div>
+            <div class="spec-item">
+              <label>Background Color</label>
+              <strong id="spec-bg" style="color: var(--accent);">Plain White / Off-White</strong>
+            </div>
+          </div>
+          <a id="spec-cta" href="app.html?preset=us" class="btn-primary">Apply US Preset <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
       </div>
     </section>
 
@@ -207,6 +265,65 @@ footer a { color: var(--primary); text-decoration: none; }
   <footer>
     <p>&copy; 2026 Create Passport Size Photo Online Free • SHADER7 Suite. <a href="../">View All Apps</a></p>
   </footer>
+
+  <script>
+    const presetsData = {
+      us: {
+        dim: '2.00 × 2.00 in (51 × 51 mm)',
+        res: '600 × 600 px',
+        head: '50% - 69% of height',
+        bg: 'Plain White / Off-White',
+        btnText: 'Apply US Preset',
+        presetParam: 'us'
+      },
+      uk: {
+        dim: '35 × 45 mm (1.38 × 1.77 in)',
+        res: '413 × 531 px',
+        head: '29mm - 34mm head height',
+        bg: 'Light Grey / Cream',
+        btnText: 'Apply UK Preset',
+        presetParam: 'uk'
+      },
+      schengen: {
+        dim: '35 × 45 mm (1.38 × 1.77 in)',
+        res: '413 × 531 px',
+        head: '70% - 80% (32 - 36mm)',
+        bg: 'Light Grey / White',
+        btnText: 'Apply Schengen Preset',
+        presetParam: 'schengen'
+      },
+      in: {
+        dim: '35 × 45 mm (or 2 × 2 in)',
+        res: '413 × 531 px',
+        head: '70% - 80% face coverage',
+        bg: 'Plain White Background',
+        btnText: 'Apply India Preset',
+        presetParam: 'in'
+      },
+      ca: {
+        dim: '50 × 70 mm (2.0 × 2.75 in)',
+        res: '590 × 826 px',
+        head: '31mm - 36mm head length',
+        bg: 'Plain White / Light Tint',
+        btnText: 'Apply Canada Preset',
+        presetParam: 'ca'
+      }
+    };
+
+    function selectPreset(key, btnEl) {
+      document.querySelectorAll('.preset-tab-btn').forEach(b => b.classList.remove('active'));
+      if (btnEl) btnEl.classList.add('active');
+
+      const data = presetsData[key];
+      document.getElementById('spec-dim').innerHTML = data.dim;
+      document.getElementById('spec-res').textContent = data.res;
+      document.getElementById('spec-head').textContent = data.head;
+      document.getElementById('spec-bg').textContent = data.bg;
+      const cta = document.getElementById('spec-cta');
+      cta.innerHTML = `${data.btnText} <i class="fa-solid fa-arrow-right"></i>`;
+      cta.href = `app.html?preset=${data.presetParam}`;
+    }
+  </script>
 
 </body>
 </html>
