@@ -21,6 +21,7 @@
 <meta name="robots" content="index, follow">
 <meta name="theme-color" content="#1d4ed8">
 <link rel="canonical" href="https://shader7.com/">
+<link rel="manifest" href="/manifest.json">
 
 <!-- Open Graph -->
 <meta property="og:type" content="website">
@@ -35,7 +36,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" />
 
-<!-- Global Theme Manager -->
+<!-- Global Theme Manager & PWA Engine -->
 <script src="js/theme.js"></script>
 
 <!-- Social Bar Ad Script -->
@@ -87,7 +88,10 @@ header.top-bar { position: relative; z-index: 10; display: flex; justify-content
 .brand-link { font-size: 1.35rem; font-weight: 900; color: var(--text-main); text-decoration: none; display: flex; align-items: center; gap: 0.6rem; letter-spacing: -0.5px; }
 .brand-link i { color: var(--primary); }
 
-.top-actions { display: flex; align-items: center; gap: 1rem; }
+.top-actions { display: flex; align-items: center; gap: 0.75rem; }
+.install-btn { background: linear-gradient(135deg, #1d4ed8, #7c3aed); color: white; border: none; padding: 0.5rem 1.15rem; border-radius: 99px; font-weight: 700; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.45rem; transition: transform 0.2s, box-shadow 0.2s; }
+.install-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(29, 78, 216, 0.35); }
+
 .theme-toggle-btn { background: transparent; border: 1px solid var(--border); color: var(--text-main); padding: 0.45rem 0.85rem; border-radius: 10px; cursor: pointer; font-size: 0.95rem; transition: background 0.2s; }
 .theme-toggle-btn:hover { background: rgba(125, 125, 125, 0.1); }
 
@@ -95,7 +99,9 @@ header.top-bar { position: relative; z-index: 10; display: flex; justify-content
 .hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(29, 78, 216, 0.1); border: 1px solid rgba(29, 78, 216, 0.25); color: var(--primary); padding: 0.4rem 1.2rem; border-radius: 99px; font-size: 0.82rem; font-weight: 800; letter-spacing: 0.5px; margin-bottom: 1.5rem; }
 .hero h1 { font-size: clamp(2.5rem, 5.5vw, 4.25rem); font-weight: 900; line-height: 1.1; margin-bottom: 1.25rem; letter-spacing: -1.5px; }
 .hero h1 span { background: linear-gradient(135deg, var(--primary), #7c3aed); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.hero p { font-size: 1.2rem; color: var(--text-muted); max-width: 720px; margin: 0 auto 2.5rem; }
+.hero p { font-size: 1.2rem; color: var(--text-muted); max-width: 720px; margin: 0 auto 2rem; }
+
+.hero-actions { display: flex; align-items: center; justify-content: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem; }
 
 /* Interactive Search & Filter Bar */
 .search-filter-box { position: relative; z-index: 10; max-width: 750px; margin: 0 auto 3.5rem; padding: 0 1rem; }
@@ -139,10 +145,13 @@ footer a { color: var(--primary); text-decoration: none; }
   <header class="top-bar">
     <a href="./" class="brand-link"><i class="fa-solid fa-shapes"></i> SHADER7 Web Suite</a>
     <div class="top-actions">
+      <button id="pwa-install-btn" class="install-btn" style="display: none;" onclick="window.triggerPwaInstall()">
+        <i class="fa-solid fa-download"></i> Install App
+      </button>
       <button onclick="window.toggleShader7Theme()" class="theme-toggle-btn" aria-label="Toggle Theme" title="Toggle Theme">
         <i class="fa-solid fa-moon"></i>
       </button>
-      <a href="#tools" class="btn-primary">Browse All Apps <i class="fa-solid fa-arrow-down"></i></a>
+      <a href="#tools" class="btn-primary">Browse Apps <i class="fa-solid fa-arrow-down"></i></a>
     </div>
   </header>
 
@@ -150,7 +159,15 @@ footer a { color: var(--primary); text-decoration: none; }
     <section class="hero">
       <div class="hero-badge"><i class="fa-solid fa-bolt"></i> 100% Client-Side • Privacy-First Suite</div>
       <h1>Powerful Web Tools <span>Built For Speed & Privacy</span></h1>
-      <p>High-performance engineering calculators, ATS resume builders, encrypted P2P file sharing, and media utilities. No registration, zero cloud uploads.</p>
+      <p>High-performance engineering calculators, ATS resume builders, trigonometry tools, and media utilities. No registration, zero cloud uploads.</p>
+      <div class="hero-actions">
+        <button class="btn-primary pwa-install-btn" style="display: none;" onclick="window.triggerPwaInstall()">
+          <i class="fa-solid fa-mobile-screen-button"></i> Install App on Device
+        </button>
+        <a href="#tools" class="btn-primary" style="background: var(--bg-card); color: var(--text-main) !important; border: 1px solid var(--border);">
+          Explore All Tools <i class="fa-solid fa-arrow-down"></i>
+        </a>
+      </div>
     </section>
 
     <!-- Search & Filter Controls -->
@@ -364,6 +381,21 @@ footer a { color: var(--primary); text-decoration: none; }
       });
     }
   </script>
+
+  <!-- PWA Floating Install Banner -->
+  <div id="pwa-install-banner" class="pwa-floating-banner" style="display: none;">
+    <div class="pwa-banner-left">
+      <div class="pwa-app-icon"><i class="fa-solid fa-shapes"></i></div>
+      <div>
+        <div class="pwa-title">Install SHADER7 Web Suite</div>
+        <div class="pwa-desc">Instant offline launch, fast access &amp; standalone app mode.</div>
+      </div>
+    </div>
+    <div class="pwa-banner-right">
+      <button class="pwa-btn-install" onclick="window.triggerPwaInstall()"><i class="fa-solid fa-download"></i> Install</button>
+      <button class="pwa-btn-dismiss" onclick="window.dismissPwaBanner()" aria-label="Dismiss">&times;</button>
+    </div>
+  </div>
 
 </body>
 </html>
