@@ -119,6 +119,9 @@
 
   function showPwaInstallElements() {
     try {
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+      if (isStandalone) return;
+
       const installBtns = document.querySelectorAll('#pwa-install-btn, .pwa-install-btn');
       installBtns.forEach(btn => {
         btn.style.display = 'inline-flex';
@@ -132,6 +135,13 @@
         banner.style.display = 'flex';
       }
     } catch (e) {}
+  }
+
+  // Auto-reveal install triggers on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', showPwaInstallElements);
+  } else {
+    showPwaInstallElements();
   }
 
   window.triggerPwaInstall = async function() {
