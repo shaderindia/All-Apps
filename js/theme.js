@@ -385,16 +385,34 @@
     }
     @media (max-width: 600px) {
       .pwa-floating-banner {
-        left: 1rem;
-        right: 1rem;
-        bottom: 1rem;
+        left: 0.75rem;
+        right: 0.75rem;
+        bottom: 0.75rem;
+        padding: 0.75rem 0.9rem;
+        gap: 0.75rem;
         max-width: none;
+      }
+      .pwa-app-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+      }
+      .pwa-title {
+        font-size: 0.85rem;
+      }
+      .pwa-desc {
+        font-size: 0.72rem;
+      }
+      .pwa-btn-install {
+        padding: 0.45rem 0.8rem;
+        font-size: 0.76rem;
       }
     }
     .pwa-banner-left {
       display: flex;
       align-items: center;
       gap: 0.75rem;
+      min-width: 0;
     }
     .pwa-app-icon {
       width: 42px;
@@ -418,6 +436,9 @@
       font-size: 0.78rem;
       color: var(--text-muted, #64748b);
       line-height: 1.3;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .pwa-banner-right {
       display: flex;
@@ -438,6 +459,7 @@
       align-items: center;
       gap: 0.4rem;
       transition: transform 0.2s;
+      white-space: nowrap;
     }
     .pwa-btn-install:hover { transform: scale(1.04); }
     .pwa-btn-dismiss {
