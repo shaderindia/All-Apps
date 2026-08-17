@@ -152,10 +152,12 @@
     showPwaInstallElements();
   }
 
-  window.triggerPwaInstall = async function(event) {
+  window.triggerPwaInstall = function(event) {
     if (event) {
-      event.stopPropagation?.();
-      event.preventDefault?.();
+      try {
+        event.stopPropagation();
+        event.preventDefault();
+      } catch (e) {}
     }
 
     // Physical haptic vibration feedback if supported
@@ -177,18 +179,24 @@
         window.deferredPwaPrompt.prompt();
         promptTriggered = true;
         showPwaToast("Opening browser install prompt in address bar / screen...");
-        const { outcome } = await window.deferredPwaPrompt.userChoice;
-        if (outcome === 'accepted') {
-          showPwaToast("✓ SHADER7 App Installed Successfully!");
-          window.dismissPwaBanner();
-          const existing = document.getElementById('pwa-install-modal');
-          if (existing) existing.remove();
-        }
-        window.deferredPwaPrompt = null;
-      } catch (err) {}
+        
+        // Handle user choice asynchronously without blocking modal rendering
+        const currentPrompt = window.deferredPwaPrompt;
+        currentPrompt.userChoice.then(function(choiceResult) {
+          if (choiceResult && choiceResult.outcome === 'accepted') {
+            showPwaToast("✓ SHADER7 App Installed Successfully!");
+            window.dismissPwaBanner();
+            const existing = document.getElementById('pwa-install-modal');
+            if (existing) existing.remove();
+          }
+          window.deferredPwaPrompt = null;
+        }).catch(function() {});
+      } catch (err) {
+        console.warn("PWA prompt invocation error:", err);
+      }
     }
 
-    // Always show the clear on-screen install dialog so the user sees immediate action
+    // Always show the clear on-screen install dialog immediately
     showUniversalInstallModal(promptTriggered);
   };
 
