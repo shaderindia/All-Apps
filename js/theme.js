@@ -122,7 +122,7 @@
       const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
       if (isStandalone) return;
 
-      const installBtns = document.querySelectorAll('#pwa-install-btn, .pwa-install-btn');
+      const installBtns = document.querySelectorAll('#pwa-install-btn, .pwa-install-btn, .pwa-btn-install');
       installBtns.forEach(btn => {
         btn.style.display = 'inline-flex';
         // Attach direct non-bubbling listener to bypass third-party ad click interceptors
@@ -155,11 +155,12 @@
   window.triggerPwaInstall = async function(event) {
     if (event) {
       event.stopPropagation?.();
+      event.preventDefault?.();
     }
 
     // Physical haptic vibration feedback if supported
     try {
-      if (navigator.vibrate) navigator.vibrate([30, 20, 30]);
+      if (navigator.vibrate) navigator.vibrate([40, 30, 40]);
     } catch (e) {}
 
     // Tactile button bounce feedback on all install buttons
@@ -169,22 +170,26 @@
       setTimeout(() => { b.style.transform = ''; }, 200);
     });
 
+    let promptTriggered = false;
+
     if (window.deferredPwaPrompt) {
       try {
         window.deferredPwaPrompt.prompt();
-        showPwaToast("Opening official install prompt in browser...");
+        promptTriggered = true;
+        showPwaToast("Opening browser install prompt in address bar / screen...");
         const { outcome } = await window.deferredPwaPrompt.userChoice;
         if (outcome === 'accepted') {
           showPwaToast("✓ SHADER7 App Installed Successfully!");
           window.dismissPwaBanner();
+          const existing = document.getElementById('pwa-install-modal');
+          if (existing) existing.remove();
         }
         window.deferredPwaPrompt = null;
-      } catch (err) {
-        showUniversalInstallModal();
-      }
-    } else {
-      showUniversalInstallModal();
+      } catch (err) {}
     }
+
+    // Always show the clear on-screen install dialog so the user sees immediate action
+    showUniversalInstallModal(promptTriggered);
   };
 
   window.dismissPwaBanner = function(e) {
@@ -212,7 +217,7 @@
     }, 4500);
   }
 
-  function showUniversalInstallModal() {
+  function showUniversalInstallModal(isPromptOpened) {
     const existing = document.getElementById('pwa-install-modal');
     if (existing) existing.remove();
 
@@ -220,7 +225,7 @@
     const isAndroid = /Android/i.test(navigator.userAgent);
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
 
-    let modalTitle = 'Install SHADER7 App';
+    let modalTitle = 'Install SHADER7 Suite';
     let instructionsHtml = '';
 
     if (isStandalone) {
@@ -231,7 +236,7 @@
             <i class="fa-solid fa-check"></i>
           </div>
           <p style="font-weight: 800; font-size: 1.15rem; margin-bottom: 0.5rem; color: #0f172a;">SHADER7 is already installed!</p>
-          <p style="font-size: 0.92rem; color: #64748b; line-height: 1.5;">You are running the application in standalone mode with full offline caching enabled.</p>
+          <p style="font-size: 0.92rem; color: #64748b; line-height: 1.5;">You are running the application in standalone mode with offline caching enabled.</p>
         </div>
       `;
     } else if (isIos) {
@@ -241,7 +246,7 @@
         <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 1.1rem; margin-bottom: 1.5rem;">
           <div style="display: flex; gap: 0.85rem; align-items: flex-start; margin-bottom: 1rem;">
             <div style="width: 30px; height: 30px; border-radius: 50%; background: #0284c7; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.85rem; flex-shrink: 0;">1</div>
-            <div style="font-size: 0.92rem; line-height: 1.4; color: #1e293b;">Tap the <strong>Share icon</strong> <i class="fa-solid fa-arrow-up-from-bracket" style="color: #0284c7; font-size: 1rem;"></i> at the bottom toolbar of Safari.</div>
+            <div style="font-size: 0.92rem; line-height: 1.4; color: #1e293b;">Tap the <strong>Share button</strong> <i class="fa-solid fa-arrow-up-from-bracket" style="color: #0284c7; font-size: 1rem;"></i> at the bottom toolbar in Safari.</div>
           </div>
           <div style="display: flex; gap: 0.85rem; align-items: flex-start; margin-bottom: 1rem;">
             <div style="width: 30px; height: 30px; border-radius: 50%; background: #059669; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.85rem; flex-shrink: 0;">2</div>
@@ -256,11 +261,11 @@
     } else if (isAndroid) {
       modalTitle = 'Install on Android';
       instructionsHtml = `
-        <p style="font-size: 0.92rem; margin-bottom: 1.25rem; color: #475569; line-height: 1.5;">Install SHADER7 directly to your Android device:</p>
+        <p style="font-size: 0.92rem; margin-bottom: 1.25rem; color: #475569; line-height: 1.5;">Install SHADER7 directly to your Android home screen:</p>
         <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 1.1rem; margin-bottom: 1.5rem;">
           <div style="display: flex; gap: 0.85rem; align-items: flex-start; margin-bottom: 1rem;">
             <div style="width: 30px; height: 30px; border-radius: 50%; background: #1d4ed8; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.85rem; flex-shrink: 0;">1</div>
-            <div style="font-size: 0.92rem; line-height: 1.4; color: #1e293b;">Tap the <strong>three dots menu (⋮)</strong> at the top right of Chrome/browser.</div>
+            <div style="font-size: 0.92rem; line-height: 1.4; color: #1e293b;">Tap the <strong>three dots menu (⋮)</strong> at the top right of your browser.</div>
           </div>
           <div style="display: flex; gap: 0.85rem; align-items: flex-start;">
             <div style="width: 30px; height: 30px; border-radius: 50%; background: #059669; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.85rem; flex-shrink: 0;">2</div>
@@ -270,8 +275,16 @@
       `;
     } else {
       modalTitle = 'Install Desktop App';
+      const promptBanner = isPromptOpened ? `
+        <div style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 0.75rem 1rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.6rem; color: #065f46; font-size: 0.88rem; font-weight: 700;">
+          <i class="fa-solid fa-circle-check" style="font-size: 1.1rem; color: #10b981;"></i>
+          <span>Browser install prompt opened in your address bar! Click "Install" in the prompt to complete.</span>
+        </div>
+      ` : '';
+
       instructionsHtml = `
-        <p style="font-size: 0.92rem; margin-bottom: 1.25rem; color: #475569; line-height: 1.5;">Install SHADER7 Suite as a standalone desktop application on Windows/Mac:</p>
+        ${promptBanner}
+        <p style="font-size: 0.92rem; margin-bottom: 1.25rem; color: #475569; line-height: 1.5;">Install SHADER7 Suite as a standalone desktop app on Windows/Mac:</p>
         <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 1.1rem; margin-bottom: 1.5rem;">
           <div style="display: flex; gap: 0.85rem; align-items: flex-start; margin-bottom: 1rem;">
             <div style="width: 30px; height: 30px; border-radius: 50%; background: #1d4ed8; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.85rem; flex-shrink: 0;">1</div>
@@ -283,7 +296,7 @@
           </div>
           <div style="display: flex; gap: 0.85rem; align-items: flex-start;">
             <div style="width: 30px; height: 30px; border-radius: 50%; background: #7c3aed; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.85rem; flex-shrink: 0;">3</div>
-            <div style="font-size: 0.92rem; line-height: 1.4; color: #1e293b;">Click <strong>Install</strong> in the browser popup.</div>
+            <div style="font-size: 0.92rem; line-height: 1.4; color: #1e293b;">Click <strong>Install</strong> in the popup to launch standalone mode.</div>
           </div>
         </div>
       `;
