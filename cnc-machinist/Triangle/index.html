@@ -1,375 +1,519 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Universal Triangle Solver</title>
-    <style>
-        :root {
-            --bg-color: #0f172a;
-            --panel-bg: #1e293b;
-            --input-bg: #334155;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --accent: #6366f1;
-            --accent-hover: #4f46e5;
-            --calculated-glow: #38bdf8;
-            --altitude-color: #ec4899;
-            --median-color: #06b6d4;
-            --danger: #ef4444;
-            --danger-bg: #450a0a;
-            --warning: #f59e0b;
-            --border: #475569;
-            --radius: 8px;
-            --font: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+<!-- Social Bar Ad Script -->
+<script src="https://emotionallytonightintelligent.com/24/99/11/249911a0bb6cd7ff11a49086b8f131e7.js"></script>
+<script>
+    // ponytail: Ensure trailing slash for proper relative path resolution
+    if (window.location.protocol.startsWith('http') && !window.location.pathname.endsWith('/')) {
+        const pathParts = window.location.pathname.split('/');
+        const lastPart = pathParts[pathParts.length - 1];
+        if (lastPart && !lastPart.includes('.')) {
+            window.location.replace(window.location.pathname + '/' + window.location.search + window.location.hash);
         }
+    }
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+<title>Universal Triangle Solver | Trigonometry & CNC Geometry Tool - SHADER7</title>
+<meta name="description" content="Free online Universal Triangle Solver. Calculate missing sides, angles, perpendicular altitude, hypotenuse median, segments, and area for right and general triangles with interactive canvas diagram.">
+<meta name="keywords" content="triangle solver, trigonometry calculator, right triangle solver, CNC triangle solver, side angle angle calculator, altitude median triangle calculator, SHADER7">
+<meta name="author" content="Nishikant Xalxo">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#1d4ed8">
+<link rel="canonical" href="https://shader7.com/cnc-machinist/Triangle/">
 
-        body {
-            font-family: var(--font);
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Universal Triangle Solver | SHADER7 CNC Tools">
+<meta property="og:description" content="Calculate missing sides, angles, perpendicular altitude, medians, and area with live interactive diagram.">
+<meta property="og:url" content="https://shader7.com/cnc-machinist/Triangle/">
+<meta property="og:site_name" content="SHADER7">
 
-        header {
-            padding: 1.25rem 2rem;
-            background-color: var(--panel-bg);
-            border-bottom: 1px solid var(--border);
-            text-align: center;
-        }
+<!-- Fonts & Icons -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" />
 
-        header h1 {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: var(--accent);
-            margin-bottom: 0.25rem;
-        }
+<!-- Global Theme Manager -->
+<script src="../../js/theme.js"></script>
 
-        .container {
-            display: flex;
-            flex: 1;
-            flex-direction: column;
-            padding: 1.5rem;
-            gap: 1.5rem;
-            max-width: 1400px;
-            margin: 0 auto;
-            width: 100%;
-        }
+<style>
+:root, [data-theme="dark"] {
+    --bg-color: #090d16;
+    --panel-bg: #111827;
+    --input-bg: #1e293b;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --accent: #6366f1;
+    --accent-hover: #4f46e5;
+    --calculated-glow: #38bdf8;
+    --altitude-color: #ec4899;
+    --median-color: #06b6d4;
+    --danger: #ef4444;
+    --danger-bg: #450a0a;
+    --warning: #f59e0b;
+    --border: rgba(255, 255, 255, 0.1);
+    --border-hover: rgba(99, 102, 241, 0.4);
+    --radius: 12px;
+    --canvas-bg: #0b1120;
+    --glass-bg: rgba(17, 24, 39, 0.85);
+    --font: 'Outfit', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+}
 
-        @media (min-width: 900px) {
-            .container {
-                flex-direction: row;
-            }
-            .panel {
-                flex: 1;
-            }
-        }
+[data-theme="light"] {
+    --bg-color: #f8fafc;
+    --panel-bg: #ffffff;
+    --input-bg: #f1f5f9;
+    --text-main: #0f172a;
+    --text-muted: #475569;
+    --accent: #4f46e5;
+    --accent-hover: #4338ca;
+    --calculated-glow: #0284c7;
+    --altitude-color: #db2777;
+    --median-color: #0891b2;
+    --danger: #dc2626;
+    --danger-bg: #fee2e2;
+    --warning: #d97706;
+    --border: rgba(15, 23, 42, 0.1);
+    --border-hover: rgba(79, 70, 229, 0.3);
+    --radius: 12px;
+    --canvas-bg: #f8fafc;
+    --glass-bg: rgba(255, 255, 255, 0.85);
+    --font: 'Outfit', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+}
 
-        .panel {
-            background-color: var(--panel-bg);
-            border-radius: var(--radius);
-            padding: 1.5rem;
-            border: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            gap: 1.25rem;
-        }
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
-        /* Controls & Toggles */
-        .toggles {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            margin-bottom: 0.5rem;
-        }
+body {
+    font-family: var(--font);
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    transition: background 0.2s, color 0.2s;
+}
 
-        .toggle-group {
-            display: flex;
-            background-color: var(--input-bg);
-            border-radius: var(--radius);
-            overflow: hidden;
-            border: 1px solid var(--border);
-        }
+/* Top Navigation Bar */
+header.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.85rem 2rem;
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+}
 
-        .toggle-group label {
-            padding: 0.5rem 1rem;
-            cursor: pointer;
-            font-size: 0.875rem;
-            font-weight: 500;
-            transition: background-color 0.2s, color 0.2s;
-            user-select: none;
-        }
+.brand-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 1.15rem;
+    font-weight: 800;
+}
 
-        .toggle-group input[type="radio"] {
-            display: none;
-        }
+.brand-link {
+    color: var(--text-main);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
 
-        .toggle-group input[type="radio"]:checked + label {
-            background-color: var(--accent);
-            color: white;
-        }
+.brand-link i { color: var(--accent); }
+.brand-sep { color: var(--text-muted); opacity: 0.6; }
+.brand-sub { color: var(--accent); font-weight: 700; font-size: 1rem; }
 
-        /* Inputs Grid */
-        .input-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.25rem;
-        }
+.top-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
 
-        @media (max-width: 600px) {
-            .input-grid {
-                grid-template-columns: 1fr;
-            }
-        }
+.nav-btn {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: color 0.2s;
+}
+.nav-btn:hover { color: var(--text-main); }
 
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
+.theme-toggle-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-main);
+    padding: 0.45rem 0.85rem;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: background 0.2s;
+}
+.theme-toggle-btn:hover { background: rgba(125, 125, 125, 0.1); }
 
-        .input-group label {
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: var(--text-muted);
-        }
+.container {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    padding: 1.5rem;
+    gap: 1.5rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+}
 
-        .input-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
+@media (min-width: 900px) {
+    .container {
+        flex-direction: row;
+    }
+    .panel {
+        flex: 1;
+    }
+}
 
-        .input-wrapper span {
-            position: absolute;
-            left: 12px;
-            color: var(--text-muted);
-            font-weight: 600;
-            font-size: 0.85rem;
-            pointer-events: none;
-            white-space: nowrap;
-        }
+.panel {
+    background-color: var(--panel-bg);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
 
-        input[type="number"] {
-            width: 100%;
-            padding: 0.75rem 0.75rem 0.75rem 7.2rem;
-            background-color: var(--input-bg);
-            border: 1px solid var(--border);
-            color: var(--text-main);
-            border-radius: var(--radius);
-            font-family: var(--font);
-            font-size: 1rem;
-            outline: none;
-            transition: border-color 0.2s, background-color 0.2s;
-        }
+/* Controls & Toggles */
+.toggles {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
 
-        .angle-input input[type="number"] {
-            padding-left: 2.5rem;
-        }
+.toggle-group {
+    display: flex;
+    background-color: var(--input-bg);
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border);
+}
 
-        input[type="number"]:focus {
-            border-color: var(--accent);
-        }
+.toggle-group label {
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: background-color 0.2s, color 0.2s;
+    user-select: none;
+    color: var(--text-muted);
+}
 
-        input[type="number"][data-calculated="true"] {
-            color: var(--calculated-glow);
-            border-color: rgba(56, 189, 248, 0.4);
-            background-color: #1a283d;
-        }
+.toggle-group input[type="radio"] {
+    display: none;
+}
 
-        input[type="number"]:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            background-color: #1e293b;
-        }
+.toggle-group input[type="radio"]:checked + label {
+    background-color: var(--accent);
+    color: white;
+}
 
-        /* Results Summary Card */
-        .results-card {
-            background-color: var(--input-bg);
-            border-radius: var(--radius);
-            padding: 1rem;
-            border: 1px solid var(--border);
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0.75rem;
-            font-size: 0.875rem;
-        }
+/* Inputs Grid */
+.input-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+}
 
-        .results-card div span {
-            color: var(--text-muted);
-            font-weight: 500;
-        }
+@media (max-width: 600px) {
+    .input-grid {
+        grid-template-columns: 1fr;
+    }
+}
 
-        .results-card div strong {
-            color: var(--calculated-glow);
-            float: right;
-        }
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
 
-        .results-card div strong.altitude-val {
-            color: var(--altitude-color);
-        }
+.input-group label {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--text-muted);
+}
 
-        .results-card div strong.median-val {
-            color: var(--median-color);
-        }
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
 
-        /* Canvas Overlay Controls */
-        .canvas-options {
-            display: flex;
-            gap: 1.25rem;
-            flex-wrap: wrap;
-            padding: 0.5rem 0.25rem 0 0.25rem;
-            font-size: 0.85rem;
-            align-items: center;
-            justify-content: space-between;
-        }
+.input-wrapper span {
+    position: absolute;
+    left: 12px;
+    color: var(--text-muted);
+    font-weight: 700;
+    font-size: 0.85rem;
+    pointer-events: none;
+    white-space: nowrap;
+}
 
-        .canvas-options-left {
-            display: flex;
-            gap: 1.25rem;
-            flex-wrap: wrap;
-        }
+input[type="number"] {
+    width: 100%;
+    padding: 0.75rem 0.75rem 0.75rem 7.2rem;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border);
+    color: var(--text-main);
+    border-radius: var(--radius);
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s, background-color 0.2s;
+}
 
-        .canvas-options label {
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            cursor: pointer;
-            color: var(--text-muted);
-            user-select: none;
-        }
+.angle-input input[type="number"] {
+    padding-left: 2.5rem;
+}
 
-        .canvas-options input[type="checkbox"] {
-            accent-color: var(--accent);
-            cursor: pointer;
-        }
+input[type="number"]:focus {
+    border-color: var(--accent);
+}
 
-        /* Buttons */
-        .actions {
-            display: flex;
-            gap: 1rem;
-            margin-top: 0.5rem;
-        }
+input[type="number"][data-calculated="true"] {
+    color: var(--calculated-glow);
+    border-color: rgba(56, 189, 248, 0.4);
+    background-color: rgba(56, 189, 248, 0.08);
+}
 
-        button {
-            flex: 1;
-            padding: 0.875rem;
-            border: none;
-            border-radius: var(--radius);
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-family: var(--font);
-        }
+input[type="number"]:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
 
-        .btn-primary {
-            background-color: var(--accent);
-            color: white;
-        }
+/* Results Summary Card */
+.results-card {
+    background-color: var(--input-bg);
+    border-radius: var(--radius);
+    padding: 1rem;
+    border: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    font-size: 0.875rem;
+}
 
-        .btn-primary:hover {
-            background-color: var(--accent-hover);
-        }
+.results-card div span {
+    color: var(--text-muted);
+    font-weight: 500;
+}
 
-        .btn-secondary {
-            background-color: transparent;
-            border: 1px solid var(--border);
-            color: var(--text-main);
-        }
+.results-card div strong {
+    color: var(--calculated-glow);
+    float: right;
+    font-family: var(--font-mono);
+}
 
-        .btn-secondary:hover {
-            background-color: var(--input-bg);
-        }
+.results-card div strong.altitude-val {
+    color: var(--altitude-color);
+}
 
-        .btn-sm {
-            padding: 0.45rem 0.85rem;
-            font-size: 0.825rem;
-            width: auto;
-            flex: none;
-        }
+.results-card div strong.median-val {
+    color: var(--median-color);
+}
 
-        /* Canvas Panel */
-        .right-panel {
-            display: flex;
-            flex-direction: column;
-        }
+/* Canvas Overlay Controls */
+.canvas-options {
+    display: flex;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+    padding: 0.5rem 0.25rem 0 0.25rem;
+    font-size: 0.85rem;
+    align-items: center;
+    justify-content: space-between;
+}
 
-        .canvas-container {
-            flex: 1;
-            min-height: 480px;
-            background-color: var(--input-bg);
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+.canvas-options-left {
+    display: flex;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+}
 
-        canvas {
-            display: block;
-            width: 100%;
-            height: 100%;
-        }
+.canvas-options label {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    cursor: pointer;
+    color: var(--text-muted);
+    user-select: none;
+    font-weight: 600;
+}
 
-        .placeholder-text {
-            position: absolute;
-            color: var(--text-muted);
-            font-size: 1.1rem;
-            pointer-events: none;
-        }
+.canvas-options input[type="checkbox"] {
+    accent-color: var(--accent);
+    cursor: pointer;
+}
 
-        .alert {
-            padding: 1rem;
-            border-radius: var(--radius);
-            font-size: 0.95rem;
-            margin-bottom: 1rem;
-            line-height: 1.4;
-            display: block;
-        }
+/* Buttons */
+.actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
 
-        .alert.hidden {
-            display: none !important;
-        }
+button {
+    flex: 1;
+    padding: 0.875rem;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: var(--font);
+}
 
-        .alert.error {
-            background-color: var(--danger-bg);
-            color: #fca5a5;
-            border: 1px solid var(--danger);
-        }
-        
-        .alert.warning {
-            background-color: #451a03;
-            color: #fcd34d;
-            border: 1px solid var(--warning);
-        }
+.btn-primary {
+    background-color: var(--accent);
+    color: white;
+}
 
-        input[type=number]::-webkit-inner-spin-button, 
-        input[type=number]::-webkit-outer-spin-button { 
-            -webkit-appearance: none; 
-            margin: 0; 
-        }
-        input[type=number] {
-            -moz-appearance: textfield;
-        }
-    </style>
+.btn-primary:hover {
+    background-color: var(--accent-hover);
+}
+
+.btn-secondary {
+    background-color: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-main);
+}
+
+.btn-secondary:hover {
+    background-color: var(--input-bg);
+}
+
+.btn-sm {
+    padding: 0.45rem 0.85rem;
+    font-size: 0.825rem;
+    width: auto;
+    flex: none;
+}
+
+/* Canvas Panel */
+.right-panel {
+    display: flex;
+    flex-direction: column;
+}
+
+.canvas-container {
+    flex: 1;
+    min-height: 480px;
+    background-color: var(--canvas-bg);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.placeholder-text {
+    position: absolute;
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    pointer-events: none;
+    font-weight: 600;
+}
+
+.alert {
+    padding: 1rem;
+    border-radius: var(--radius);
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+    line-height: 1.4;
+    display: block;
+}
+
+.alert.hidden {
+    display: none !important;
+}
+
+.alert.error {
+    background-color: var(--danger-bg);
+    color: #fca5a5;
+    border: 1px solid var(--danger);
+}
+
+[data-theme="light"] .alert.error {
+    color: #b91c1c;
+}
+
+.alert.warning {
+    background-color: #451a03;
+    color: #fcd34d;
+    border: 1px solid var(--warning);
+}
+
+[data-theme="light"] .alert.warning {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+    -webkit-appearance: none; 
+    margin: 0; 
+}
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
+footer {
+    border-top: 1px solid var(--border);
+    padding: 2rem 1.5rem;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-top: 3rem;
+}
+footer a { color: var(--accent); text-decoration: none; }
+</style>
 </head>
 <body>
 
-    <header>
-        <h1>Universal Triangle Solver</h1>
-        <p style="color: var(--text-muted); font-size: 0.9rem;">Calculate missing sides, angles, perpendicular altitude, medians & area</p>
+    <header class="top-bar">
+        <div class="brand-wrap">
+            <a href="../index.html" class="brand-link"><i class="fa-solid fa-gear"></i> CNC Machinist</a>
+            <span class="brand-sep">/</span>
+            <span class="brand-sub">Universal Triangle Solver</span>
+        </div>
+        <div class="top-actions">
+            <a href="../index.html" class="nav-btn"><i class="fa-solid fa-arrow-left"></i> CNC Hub</a>
+            <a href="../../index.html#tools" class="nav-btn">All Apps</a>
+            <button onclick="window.toggleShader7Theme()" class="theme-toggle-btn" aria-label="Toggle Theme" title="Toggle Theme">
+                <i class="fa-solid fa-moon"></i>
+            </button>
+        </div>
     </header>
 
     <div class="container">
@@ -469,6 +613,10 @@
             </div>
         </div>
     </div>
+
+    <footer>
+        <p>&copy; 2026 Universal Triangle Solver • SHADER7 CNC Suite. <a href="../index.html">View CNC Hub</a></p>
+    </footer>
 
     <script>
         // --- DOM Elements ---
@@ -653,9 +801,11 @@ Perimeter: ${resPerimeter.innerText}
 Type: ${resType.innerText}`;
 
             navigator.clipboard.writeText(summaryText).then(() => {
-                const originalText = btnCopySummary.innerText;
+                const origText = btnCopySummary.innerText;
                 btnCopySummary.innerText = "Copied!";
-                setTimeout(() => { btnCopySummary.innerText = originalText; }, 1800);
+                setTimeout(() => btnCopySummary.innerText = origText, 2000);
+            }).catch(() => {
+                showWarning("Failed to copy to clipboard.");
             });
         });
 
@@ -688,6 +838,14 @@ Type: ${resType.innerText}`;
                 drawTriangle(lastResult); 
             }
         });
+
+        // Re-draw when theme changes
+        const observer = new MutationObserver(() => {
+            if (lastResult) {
+                drawTriangle(lastResult);
+            }
+        });
+        observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
         // --- Core Solver Engine ---
         function processAndSolve(isSilent = false) {
@@ -754,84 +912,84 @@ Type: ${resType.innerText}`;
             let progress = true;
             let ambiguousWarning = false;
 
-            while (progress && loops < 6) {
-                progress = false;
+            while (progress && loops < 12) {
                 loops++;
+                progress = false;
 
-                // 1. Find 3rd Angle
+                // 1. Angle Sum: A + B + C = 180
                 if (A && B && !C) { C = 180 - A - B; progress = true; }
                 if (A && C && !B) { B = 180 - A - C; progress = true; }
                 if (B && C && !A) { A = 180 - B - C; progress = true; }
 
-                if ((A && A <= 0) || (B && B <= 0) || (C && C <= 0)) return { error: "Angles mathematically impossible (≤ 0°)." };
+                if ((A && A <= 0) || (B && B <= 0) || (C && C <= 0)) {
+                    return { error: "Invalid triangle geometry (angles must be > 0°)." };
+                }
 
-                // 2. Law of Cosines (SSS)
+                // 2. Law of Cosines (SSS -> Angles)
                 if (a && b && c) {
-                    if (a + b <= c + EPSILON || a + c <= b + EPSILON || b + c <= a + EPSILON) {
-                        return { error: "Triangle Inequality Violation: The sum of any two sides must exceed the third." };
-                    }
-                    if (!A) { A = acosD((b*b + c*c - a*a) / (2*b*c)); progress = true; }
-                    if (!B) { B = acosD((a*a + c*c - b*b) / (2*a*c)); progress = true; }
-                    if (!C) { C = acosD((a*a + b*b - c*c) / (2*a*b)); progress = true; }
+                    if (!A) { A = acosD((b * b + c * c - a * a) / (2 * b * c)); progress = true; }
+                    if (!B) { B = acosD((a * a + c * c - b * b) / (2 * a * c)); progress = true; }
+                    if (!C) { C = acosD((a * a + b * b - c * c) / (2 * a * b)); progress = true; }
                 }
 
-                // 3. Law of Cosines (SAS)
-                if (b && c && A && !a) { a = Math.sqrt(Math.max(0, b*b + c*c - 2*b*c*cosD(A))); progress = true; }
-                if (a && c && B && !b) { b = Math.sqrt(Math.max(0, a*a + c*c - 2*a*c*cosD(B))); progress = true; }
-                if (a && b && C && !c) { c = Math.sqrt(Math.max(0, a*a + b*b - 2*a*b*cosD(C))); progress = true; }
+                // 3. Law of Cosines (SAS -> Missing Side)
+                if (a && b && C && !c) { c = Math.sqrt(Math.max(0, a * a + b * b - 2 * a * b * cosD(C))); progress = true; }
+                if (a && c && B && !b) { b = Math.sqrt(Math.max(0, a * a + c * c - 2 * a * c * cosD(B))); progress = true; }
+                if (b && c && A && !a) { a = Math.sqrt(Math.max(0, b * b + c * c - 2 * b * c * cosD(A))); progress = true; }
 
-                // 4. Law of Sines (ASA, AAS)
-                if (A && B && C) {
-                    let ratio = (a ? a/sinD(A) : (b ? b/sinD(B) : (c ? c/sinD(C) : null)));
-                    if (ratio) {
-                        if (!a) { a = ratio * sinD(A); progress = true; }
-                        if (!b) { b = ratio * sinD(B); progress = true; }
-                        if (!c) { c = ratio * sinD(C); progress = true; }
-                    }
-                }
+                // 4. Law of Sines (AAS / ASA / SSA)
+                const pairs = [
+                    { s: a, ang: A, nameS: 'a', nameA: 'A' },
+                    { s: b, ang: B, nameS: 'b', nameA: 'B' },
+                    { s: c, ang: C, nameS: 'c', nameA: 'C' }
+                ];
 
-                // 5. Law of Sines (SSA Ambiguous Case)
-                if (!progress) {
-                    let pairs = [ {s:a, ang:A, name:'A'}, {s:b, ang:B, name:'B'}, {s:c, ang:C, name:'C'} ];
-                    let known = pairs.find(p => p.s && p.ang);
-                    
-                    if (known) {
-                        let ratioVal = known.s / sinD(known.ang);
-                        
-                        for (let unk of pairs) {
-                            if (unk.s && !unk.ang) {
-                                let sinUnk = unk.s / ratioVal;
-                                if (sinUnk > 1 + EPSILON) return { error: "Impossible side/angle configuration." };
-                                if (sinUnk > 1) sinUnk = 1;
+                const knownPair = pairs.find(p => p.s && p.ang);
 
-                                let ang1 = asinD(sinUnk);
-                                let ang2 = 180 - ang1;
+                if (knownPair) {
+                    const ratio = knownPair.s / sinD(knownPair.ang);
 
-                                let otherSum = pairs.filter(p => p.ang && p.name !== unk.name).reduce((sum, p) => sum + p.ang, 0);
-                                let valid1 = (otherSum + ang1 < 180 - EPSILON);
-                                let valid2 = (otherSum + ang2 < 180 - EPSILON);
-
-                                if (valid1 && valid2 && Math.abs(ang1 - ang2) > EPSILON) {
-                                    ambiguousWarning = true;
-                                    unk.ang = ang1;
-                                    if (unk.name === 'A') A = ang1;
-                                    if (unk.name === 'B') B = ang1;
-                                    if (unk.name === 'C') C = ang1;
-                                    progress = true;
-                                } else if (valid1) {
-                                    if (unk.name === 'A') A = ang1;
-                                    if (unk.name === 'B') B = ang1;
-                                    if (unk.name === 'C') C = ang1;
-                                    progress = true;
-                                } else if (valid2) {
-                                    if (unk.name === 'A') A = ang2;
-                                    if (unk.name === 'B') B = ang2;
-                                    if (unk.name === 'C') C = ang2;
-                                    progress = true;
-                                }
+                    pairs.forEach(target => {
+                        if (target.ang && !target.s) {
+                            const calculatedSide = ratio * sinD(target.ang);
+                            if (target.nameS === 'a') a = calculatedSide;
+                            if (target.nameS === 'b') b = calculatedSide;
+                            if (target.nameS === 'c') c = calculatedSide;
+                            target.s = calculatedSide;
+                            progress = true;
+                        } else if (target.s && !target.ang) {
+                            const sinVal = target.s / ratio;
+                            if (sinVal > 1 + EPSILON) {
+                                return { error: `No solution exists (Law of Sines yields sin > 1 for angle ${target.nameA}).` };
                             }
+                            const angleDeg = asinD(sinVal);
+                            
+                            if (target.s < knownPair.s) {
+                                ambiguousWarning = true;
+                            }
+
+                            if (target.nameA === 'A') A = angleDeg;
+                            if (target.nameA === 'B') B = angleDeg;
+                            if (target.nameA === 'C') C = angleDeg;
+                            target.ang = angleDeg;
+                            progress = true;
                         }
+                    });
+                }
+
+                // 5. Special Right Triangle Shortcuts
+                if (C === 90) {
+                    if (a && b && !c) { c = Math.hypot(a, b); progress = true; }
+                    if (c && a && !b) {
+                        if (c <= a) return { error: "Hypotenuse must be strictly longer than legs." };
+                        b = Math.sqrt(c * c - a * a); progress = true;
                     }
+                    if (c && b && !a) {
+                        if (c <= b) return { error: "Hypotenuse must be strictly longer than legs." };
+                        a = Math.sqrt(c * c - b * b); progress = true;
+                    }
+                    if (a && c && !A) { A = asinD(a / c); progress = true; }
+                    if (b && c && !B) { B = asinD(b / c); progress = true; }
                 }
             }
 
@@ -941,6 +1099,7 @@ Type: ${resType.innerText}`;
 
         // --- Streamlined Parallel & Upright Badge Drawers ---
         function drawParallelBadge(text, p1, p2, offsetDist, outwardNormal, options = {}) {
+            const isLight = document.documentElement.getAttribute('data-theme') === 'light';
             const frac = options.frac !== undefined ? options.frac : 0.5;
             const midX = p1.x + (p2.x - p1.x) * frac;
             const midY = p1.y + (p2.y - p1.y) * frac;
@@ -964,14 +1123,14 @@ Type: ${resType.innerText}`;
             ctx.translate(posX, posY);
             ctx.rotate(angle);
 
-            const font = options.font || '600 11px Inter, sans-serif';
+            const font = options.font || '700 11px Outfit, sans-serif';
             ctx.font = font;
             const metrics = ctx.measureText(text);
             const textW = Math.ceil(metrics.width);
             const textH = 11;
-            const padX = 5;
+            const padX = 6;
             const padY = 2;
-            const radius = 3;
+            const radius = 4;
 
             const rectX = -textW / 2 - padX;
             const rectY = -textH / 2 - padY;
@@ -984,13 +1143,13 @@ Type: ${resType.innerText}`;
             } else {
                 ctx.rect(rectX, rectY, rectW, rectH);
             }
-            ctx.fillStyle = options.bgColor || 'rgba(15, 23, 42, 0.92)';
+            ctx.fillStyle = options.bgColor || (isLight ? 'rgba(255, 255, 255, 0.95)' : 'rgba(15, 23, 42, 0.92)');
             ctx.fill();
             ctx.lineWidth = 1;
-            ctx.strokeStyle = options.borderColor || 'rgba(71, 85, 105, 0.8)';
+            ctx.strokeStyle = options.borderColor || (isLight ? 'rgba(15, 23, 42, 0.15)' : 'rgba(71, 85, 105, 0.8)');
             ctx.stroke();
 
-            ctx.fillStyle = options.color || '#f8fafc';
+            ctx.fillStyle = options.color || (isLight ? '#0f172a' : '#f8fafc');
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillText(text, 0, 0.5);
@@ -999,12 +1158,13 @@ Type: ${resType.innerText}`;
         }
 
         function drawUprightBadge(text, x, y, options = {}) {
-            const font = options.font || '700 11px Inter, sans-serif';
+            const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+            const font = options.font || '700 11px Outfit, sans-serif';
             ctx.font = font;
             const metrics = ctx.measureText(text);
             const textW = Math.ceil(metrics.width);
             const textH = 11;
-            const padX = 5;
+            const padX = 6;
             const padY = 2;
 
             const rectX = x - textW / 2 - padX;
@@ -1014,17 +1174,17 @@ Type: ${resType.innerText}`;
 
             ctx.beginPath();
             if (ctx.roundRect) {
-                ctx.roundRect(rectX, rectY, rectW, rectH, 3);
+                ctx.roundRect(rectX, rectY, rectW, rectH, 4);
             } else {
                 ctx.rect(rectX, rectY, rectW, rectH);
             }
-            ctx.fillStyle = options.bgColor || 'rgba(15, 23, 42, 0.92)';
+            ctx.fillStyle = options.bgColor || (isLight ? 'rgba(255, 255, 255, 0.95)' : 'rgba(15, 23, 42, 0.92)');
             ctx.fill();
             ctx.lineWidth = 1;
-            ctx.strokeStyle = options.borderColor || 'rgba(99, 102, 241, 0.8)';
+            ctx.strokeStyle = options.borderColor || (isLight ? 'rgba(79, 70, 229, 0.4)' : 'rgba(99, 102, 241, 0.8)');
             ctx.stroke();
 
-            ctx.fillStyle = options.color || '#ffffff';
+            ctx.fillStyle = options.color || (isLight ? '#312e81' : '#ffffff');
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillText(text, x, y + 0.5);
@@ -1032,6 +1192,7 @@ Type: ${resType.innerText}`;
 
         // --- Visual / Drawing Engine ---
         function drawTriangle(vals) {
+            const isLight = document.documentElement.getAttribute('data-theme') === 'light';
             const { a, b, c, A, B, C } = vals;
             const w = canvasWrapper.clientWidth;
             const h = canvasWrapper.clientHeight;
@@ -1072,10 +1233,10 @@ Type: ${resType.innerText}`;
             ctx.lineTo(tB.x, tB.y);
             ctx.closePath();
             
-            ctx.fillStyle = 'rgba(99, 102, 241, 0.12)';
+            ctx.fillStyle = isLight ? 'rgba(79, 70, 229, 0.08)' : 'rgba(99, 102, 241, 0.12)';
             ctx.fill();
             ctx.lineWidth = 2.5;
-            ctx.strokeStyle = '#6366f1';
+            ctx.strokeStyle = isLight ? '#4f46e5' : '#6366f1';
             ctx.stroke();
 
             // Right Angle Indicator
@@ -1091,7 +1252,7 @@ Type: ${resType.innerText}`;
 
                 ctx.beginPath();
                 ctx.moveTo(targetVertex.x + dir1.x * sqSize, targetVertex.y + dir1.y * sqSize);
-                ctx.lineTo(targetVertex.x + dir1.x * sqSize + dir2.x * sqSize, targetVertex.y + dir1.y * sqSize + dir2.y * sqSize);
+                ctx.lineTo(targetVertex.x + dir1.x * sqSize + dir2.x * sqSize, targetVertex.y + dir1.y * sqSize + dir2.x * sqSize);
                 ctx.lineTo(targetVertex.x + dir2.x * sqSize, targetVertex.y + dir2.y * sqSize);
                 ctx.strokeStyle = color;
                 ctx.lineWidth = 1.5;
@@ -1124,7 +1285,7 @@ Type: ${resType.innerText}`;
                     ctx.setLineDash([3, 3]);
                     ctx.moveTo(tA.x, tA.y);
                     ctx.lineTo(tD.x, tD.y);
-                    ctx.strokeStyle = '#64748b';
+                    ctx.strokeStyle = isLight ? '#94a3b8' : '#64748b';
                     ctx.lineWidth = 1.2;
                     ctx.stroke();
                 } else if (t_proj > 1) {
@@ -1132,7 +1293,7 @@ Type: ${resType.innerText}`;
                     ctx.setLineDash([3, 3]);
                     ctx.moveTo(tB.x, tB.y);
                     ctx.lineTo(tD.x, tD.y);
-                    ctx.strokeStyle = '#64748b';
+                    ctx.strokeStyle = isLight ? '#94a3b8' : '#64748b';
                     ctx.lineWidth = 1.2;
                     ctx.stroke();
                 }
@@ -1141,67 +1302,68 @@ Type: ${resType.innerText}`;
                 ctx.setLineDash([4, 4]);
                 ctx.moveTo(tC.x, tC.y);
                 ctx.lineTo(tD.x, tD.y);
-                ctx.strokeStyle = '#ec4899';
+                ctx.strokeStyle = isLight ? '#db2777' : '#ec4899';
                 ctx.lineWidth = 1.8;
                 ctx.stroke();
                 ctx.setLineDash([]);
 
                 // Right angle square at foot D
                 let sqSize = 8;
-                let dirAlongAB = { 
-                    x: (tA.x - tB.x) / (Math.hypot(tA.x - tB.x, tA.y - tB.y) || 1), 
-                    y: (tA.y - tB.y) / (Math.hypot(tA.x - tB.x, tA.y - tB.y) || 1) 
-                };
-                let dirAlongDC = { 
-                    x: (tC.x - tD.x) / (Math.hypot(tC.x - tD.x, tC.y - tD.y) || 1), 
-                    y: (tC.y - tD.y) / (Math.hypot(tC.x - tD.x, tC.y - tD.y) || 1) 
-                };
+                let dx_base = tB.x - tA.x, dy_base = tB.y - tA.y;
+                let len_base = Math.hypot(dx_base, dy_base) || 1;
+                let u_base = { x: dx_base / len_base, y: dy_base / len_base };
+                
+                let dx_alt = tC.x - tD.x, dy_alt = tC.y - tD.y;
+                let len_alt = Math.hypot(dx_alt, dy_alt) || 1;
+                let u_alt = { x: dx_alt / len_alt, y: dy_alt / len_alt };
 
                 ctx.beginPath();
-                ctx.moveTo(tD.x + dirAlongAB.x * sqSize, tD.y + dirAlongAB.y * sqSize);
-                ctx.lineTo(tD.x + dirAlongAB.x * sqSize + dirAlongDC.x * sqSize, tD.y + dirAlongAB.y * sqSize + dirAlongDC.y * sqSize);
-                ctx.lineTo(tD.x + dirAlongDC.x * sqSize, tD.y + dirAlongDC.y * sqSize);
-                ctx.strokeStyle = '#ec4899';
+                ctx.moveTo(tD.x + u_base.x * sqSize, tD.y + u_base.y * sqSize);
+                ctx.lineTo(tD.x + u_base.x * sqSize + u_alt.x * sqSize, tD.y + u_base.y * sqSize + u_alt.y * sqSize);
+                ctx.lineTo(tD.x + u_alt.x * sqSize, tD.y + u_alt.y * sqSize);
+                ctx.strokeStyle = isLight ? '#db2777' : '#ec4899';
                 ctx.lineWidth = 1.2;
                 ctx.stroke();
             }
 
             if (chkMedian.checked) {
                 ctx.beginPath();
-                ctx.setLineDash([5, 5]);
+                ctx.setLineDash([2, 2]);
                 ctx.moveTo(tC.x, tC.y);
                 ctx.lineTo(tM.x, tM.y);
-                ctx.strokeStyle = '#06b6d4';
-                ctx.lineWidth = 1.8;
+                ctx.strokeStyle = isLight ? '#0891b2' : '#06b6d4';
+                ctx.lineWidth = 1.6;
                 ctx.stroke();
                 ctx.setLineDash([]);
 
+                // Small circle at midpoint M
                 ctx.beginPath();
-                ctx.arc(tM.x, tM.y, 3.5, 0, 2 * Math.PI);
-                ctx.fillStyle = '#06b6d4';
+                ctx.arc(tM.x, tM.y, 3, 0, Math.PI * 2);
+                ctx.fillStyle = isLight ? '#0891b2' : '#06b6d4';
                 ctx.fill();
             }
 
-            // 4. Draw Clean, Compact Side Dimensions (Parallel)
-            const normA = getEdgeOutwardNormal(tB, tC, tA);
-            drawParallelBadge(`a = ${a.toFixed(2)}`, tB, tC, 16, normA, {
-                color: '#e2e8f0',
-                borderColor: 'rgba(71, 85, 105, 0.8)'
+            // 4. Draw Side Badges (Compact & Rotated Parallel to Edges)
+            const nAB = getEdgeOutwardNormal(tA, tB, tC);
+            const nBC = getEdgeOutwardNormal(tC, tB, tA);
+            const nCA = getEdgeOutwardNormal(tA, tC, tB);
+
+            drawParallelBadge(`c = ${c.toFixed(2)}`, tA, tB, 18, nAB, {
+                color: isLight ? '#0369a1' : '#38bdf8',
+                borderColor: isLight ? 'rgba(2, 132, 199, 0.3)' : 'rgba(56, 189, 248, 0.4)'
             });
 
-            const normB = getEdgeOutwardNormal(tA, tC, tB);
-            drawParallelBadge(`b = ${b.toFixed(2)}`, tA, tC, 16, normB, {
-                color: '#e2e8f0',
-                borderColor: 'rgba(71, 85, 105, 0.8)'
+            drawParallelBadge(`a = ${a.toFixed(2)}`, tC, tB, 18, nBC, {
+                color: isLight ? '#0369a1' : '#38bdf8',
+                borderColor: isLight ? 'rgba(2, 132, 199, 0.3)' : 'rgba(56, 189, 248, 0.4)'
             });
 
-            const normC = getEdgeOutwardNormal(tA, tB, tC);
-            drawParallelBadge(`c = ${c.toFixed(2)}`, tA, tB, 16, normC, {
-                color: '#e2e8f0',
-                borderColor: 'rgba(71, 85, 105, 0.8)'
+            drawParallelBadge(`b = ${b.toFixed(2)}`, tA, tC, 18, nCA, {
+                color: isLight ? '#0369a1' : '#38bdf8',
+                borderColor: isLight ? 'rgba(2, 132, 199, 0.3)' : 'rgba(56, 189, 248, 0.4)'
             });
 
-            // 5. Draw Auxiliary Dimensions (Parallel)
+            // 5. Draw Auxiliary Badges
             if (chkAltitude.checked) {
                 let dx = tD.x - tC.x, dy = tD.y - tC.y;
                 let len = Math.hypot(dx, dy) || 1;
@@ -1211,9 +1373,9 @@ Type: ${resType.innerText}`;
                 }
 
                 drawParallelBadge(`h = ${altitudeVal.toFixed(2)}`, tC, tD, 12, { x: nx, y: ny }, {
-                    frac: 0.40,
-                    color: '#f472b6',
-                    borderColor: 'rgba(236, 72, 153, 0.7)'
+                    frac: 0.45,
+                    color: isLight ? '#be185d' : '#f472b6',
+                    borderColor: isLight ? 'rgba(219, 39, 119, 0.4)' : 'rgba(236, 72, 153, 0.7)'
                 });
             }
 
@@ -1227,8 +1389,8 @@ Type: ${resType.innerText}`;
 
                 drawParallelBadge(`m = ${medianVal.toFixed(2)}`, tC, tM, 12, { x: nx, y: ny }, {
                     frac: 0.65,
-                    color: '#22d3ee',
-                    borderColor: 'rgba(6, 182, 212, 0.7)'
+                    color: isLight ? '#0e7490' : '#22d3ee',
+                    borderColor: isLight ? 'rgba(8, 145, 178, 0.4)' : 'rgba(6, 182, 212, 0.7)'
                 });
             }
 
