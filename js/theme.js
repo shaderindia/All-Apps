@@ -145,25 +145,28 @@
   }
 
   window.triggerPwaInstall = async function() {
-    if (window.deferredPwaPrompt) {
-      window.deferredPwaPrompt.prompt();
-      const { outcome } = await window.deferredPwaPrompt.userChoice;
-      if (outcome === 'accepted') {
-        window.dismissPwaBanner();
-      }
-      window.deferredPwaPrompt = null;
-    } else {
-      // Check for iOS Safari
-      const isIos = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-      const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+    // Provide immediate tactile click feedback on all clicked install buttons
+    const activeBtns = document.querySelectorAll('#pwa-install-btn, .pwa-install-btn');
+    activeBtns.forEach(b => {
+      b.style.transform = 'scale(0.95)';
+      setTimeout(() => { b.style.transform = ''; }, 200);
+    });
 
-      if (isStandalone) {
-        showPwaToast("App is already installed on your device!");
-      } else if (isIos) {
-        showIosInstallModal();
-      } else {
-        showPwaToast("To install, click the browser menu (⋮) and select 'Install app' or 'Add to Home screen'.");
+    if (window.deferredPwaPrompt) {
+      try {
+        window.deferredPwaPrompt.prompt();
+        showPwaToast("Opening installation prompt in browser...");
+        const { outcome } = await window.deferredPwaPrompt.userChoice;
+        if (outcome === 'accepted') {
+          showPwaToast("✓ SHADER7 App Installed Successfully!");
+          window.dismissPwaBanner();
+        }
+        window.deferredPwaPrompt = null;
+      } catch (err) {
+        showUniversalInstallModal();
       }
+    } else {
+      showUniversalInstallModal();
     }
   };
 
@@ -178,36 +181,113 @@
   };
 
   function showPwaToast(msg) {
+    const existing = document.querySelector('.pwa-toast-alert');
+    if (existing) existing.remove();
+
     const toast = document.createElement('div');
     toast.className = 'pwa-toast-alert';
-    toast.innerHTML = `<i class="fa-solid fa-circle-info"></i> <span>${msg}</span>`;
+    toast.innerHTML = `<i class="fa-solid fa-circle-check" style="color: #10b981;"></i> <span>${msg}</span>`;
     document.body.appendChild(toast);
     setTimeout(() => {
       toast.style.opacity = '0';
       setTimeout(() => toast.remove(), 300);
-    }, 4000);
+    }, 4500);
   }
 
-  function showIosInstallModal() {
-    const existing = document.getElementById('pwa-ios-modal');
+  function showUniversalInstallModal() {
+    const existing = document.getElementById('pwa-install-modal');
     if (existing) existing.remove();
 
-    const modal = document.createElement('div');
-    modal.id = 'pwa-ios-modal';
-    modal.className = 'pwa-ios-modal-backdrop';
-    modal.innerHTML = `
-      <div class="pwa-ios-modal-card">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-          <h3 style="font-weight: 800; font-size: 1.15rem; margin: 0;"><i class="fa-brands fa-apple"></i> Install on iOS</h3>
-          <button onclick="document.getElementById('pwa-ios-modal').remove()" style="background: none; border: none; font-size: 1.3rem; cursor: pointer; color: inherit;">&times;</button>
+    const isIos = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const isAndroid = /Android/i.test(navigator.userAgent);
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+    const isChromiumDesktop = !isIos && !isAndroid && (!!window.chrome || navigator.userAgent.includes("Edg"));
+
+    let modalTitle = 'Install SHADER7 App';
+    let instructionsHtml = '';
+
+    if (isStandalone) {
+      modalTitle = 'Already Installed';
+      instructionsHtml = `
+        <div style="text-align: center; padding: 1rem 0;">
+          <div style="width: 56px; height: 56px; border-radius: 50%; background: rgba(16, 185, 129, 0.15); color: #10b981; display: inline-flex; align-items: center; justify-content: center; font-size: 1.75rem; margin-bottom: 1rem;">
+            <i class="fa-solid fa-check"></i>
+          </div>
+          <p style="font-weight: 700; font-size: 1.05rem; margin-bottom: 0.5rem;">SHADER7 is already installed!</p>
+          <p style="font-size: 0.9rem; color: var(--text-muted, #64748b);">You are currently running the suite in standalone application mode.</p>
         </div>
-        <p style="font-size: 0.9rem; margin-bottom: 1.25rem; opacity: 0.85;">Install SHADER7 Suite to your iPhone or iPad home screen:</p>
-        <ol style="font-size: 0.88rem; padding-left: 1.25rem; line-height: 1.8; margin-bottom: 1.5rem;">
-          <li>Tap the <strong>Share</strong> button <i class="fa-solid fa-arrow-up-from-bracket" style="color: #0284c7;"></i> at the bottom of Safari.</li>
-          <li>Scroll down and tap <strong>Add to Home Screen</strong> <i class="fa-regular fa-square-plus" style="color: #059669;"></i>.</li>
-          <li>Tap <strong>Add</strong> in the top-right corner.</li>
-        </ol>
-        <button onclick="document.getElementById('pwa-ios-modal').remove()" style="width: 100%; padding: 0.75rem; border-radius: 99px; background: #1d4ed8; color: white; border: none; font-weight: 700; cursor: pointer;">Got It</button>
+      `;
+    } else if (isIos) {
+      modalTitle = 'Install on iPhone & iPad';
+      instructionsHtml = `
+        <p style="font-size: 0.92rem; margin-bottom: 1.25rem; color: var(--text-muted, #64748b);">Add SHADER7 to your home screen for quick offline access:</p>
+        <div style="background: rgba(125, 125, 125, 0.08); border-radius: 14px; padding: 1.1rem; margin-bottom: 1.5rem;">
+          <div style="display: flex; gap: 0.85rem; align-items: flex-start; margin-bottom: 0.85rem;">
+            <div style="width: 28px; height: 28px; border-radius: 50%; background: #0284c7; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.8rem; flex-shrink: 0;">1</div>
+            <div style="font-size: 0.9rem; line-height: 1.4;">Tap the <strong>Share button</strong> <i class="fa-solid fa-arrow-up-from-bracket" style="color: #0284c7;"></i> at the bottom of Safari.</div>
+          </div>
+          <div style="display: flex; gap: 0.85rem; align-items: flex-start; margin-bottom: 0.85rem;">
+            <div style="width: 28px; height: 28px; border-radius: 50%; background: #059669; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.8rem; flex-shrink: 0;">2</div>
+            <div style="font-size: 0.9rem; line-height: 1.4;">Scroll down and select <strong>Add to Home Screen</strong> <i class="fa-regular fa-square-plus" style="color: #059669;"></i>.</div>
+          </div>
+          <div style="display: flex; gap: 0.85rem; align-items: flex-start;">
+            <div style="width: 28px; height: 28px; border-radius: 50%; background: #7c3aed; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.8rem; flex-shrink: 0;">3</div>
+            <div style="font-size: 0.9rem; line-height: 1.4;">Tap <strong>Add</strong> in the top-right corner.</div>
+          </div>
+        </div>
+      `;
+    } else if (isAndroid) {
+      modalTitle = 'Install on Android';
+      instructionsHtml = `
+        <p style="font-size: 0.92rem; margin-bottom: 1.25rem; color: var(--text-muted, #64748b);">Install SHADER7 to your home screen:</p>
+        <div style="background: rgba(125, 125, 125, 0.08); border-radius: 14px; padding: 1.1rem; margin-bottom: 1.5rem;">
+          <div style="display: flex; gap: 0.85rem; align-items: flex-start; margin-bottom: 0.85rem;">
+            <div style="width: 28px; height: 28px; border-radius: 50%; background: #1d4ed8; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.8rem; flex-shrink: 0;">1</div>
+            <div style="font-size: 0.9rem; line-height: 1.4;">Tap the <strong>three dots menu (⋮)</strong> at the top right of your browser.</div>
+          </div>
+          <div style="display: flex; gap: 0.85rem; align-items: flex-start;">
+            <div style="width: 28px; height: 28px; border-radius: 50%; background: #059669; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.8rem; flex-shrink: 0;">2</div>
+            <div style="font-size: 0.9rem; line-height: 1.4;">Tap <strong>Install app</strong> or <strong>Add to Home screen</strong>.</div>
+          </div>
+        </div>
+      `;
+    } else {
+      modalTitle = 'Install Desktop App';
+      instructionsHtml = `
+        <p style="font-size: 0.92rem; margin-bottom: 1.25rem; color: var(--text-muted, #64748b);">Install SHADER7 directly to your computer as a standalone desktop app:</p>
+        <div style="background: rgba(125, 125, 125, 0.08); border-radius: 14px; padding: 1.1rem; margin-bottom: 1.5rem;">
+          <div style="display: flex; gap: 0.85rem; align-items: flex-start; margin-bottom: 0.85rem;">
+            <div style="width: 28px; height: 28px; border-radius: 50%; background: #1d4ed8; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.8rem; flex-shrink: 0;">1</div>
+            <div style="font-size: 0.9rem; line-height: 1.4;">Look at the <strong>right side of your browser address bar</strong> (URL bar at the top).</div>
+          </div>
+          <div style="display: flex; gap: 0.85rem; align-items: flex-start; margin-bottom: 0.85rem;">
+            <div style="width: 28px; height: 28px; border-radius: 50%; background: #059669; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.8rem; flex-shrink: 0;">2</div>
+            <div style="font-size: 0.9rem; line-height: 1.4;">Click the <strong>Install App icon</strong> <i class="fa-solid fa-desktop" style="color: #059669;"></i> or <i class="fa-solid fa-download" style="color: #1d4ed8;"></i>.</div>
+          </div>
+          <div style="display: flex; gap: 0.85rem; align-items: flex-start;">
+            <div style="width: 28px; height: 28px; border-radius: 50%; background: #7c3aed; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.8rem; flex-shrink: 0;">3</div>
+            <div style="font-size: 0.9rem; line-height: 1.4;">Click <strong>Install</strong> to add SHADER7 to your desktop and taskbar.</div>
+          </div>
+        </div>
+      `;
+    }
+
+    const modal = document.createElement('div');
+    modal.id = 'pwa-install-modal';
+    modal.className = 'pwa-modal-backdrop';
+    modal.innerHTML = `
+      <div class="pwa-modal-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+          <div style="display: flex; align-items: center; gap: 0.6rem;">
+            <div style="width: 38px; height: 38px; border-radius: 10px; background: linear-gradient(135deg, #1d4ed8, #7c3aed); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.15rem;">
+              <i class="fa-solid fa-shapes"></i>
+            </div>
+            <h3 style="font-weight: 800; font-size: 1.15rem; margin: 0;">${modalTitle}</h3>
+          </div>
+          <button onclick="document.getElementById('pwa-install-modal').remove()" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: inherit; line-height: 1; padding: 0.3rem;" aria-label="Close">&times;</button>
+        </div>
+        ${instructionsHtml}
+        <button onclick="document.getElementById('pwa-install-modal').remove()" style="width: 100%; padding: 0.8rem; border-radius: 99px; background: linear-gradient(135deg, #1d4ed8, #1e40af); color: white; border: none; font-weight: 700; font-size: 0.92rem; cursor: pointer; transition: transform 0.2s;">Got It</button>
       </div>
     `;
     document.body.appendChild(modal);
@@ -225,44 +305,61 @@
   pwaStyle.textContent = `
     .pwa-toast-alert {
       position: fixed;
-      bottom: 2rem;
+      top: 1.5rem;
       left: 50%;
       transform: translateX(-50%);
       background: rgba(15, 23, 42, 0.95);
       color: #f8fafc;
-      padding: 0.85rem 1.5rem;
+      padding: 0.85rem 1.75rem;
       border-radius: 99px;
-      font-size: 0.9rem;
-      font-weight: 600;
+      font-size: 0.92rem;
+      font-weight: 700;
       display: flex;
       align-items: center;
-      gap: 0.6rem;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-      z-index: 10000;
+      gap: 0.65rem;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.35);
+      z-index: 100002;
       transition: opacity 0.3s ease;
       max-width: 90vw;
       text-align: center;
+      border: 1px solid rgba(255,255,255,0.15);
+      animation: pwaToastPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
-    .pwa-ios-modal-backdrop {
+    @keyframes pwaToastPop {
+      from { transform: translate(-50%, -20px); opacity: 0; }
+      to { transform: translate(-50%, 0); opacity: 1; }
+    }
+    .pwa-modal-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.6);
+      background: rgba(0,0,0,0.65);
       backdrop-filter: blur(8px);
-      z-index: 10001;
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 100001;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 1.5rem;
+      padding: 1.25rem;
+      animation: pwaFadeIn 0.2s ease-out;
     }
-    .pwa-ios-modal-card {
+    @keyframes pwaFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .pwa-modal-card {
       background: var(--bg-card, #ffffff);
       color: var(--text-main, #0f172a);
-      border-radius: 20px;
+      border-radius: 22px;
       padding: 1.75rem;
-      max-width: 400px;
+      max-width: 440px;
       width: 100%;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      box-shadow: 0 25px 50px rgba(0,0,0,0.35);
       border: 1px solid var(--border, rgba(0,0,0,0.1));
+      animation: pwaModalPop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    @keyframes pwaModalPop {
+      from { transform: scale(0.92); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
     }
     .pwa-floating-banner {
       position: fixed;
