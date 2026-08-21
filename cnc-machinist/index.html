@@ -137,19 +137,6 @@ header.top-bar { display: flex; justify-content: space-between; align-items: cen
 .hero h1 span { background: linear-gradient(135deg, var(--accent-orange), var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 .hero p { font-size: 1.15rem; color: var(--text-muted); max-width: 720px; margin: 0 auto 2.5rem; }
 
-/* Interactive Speeds & Feeds Live Preview Widget */
-.widget-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 24px; padding: 2rem; max-width: 880px; margin: 2rem auto 4rem; box-shadow: var(--shadow-lg); text-align: left; }
-.widget-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); }
-.widget-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem; }
-.input-group label { display: block; font-size: 0.82rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.4rem; }
-.input-group input, .input-group select { width: 100%; padding: 0.65rem 0.9rem; border-radius: 10px; border: 1px solid var(--border); background: var(--bg-page); color: var(--text-main); font-family: var(--font-mono); font-weight: 600; font-size: 0.92rem; }
-
-.result-banner { background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 14px; padding: 1.25rem; display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 1rem; }
-.result-item { text-align: center; }
-.result-label { font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
-.result-val { font-size: 1.5rem; font-weight: 900; color: var(--primary); font-family: var(--font-mono); }
-
-/* Category Sections */
 .cat-section { max-width: 1200px; margin: 3.5rem auto; padding: 0 1.5rem; }
 .cat-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.75rem; padding-bottom: 0.75rem; border-bottom: 2px solid var(--border); }
 .cat-header h2 { font-size: 1.6rem; font-weight: 800; }
@@ -291,9 +278,9 @@ footer.main-footer {
   .hero-actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; max-width: 520px; margin: 0 auto 2rem; }
   .hero-actions .btn-primary, .hero-actions button { width: 100%; justify-content: center; font-size: 0.85rem; padding: 0.65rem 0.75rem; }
   
-  .widget-box { padding: 1.25rem; margin: 1.5rem auto 3rem; }
-  .widget-grid { grid-template-columns: 1fr; gap: 1rem; }
-  .result-banner { flex-direction: column; gap: 0.75rem; }
+  
+  
+  
   
   .cat-section { padding: 0 1rem; margin: 2.5rem auto; }
   .tools-grid { grid-template-columns: 1fr; gap: 1.25rem; }
@@ -342,46 +329,6 @@ footer.main-footer {
         <a href="3DCADWEB/index.html" class="btn-primary" style="background: linear-gradient(135deg, #0ea5e9, #0284c7);">
           <i class="fa-solid fa-cube"></i> 3D CAD Studio
         </a>
-      </div>
-      
-      <!-- Interactive Speeds & Feeds Demo Widget -->
-      <div class="widget-box">
-        <div class="widget-header">
-          <div style="font-weight: 800; font-size: 1.05rem; display: flex; align-items: center; gap: 0.5rem;">
-            <i class="fa-solid fa-calculator" style="color: var(--accent-orange);"></i> Speeds & Feeds Instant Calculator
-          </div>
-          <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); background: var(--glass-bg); padding: 4px 10px; border-radius: 99px; border: 1px solid var(--border);">Live Demo</span>
-        </div>
-
-        <div class="widget-grid">
-          <div class="input-group">
-            <label>Tool Diameter (mm)</label>
-            <input type="number" id="sf-dia" value="12" min="1" oninput="updateSFDemo()">
-          </div>
-          <div class="input-group">
-            <label>Cutting Speed Vc (m/min)</label>
-            <input type="number" id="sf-vc" value="150" min="10" oninput="updateSFDemo()">
-          </div>
-          <div class="input-group">
-            <label>Number of Flutes (Z)</label>
-            <input type="number" id="sf-flutes" value="4" min="1" oninput="updateSFDemo()">
-          </div>
-          <div class="input-group">
-            <label>Feed Per Tooth fz (mm)</label>
-            <input type="number" id="sf-fz" value="0.08" step="0.01" oninput="updateSFDemo()">
-          </div>
-        </div>
-
-        <div class="result-banner">
-          <div class="result-item">
-            <div class="result-label">Spindle RPM (n)</div>
-            <div class="result-val" id="res-sf-rpm" style="color: var(--accent-orange);">3,979 RPM</div>
-          </div>
-          <div class="result-item">
-            <div class="result-label">Table Feed Rate (Vf)</div>
-            <div class="result-val" id="res-sf-feed" style="color: var(--primary);">1,273 mm/min</div>
-          </div>
-        </div>
       </div>
     </section>
 
@@ -555,21 +502,6 @@ footer.main-footer {
       </div>
     </div>
   </footer>
-
-  <script>
-    function updateSFDemo() {
-      const dia = parseFloat(document.getElementById('sf-dia').value) || 1;
-      const vc = parseFloat(document.getElementById('sf-vc').value) || 0;
-      const flutes = parseInt(document.getElementById('sf-flutes').value) || 1;
-      const fz = parseFloat(document.getElementById('sf-fz').value) || 0;
-
-      const rpm = (vc * 1000) / (Math.PI * dia);
-      const feed = rpm * flutes * fz;
-
-      document.getElementById('res-sf-rpm').textContent = Math.round(rpm).toLocaleString() + ' RPM';
-      document.getElementById('res-sf-feed').textContent = Math.round(feed).toLocaleString() + ' mm/min';
-    }
-  </script>
 
 </body>
 </html>

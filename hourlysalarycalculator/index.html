@@ -136,17 +136,6 @@ header.top-bar { display: flex; justify-content: space-between; align-items: cen
 .hero h1 span { background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 .hero p { font-size: 1.15rem; color: var(--text-muted); max-width: 700px; margin: 0 auto 2.5rem; }
 
-/* Interactive Wage Calculator Widget */
-.widget-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 24px; padding: 2rem; max-width: 850px; margin: 2rem auto 4rem; box-shadow: var(--shadow-lg); text-align: left; }
-.widget-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); }
-.widget-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem; }
-.input-group label { display: block; font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.4rem; }
-.input-group input { width: 100%; padding: 0.65rem 0.9rem; border-radius: 10px; border: 1px solid var(--border); background: var(--bg-page); color: var(--text-main); font-family: var(--font-mono); font-weight: 600; font-size: 0.95rem; }
-.result-banner { background: rgba(5, 150, 105, 0.1); border: 1px solid rgba(5, 150, 105, 0.25); border-radius: 14px; padding: 1.25rem; display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 1rem; }
-.result-item { text-align: center; }
-.result-label { font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
-.result-val { font-size: 1.5rem; font-weight: 900; color: var(--primary); font-family: var(--font-mono); }
-
 /* Grid */
 .grid-section { max-width: 1200px; margin: 3rem auto; padding: 0 1.5rem; }
 .section-head { text-align: center; margin-bottom: 3rem; }
@@ -175,9 +164,9 @@ footer a { color: var(--primary); text-decoration: none; }
   .hero h1 { font-size: clamp(2rem, 8vw, 3rem); }
   .hero p { font-size: 1.05rem; margin-bottom: 1.75rem; }
   
-  .widget-box { padding: 1.25rem; margin: 1.5rem auto 3rem; }
-  .widget-grid { grid-template-columns: 1fr; gap: 1rem; }
-  .result-banner { flex-direction: column; gap: 0.75rem; }
+  
+  
+  
   
   .grid-section { padding: 0 1rem; margin: 2.5rem auto; }
   .tools-grid { grid-template-columns: 1fr; gap: 1.25rem; }
@@ -198,10 +187,7 @@ footer a { color: var(--primary); text-decoration: none; }
     <a href="../" class="brand-link"><i class="fa-solid fa-sack-dollar"></i> Paycheck Calculator</a>
     <div class="top-actions">
       <a href="/" class="btn-shader7-home" style="display: inline-flex; align-items: center; gap: 0.45rem; background: rgba(29, 78, 216, 0.08); color: var(--primary, #1d4ed8); border: 1px solid rgba(29, 78, 216, 0.2); padding: 0.45rem 0.95rem; border-radius: 99px; font-weight: 800; font-size: 0.82rem; text-decoration: none; transition: transform 0.2s, background 0.2s;"><i class="fa-solid fa-house"></i> SHADER7 Home</a>
-      <button id="pwa-install-btn" class="install-btn" onclick="window.triggerPwaInstall(event)">
-        <i class="fa-solid fa-download"></i> Install App
-      </button>
-      <a href="../index.html#tools" style="color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 0.9rem;">All Apps</a>
+      <a href="../index.html#tools" style="color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 0.88rem; padding: 0.4rem 0.6rem;">All Apps</a>
       <button onclick="window.toggleShader7Theme()" class="theme-toggle-btn" aria-label="Toggle Theme" title="Toggle Theme">
         <i class="fa-solid fa-moon"></i>
       </button>
@@ -215,44 +201,11 @@ footer a { color: var(--primary); text-decoration: none; }
       <h1>Convert Hourly Wage to <span>Annual & Monthly Income</span></h1>
       <p>Calculate your annual salary, biweekly paycheck, monthly earnings, and overtime pay rate from your hourly wage instantly.</p>
       
-      <!-- Interactive Wage Calculator Demo Widget -->
-      <div class="widget-box">
-        <div class="widget-header">
-          <div style="font-weight: 800; font-size: 1.05rem; display: flex; align-items: center; gap: 0.5rem;">
-            <i class="fa-solid fa-calculator" style="color: var(--primary);"></i> Live Hourly-to-Annual Wage Converter
-          </div>
-          <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); background: var(--glass-bg); padding: 4px 10px; border-radius: 99px; border: 1px solid var(--border);">Live Demo</span>
-        </div>
-
-        <div class="widget-grid">
-          <div class="input-group">
-            <label>Hourly Wage ($)</label>
-            <input type="number" id="wage-rate" value="35.00" step="0.5" oninput="updateWageDemo()">
-          </div>
-          <div class="input-group">
-            <label>Hours Per Week</label>
-            <input type="number" id="wage-hours" value="40" min="1" max="80" oninput="updateWageDemo()">
-          </div>
-          <div class="input-group">
-            <label>Overtime Hours / Wk</label>
-            <input type="number" id="wage-ot" value="5" min="0" oninput="updateWageDemo()">
-          </div>
-        </div>
-
-        <div class="result-banner">
-          <div class="result-item">
-            <div class="result-label">Weekly Gross</div>
-            <div class="result-val" id="res-weekly">$1,662.50</div>
-          </div>
-          <div class="result-item">
-            <div class="result-label">Monthly Gross</div>
-            <div class="result-val" id="res-monthly" style="color: var(--accent);">$7,204.17</div>
-          </div>
-          <div class="result-item">
-            <div class="result-label">Annual Gross Salary</div>
-            <div class="result-val" id="res-annual" style="color: var(--primary);">$86,450</div>
-          </div>
-        </div>
+      <div class="hero-actions" style="display: flex; gap: 0.85rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2.5rem;">
+        <a href="app.html" class="btn-primary" style="font-size: 1.05rem; padding: 0.85rem 1.8rem;"><i class="fa-solid fa-calculator"></i> Calculate Salary Free</a>
+        <button class="btn-primary pwa-install-btn" onclick="window.triggerPwaInstall(event)" style="background: linear-gradient(135deg, #10b981, #059669); font-size: 1.05rem; padding: 0.85rem 1.8rem; border: none; cursor: pointer;">
+          <i class="fa-solid fa-download"></i> Install Web App
+        </button>
       </div>
     </section>
 
@@ -291,24 +244,6 @@ footer a { color: var(--primary); text-decoration: none; }
   <footer>
     <p>&copy; 2026 Paycheck Calculator • SHADER7 Suite. <a href="../">View All Apps</a></p>
   </footer>
-
-  <script>
-    function updateWageDemo() {
-      const rate = parseFloat(document.getElementById('wage-rate').value) || 0;
-      const hours = parseFloat(document.getElementById('wage-hours').value) || 0;
-      const otHours = parseFloat(document.getElementById('wage-ot').value) || 0;
-
-      const regPay = rate * Math.min(40, hours);
-      const otPay = (rate * 1.5) * otHours;
-      const weekly = regPay + otPay;
-      const annual = weekly * 52;
-      const monthly = annual / 12;
-
-      document.getElementById('res-weekly').textContent = '$' + weekly.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-      document.getElementById('res-monthly').textContent = '$' + monthly.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-      document.getElementById('res-annual').textContent = '$' + Math.round(annual).toLocaleString('en-US');
-    }
-  </script>
 
 </body>
 </html>

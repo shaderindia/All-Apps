@@ -136,16 +136,6 @@ header.top-bar { display: flex; justify-content: space-between; align-items: cen
 .hero h1 span { background: linear-gradient(135deg, var(--primary), var(--accent-green)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 .hero p { font-size: 1.15rem; color: var(--text-muted); max-width: 700px; margin: 0 auto 2.5rem; }
 
-/* Interactive Invoice Builder Demo Widget */
-.invoice-widget { background: var(--bg-card); border: 1px solid var(--border); border-radius: 24px; padding: 2rem; max-width: 850px; margin: 2rem auto 4rem; box-shadow: var(--shadow-lg); text-align: left; }
-.widget-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem; }
-.input-group label { display: block; font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.4rem; }
-.input-group input { width: 100%; padding: 0.65rem 0.9rem; border-radius: 10px; border: 1px solid var(--border); background: var(--bg-page); color: var(--text-main); font-family: var(--font-mono); font-weight: 600; font-size: 0.95rem; }
-.result-banner { background: rgba(37, 99, 235, 0.1); border: 1px solid rgba(37, 99, 235, 0.25); border-radius: 14px; padding: 1.25rem; display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 1rem; }
-.result-item { text-align: center; }
-.result-label { font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
-.result-val { font-size: 1.5rem; font-weight: 900; color: var(--primary); font-family: var(--font-mono); }
-
 /* Grid */
 .grid-section { max-width: 1200px; margin: 3rem auto; padding: 0 1.5rem; }
 .section-head { text-align: center; margin-bottom: 3rem; }
@@ -174,9 +164,9 @@ footer a { color: var(--primary); text-decoration: none; }
   .hero h1 { font-size: clamp(2rem, 8vw, 3rem); }
   .hero p { font-size: 1.05rem; margin-bottom: 1.75rem; }
   
-  .invoice-widget { padding: 1.25rem; margin: 1.5rem auto 3rem; }
-  .widget-grid { grid-template-columns: 1fr; gap: 1rem; }
-  .result-banner { flex-direction: column; gap: 0.75rem; }
+  
+  
+  
   
   .grid-section { padding: 0 1rem; margin: 2.5rem auto; }
   .tools-grid { grid-template-columns: 1fr; gap: 1.25rem; }
@@ -197,10 +187,7 @@ footer a { color: var(--primary); text-decoration: none; }
     <a href="../" class="brand-link"><i class="fa-solid fa-file-invoice-dollar"></i> ReceiptPro Generator</a>
     <div class="top-actions">
       <a href="/" class="btn-shader7-home" style="display: inline-flex; align-items: center; gap: 0.45rem; background: rgba(29, 78, 216, 0.08); color: var(--primary, #1d4ed8); border: 1px solid rgba(29, 78, 216, 0.2); padding: 0.45rem 0.95rem; border-radius: 99px; font-weight: 800; font-size: 0.82rem; text-decoration: none; transition: transform 0.2s, background 0.2s;"><i class="fa-solid fa-house"></i> SHADER7 Home</a>
-      <button id="pwa-install-btn" class="install-btn" onclick="window.triggerPwaInstall(event)">
-        <i class="fa-solid fa-download"></i> Install App
-      </button>
-      <a href="../index.html#tools" style="color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 0.9rem;">All Apps</a>
+      <a href="../index.html#tools" style="color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 0.88rem; padding: 0.4rem 0.6rem;">All Apps</a>
       <button onclick="window.toggleShader7Theme()" class="theme-toggle-btn" aria-label="Toggle Theme" title="Toggle Theme">
         <i class="fa-solid fa-moon"></i>
       </button>
@@ -214,43 +201,11 @@ footer a { color: var(--primary); text-decoration: none; }
       <h1>Create & Download Invoices <span>In Seconds</span></h1>
       <p>Generate professional client invoices, cash receipts, and payment vouchers with automated tax calculation and instant vector PDF downloads.</p>
       
-      <!-- Interactive Invoice Builder Demo Widget -->
-      <div class="invoice-widget">
-        <div style="text-align: center; margin-bottom: 1.25rem;">
-          <div style="font-weight: 800; font-size: 1.05rem; display: inline-flex; align-items: center; gap: 0.5rem;">
-            <i class="fa-solid fa-calculator" style="color: var(--primary);"></i> Live Invoice Total Calculator
-          </div>
-        </div>
-
-        <div class="widget-grid">
-          <div class="input-group">
-            <label>Item Amount ($)</label>
-            <input type="number" id="inv-amount" value="450.00" step="10" oninput="updateInvoiceDemo()">
-          </div>
-          <div class="input-group">
-            <label>Quantity</label>
-            <input type="number" id="inv-qty" value="2" min="1" oninput="updateInvoiceDemo()">
-          </div>
-          <div class="input-group">
-            <label>Tax Rate (%)</label>
-            <input type="number" id="inv-tax" value="18" step="1" oninput="updateInvoiceDemo()">
-          </div>
-        </div>
-
-        <div class="result-banner">
-          <div class="result-item">
-            <div class="result-label">Subtotal</div>
-            <div class="result-val" id="res-inv-sub">$900.00</div>
-          </div>
-          <div class="result-item">
-            <div class="result-label">Tax Amount</div>
-            <div class="result-val" id="res-inv-tax">$162.00</div>
-          </div>
-          <div class="result-item">
-            <div class="result-label">Grand Total</div>
-            <div class="result-val" id="res-inv-total" style="color: var(--accent-green);">$1,062.00</div>
-          </div>
-        </div>
+      <div class="hero-actions" style="display: flex; gap: 0.85rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2.5rem;">
+        <a href="app.html" class="btn-primary" style="font-size: 1.05rem; padding: 0.85rem 1.8rem;"><i class="fa-solid fa-file-invoice-dollar"></i> Create Invoice Free</a>
+        <button class="btn-primary pwa-install-btn" onclick="window.triggerPwaInstall(event)" style="background: linear-gradient(135deg, #10b981, #059669); font-size: 1.05rem; padding: 0.85rem 1.8rem; border: none; cursor: pointer;">
+          <i class="fa-solid fa-download"></i> Install Web App
+        </button>
       </div>
     </section>
 
@@ -289,22 +244,6 @@ footer a { color: var(--primary); text-decoration: none; }
   <footer>
     <p>&copy; 2026 ReceiptPro • SHADER7 Suite. <a href="../">View All Apps</a></p>
   </footer>
-
-  <script>
-    function updateInvoiceDemo() {
-      const amt = parseFloat(document.getElementById('inv-amount').value) || 0;
-      const qty = parseInt(document.getElementById('inv-qty').value) || 1;
-      const taxRate = parseFloat(document.getElementById('inv-tax').value) || 0;
-
-      const sub = amt * qty;
-      const tax = sub * (taxRate / 100);
-      const total = sub + tax;
-
-      document.getElementById('res-inv-sub').textContent = '$' + sub.toFixed(2);
-      document.getElementById('res-inv-tax').textContent = '$' + tax.toFixed(2);
-      document.getElementById('res-inv-total').textContent = '$' + total.toFixed(2);
-    }
-  </script>
 
 </body>
 </html>

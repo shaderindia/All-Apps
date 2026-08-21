@@ -144,20 +144,6 @@ header.top-bar { display: flex; justify-content: space-between; align-items: cen
 .hero h1 span { background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 .hero p { font-size: 1.15rem; color: var(--text-muted); max-width: 700px; margin: 0 auto 2rem; }
 
-/* Interactive Template Switcher Widget */
-.template-widget { background: var(--bg-card); border: 1px solid var(--border); border-radius: 24px; padding: 2rem; max-width: 950px; margin: 2rem auto 4rem; box-shadow: var(--shadow-lg); text-align: left; }
-.widget-controls { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 1.5rem; justify-content: center; }
-.tmpl-btn { background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 0.55rem 1.1rem; border-radius: 12px; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
-.tmpl-btn.active, .tmpl-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
-
-.preview-stage { background: #f1f5f9; border-radius: 16px; border: 1px solid var(--border); overflow: hidden; height: 500px; position: relative; transition: all 0.3s; }
-[data-theme="dark"] .preview-stage { background: #0b1120; }
-.preview-iframe { width: 100%; height: 100%; border: none; background: white; }
-
-.template-meta-bar { display: flex; justify-content: space-between; align-items: center; margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--border); flex-wrap: wrap; gap: 1rem; }
-.template-title { font-weight: 800; font-size: 1.1rem; }
-.template-desc { font-size: 0.9rem; color: var(--text-muted); }
-
 /* Grid */
 .grid-section { max-width: 1200px; margin: 3.5rem auto; padding: 0 1.5rem; }
 .section-head { text-align: center; margin-bottom: 3rem; }
@@ -186,12 +172,12 @@ footer a { color: var(--primary); text-decoration: none; }
   .hero h1 { font-size: clamp(2rem, 8vw, 3rem); }
   .hero p { font-size: 1.05rem; margin-bottom: 1.75rem; }
   
-  .template-widget { padding: 1.25rem; margin: 1.5rem auto 3rem; }
-  .widget-controls { gap: 0.35rem; }
-  .tmpl-btn { padding: 0.4rem 0.75rem; font-size: 0.78rem; flex-grow: 1; text-align: center; }
-  .preview-stage { height: 380px; }
-  .template-meta-bar { flex-direction: column; align-items: stretch; gap: 1rem; }
-  #use-tmpl-btn { width: 100%; justify-content: center; }
+  
+  
+  
+  
+  
+  
   
   .grid-section { padding: 0 1rem; margin: 2.5rem auto; }
   .tools-grid { grid-template-columns: 1fr; gap: 1.25rem; }
@@ -212,14 +198,11 @@ footer a { color: var(--primary); text-decoration: none; }
     <a href="../" class="brand-link"><i class="fa-solid fa-file-invoice"></i> CV Banao ATS Builder</a>
     <div class="top-actions">
       <a href="/" class="btn-shader7-home" style="display: inline-flex; align-items: center; gap: 0.45rem; background: rgba(29, 78, 216, 0.08); color: var(--primary, #1d4ed8); border: 1px solid rgba(29, 78, 216, 0.2); padding: 0.45rem 0.95rem; border-radius: 99px; font-weight: 800; font-size: 0.82rem; text-decoration: none; transition: transform 0.2s, background 0.2s;"><i class="fa-solid fa-house"></i> SHADER7 Home</a>
-      <button id="pwa-install-btn" class="install-btn" onclick="window.triggerPwaInstall(event)">
-        <i class="fa-solid fa-download"></i> Install App
-      </button>
-      <a href="../index.html#tools" style="color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 0.9rem;">All Apps</a>
+      <a href="../index.html#tools" style="color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 0.88rem; padding: 0.4rem 0.6rem;">All Apps</a>
       <button onclick="window.toggleShader7Theme()" class="theme-toggle-btn" aria-label="Toggle Theme" title="Toggle Theme">
         <i class="fa-solid fa-moon"></i>
       </button>
-      <a href="app.html" class="btn-primary">Build Resume Now <i class="fa-solid fa-arrow-right"></i></a>
+      <a href="template1/index.html" class="btn-primary">Build Resume Now <i class="fa-solid fa-arrow-right"></i></a>
     </div>
   </header>
 
@@ -229,38 +212,11 @@ footer a { color: var(--primary); text-decoration: none; }
       <h1>Create ATS-Friendly Resumes <span>With Real Templates</span></h1>
       <p>Select from 5 real, recruiter-approved ATS templates with live interactive editing, instant photo cropping, auto-save, and vector A4 PDF export.</p>
       
-      <!-- Real Web Lottie Resume Document Scan Animation -->
-      <div style="max-width: 320px; margin: 1rem auto; display: flex; justify-content: center;">
-        <lottie-player src="https://assets8.lottiefiles.com/packages/lf20_1L4672.json" background="transparent" speed="1" style="width: 260px; height: 160px;" loop autoplay></lottie-player>
-      </div>
-
-      <!-- Real Template Switcher & Live Preview Widget -->
-      <div class="template-widget">
-        <div style="text-align: center; margin-bottom: 1.25rem;">
-          <div style="font-weight: 800; font-size: 1.05rem; display: inline-flex; align-items: center; gap: 0.5rem;">
-            <i class="fa-solid fa-eye" style="color: var(--primary);"></i> Live Real Template Interactive Viewer
-          </div>
-        </div>
-
-        <div class="widget-controls">
-          <button class="tmpl-btn active" onclick="loadRealTemplate(1, this)">Template 1 (Classic ATS)</button>
-          <button class="tmpl-btn" onclick="loadRealTemplate(2, this)">Template 2 (Executive 2-Col)</button>
-          <button class="tmpl-btn" onclick="loadRealTemplate(3, this)">Template 3 (Compact Elegant)</button>
-          <button class="tmpl-btn" onclick="loadRealTemplate(4, this)">Template 4 (Creative Visual)</button>
-          <button class="tmpl-btn" onclick="loadRealTemplate(5, this)">Template 5 (Tech Specialist)</button>
-        </div>
-
-        <div class="preview-stage">
-          <iframe id="template-frame" class="preview-iframe" src="template1/index.html?previewOnly=true" title="Real Resume Template Preview"></iframe>
-        </div>
-
-        <div class="template-meta-bar">
-          <div>
-            <div class="template-title" id="active-tmpl-title">Template 1: Modern Classic ATS Single-Column</div>
-            <div class="template-desc" id="active-tmpl-desc">Clean single-column layout optimized for 100% ATS parsing compliance across Greenhouse, Lever, and Workday.</div>
-          </div>
-          <a id="use-tmpl-btn" href="template1/index.html" class="btn-primary">Use This Template <i class="fa-solid fa-arrow-right"></i></a>
-        </div>
+      <div class="hero-actions" style="display: flex; gap: 0.85rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2.5rem;">
+        <a href="template1/index.html" class="btn-primary" style="font-size: 1.05rem; padding: 0.85rem 1.8rem;"><i class="fa-solid fa-file-contract"></i> Build Resume (Template 1)</a>
+        <button class="btn-primary pwa-install-btn" onclick="window.triggerPwaInstall(event)" style="background: linear-gradient(135deg, #10b981, #059669); font-size: 1.05rem; padding: 0.85rem 1.8rem; border: none; cursor: pointer;">
+          <i class="fa-solid fa-download"></i> Install Web App
+        </button>
       </div>
     </section>
 
@@ -316,49 +272,8 @@ footer a { color: var(--primary); text-decoration: none; }
   </main>
 
   <footer>
-    <p>&copy; 2026 CV Banao • SHADER7 Suite. <a href="../">View All Apps</a></p>
+    <p>&copy; 2026 CV Banao ATS Resume Builder • SHADER7 Suite. <a href="../">View All Apps</a></p>
   </footer>
-
-  <script>
-    const tmplInfo = {
-      1: {
-        title: "Template 1: Modern Classic ATS Single-Column",
-        desc: "Clean single-column layout optimized for 100% ATS parsing compliance across Greenhouse, Lever, and Workday.",
-        url: "template1/index.html"
-      },
-      2: {
-        title: "Template 2: Executive Two-Column Professional",
-        desc: "Split sidebar layout designed for management, executive roles, and multi-skill highlights.",
-        url: "template2/index.html"
-      },
-      3: {
-        title: "Template 3: Compact Elegant ATS Resume",
-        desc: "High-density structure maximizing vertical space for candidates with multi-year work histories.",
-        url: "template3/index.html"
-      },
-      4: {
-        title: "Template 4: Creative Visual Minimalist",
-        desc: "Sleek contemporary design with clean typography and accent badges for creative & product roles.",
-        url: "template4/index.html"
-      },
-      5: {
-        title: "Template 5: Technical Specialist Grid Layout",
-        desc: "Grid-structured technical CV tailored for software engineers, IT specialists, and technical leads.",
-        url: "template5/index.html"
-      }
-    };
-
-    function loadRealTemplate(num, btnEl) {
-      document.querySelectorAll('.tmpl-btn').forEach(b => b.classList.remove('active'));
-      if (btnEl) btnEl.classList.add('active');
-
-      const info = tmplInfo[num];
-      document.getElementById('template-frame').src = info.url + '?previewOnly=true';
-      document.getElementById('active-tmpl-title').textContent = info.title;
-      document.getElementById('active-tmpl-desc').textContent = info.desc;
-      document.getElementById('use-tmpl-btn').href = info.url;
-    }
-  </script>
 
 </body>
 </html>
