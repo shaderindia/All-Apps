@@ -180,7 +180,7 @@
         promptTriggered = true;
         showPwaToast("Opening browser install prompt in address bar / screen...");
         
-        // Handle user choice asynchronously without blocking modal rendering
+        // Handle user choice asynchronously
         const currentPrompt = window.deferredPwaPrompt;
         currentPrompt.userChoice.then(function(choiceResult) {
           if (choiceResult && choiceResult.outcome === 'accepted') {
@@ -193,11 +193,14 @@
         }).catch(function() {});
       } catch (err) {
         console.warn("PWA prompt invocation error:", err);
+        promptTriggered = false;
       }
     }
 
-    // Always show the clear on-screen install dialog immediately
-    showUniversalInstallModal(promptTriggered);
+    // If native prompt was not triggered (or on iOS/Firefox/Brave), show clear step-by-step modal
+    if (!promptTriggered) {
+      showUniversalInstallModal(false);
+    }
   };
 
   window.dismissPwaBanner = function(e) {
