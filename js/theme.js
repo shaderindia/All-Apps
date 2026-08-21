@@ -235,103 +235,15 @@
     const isAndroid = /Android/i.test(navigator.userAgent);
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 
-    let modalTitle = 'Install SHADER7 Suite';
-    let instructionsHtml = '';
-
     if (isStandalone) {
-      modalTitle = 'Already Installed';
-      showPwaToast("✓ SHADER7 is running in standalone installed mode!");
-      instructionsHtml = `
-        <div style="text-align: center; padding: 1.25rem 0;">
-          <div style="width: 64px; height: 64px; border-radius: 50%; background: rgba(16, 185, 129, 0.15); color: #10b981; display: inline-flex; align-items: center; justify-content: center; font-size: 2rem; margin-bottom: 1rem;">
-            <i class="fa-solid fa-circle-check"></i>
-          </div>
-          <p style="font-weight: 800; font-size: 1.15rem; margin-bottom: 0.5rem; color: inherit;">SHADER7 is already installed!</p>
-          <p style="font-size: 0.92rem; color: #64748b; line-height: 1.5;">You are running the application in standalone mode with full offline functionality enabled.</p>
-        </div>
-      `;
+      showPwaToast("✓ SHADER7 is already running in standalone installed mode!");
     } else if (isIos) {
-      modalTitle = 'Install on iPhone & iPad';
-      showPwaToast("Tap Share (⎙) -> 'Add to Home Screen' to Install");
-      instructionsHtml = `
-        <div style="background: rgba(14, 165, 233, 0.1); border: 1px solid rgba(14, 165, 233, 0.25); border-radius: 12px; padding: 0.75rem 1rem; margin-bottom: 1.15rem; display: flex; align-items: center; gap: 0.65rem; color: #0369a1; font-size: 0.88rem; font-weight: 700;">
-          <i class="fa-brands fa-apple" style="font-size: 1.25rem; color: #0284c7;"></i>
-          <span>Add to iOS Home Screen for instant 1-tap offline access!</span>
-        </div>
-        <p style="font-size: 0.92rem; margin-bottom: 1.15rem; color: inherit; line-height: 1.5; opacity: 0.9;">Follow these 3 quick steps in <strong>Safari</strong>:</p>
-        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 1.1rem; margin-bottom: 1.35rem;">
-          <div style="display: flex; gap: 0.85rem; align-items: flex-start; margin-bottom: 1rem;">
-            <div style="width: 28px; height: 28px; border-radius: 50%; background: #0284c7; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.82rem; flex-shrink: 0;">1</div>
-            <div style="font-size: 0.92rem; line-height: 1.4; color: #1e293b;">Tap the <strong>Share button</strong> <i class="fa-solid fa-arrow-up-from-bracket" style="color: #0284c7; font-size: 1rem; margin: 0 0.2rem;"></i> at the bottom of Safari toolbar.</div>
-          </div>
-          <div style="display: flex; gap: 0.85rem; align-items: flex-start; margin-bottom: 1rem;">
-            <div style="width: 28px; height: 28px; border-radius: 50%; background: #059669; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.82rem; flex-shrink: 0;">2</div>
-            <div style="font-size: 0.92rem; line-height: 1.4; color: #1e293b;">Scroll down and tap <strong>Add to Home Screen</strong> <i class="fa-regular fa-square-plus" style="color: #059669; font-size: 1rem; margin: 0 0.2rem;"></i>.</div>
-          </div>
-          <div style="display: flex; gap: 0.85rem; align-items: flex-start;">
-            <div style="width: 28px; height: 28px; border-radius: 50%; background: #7c3aed; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.82rem; flex-shrink: 0;">3</div>
-            <div style="font-size: 0.92rem; line-height: 1.4; color: #1e293b;">Tap <strong>Add</strong> in the top-right corner to finish installation.</div>
-          </div>
-        </div>
-      `;
-    } else if (isAndroid) {
-      modalTitle = 'Install on Android';
-      showPwaToast("Install Prompt: Add to Android Home Screen");
-      const promptBanner = isPromptOpened ? `
-        <div style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 0.75rem 1rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.6rem; color: #065f46; font-size: 0.88rem; font-weight: 700;">
-          <i class="fa-solid fa-circle-check" style="font-size: 1.1rem; color: #10b981;"></i>
-          <span>Browser install prompt opened! Tap "Install" on your screen.</span>
-        </div>
-      ` : '';
-
-      instructionsHtml = `
-        ${promptBanner}
-        <p style="font-size: 0.92rem; margin-bottom: 1.15rem; color: inherit; line-height: 1.5; opacity: 0.9;">Install SHADER7 directly to your Android home screen:</p>
-        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 1.1rem; margin-bottom: 1.35rem;">
-          <div style="display: flex; gap: 0.85rem; align-items: flex-start; margin-bottom: 1rem;">
-            <div style="width: 28px; height: 28px; border-radius: 50%; background: #1d4ed8; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.82rem; flex-shrink: 0;">1</div>
-            <div style="font-size: 0.92rem; line-height: 1.4; color: #1e293b;">Tap the <strong>three dots menu (⋮)</strong> at the top right of your browser.</div>
-          </div>
-          <div style="display: flex; gap: 0.85rem; align-items: flex-start;">
-            <div style="width: 28px; height: 28px; border-radius: 50%; background: #059669; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.82rem; flex-shrink: 0;">2</div>
-            <div style="font-size: 0.92rem; line-height: 1.4; color: #1e293b;">Tap <strong>"Install app"</strong> or <strong>"Add to Home screen"</strong>.</div>
-          </div>
-        </div>
-      `;
-    } else {
-      // PC / Desktop (Windows, Mac, Linux)
-      modalTitle = 'Install Desktop App on PC';
-      showPwaToast(isPromptOpened ? "Click 'Install' in browser address bar (top right)" : "Install SHADER7 Desktop App");
-      const promptBanner = isPromptOpened ? `
-        <div style="background: rgba(16, 185, 129, 0.14); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: 12px; padding: 0.85rem 1rem; margin-bottom: 1.15rem; display: flex; align-items: center; gap: 0.65rem; color: #065f46; font-size: 0.88rem; font-weight: 700;">
-          <i class="fa-solid fa-circle-check" style="font-size: 1.25rem; color: #10b981; flex-shrink: 0;"></i>
-          <span>Browser install prompt opened in your address bar! Click <strong>Install</strong> to complete.</span>
-        </div>
-      ` : `
-        <div style="background: rgba(59, 130, 246, 0.12); border: 1px solid rgba(59, 130, 246, 0.25); border-radius: 12px; padding: 0.85rem 1rem; margin-bottom: 1.15rem; display: flex; align-items: center; gap: 0.65rem; color: #1e40af; font-size: 0.88rem; font-weight: 700;">
-          <i class="fa-solid fa-laptop-code" style="font-size: 1.25rem; color: #3b82f6; flex-shrink: 0;"></i>
-          <span>Install SHADER7 Suite as a native Windows / Mac desktop app with offline support.</span>
-        </div>
-      `;
-
-      instructionsHtml = `
-        ${promptBanner}
-        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 1.1rem; margin-bottom: 1.35rem;">
-          <div style="display: flex; gap: 0.85rem; align-items: flex-start; margin-bottom: 1rem;">
-            <div style="width: 28px; height: 28px; border-radius: 50%; background: #1d4ed8; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.82rem; flex-shrink: 0;">1</div>
-            <div style="font-size: 0.92rem; line-height: 1.4; color: #1e293b;">Look at the <strong>right side of your URL address bar</strong> at the top.</div>
-          </div>
-          <div style="display: flex; gap: 0.85rem; align-items: flex-start; margin-bottom: 1rem;">
-            <div style="width: 28px; height: 28px; border-radius: 50%; background: #059669; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.82rem; flex-shrink: 0;">2</div>
-            <div style="font-size: 0.92rem; line-height: 1.4; color: #1e293b;">Click the <strong>Install App icon</strong> <i class="fa-solid fa-download" style="color: #1d4ed8; font-size: 0.95rem; margin: 0 0.2rem;"></i> or <i class="fa-solid fa-desktop" style="color: #059669; font-size: 0.95rem; margin: 0 0.2rem;"></i>.</div>
-          </div>
-          <div style="display: flex; gap: 0.85rem; align-items: flex-start;">
-            <div style="width: 28px; height: 28px; border-radius: 50%; background: #7c3aed; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.82rem; flex-shrink: 0;">3</div>
-            <div style="font-size: 0.92rem; line-height: 1.4; color: #1e293b;">Click <strong>Install</strong> in the dialog to open in full screen.</div>
-          </div>
-        </div>
-      `;
+      showPwaToast("iOS: Tap Share (⎙) -> 'Add to Home Screen'");
+    } else if (isPromptOpened) {
+      showPwaToast("Browser install prompt opened on screen!");
     }
+
+    const defaultTab = isIos ? 'ios' : (isAndroid ? 'android' : 'pc');
 
     const modal = document.createElement('div');
     modal.id = 'pwa-install-modal';
@@ -342,26 +254,165 @@
 
     modal.innerHTML = `
       <div class="pwa-modal-card" onclick="event.stopPropagation()">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.15rem;">
+        <!-- Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.1rem;">
           <div style="display: flex; align-items: center; gap: 0.75rem;">
-            <div style="width: 42px; height: 42px; border-radius: 12px; background: linear-gradient(135deg, #1d4ed8, #7c3aed); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; box-shadow: 0 4px 14px rgba(29, 78, 216, 0.35);">
+            <div style="width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, #1d4ed8, #7c3aed); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.35rem; box-shadow: 0 4px 14px rgba(29, 78, 216, 0.35); flex-shrink: 0;">
               <i class="fa-solid fa-shapes"></i>
             </div>
             <div>
-              <h3 style="font-weight: 900; font-size: 1.22rem; margin: 0; color: inherit; line-height: 1.2;">${modalTitle}</h3>
-              <span style="font-size: 0.76rem; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">SHADER7 Web Apps Suite</span>
+              <h3 style="font-weight: 900; font-size: 1.25rem; margin: 0; color: inherit; line-height: 1.2;">Install SHADER7 App</h3>
+              <span style="font-size: 0.76rem; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">100% Free • Works Offline</span>
             </div>
           </div>
-          <button onclick="document.getElementById('pwa-install-modal').remove()" style="background: rgba(0,0,0,0.06); border: none; font-size: 1.4rem; cursor: pointer; color: inherit; line-height: 1; padding: 0.35rem 0.6rem; border-radius: 50%; transition: opacity 0.2s;" aria-label="Close" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">&times;</button>
+          <button onclick="document.getElementById('pwa-install-modal').remove()" style="background: rgba(125,125,125,0.1); border: none; font-size: 1.4rem; cursor: pointer; color: inherit; line-height: 1; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: opacity 0.2s;" aria-label="Close">&times;</button>
         </div>
-        ${instructionsHtml}
-        <div style="display: flex; gap: 0.75rem;">
+
+        <!-- OS Selector Tabs -->
+        <div class="pwa-tabs-bar" style="display: flex; gap: 6px; background: rgba(125,125,125,0.1); padding: 4px; border-radius: 12px; margin-bottom: 1.25rem;">
+          <button id="pwa-tab-btn-ios" onclick="window.switchPwaTab('ios')" class="pwa-tab-btn ${defaultTab === 'ios' ? 'active' : ''}">
+            <i class="fa-brands fa-apple"></i> iOS (iPhone/iPad)
+          </button>
+          <button id="pwa-tab-btn-android" onclick="window.switchPwaTab('android')" class="pwa-tab-btn ${defaultTab === 'android' ? 'active' : ''}">
+            <i class="fa-brands fa-android"></i> Android
+          </button>
+          <button id="pwa-tab-btn-pc" onclick="window.switchPwaTab('pc')" class="pwa-tab-btn ${defaultTab === 'pc' ? 'active' : ''}">
+            <i class="fa-solid fa-laptop"></i> PC / Mac
+          </button>
+        </div>
+
+        <!-- Tab 1: iOS (iPhone & iPad) Step-by-Step -->
+        <div id="pwa-tab-content-ios" class="pwa-tab-content ${defaultTab === 'ios' ? 'active' : ''}" style="${defaultTab === 'ios' ? 'display: block;' : 'display: none;'}">
+          <div style="background: rgba(14, 165, 233, 0.1); border: 1px solid rgba(14, 165, 233, 0.25); border-radius: 12px; padding: 0.75rem 1rem; margin-bottom: 1.15rem; display: flex; align-items: center; gap: 0.65rem; color: #0369a1; font-size: 0.88rem; font-weight: 700;">
+            <i class="fa-brands fa-apple" style="font-size: 1.35rem; color: #0284c7; flex-shrink: 0;"></i>
+            <span>Install on iOS without App Store in 3 simple steps:</span>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 1.1rem; margin-bottom: 1.15rem;">
+            <div style="display: flex; gap: 0.85rem; align-items: flex-start; margin-bottom: 1rem;">
+              <div style="width: 28px; height: 28px; border-radius: 50%; background: #0284c7; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.82rem; flex-shrink: 0;">1</div>
+              <div style="font-size: 0.92rem; line-height: 1.45; color: #1e293b;">
+                In <strong>Safari</strong>, tap the <strong>Share icon</strong> <i class="fa-solid fa-arrow-up-from-bracket" style="color: #0284c7; font-size: 1.05rem; margin: 0 0.25rem;"></i> on the bottom toolbar (or top on iPad).
+              </div>
+            </div>
+            <div style="display: flex; gap: 0.85rem; align-items: flex-start; margin-bottom: 1rem;">
+              <div style="width: 28px; height: 28px; border-radius: 50%; background: #059669; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.82rem; flex-shrink: 0;">2</div>
+              <div style="font-size: 0.92rem; line-height: 1.45; color: #1e293b;">
+                Scroll down the menu and tap <strong>Add to Home Screen</strong> <i class="fa-regular fa-square-plus" style="color: #059669; font-size: 1.05rem; margin: 0 0.25rem;"></i>.
+              </div>
+            </div>
+            <div style="display: flex; gap: 0.85rem; align-items: flex-start;">
+              <div style="width: 28px; height: 28px; border-radius: 50%; background: #7c3aed; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.82rem; flex-shrink: 0;">3</div>
+              <div style="font-size: 0.92rem; line-height: 1.45; color: #1e293b;">
+                Tap <strong>Add</strong> in the top-right corner. The app icon will appear instantly on your home screen!
+              </div>
+            </div>
+          </div>
+
+          <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 10px; padding: 0.65rem 0.85rem; font-size: 0.82rem; color: #b45309; line-height: 1.4; display: flex; gap: 0.5rem; align-items: center;">
+            <i class="fa-solid fa-lightbulb" style="font-size: 0.95rem; color: #d97706; flex-shrink: 0;"></i>
+            <span><strong>Tip:</strong> If viewing inside Chrome or Instagram, tap Share <i class="fa-solid fa-arrow-up-from-bracket"></i> or open in Safari for native home screen install.</span>
+          </div>
+        </div>
+
+        <!-- Tab 2: Android Step-by-Step -->
+        <div id="pwa-tab-content-android" class="pwa-tab-content ${defaultTab === 'android' ? 'active' : ''}" style="${defaultTab === 'android' ? 'display: block;' : 'display: none;'}">
+          ${isPromptOpened ? `
+            <div style="background: rgba(16, 185, 129, 0.14); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: 12px; padding: 0.75rem 1rem; margin-bottom: 1.15rem; display: flex; align-items: center; gap: 0.65rem; color: #065f46; font-size: 0.88rem; font-weight: 700;">
+              <i class="fa-solid fa-circle-check" style="font-size: 1.25rem; color: #10b981; flex-shrink: 0;"></i>
+              <span>Install dialog opened! Tap <strong>"Install"</strong> or <strong>"Add"</strong> on your screen.</span>
+            </div>
+          ` : `
+            <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 12px; padding: 0.75rem 1rem; margin-bottom: 1.15rem; display: flex; align-items: center; gap: 0.65rem; color: #047857; font-size: 0.88rem; font-weight: 700;">
+              <i class="fa-brands fa-android" style="font-size: 1.35rem; color: #10b981; flex-shrink: 0;"></i>
+              <span>Install to Android Home Screen for fast standalone app mode:</span>
+            </div>
+          `}
+
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 1.1rem; margin-bottom: 1.15rem;">
+            <div style="display: flex; gap: 0.85rem; align-items: flex-start; margin-bottom: 1rem;">
+              <div style="width: 28px; height: 28px; border-radius: 50%; background: #1d4ed8; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.82rem; flex-shrink: 0;">1</div>
+              <div style="font-size: 0.92rem; line-height: 1.45; color: #1e293b;">
+                Tap the <strong>three dots menu (⋮)</strong> at the top right of Chrome (or bottom bar in Samsung Internet).
+              </div>
+            </div>
+            <div style="display: flex; gap: 0.85rem; align-items: flex-start; margin-bottom: 1rem;">
+              <div style="width: 28px; height: 28px; border-radius: 50%; background: #059669; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.82rem; flex-shrink: 0;">2</div>
+              <div style="font-size: 0.92rem; line-height: 1.45; color: #1e293b;">
+                Tap <strong>"Install app"</strong> or <strong>"Add to Home screen"</strong> <i class="fa-solid fa-mobile-screen" style="color: #059669; font-size: 1rem; margin: 0 0.2rem;"></i>.
+              </div>
+            </div>
+            <div style="display: flex; gap: 0.85rem; align-items: flex-start;">
+              <div style="width: 28px; height: 28px; border-radius: 50%; background: #7c3aed; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.82rem; flex-shrink: 0;">3</div>
+              <div style="font-size: 0.92rem; line-height: 1.45; color: #1e293b;">
+                Confirm by tapping <strong>Install</strong>.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 3: Desktop PC / Mac Step-by-Step -->
+        <div id="pwa-tab-content-pc" class="pwa-tab-content ${defaultTab === 'pc' ? 'active' : ''}" style="${defaultTab === 'pc' ? 'display: block;' : 'display: none;'}">
+          ${isPromptOpened ? `
+            <div style="background: rgba(16, 185, 129, 0.14); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: 12px; padding: 0.75rem 1rem; margin-bottom: 1.15rem; display: flex; align-items: center; gap: 0.65rem; color: #065f46; font-size: 0.88rem; font-weight: 700;">
+              <i class="fa-solid fa-circle-check" style="font-size: 1.25rem; color: #10b981; flex-shrink: 0;"></i>
+              <span>Address bar prompt opened! Click <strong>Install</strong> to complete.</span>
+            </div>
+          ` : `
+            <div style="background: rgba(59, 130, 246, 0.12); border: 1px solid rgba(59, 130, 246, 0.25); border-radius: 12px; padding: 0.75rem 1rem; margin-bottom: 1.15rem; display: flex; align-items: center; gap: 0.65rem; color: #1e40af; font-size: 0.88rem; font-weight: 700;">
+              <i class="fa-solid fa-laptop-code" style="font-size: 1.25rem; color: #3b82f6; flex-shrink: 0;"></i>
+              <span>Install SHADER7 as a native Windows / Mac desktop app:</span>
+            </div>
+          `}
+
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 1.1rem; margin-bottom: 1.15rem;">
+            <div style="display: flex; gap: 0.85rem; align-items: flex-start; margin-bottom: 1rem;">
+              <div style="width: 28px; height: 28px; border-radius: 50%; background: #1d4ed8; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.82rem; flex-shrink: 0;">1</div>
+              <div style="font-size: 0.92rem; line-height: 1.45; color: #1e293b;">
+                Look at the <strong>right side of your URL address bar</strong> at the top.
+              </div>
+            </div>
+            <div style="display: flex; gap: 0.85rem; align-items: flex-start; margin-bottom: 1rem;">
+              <div style="width: 28px; height: 28px; border-radius: 50%; background: #059669; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.82rem; flex-shrink: 0;">2</div>
+              <div style="font-size: 0.92rem; line-height: 1.45; color: #1e293b;">
+                Click the <strong>Install icon</strong> <i class="fa-solid fa-download" style="color: #1d4ed8; font-size: 1rem; margin: 0 0.2rem;"></i> or <i class="fa-solid fa-desktop" style="color: #059669; font-size: 1rem; margin: 0 0.2rem;"></i>, or click browser menu (⋮) &rarr; <strong>"Cast, save and share"</strong> / <strong>"Install SHADER7"</strong>.
+              </div>
+            </div>
+            <div style="display: flex; gap: 0.85rem; align-items: flex-start;">
+              <div style="width: 28px; height: 28px; border-radius: 50%; background: #7c3aed; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.82rem; flex-shrink: 0;">3</div>
+              <div style="font-size: 0.92rem; line-height: 1.45; color: #1e293b;">
+                Click <strong>Install</strong> in the dialog to open in full screen.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Button -->
+        <div style="display: flex; gap: 0.75rem; margin-top: 1rem;">
           <button onclick="document.getElementById('pwa-install-modal').remove()" style="flex: 1; padding: 0.85rem; border-radius: 99px; background: linear-gradient(135deg, #1d4ed8, #1e40af); color: white; border: none; font-weight: 800; font-size: 0.95rem; cursor: pointer; box-shadow: 0 6px 18px rgba(29, 78, 216, 0.4); transition: transform 0.15s ease;" onmousedown="this.style.transform='scale(0.97)'" onmouseup="this.style.transform='scale(1)'">Got It</button>
         </div>
       </div>
     `;
     document.body.appendChild(modal);
   }
+
+  // Global Tab Switcher for PWA Modal
+  window.switchPwaTab = function(tabName) {
+    const tabs = ['ios', 'android', 'pc'];
+    tabs.forEach(t => {
+      const btn = document.getElementById('pwa-tab-btn-' + t);
+      const content = document.getElementById('pwa-tab-content-' + t);
+      if (btn && content) {
+        if (t === tabName) {
+          btn.classList.add('active');
+          content.style.display = 'block';
+        } else {
+          btn.classList.remove('active');
+          content.style.display = 'none';
+        }
+      }
+    });
+  };
 
   // Register Service Worker for PWA
   if ('serviceWorker' in navigator) {
@@ -451,6 +502,39 @@
     }
     [data-theme="dark"] .pwa-modal-card div[style*="color: #1e293b"] {
       color: #f1f5f9 !important;
+    }
+    .pwa-tab-btn {
+      flex: 1;
+      padding: 0.55rem 0.35rem;
+      border-radius: 9px;
+      border: none;
+      background: transparent;
+      color: inherit;
+      opacity: 0.7;
+      font-weight: 700;
+      font-size: 0.78rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      font-family: inherit;
+    }
+    .pwa-tab-btn:hover {
+      opacity: 0.95;
+    }
+    .pwa-tab-btn.active {
+      background: #ffffff;
+      color: #1d4ed8;
+      opacity: 1;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    }
+    [data-theme="dark"] .pwa-tab-btn.active {
+      background: #1e293b;
+      color: #60a5fa;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.35);
     }
     @keyframes pwaModalPop {
       from { transform: scale(0.92); opacity: 0; }
