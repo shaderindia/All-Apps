@@ -286,8 +286,6 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: var(--font-sans); background-color: var(--bg-page); color: var(--text-main); line-height: 1.6; overflow-x: hidden; position: relative; transition: background 0.2s, color 0.2s; }
 
-#bg-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none; opacity: 0.5; }
-
 header.top-bar { position: relative; z-index: 10; display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 2rem; background: var(--glass-bg); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); max-width: 1200px; margin: 0 auto; }
 .brand-link { font-size: 1.35rem; font-weight: 900; color: var(--text-main); text-decoration: none; display: flex; align-items: center; gap: 0.6rem; letter-spacing: -0.5px; }
 .brand-link i { color: var(--primary); }
@@ -482,8 +480,6 @@ footer.main-footer {
 </style>
 </head>
 <body>
-
-  <canvas id="bg-canvas"></canvas>
 
   <header class="top-bar">
     <a href="./" class="brand-link"><i class="fa-solid fa-shapes"></i> SHADER7 Web Suite</a>
@@ -787,49 +783,6 @@ footer.main-footer {
   </footer>
 
   <script>
-    // Background Motion Canvas Script
-    const bgCanvas = document.getElementById('bg-canvas');
-    const bgCtx = bgCanvas.getContext('2d');
-    let particles = [];
-
-    function resizeCanvas() {
-      bgCanvas.width = window.innerWidth;
-      bgCanvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
-
-    for (let i = 0; i < 40; i++) {
-      particles.push({
-        x: Math.random() * bgCanvas.width,
-        y: Math.random() * bgCanvas.height,
-        vx: (Math.random() - 0.5) * 0.6,
-        vy: (Math.random() - 0.5) * 0.6,
-        size: Math.random() * 2 + 1
-      });
-    }
-
-    function renderBg() {
-      bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
-      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-      const color = isDark ? '59, 130, 246' : '29, 78, 216';
-
-      particles.forEach(p => {
-        p.x += p.vx; p.y += p.vy;
-        if (p.x < 0) p.x = bgCanvas.width;
-        if (p.x > bgCanvas.width) p.x = 0;
-        if (p.y < 0) p.y = bgCanvas.height;
-        if (p.y > bgCanvas.height) p.y = 0;
-
-        bgCtx.fillStyle = `rgba(${color}, 0.25)`;
-        bgCtx.beginPath();
-        bgCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        bgCtx.fill();
-      });
-      requestAnimationFrame(renderBg);
-    }
-    renderBg();
-
     // App Search & Category Filter
     let activeCat = 'all';
 
