@@ -170,7 +170,6 @@
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--border);
-      max-width: 100%;
     }
 
     .nav-container {
@@ -197,7 +196,8 @@
     .top-actions {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 0.65rem;
+      flex-wrap: wrap;
     }
 
     .btn-shader7-home {
@@ -212,6 +212,7 @@
       font-weight: 800;
       font-size: 0.82rem;
       text-decoration: none;
+      min-height: 38px;
       transition: transform 0.2s, background 0.2s;
     }
     .btn-shader7-home:hover {
@@ -221,12 +222,19 @@
     .nav-link {
       color: var(--text-muted);
       text-decoration: none;
-      font-weight: 600;
-      font-size: 0.88rem;
-      padding: 0.4rem 0.6rem;
-      transition: color 0.2s;
+      font-weight: 700;
+      font-size: 0.85rem;
+      padding: 0.45rem 0.75rem;
+      border-radius: 8px;
+      min-height: 38px;
+      display: inline-flex;
+      align-items: center;
+      transition: color 0.2s, background 0.2s;
     }
-    .nav-link:hover { color: var(--primary); }
+    .nav-link:hover {
+      color: var(--primary);
+      background: var(--bg-subtle);
+    }
 
     .theme-toggle-btn {
       background: transparent;
@@ -236,6 +244,10 @@
       border-radius: 10px;
       cursor: pointer;
       font-size: 0.95rem;
+      min-height: 38px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       transition: background 0.2s, border-color 0.2s;
     }
     .theme-toggle-btn:hover {
@@ -426,46 +438,73 @@
       margin-bottom: 1.75rem;
     }
 
+    /* Creator Action Buttons Optimized */
     .creator-actions {
-      display: flex;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
       gap: 0.85rem;
     }
 
-    .btn-insta {
+    .btn-creator-primary {
       display: inline-flex;
       align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      color: white;
+      text-decoration: none;
+      padding: 0.8rem 1.2rem;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 0.88rem;
+      min-height: 48px;
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-creator-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 25px rgba(37, 99, 235, 0.5);
+    }
+
+    .btn-creator-insta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       gap: 0.5rem;
       background: linear-gradient(135deg, #e1306c, #c13584);
       color: white;
       text-decoration: none;
-      padding: 0.7rem 1.4rem;
+      padding: 0.8rem 1.2rem;
       border-radius: 12px;
-      font-weight: 700;
+      font-weight: 800;
       font-size: 0.88rem;
+      min-height: 48px;
+      box-shadow: 0 8px 20px rgba(225, 48, 108, 0.35);
       transition: transform 0.2s, box-shadow 0.2s;
     }
-    .btn-insta:hover {
+    .btn-creator-insta:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(225, 48, 108, 0.4);
+      box-shadow: 0 12px 25px rgba(225, 48, 108, 0.5);
     }
 
-    .btn-email-creator {
+    .btn-creator-secondary {
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 0.5rem;
       background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.18);
       color: #f1f5f9;
       text-decoration: none;
-      padding: 0.7rem 1.4rem;
+      padding: 0.8rem 1.2rem;
       border-radius: 12px;
-      font-weight: 700;
+      font-weight: 800;
       font-size: 0.88rem;
+      min-height: 48px;
       transition: background 0.2s, transform 0.2s;
     }
-    .btn-email-creator:hover {
-      background: rgba(255, 255, 255, 0.15);
+    .btn-creator-secondary:hover {
+      background: rgba(255, 255, 255, 0.16);
       transform: translateY(-2px);
     }
 
@@ -570,7 +609,7 @@
       line-height: 1.6;
     }
 
-    /* CTA Banner */
+    /* CTA Banner & Button Layout */
     .cta-banner {
       background: linear-gradient(135deg, var(--primary), var(--accent-purple));
       color: white;
@@ -592,9 +631,16 @@
       margin: 0 auto 2rem;
       line-height: 1.6;
     }
-    .cta-btn {
+    .cta-actions {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .cta-btn-white {
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 0.5rem;
       background: #ffffff;
       color: #1e1b4b !important;
@@ -602,13 +648,34 @@
       border-radius: 99px;
       font-weight: 800;
       font-size: 0.95rem;
+      min-height: 48px;
       text-decoration: none;
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
       transition: transform 0.2s, box-shadow 0.2s;
     }
-    .cta-btn:hover {
+    .cta-btn-white:hover {
       transform: translateY(-2px);
       box-shadow: 0 14px 30px rgba(0, 0, 0, 0.3);
+    }
+    .cta-btn-outline {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #ffffff !important;
+      padding: 0.85rem 2rem;
+      border-radius: 99px;
+      font-weight: 800;
+      font-size: 0.95rem;
+      min-height: 48px;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .cta-btn-outline:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
     }
 
     /* Footer */
@@ -637,16 +704,18 @@
       color: var(--primary);
     }
 
-    /* Responsive Queries */
+    /* Responsive Queries Across All Devices */
     @media (max-width: 992px) {
       .stats-ribbon { grid-template-columns: repeat(2, 1fr); }
       .creator-grid { grid-template-columns: 1fr; text-align: center; gap: 2rem; }
-      .creator-actions { justify-content: center; }
+      .creator-actions { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
       .tech-grid { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 768px) {
       header.top-bar { padding: 0.75rem 1rem; }
+      .top-actions { gap: 0.4rem; }
+      .brand-link { font-size: 1.15rem; }
       main { padding: 1.5rem 1rem 3rem; }
       .hero-section { padding: 2rem 0.5rem; }
       .creator-card { padding: 2rem 1.5rem; }
@@ -656,13 +725,16 @@
       .stat-number { font-size: 1.6rem; }
       .cta-banner { padding: 2.5rem 1.25rem; }
       .cta-banner h2 { font-size: 1.75rem; }
+      .cta-actions { flex-direction: column; width: 100%; align-items: center; }
+      .cta-btn-white, .cta-btn-outline { width: 100%; max-width: 340px; }
     }
 
     @media (max-width: 480px) {
-      .top-actions { gap: 0.4rem; }
+      header.top-bar { flex-wrap: wrap; gap: 0.6rem; justify-content: center; }
+      .top-actions { width: 100%; justify-content: center; }
       .stats-ribbon { grid-template-columns: 1fr; }
-      .creator-actions { flex-direction: column; width: 100%; }
-      .btn-insta, .btn-email-creator { width: 100%; justify-content: center; }
+      .creator-actions { width: 100%; }
+      .btn-creator-primary, .btn-creator-insta, .btn-creator-secondary { width: 100%; justify-content: center; }
     }
   </style>
 </head>
@@ -734,14 +806,14 @@
             Hi, I'm Nishikant. I built SHADER7 to bridge the gap between heavy, paywalled software and clean, lightning-fast browser execution. Combining my background in modern client-side architectures with hands-on industrial CNC shop-floor programming, I design tools that run entirely on your local hardware. Whether you're an engineer calculating cutting feeds, a job seeker generating ATS resumes, or an applicant exporting biometric passport photos, SHADER7 guarantees absolute speed, zero tracking, and complete privacy.
           </p>
           <div class="creator-actions">
-            <a href="https://instagram.com/nishix_vamp" target="_blank" rel="noopener noreferrer" class="btn-insta">
-              <i class="fa-brands fa-instagram"></i> Follow @nishix_vamp
+            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=nxdecore@gmail.com&su=SHADER7%20Inquiry" target="_blank" rel="noopener noreferrer" class="btn-creator-primary">
+              <i class="fa-solid fa-envelope"></i> Email Developer
             </a>
-            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=nxdecore@gmail.com&su=SHADER7%20Inquiry" target="_blank" rel="noopener noreferrer" class="btn-email-creator">
-              <i class="fa-solid fa-envelope"></i> nxdecore@gmail.com
+            <a href="https://instagram.com/nishix_vamp" target="_blank" rel="noopener noreferrer" class="btn-creator-insta">
+              <i class="fa-brands fa-instagram"></i> @nishix_vamp
             </a>
-            <a href="https://github.com/shaderindia" target="_blank" rel="noopener noreferrer" class="btn-email-creator">
-              <i class="fa-brands fa-github"></i> GitHub: @shaderindia
+            <a href="https://github.com/shaderindia" target="_blank" rel="noopener noreferrer" class="btn-creator-secondary">
+              <i class="fa-brands fa-github"></i> @shaderindia
             </a>
           </div>
         </div>
@@ -824,9 +896,14 @@
     <section class="cta-banner">
       <h2>Experience the Full SHADER7 Suite</h2>
       <p>Discover our complete collection of biometric passport editors, CNC machining suites, ATS resume builders, and utility calculators.</p>
-      <a href="/index.html#tools" class="cta-btn">
-        <i class="fa-solid fa-shapes"></i> Browse All Tools Free
-      </a>
+      <div class="cta-actions">
+        <a href="/index.html#tools" class="cta-btn-white">
+          <i class="fa-solid fa-shapes"></i> Browse All Tools Free
+        </a>
+        <a href="/contact.html" class="cta-btn-outline">
+          <i class="fa-solid fa-envelope"></i> Contact Developer
+        </a>
+      </div>
     </section>
   </main>
 
