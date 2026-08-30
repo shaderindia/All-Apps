@@ -409,19 +409,41 @@
     .zoom-controls { display: flex; gap: 6px; align-items: center; }
     .zoom-controls span { min-width: 48px; text-align: center; font-weight: 800; font-size: 0.9rem; }
     .report-scroll { width: min(960px, 100%); margin: 0 auto; overflow: auto; display: flex; align-items: flex-start; justify-content: center; -webkit-overflow-scrolling: touch; }
-    #report-preview-content { background: #fff; width: 210mm; min-height: 297mm; padding: 12mm; transform-origin: top center; transition: transform .18s ease; box-shadow: 0 10px 40px rgba(0,0,0,.35); font-size: 10pt; color: #333; position: relative; border-radius: 4px; }
-    .report-company-name { text-align: center; font-size: 16pt; font-weight: 800; color: #1f2937; margin-bottom: 8pt; word-break: break-word; }
-    .report-header { text-align: center; margin-bottom: 14pt; }
-    .report-header h2 { margin: 0 0 3pt; font-size: 18pt; }
-    .report-details { display: grid; grid-template-columns: 1fr 1fr; gap: 12pt; margin-bottom: 12pt; }
-    .report-details p { margin: 0 0 4pt; }
-    .report-table-container { display: grid; grid-template-columns: 1fr 1fr; gap: 8pt; }
+    #report-preview-content {
+      background: #fff;
+      width: 210mm;
+      min-height: 297mm;
+      height: 297mm;
+      max-height: 297mm;
+      padding: 10mm 12mm 8mm;
+      transform-origin: top center;
+      transition: transform .18s ease;
+      box-shadow: 0 10px 40px rgba(0,0,0,.35);
+      font-size: 8.5pt;
+      color: #1e293b;
+      position: relative;
+      border-radius: 4px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+    .report-company-name { text-align: center; font-size: 15pt; font-weight: 800; color: #0f172a; margin-bottom: 2pt; word-break: break-word; line-height: 1.2; }
+    .report-header { text-align: center; margin-bottom: 8pt; border-bottom: 1.5px solid #cbd5e1; padding-bottom: 4pt; }
+    .report-header h2 { margin: 0 0 2pt; font-size: 13pt; font-weight: 800; color: #2563eb; }
+    .report-header p { margin: 0; font-size: 8.5pt; color: #64748b; font-weight: 600; }
+    .report-details { display: grid; grid-template-columns: 1fr 1fr; gap: 8pt; margin-bottom: 8pt; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6pt 8pt; font-size: 8pt; }
+    .report-details p { margin: 0 0 2.5pt; line-height: 1.35; }
+    .report-table-title { text-align: center; margin: 4pt 0 4pt; font-size: 9.5pt; font-weight: 800; color: #0f172a; }
+    .report-table-container { display: grid; grid-template-columns: 1fr 1fr; gap: 6pt; }
     .report-table { width: 100%; border-collapse: collapse; }
-    .report-table th, .report-table td { border: 1px solid #ddd; padding: 5pt; text-align: left; font-size: 7.8pt; vertical-align: top; }
-    .report-table th { background: #f3f4f6; }
-    .report-footer { display: grid; grid-template-columns: 1fr 1fr; gap: 10pt; margin-top: 24pt; font-size: 9pt; }
+    .report-table th, .report-table td { border: 1px solid #cbd5e1; padding: 3pt 4pt; text-align: left; font-size: 7.2pt; line-height: 1.2; vertical-align: middle; }
+    .report-table th { background: #f1f5f9; font-weight: 800; color: #1e293b; }
+    .report-footer { display: grid; grid-template-columns: 1fr 1fr; gap: 10pt; margin-top: auto; padding-top: 10pt; font-size: 8pt; border-top: 1px dashed #cbd5e1; }
     .report-footer .right { text-align: right; }
-    .report-watermark { position: absolute; inset: 0; display: grid; place-items: center; transform: rotate(-35deg); font-size: 3rem; font-weight: 800; color: rgba(0,0,0,.045); pointer-events: none; user-select: none; white-space: nowrap; overflow: hidden; }
+    .report-meta-note { text-align: center; font-size: 6.8pt; color: #94a3b8; margin-top: 4pt; }
+    .report-watermark { position: absolute; inset: 0; display: grid; place-items: center; transform: rotate(-35deg); font-size: 3.5rem; font-weight: 900; color: rgba(0,0,0,.035); pointer-events: none; user-select: none; white-space: nowrap; overflow: hidden; }
     details { border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; background: #fff; margin-top: 10px; }
     summary { cursor: pointer; }
     .credits { text-align: center; color: var(--muted); font-size: .9rem; margin-top: 22px; }
@@ -1023,6 +1045,8 @@
 
       let totalWeekdayHours = 0, totalWeekendHours = 0, totalNightHours = 0, totalCShiftHours = 0, daysWorked = 0, daysOff = 0, totalSalaryRON = 0;
       const leftRows = [], rightRows = [];
+      const splitDay = Math.ceil(daysInMonth / 2);
+
       for (let day = 1; day <= daysInMonth; day++) {
         const dateObj = new Date(year, month - 1, day);
         const hoursSelect = $(`#hours-${day}`);
@@ -1041,18 +1065,62 @@
         if (isC) totalCShiftHours += hrs;
         if (hrs > 0) daysWorked++; else daysOff++;
         const labels = [];
-        if (isWeekend) labels.push('Weekend');
+        if (isWeekend) labels.push('Wknd');
         if (isNight) labels.push(`Night x${nightRate}`);
-        if (isC) labels.push(`C Shift x${cShiftRate}`);
-        const hoursLabel = `${formatNumber(hrs, hrs % 1 ? 1 : 0)} hrs${labels.length ? ` (${labels.join(' + ')})` : ''}`;
+        if (isC) labels.push(`C x${cShiftRate}`);
+        const hoursLabel = `${formatNumber(hrs, hrs % 1 ? 1 : 0)}h${labels.length ? ` (${labels.join('+')})` : ''}`;
         const dateLabel = `${dateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })} (${dateObj.toLocaleDateString('en-GB', { weekday: 'short' })}) - ${shiftText}`;
-        const row = `<tr><td>${dateLabel}</td><td>${hoursLabel}</td><td>${formatNumber(dailyPay)} RON</td></tr>`;
-        if (day <= 15) leftRows.push(row); else rightRows.push(row);
+        const row = `<tr style="${isWeekend ? 'background:#fff7f7;' : ''}"><td>${dateLabel}</td><td>${hoursLabel}</td><td>${formatNumber(dailyPay)} RON</td></tr>`;
+        if (day <= splitDay) leftRows.push(row); else rightRows.push(row);
       }
 
       const totalHours = totalWeekdayHours + totalWeekendHours;
       const totalSalaryINR = totalSalaryRON * exchangeRate;
-      return `<div class="report-watermark">${companyName}</div><div class="report-company-name">${companyName}</div><div class="report-header"><h2>Salary Report</h2><p>For ${monthName} ${year}</p></div><div class="report-details"><div><p><strong>Employee:</strong> ${employeeName}</p><p><strong>Base Salary:</strong> ${formatNumber(salary)} RON</p><p><strong>Fixed Base Hours:</strong> ${formatNumber(fixedBaseHours, fixedBaseHours % 1 ? 1 : 0)}</p><p><strong>Hourly Rate:</strong> ${formatNumber(hourlyRate)} RON</p><p><strong>Weekend Multiplier:</strong> ${weekendRate}x</p><p><strong>Night Shift Multiplier:</strong> ${nightRate}x</p><p><strong>C Shift Multiplier:</strong> ${cShiftRate}x</p></div><div><p><strong>Total Hours:</strong> ${formatNumber(totalHours, totalHours % 1 ? 1 : 0)}</p><p><strong>Weekday Hours:</strong> ${formatNumber(totalWeekdayHours, totalWeekdayHours % 1 ? 1 : 0)}</p><p><strong>Weekend Hours:</strong> ${formatNumber(totalWeekendHours, totalWeekendHours % 1 ? 1 : 0)}</p><p><strong>Night Shift Hours:</strong> ${formatNumber(totalNightHours, totalNightHours % 1 ? 1 : 0)}</p><p><strong>C Shift Hours:</strong> ${formatNumber(totalCShiftHours, totalCShiftHours % 1 ? 1 : 0)}</p><p><strong>Days Worked:</strong> ${daysWorked} | <strong>Days Off:</strong> ${daysOff}</p><p><strong>Total Salary:</strong> ${formatNumber(totalSalaryRON)} RON</p><p><strong>Total Salary:</strong> ${formatNumber(totalSalaryINR)} INR</p></div></div><h3 style="text-align:center;margin:12pt 0 8pt;font-size:12pt;">Daily Work Log</h3><div class="report-table-container"><table class="report-table"><thead><tr><th>Date, Day & Shift</th><th>Hours</th><th>Daily Pay</th></tr></thead><tbody>${leftRows.join('')}</tbody></table><table class="report-table"><thead><tr><th>Date, Day & Shift</th><th>Hours</th><th>Daily Pay</th></tr></thead><tbody>${rightRows.join('')}</tbody></table></div><div class="report-footer"><div><p><strong>Employee Signature:</strong> ______________________________</p><p><strong>Date:</strong> ____________________</p></div><div class="right"><p><strong>Employer Signature:</strong> ______________________________</p><p><strong>Date:</strong> ____________________</p></div></div>`;
+      const now = new Date();
+      const generatedTimestamp = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+
+      return `<div class="report-watermark">${companyName}</div>
+<div>
+  <div class="report-company-name">${companyName}</div>
+  <div class="report-header">
+    <h2>Salary Statement</h2>
+    <p>For Period: <strong>${monthName} ${year}</strong> &bull; Generated on ${generatedTimestamp}</p>
+  </div>
+  <div class="report-details">
+    <div>
+      <p><strong>Employee:</strong> ${employeeName}</p>
+      <p><strong>Base Salary:</strong> ${formatNumber(salary)} RON</p>
+      <p><strong>Fixed Base Hours:</strong> ${formatNumber(fixedBaseHours, fixedBaseHours % 1 ? 1 : 0)} hrs</p>
+      <p><strong>Standard Hourly Rate:</strong> ${formatNumber(hourlyRate)} RON/hr</p>
+      <p><strong>Multipliers:</strong> Weekend: ${weekendRate}x | Night: ${nightRate}x | C Shift: ${cShiftRate}x</p>
+    </div>
+    <div>
+      <p><strong>Total Hours Worked:</strong> ${formatNumber(totalHours, totalHours % 1 ? 1 : 0)} hrs</p>
+      <p><strong>Breakdown:</strong> Weekday: ${formatNumber(totalWeekdayHours, totalWeekdayHours % 1 ? 1 : 0)}h | Weekend: ${formatNumber(totalWeekendHours, totalWeekendHours % 1 ? 1 : 0)}h | Night: ${formatNumber(totalNightHours, totalNightHours % 1 ? 1 : 0)}h</p>
+      <p><strong>Days Worked:</strong> ${daysWorked} | <strong>Days Off:</strong> ${daysOff}</p>
+      <p><strong>Total Gross Salary:</strong> <strong>${formatNumber(totalSalaryRON)} RON</strong></p>
+      <p><strong>Converted Value (INR):</strong> ${formatNumber(totalSalaryINR)} INR</p>
+    </div>
+  </div>
+  <div class="report-table-title">Itemized Daily Work Log</div>
+  <div class="report-table-container">
+    <table class="report-table">
+      <thead><tr><th>Date & Shift</th><th>Hours</th><th>Daily Pay</th></tr></thead>
+      <tbody>${leftRows.join('')}</tbody>
+    </table>
+    <table class="report-table">
+      <thead><tr><th>Date & Shift</th><th>Hours</th><th>Daily Pay</th></tr></thead>
+      <tbody>${rightRows.join('')}</tbody>
+    </table>
+  </div>
+</div>
+<div>
+  <div class="report-footer">
+    <div><p><strong>Employee Signature:</strong> _________________________</p><p><strong>Date:</strong> ____________________</p></div>
+    <div class="right"><p><strong>Authorized Signature:</strong> _________________________</p><p><strong>Date:</strong> ____________________</p></div>
+  </div>
+  <div class="report-meta-note">SHADER7 Advanced Salary Engine &bull; Document Verified Single-Page A4 Standard</div>
+</div>`;
     }
 
     function hideReportPreview() { $('#report-preview-modal').classList.add('hidden'); }
@@ -1071,11 +1139,30 @@
         const safeName = ($('#employee-name-input').value.trim() || 'Employee').replace(/[^a-z0-9_-]+/gi, '_'); const safeCompany = ($('#company-name').value.trim() || 'Company').replace(/[^a-z0-9_-]+/gi, '_'); const filePrefix = `Salary_Report_${safeName}_${safeCompany}_${getMonthKey()}`;
         if (format === 'pdf') {
           if (!window.jspdf?.jsPDF) return showToast('PDF library is still loading. Try again in a moment.');
-          const { jsPDF } = window.jspdf; const pdf = new jsPDF('p', 'mm', 'a4'); const pageWidth = pdf.internal.pageSize.getWidth(); const pageHeight = pdf.internal.pageSize.getHeight(); const margin = 6; const usableWidth = pageWidth - margin * 2; const usableHeight = pageHeight - margin * 2; const imgWidth = canvas.width; const imgHeight = canvas.height; const pageCanvas = document.createElement('canvas'); const pageCtx = pageCanvas.getContext('2d'); const sliceHeight = Math.floor(imgWidth * (usableHeight / usableWidth)); pageCanvas.width = imgWidth;
-          let renderedHeight = 0; let pageIndex = 0;
-          while (renderedHeight < imgHeight) { const currentSliceHeight = Math.min(sliceHeight, imgHeight - renderedHeight); pageCanvas.height = currentSliceHeight; pageCtx.clearRect(0, 0, pageCanvas.width, pageCanvas.height); pageCtx.drawImage(canvas, 0, renderedHeight, imgWidth, currentSliceHeight, 0, 0, imgWidth, currentSliceHeight); const pageData = pageCanvas.toDataURL('image/png', 1); if (pageIndex > 0) pdf.addPage(); const drawnHeight = currentSliceHeight * usableWidth / imgWidth; pdf.addImage(pageData, 'PNG', margin, margin, usableWidth, drawnHeight, undefined, 'FAST'); renderedHeight += currentSliceHeight; pageIndex++; }
+          const { jsPDF } = window.jspdf;
+          const pdf = new jsPDF('p', 'mm', 'a4');
+          const pdfWidth = pdf.internal.pageSize.getWidth();
+          const pdfHeight = pdf.internal.pageSize.getHeight();
+          const margin = 4;
+          const usableWidth = pdfWidth - margin * 2;
+          const usableHeight = pdfHeight - margin * 2;
+          const imgAspect = canvas.width / canvas.height;
+          const pageAspect = usableWidth / usableHeight;
+          let renderWidth, renderHeight;
+          if (imgAspect > pageAspect) {
+            renderWidth = usableWidth;
+            renderHeight = usableWidth / imgAspect;
+          } else {
+            renderHeight = usableHeight;
+            renderWidth = usableHeight * imgAspect;
+          }
+          const xOffset = margin + (usableWidth - renderWidth) / 2;
+          const yOffset = margin + (usableHeight - renderHeight) / 2;
+          pdf.addImage(canvas.toDataURL('image/png', 1.0), 'PNG', xOffset, yOffset, renderWidth, renderHeight, undefined, 'FAST');
           pdf.save(`${filePrefix}.pdf`);
-        } else { const link = document.createElement('a'); link.download = `${filePrefix}.jpg`; link.href = canvas.toDataURL('image/jpeg', .95); document.body.appendChild(link); link.click(); link.remove(); }
+        } else {
+          const link = document.createElement('a'); link.download = `${filePrefix}.jpg`; link.href = canvas.toDataURL('image/jpeg', .95); document.body.appendChild(link); link.click(); link.remove();
+        }
         showToast(`${format.toUpperCase()} downloaded.`);
       } catch (error) { console.error(error); showToast('Could not generate report. Please try again.'); }
       finally { reportElement.style.transform = originalTransform; targetBtn.disabled = false; targetBtn.innerHTML = originalText; }
