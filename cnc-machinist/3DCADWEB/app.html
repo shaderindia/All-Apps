@@ -57,7 +57,7 @@ button.on{background:#5a2330;border-color:var(--red)}
 <fieldset><legend>Project</legend>
 <label><span>Units</span><select id="u_sel"><option value="mm">mm (G21)</option><option value="in">inch (G20)</option></select></label>
 <div class="row"><button id="prjExp">â¬‡ Export</button><button id="prjImp">â¬† Import</button></div>
-<div class="row"><button id="prjReset">New / reset</button><button id="undoBtn">â†© Undo</button></div>
+<div class="row"><button id="prjReset">New / reset</button><button id="undoBtn">&rarr;© Undo</button></div>
 <input id="prjFile" type="file" accept=".json" class="hide"></fieldset>
 <fieldset><legend>Stock / base</legend>
 <label><span>L Ã— W Ã— H</span><span class="row"><input id="sx" type="number" value="100" min="1" style="width:52px"><input id="sy" type="number" value="80" min="1" style="width:52px"><input id="sz" type="number" value="20" min="0.1" style="width:52px"></span></label>
@@ -99,7 +99,7 @@ button.on{background:#5a2330;border-color:var(--red)}
 </div></fieldset>
 <fieldset><legend>Face / side selection</legend>
 <div class="row"><button id="faceBtn">â¬š Select face</button><button id="faceClr">Clear</button></div>
-<div id="faceInfo">No face selected â†’ whole top is machined.</div>
+<div id="faceInfo">No face selected &rarr; whole top is machined.</div>
 <div class="row"><button id="sideBtn">â¬“ Select sides</button><button id="sideClr">Clear sides</button></div>
 <div id="sideInfo">No side faces selected.</div></fieldset>
 <fieldset><legend>Operation</legend>
@@ -135,12 +135,12 @@ button.on{background:#5a2330;border-color:var(--red)}
 <label><span>PCD Ã˜</span><input id="pcd_d" type="number" value="50" min="0.1" step="0.1"></label>
 <label><span>Hole Ã˜</span><input id="pcd_hd" type="number" value="6" min="0.1" step="0.1"></label>
 <label><span>No. of holes</span><input id="pcd_n" type="number" value="8" min="1" step="1"></label>
-<label><span>Start angle Â°</span><input id="pcd_a0" type="number" value="0" step="0.1"></label>
+<label><span>Start angle °</span><input id="pcd_a0" type="number" value="0" step="0.1"></label>
 <label><span>Hole depth</span><input id="pcd_dep" type="number" value="10" min="0.1" step="0.1"></label></div>
 <div id="op_tap" class="hide"><label><span>Pitch</span><input id="t_pitch" type="number" value="1.0" min="0.1" step="0.05"></label></div>
 <div id="op_cdrill" class="hide"><label><span>Spot depth</span><input id="cd_dep" type="number" value="2" min="0.1" step="0.1"></label></div>
 <div id="op_idod" class="hide"><label><span>Stepdown</span><input id="i_sd" type="number" value="1" min="0.01" step="0.01"></label></div>
-<button id="gen" class="primary">âš™ Generate G-code</button></fieldset>
+<button id="gen" class="primary">&#9888;™ Generate G-code</button></fieldset>
 <fieldset><legend>Simulation</legend>
 <div class="row"><button id="simRun">â–¶ Run</button><button id="simPause">â¸</button><button id="simStop">â¹</button></div>
 <label><span>Speed</span><select id="simSpeed"><option value="1">1Ã—</option><option value="5">5Ã—</option><option value="20" selected>20Ã—</option><option value="100">100Ã—</option></select></label>
@@ -296,7 +296,7 @@ restore(JSON.stringify({v:1,L:100,W:80,H:20,stockOpt:{cs:0,nx:0,px:0,ny:0,py:0,f
 $('u_sel').onchange=()=>{DEC=$('u_sel').value==='in'?4:3;};
 function clearFace(){faceSel=null;
 if(faceMesh){world.remove(faceMesh);disposeObj(faceMesh);faceMesh=null;}
-$('faceInfo').textContent='No face selected â†’ whole top is machined.';
+$('faceInfo').textContent='No face selected &rarr; whole top is machined.';
 $('faceInfo').classList.remove('ok');}
 function selectFaceAt(x,y){
 const{nx,ny,cell,h}=HM,z0=hAt(x,y);
@@ -319,7 +319,7 @@ const ge=new THREE.BufferGeometry();
 ge.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
 faceMesh=new THREE.Mesh(ge,new THREE.MeshBasicMaterial({color:0x34d399,transparent:true,opacity:0.35,depthWrite:false,side:THREE.DoubleSide}));
 world.add(faceMesh);
-$('faceInfo').textContent=`Face @ Z=${fmt(z0)} (work Z=${fmt(z0-off.z)}) Â· ${n} cells`;
+$('faceInfo').textContent=`Face @ Z=${fmt(z0)} (work Z=${fmt(z0-off.z)}) &middot; ${n} cells`;
 $('faceInfo').classList.add('ok');}
 $('faceBtn').onclick=()=>{faceMode=!faceMode;pickMode=false;sideMode=false;
 $('pickOff').classList.remove('on');$('sideBtn').classList.remove('on');
@@ -755,7 +755,7 @@ simPath.push({x:off.x,y:off.y,z:safeAbs,rapid:true,f:RAPID});
 $('gcode').value=g.join('\n');
 genParams={td:op==='pcd'?Math.max(0.1,num('pcd_hd')):td,rpm,op};
 const mins=tF+tR;
-$('stats').textContent=`${g.length} lines Â· est. ${Math.floor(mins)}m ${Math.round(mins%1*60)}s`;
+$('stats').textContent=`${g.length} lines &middot; est. ${Math.floor(mins)}m ${Math.round(mins%1*60)}s`;
 $('simInfo').textContent=`Ready: ${simPath.length-1} moves.`;
 $('simInfo').classList.remove('warn');
 if(pathGroup){world.remove(pathGroup);disposeObj(pathGroup);}
@@ -769,7 +769,7 @@ const t=$('gcode').value;if(!t)return;
 const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'text/plain'}));
 a.download='program.nc';a.click();URL.revokeObjectURL(a.href);};
 $('cpy').onclick=async()=>{const t=$('gcode').value;if(!t)return;
-try{await navigator.clipboard.writeText(t);$('cpy').textContent='âœ“ Copied';
+try{await navigator.clipboard.writeText(t);$('cpy').textContent='&#10003; Copied';
 setTimeout(()=>$('cpy').textContent='âŽ˜ Copy',1200);}
 catch(e){$('gcode').select();document.execCommand('copy');}};
 function buildTool(d,drill){
@@ -845,7 +845,7 @@ for(let s=1;s<=steps;s++){const t=(can/len)*(s/steps);
 const px=a.x+dx*t,py=a.y+dy*t,pz=a.z+dz*t;
 if(!b.rapid)stamp(px,py,pz);
 else if(!sim.collided&&dz<=0&&rapidHit(px,py,pz)){sim.collided=true;
-$('simInfo').textContent='âš  RAPID COLLISION with material! Check Safe Z.';
+$('simInfo').textContent='&#9888; RAPID COLLISION with material! Check Safe Z.';
 $('simInfo').classList.add('warn');}}
 sim.cur={x:a.x+dx*(can/len),y:a.y+dy*(can/len),z:a.z+dz*(can/len)};
 sim.machT+=can/mmps;rem-=can/mmps;
@@ -858,7 +858,7 @@ if(sim.idx>=simPath.length-1){sim.playing=false;sim.mesh.geometry.computeVertexN
 if(!sim.collided){let over=0,left=0;const d=HM.h;
 for(let i=0;i<d.length;i++){const df=sim.hm[i]-d[i];
 if(df<-0.005)over=Math.max(over,-df);else if(df>0.005)left=Math.max(left,df);}
-$('simInfo').textContent=`âœ“ Complete Â· ${Math.floor(sim.total/60)}m ${Math.round(sim.total%60)}s Â· overcut ${over.toFixed(2)} Â· stock left ${left.toFixed(2)}`;}}
+$('simInfo').textContent=`&#10003; Complete &middot; ${Math.floor(sim.total/60)}m ${Math.round(sim.total%60)}s &middot; overcut ${over.toFixed(2)} &middot; stock left ${left.toFixed(2)}`;}}
 else if(!sim.collided)$('simInfo').textContent=
 `Machiningâ€¦ ${Math.min(100,(sim.machT/sim.total*100)).toFixed(1)}%`;}
 $('togPanel').onclick=()=>{$('panel').classList.toggle('open');$('gpanel').classList.remove('open');};
