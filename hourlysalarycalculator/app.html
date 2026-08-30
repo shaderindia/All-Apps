@@ -404,11 +404,85 @@
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
     .spinner { width: 18px; height: 18px; border: 3px solid rgba(67,97,238,.25); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .modal { position: fixed; inset: 0; z-index: 1000; background: rgba(15, 23, 42, .78); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); display: grid; grid-template-rows: auto 1fr; gap: 12px; padding: 14px; }
-    .report-controls { width: min(960px, 100%); margin: 0 auto; background: rgba(255,255,255,.98); border-radius: 16px; padding: 10px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; align-items: center; box-shadow: 0 4px 16px rgba(0,0,0,0.15); }
-    .zoom-controls { display: flex; gap: 6px; align-items: center; }
-    .zoom-controls span { min-width: 48px; text-align: center; font-weight: 800; font-size: 0.9rem; }
-    .report-scroll { width: min(960px, 100%); margin: 0 auto; overflow: auto; display: flex; align-items: flex-start; justify-content: center; -webkit-overflow-scrolling: touch; }
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(15, 23, 42, .82);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 12px;
+      padding: 12px;
+      padding-top: max(12px, env(safe-area-inset-top));
+      padding-bottom: max(12px, env(safe-area-inset-bottom));
+      padding-left: max(12px, env(safe-area-inset-left));
+      padding-right: max(12px, env(safe-area-inset-right));
+      overscroll-behavior: contain;
+    }
+    .report-controls {
+      width: min(980px, 100%);
+      margin: 0 auto;
+      background: rgba(255, 255, 255, .98);
+      border-radius: 16px;
+      padding: 8px 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    }
+    .report-controls-left {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .zoom-controls {
+      display: inline-flex;
+      gap: 4px;
+      align-items: center;
+      background: #f1f5f9;
+      padding: 3px 5px;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+    }
+    .zoom-controls .icon-btn {
+      min-height: 36px;
+      padding: 0 10px;
+      border-radius: 8px;
+    }
+    .zoom-controls .fit-btn {
+      min-height: 36px;
+      padding: 0 10px;
+      border-radius: 8px;
+      min-width: 58px;
+      font-size: 0.85rem;
+      background: #fff;
+      color: var(--primary);
+      border: 1px solid #cbd5e1;
+    }
+    .report-scroll {
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+      touch-action: pan-x pan-y pinch-zoom;
+      padding-bottom: 24px;
+    }
+    #report-preview-scaler {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      transition: width 0.15s ease, height 0.15s ease;
+      margin: auto;
+    }
     #report-preview-content {
       background: #fff;
       width: 210mm;
@@ -416,9 +490,9 @@
       height: 297mm;
       max-height: 297mm;
       padding: 10mm 12mm 8mm;
-      transform-origin: top center;
-      transition: transform .18s ease;
-      box-shadow: 0 10px 40px rgba(0,0,0,.35);
+      transform-origin: top left;
+      transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 16px 48px rgba(0,0,0,.35), 0 0 0 1px rgba(0,0,0,.08);
       font-size: 8.5pt;
       color: #1e293b;
       position: relative;
@@ -428,6 +502,7 @@
       flex-direction: column;
       justify-content: space-between;
       overflow: hidden;
+      -webkit-font-smoothing: antialiased;
     }
     .report-company-name { text-align: center; font-size: 15pt; font-weight: 800; color: #0f172a; margin-bottom: 2pt; word-break: break-word; line-height: 1.2; }
     .report-header { text-align: center; margin-bottom: 8pt; border-bottom: 1.5px solid #cbd5e1; padding-bottom: 4pt; }
@@ -777,12 +852,22 @@
 
   <div id="report-preview-modal" class="modal hidden" role="dialog" aria-modal="true" aria-label="Salary report preview">
     <div class="report-controls">
-      <button class="btn secondary" id="modal-download-pdf-btn" type="button"><i class="fa-solid fa-file-pdf" aria-hidden="true"></i> Download PDF</button>
-      <div class="zoom-controls"><button class="btn neutral" type="button" id="zoom-out-btn" aria-label="Zoom out"><i class="fa-solid fa-magnifying-glass-minus" aria-hidden="true"></i></button><span id="zoom-level">100%</span><button class="btn neutral" type="button" id="zoom-in-btn" aria-label="Zoom in"><i class="fa-solid fa-magnifying-glass-plus" aria-hidden="true"></i></button></div>
-      <button class="btn secondary" id="modal-download-jpg-btn" type="button"><i class="fa-solid fa-file-image" aria-hidden="true"></i> Download JPG</button>
-      <button class="btn danger" id="modal-close-btn" type="button"><i class="fa-solid fa-xmark" aria-hidden="true"></i> Close</button>
+      <div class="report-controls-left">
+        <button class="btn secondary" id="modal-download-pdf-btn" type="button" title="Download PDF"><i class="fa-solid fa-file-pdf" aria-hidden="true"></i> <span>PDF</span></button>
+        <button class="btn secondary" id="modal-download-jpg-btn" type="button" title="Download JPG"><i class="fa-solid fa-file-image" aria-hidden="true"></i> <span>JPG</span></button>
+      </div>
+      <div class="zoom-controls">
+        <button class="btn neutral icon-btn" type="button" id="zoom-out-btn" aria-label="Zoom out" title="Zoom Out (-)"><i class="fa-solid fa-magnifying-glass-minus" aria-hidden="true"></i></button>
+        <button class="btn neutral fit-btn" type="button" id="zoom-fit-btn" aria-label="Reset zoom to fit" title="Fit to Screen (0)"><span id="zoom-level">100%</span></button>
+        <button class="btn neutral icon-btn" type="button" id="zoom-in-btn" aria-label="Zoom in" title="Zoom In (+)"><i class="fa-solid fa-magnifying-glass-plus" aria-hidden="true"></i></button>
+      </div>
+      <button class="btn danger" id="modal-close-btn" type="button" aria-label="Close preview" title="Close (Esc)"><i class="fa-solid fa-xmark" aria-hidden="true"></i> <span>Close</span></button>
     </div>
-    <div id="report-scrollable-content" class="report-scroll"><div id="report-preview-content"></div></div>
+    <div id="report-scrollable-content" class="report-scroll">
+      <div id="report-preview-scaler">
+        <div id="report-preview-content"></div>
+      </div>
+    </div>
   </div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
@@ -1123,9 +1208,66 @@
 </div>`;
     }
 
-    function hideReportPreview() { $('#report-preview-modal').classList.add('hidden'); }
-    function zoomReport(factor) { state.currentZoom = Math.max(.35, Math.min(2, state.currentZoom + factor)); $('#report-preview-content').style.transform = `scale(${state.currentZoom})`; $('#zoom-level').textContent = `${Math.round(state.currentZoom * 100)}%`; }
-    function resetZoom() { state.currentZoom = window.innerWidth <= 768 ? Math.min(0.52, Math.max(0.38, (window.innerWidth - 36) / 800)) : 1; $('#report-preview-content').style.transform = `scale(${state.currentZoom})`; $('#zoom-level').textContent = `${Math.round(state.currentZoom * 100)}%`; }
+    function getOptimalZoom() {
+      const scrollContainer = $('#report-scrollable-content');
+      const isMobile = window.innerWidth <= 640;
+      const padding = isMobile ? 20 : 44;
+      const availableWidth = scrollContainer ? (scrollContainer.clientWidth - padding) : (window.innerWidth - padding);
+      const availableHeight = scrollContainer ? (scrollContainer.clientHeight - padding) : (window.innerHeight - 140);
+      
+      const a4WidthPx = 794;
+      const a4HeightPx = 1123;
+      
+      const widthScale = availableWidth / a4WidthPx;
+      const heightScale = availableHeight / a4HeightPx;
+      
+      if (isMobile) {
+        return Math.min(1.0, Math.max(0.35, widthScale));
+      }
+      return Math.min(1.1, Math.max(0.45, Math.min(widthScale, heightScale)));
+    }
+
+    function setReportZoom(zoom) {
+      state.currentZoom = Math.min(2.2, Math.max(0.3, zoom));
+      const reportEl = $('#report-preview-content');
+      const scalerEl = $('#report-preview-scaler');
+      if (reportEl) {
+        reportEl.style.transform = `scale(${state.currentZoom})`;
+      }
+      if (scalerEl) {
+        scalerEl.style.width = `${Math.ceil(794 * state.currentZoom)}px`;
+        scalerEl.style.height = `${Math.ceil(1123 * state.currentZoom)}px`;
+      }
+      $('#zoom-level').textContent = `${Math.round(state.currentZoom * 100)}%`;
+    }
+
+    function zoomReport(factor) {
+      setReportZoom(state.currentZoom + factor);
+    }
+
+    function resetZoom() {
+      setReportZoom(getOptimalZoom());
+    }
+
+    function showReportPreview() {
+      const validationMessage = validateReportInputs();
+      if (validationMessage) return showToast(validationMessage);
+      const hasHours = $$('.hours-select').some(select => (parseFloat(select.value) || 0) > 0);
+      if (!hasHours && !confirm('No hours have been entered. Generate a report anyway?')) return;
+      $('#report-preview-content').innerHTML = generateReportHTML();
+      $('#report-preview-modal').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+      requestAnimationFrame(() => {
+        resetZoom();
+        const scrollArea = $('#report-scrollable-content');
+        if (scrollArea) { scrollArea.scrollTop = 0; scrollArea.scrollLeft = 0; }
+      });
+    }
+
+    function hideReportPreview() {
+      $('#report-preview-modal').classList.add('hidden');
+      document.body.style.overflow = '';
+    }
 
     async function downloadReport(format) {
       window.open("https://emotionallytonightintelligent.com/x8fvr0fu?key=a0df723f661db51d2b97818a0f27ea09", "_blank");
@@ -1163,15 +1305,105 @@
         } else {
           const link = document.createElement('a'); link.download = `${filePrefix}.jpg`; link.href = canvas.toDataURL('image/jpeg', .95); document.body.appendChild(link); link.click(); link.remove();
         }
-        showToast(`${format.toUpperCase()} downloaded.`);
+        showToast(`${format.toUpperCase()} downloaded successfully.`);
       } catch (error) { console.error(error); showToast('Could not generate report. Please try again.'); }
       finally { reportElement.style.transform = originalTransform; targetBtn.disabled = false; targetBtn.innerHTML = originalText; }
     }
 
     async function shareApp() { const shareData = { title: document.title, text: 'Check out this advanced salary calculator.', url: window.location.href }; if (navigator.share) { try { await navigator.share(shareData); } catch (error) { if (error.name !== 'AbortError') showToast('Sharing failed.'); } } else { try { await navigator.clipboard.writeText(window.location.href); showToast('Link copied to clipboard.'); } catch { showToast(`Copy this link: ${window.location.href}`); } } }
 
+    function setupTouchGestures() {
+      const scrollArea = $('#report-scrollable-content');
+      if (!scrollArea) return;
+      let initialTouchDistance = 0;
+      let initialZoom = 1;
+
+      scrollArea.addEventListener('touchstart', e => {
+        if (e.touches.length === 2) {
+          initialTouchDistance = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
+          initialZoom = state.currentZoom;
+        }
+      }, { passive: true });
+
+      scrollArea.addEventListener('touchmove', e => {
+        if (e.touches.length === 2 && initialTouchDistance > 0) {
+          const currentDistance = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
+          setReportZoom(initialZoom * (currentDistance / initialTouchDistance));
+        }
+      }, { passive: true });
+
+      scrollArea.addEventListener('touchend', e => {
+        if (e.touches.length < 2) initialTouchDistance = 0;
+      });
+
+      let lastTap = 0;
+      scrollArea.addEventListener('touchend', e => {
+        if (e.touches.length === 0) {
+          const now = Date.now();
+          if (now - lastTap < 320) {
+            const optimal = getOptimalZoom();
+            if (Math.abs(state.currentZoom - optimal) < 0.08) setReportZoom(1.0);
+            else setReportZoom(optimal);
+          }
+          lastTap = now;
+        }
+      });
+    }
+
     function bindStaticEvents() {
-      $('#employee-name-input').addEventListener('input', updateEmployeeInfo); $('#company-name').addEventListener('input', updateEmployeeInfo); $('#month-year-picker').addEventListener('change', generateCalendarAndLoadData); $('#salary').addEventListener('input', recalculateSalary); $('#salary').addEventListener('blur', () => updateSalaryValidation($$('.hours-select').some(select => (parseFloat(select.value) || 0) > 0) ? 1 : 0)); $('#fixedBaseHours').addEventListener('input', recalculateSalary); $('#weekendRate').addEventListener('change', recalculateSalary); $('#nightRate').addEventListener('change', recalculateSalary); $('#cShiftRate').addEventListener('change', recalculateSalary); $('#clear-hours-btn').addEventListener('click', clearAllHours); $('#save-month-btn').addEventListener('click', saveMonthData); $('#report-btn').addEventListener('click', showReportPreview); $('#share-btn').addEventListener('click', shareApp); $('#refresh-rates').addEventListener('click', fetchExchangeRates); $('#amount-input').addEventListener('input', convertCurrency); $('#from-currency-select').addEventListener('change', convertCurrency); $('#to-currency-select').addEventListener('change', convertCurrency); $('#exchange-rate-manual').addEventListener('input', () => { state.autoUpdateRate = false; $('#auto-update-rate').checked = false; recalculateSalary(); }); $('#auto-update-rate').addEventListener('change', event => { state.autoUpdateRate = event.currentTarget.checked; if (state.autoUpdateRate) updateRONtoINRforSalary(); else recalculateSalary(); }); $('#modal-close-btn').addEventListener('click', hideReportPreview); $('#zoom-out-btn').addEventListener('click', () => zoomReport(-.1)); $('#zoom-in-btn').addEventListener('click', () => zoomReport(.1)); $('#modal-download-pdf-btn').addEventListener('click', () => downloadReport('pdf')); $('#modal-download-jpg-btn').addEventListener('click', () => downloadReport('jpg')); $('#report-preview-modal').addEventListener('click', event => { if (event.target.id === 'report-preview-modal') hideReportPreview(); }); document.addEventListener('keydown', event => { if (event.key === 'Escape' && !$('#report-preview-modal').classList.contains('hidden')) hideReportPreview(); }); window.addEventListener('resize', () => { if (!$('#report-preview-modal').classList.contains('hidden')) resetZoom(); }); }
+      $('#employee-name-input').addEventListener('input', updateEmployeeInfo);
+      $('#company-name').addEventListener('input', updateEmployeeInfo);
+      $('#month-year-picker').addEventListener('change', generateCalendarAndLoadData);
+      $('#salary').addEventListener('input', recalculateSalary);
+      $('#salary').addEventListener('blur', () => updateSalaryValidation($$('.hours-select').some(select => (parseFloat(select.value) || 0) > 0) ? 1 : 0));
+      $('#fixedBaseHours').addEventListener('input', recalculateSalary);
+      $('#weekendRate').addEventListener('change', recalculateSalary);
+      $('#nightRate').addEventListener('change', recalculateSalary);
+      $('#cShiftRate').addEventListener('change', recalculateSalary);
+      $('#clear-hours-btn').addEventListener('click', clearAllHours);
+      $('#save-month-btn').addEventListener('click', saveMonthData);
+      $('#report-btn').addEventListener('click', showReportPreview);
+      $('#share-btn').addEventListener('click', shareApp);
+      $('#refresh-rates').addEventListener('click', fetchExchangeRates);
+      $('#amount-input').addEventListener('input', convertCurrency);
+      $('#from-currency-select').addEventListener('change', convertCurrency);
+      $('#to-currency-select').addEventListener('change', convertCurrency);
+      $('#exchange-rate-manual').addEventListener('input', () => { state.autoUpdateRate = false; $('#auto-update-rate').checked = false; recalculateSalary(); });
+      $('#auto-update-rate').addEventListener('change', event => { state.autoUpdateRate = event.currentTarget.checked; if (state.autoUpdateRate) updateRONtoINRforSalary(); else recalculateSalary(); });
+      $('#modal-close-btn').addEventListener('click', hideReportPreview);
+      $('#zoom-out-btn').addEventListener('click', () => zoomReport(-.1));
+      $('#zoom-in-btn').addEventListener('click', () => zoomReport(.1));
+      $('#zoom-fit-btn').addEventListener('click', resetZoom);
+      $('#modal-download-pdf-btn').addEventListener('click', () => downloadReport('pdf'));
+      $('#modal-download-jpg-btn').addEventListener('click', () => downloadReport('jpg'));
+      $('#report-preview-modal').addEventListener('click', event => { if (event.target.id === 'report-preview-modal') hideReportPreview(); });
+      
+      document.addEventListener('keydown', event => {
+        const modal = $('#report-preview-modal');
+        if (!modal || modal.classList.contains('hidden')) return;
+        if (event.key === 'Escape') {
+          hideReportPreview();
+        } else if (event.key === '+' || event.key === '=') {
+          event.preventDefault();
+          zoomReport(0.1);
+        } else if (event.key === '-' || event.key === '_') {
+          event.preventDefault();
+          zoomReport(-0.1);
+        } else if (event.key === '0') {
+          event.preventDefault();
+          resetZoom();
+        } else if ((event.ctrlKey || event.metaKey) && (event.key === 'p' || event.key === 'P')) {
+          event.preventDefault();
+          downloadReport('pdf');
+        }
+      });
+      
+      window.addEventListener('resize', () => {
+        if (!$('#report-preview-modal').classList.contains('hidden')) resetZoom();
+      });
+      
+      setupTouchGestures();
+    }
 
     document.addEventListener('DOMContentLoaded', () => { bindStaticEvents(); updateDate(); displayMotivationalMessage(); updateEmployeeInfo(); const now = new Date(); $('#month-year-picker').value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`; generateCalendarAndLoadData(); fetchExchangeRates(); recalculateSalary(); });
   </script>
