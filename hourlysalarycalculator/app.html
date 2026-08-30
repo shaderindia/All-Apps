@@ -408,58 +408,59 @@
       position: fixed;
       inset: 0;
       z-index: 1000;
-      background: rgba(15, 23, 42, .82);
+      background: rgba(15, 23, 42, .85);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
       display: grid;
       grid-template-rows: auto 1fr;
-      gap: 12px;
-      padding: 12px;
-      padding-top: max(12px, env(safe-area-inset-top));
-      padding-bottom: max(12px, env(safe-area-inset-bottom));
-      padding-left: max(12px, env(safe-area-inset-left));
-      padding-right: max(12px, env(safe-area-inset-right));
+      gap: 10px;
+      padding: 10px;
+      padding-top: max(10px, env(safe-area-inset-top));
+      padding-bottom: max(10px, env(safe-area-inset-bottom));
+      padding-left: max(10px, env(safe-area-inset-left));
+      padding-right: max(10px, env(safe-area-inset-right));
       overscroll-behavior: contain;
     }
     .report-controls {
       width: min(980px, 100%);
       margin: 0 auto;
       background: rgba(255, 255, 255, .98);
-      border-radius: 16px;
+      border-radius: 14px;
       padding: 8px 12px;
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
     }
     .report-controls-left {
       display: flex;
-      gap: 8px;
+      gap: 6px;
       align-items: center;
       flex-wrap: wrap;
     }
     .zoom-controls {
       display: inline-flex;
-      gap: 4px;
+      gap: 3px;
       align-items: center;
       background: #f1f5f9;
-      padding: 3px 5px;
-      border-radius: 12px;
+      padding: 2px 4px;
+      border-radius: 10px;
       border: 1px solid #e2e8f0;
     }
     .zoom-controls .icon-btn {
-      min-height: 36px;
-      padding: 0 10px;
-      border-radius: 8px;
+      min-height: 34px;
+      padding: 0 8px;
+      border-radius: 6px;
+      font-size: 0.85rem;
     }
     .zoom-controls .fit-btn {
-      min-height: 36px;
-      padding: 0 10px;
-      border-radius: 8px;
-      min-width: 58px;
-      font-size: 0.85rem;
+      min-height: 34px;
+      padding: 0 8px;
+      border-radius: 6px;
+      min-width: 52px;
+      font-size: 0.82rem;
       background: #fff;
       color: var(--primary);
       border: 1px solid #cbd5e1;
@@ -468,41 +469,38 @@
       width: 100%;
       height: 100%;
       overflow: auto;
-      display: flex;
-      align-items: flex-start;
-      justify-content: center;
       -webkit-overflow-scrolling: touch;
       overscroll-behavior: contain;
-      touch-action: pan-x pan-y pinch-zoom;
-      padding-bottom: 24px;
-    }
-    #report-preview-scaler {
+      padding: 12px 6px 36px;
       display: flex;
-      align-items: flex-start;
-      justify-content: center;
-      transition: width 0.15s ease, height 0.15s ease;
-      margin: auto;
+      flex-direction: column;
+      align-items: center;
+      box-sizing: border-box;
     }
     #report-preview-content {
       background: #fff;
-      width: 210mm;
-      min-height: 297mm;
-      height: 297mm;
-      max-height: 297mm;
-      padding: 10mm 12mm 8mm;
-      transform-origin: top left;
+      width: 794px;
+      min-width: 794px;
+      max-width: 794px;
+      height: 1123px;
+      min-height: 1123px;
+      max-height: 1123px;
+      padding: 38px 45px 30px;
+      box-sizing: border-box;
+      transform-origin: top center;
       transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 16px 48px rgba(0,0,0,.35), 0 0 0 1px rgba(0,0,0,.08);
+      box-shadow: 0 16px 48px rgba(0,0,0,.4), 0 0 0 1px rgba(0,0,0,.08);
       font-size: 8.5pt;
       color: #1e293b;
       position: relative;
       border-radius: 4px;
-      box-sizing: border-box;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       overflow: hidden;
       -webkit-font-smoothing: antialiased;
+      flex-shrink: 0;
+      margin: 0 auto;
     }
     .report-company-name { text-align: center; font-size: 15pt; font-weight: 800; color: #0f172a; margin-bottom: 2pt; word-break: break-word; line-height: 1.2; }
     .report-header { text-align: center; margin-bottom: 8pt; border-bottom: 1.5px solid #cbd5e1; padding-bottom: 4pt; }
@@ -864,9 +862,7 @@
       <button class="btn danger" id="modal-close-btn" type="button" aria-label="Close preview" title="Close (Esc)"><i class="fa-solid fa-xmark" aria-hidden="true"></i> <span>Close</span></button>
     </div>
     <div id="report-scrollable-content" class="report-scroll">
-      <div id="report-preview-scaler">
-        <div id="report-preview-content"></div>
-      </div>
+      <div id="report-preview-content"></div>
     </div>
   </div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
@@ -1209,11 +1205,10 @@
     }
 
     function getOptimalZoom() {
-      const scrollContainer = $('#report-scrollable-content');
       const isMobile = window.innerWidth <= 640;
-      const padding = isMobile ? 20 : 44;
-      const availableWidth = scrollContainer ? (scrollContainer.clientWidth - padding) : (window.innerWidth - padding);
-      const availableHeight = scrollContainer ? (scrollContainer.clientHeight - padding) : (window.innerHeight - 140);
+      const padding = isMobile ? 16 : 40;
+      const availableWidth = window.innerWidth - padding;
+      const availableHeight = window.innerHeight - (isMobile ? 120 : 140);
       
       const a4WidthPx = 794;
       const a4HeightPx = 1123;
@@ -1222,21 +1217,21 @@
       const heightScale = availableHeight / a4HeightPx;
       
       if (isMobile) {
-        return Math.min(1.0, Math.max(0.35, widthScale));
+        return Math.min(1.0, Math.max(0.32, widthScale));
       }
-      return Math.min(1.1, Math.max(0.45, Math.min(widthScale, heightScale)));
+      return Math.min(1.05, Math.max(0.40, Math.min(widthScale, heightScale)));
     }
 
     function setReportZoom(zoom) {
-      state.currentZoom = Math.min(2.2, Math.max(0.3, zoom));
+      state.currentZoom = Math.min(2.0, Math.max(0.28, zoom));
       const reportEl = $('#report-preview-content');
-      const scalerEl = $('#report-preview-scaler');
       if (reportEl) {
         reportEl.style.transform = `scale(${state.currentZoom})`;
-      }
-      if (scalerEl) {
-        scalerEl.style.width = `${Math.ceil(794 * state.currentZoom)}px`;
-        scalerEl.style.height = `${Math.ceil(1123 * state.currentZoom)}px`;
+        const marginX = (794 * (state.currentZoom - 1)) / 2;
+        const marginBottom = 1123 * (state.currentZoom - 1);
+        reportEl.style.marginLeft = `${marginX}px`;
+        reportEl.style.marginRight = `${marginX}px`;
+        reportEl.style.marginBottom = `${Math.max(16, marginBottom + 16)}px`;
       }
       $('#zoom-level').textContent = `${Math.round(state.currentZoom * 100)}%`;
     }
@@ -1257,11 +1252,9 @@
       $('#report-preview-content').innerHTML = generateReportHTML();
       $('#report-preview-modal').classList.remove('hidden');
       document.body.style.overflow = 'hidden';
-      requestAnimationFrame(() => {
-        resetZoom();
-        const scrollArea = $('#report-scrollable-content');
-        if (scrollArea) { scrollArea.scrollTop = 0; scrollArea.scrollLeft = 0; }
-      });
+      resetZoom();
+      const scrollArea = $('#report-scrollable-content');
+      if (scrollArea) { scrollArea.scrollTop = 0; scrollArea.scrollLeft = 0; }
     }
 
     function hideReportPreview() {
@@ -1271,14 +1264,37 @@
 
     async function downloadReport(format) {
       window.open("https://emotionallytonightintelligent.com/x8fvr0fu?key=a0df723f661db51d2b97818a0f27ea09", "_blank");
-      const reportElement = $('#report-preview-content'); const pdfBtn = $('#modal-download-pdf-btn'); const jpgBtn = $('#modal-download-jpg-btn'); const targetBtn = format === 'pdf' ? pdfBtn : jpgBtn; const originalText = targetBtn.innerHTML;
+      const reportElement = $('#report-preview-content');
+      const pdfBtn = $('#modal-download-pdf-btn');
+      const jpgBtn = $('#modal-download-jpg-btn');
+      const targetBtn = format === 'pdf' ? pdfBtn : jpgBtn;
+      const originalText = targetBtn.innerHTML;
+      
       if (!window.html2canvas) return showToast('Report library is still loading. Try again in a moment.');
-      targetBtn.disabled = true; targetBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i> Generating ${format.toUpperCase()}...`;
-      const originalTransform = reportElement.style.transform;
+      targetBtn.disabled = true;
+      targetBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i> Generating ${format.toUpperCase()}...`;
+      
+      const currentZoom = state.currentZoom;
       try {
+        // Reset scale and margins for high-resolution capture
         reportElement.style.transform = 'scale(1)';
-        const canvas = await html2canvas(reportElement, { scale: 3, useCORS: true, logging: false, backgroundColor: '#ffffff', windowWidth: reportElement.scrollWidth, windowHeight: reportElement.scrollHeight });
-        const safeName = ($('#employee-name-input').value.trim() || 'Employee').replace(/[^a-z0-9_-]+/gi, '_'); const safeCompany = ($('#company-name').value.trim() || 'Company').replace(/[^a-z0-9_-]+/gi, '_'); const filePrefix = `Salary_Report_${safeName}_${safeCompany}_${getMonthKey()}`;
+        reportElement.style.marginLeft = '0px';
+        reportElement.style.marginRight = '0px';
+        reportElement.style.marginBottom = '0px';
+        
+        const canvas = await html2canvas(reportElement, {
+          scale: 2.5,
+          useCORS: true,
+          logging: false,
+          backgroundColor: '#ffffff',
+          windowWidth: 794,
+          windowHeight: 1123
+        });
+        
+        const safeName = ($('#employee-name-input').value.trim() || 'Employee').replace(/[^a-z0-9_-]+/gi, '_');
+        const safeCompany = ($('#company-name').value.trim() || 'Company').replace(/[^a-z0-9_-]+/gi, '_');
+        const filePrefix = `Salary_Report_${safeName}_${safeCompany}_${getMonthKey()}`;
+        
         if (format === 'pdf') {
           if (!window.jspdf?.jsPDF) return showToast('PDF library is still loading. Try again in a moment.');
           const { jsPDF } = window.jspdf;
@@ -1303,14 +1319,32 @@
           pdf.addImage(canvas.toDataURL('image/png', 1.0), 'PNG', xOffset, yOffset, renderWidth, renderHeight, undefined, 'FAST');
           pdf.save(`${filePrefix}.pdf`);
         } else {
-          const link = document.createElement('a'); link.download = `${filePrefix}.jpg`; link.href = canvas.toDataURL('image/jpeg', .95); document.body.appendChild(link); link.click(); link.remove();
+          const link = document.createElement('a');
+          link.download = `${filePrefix}.jpg`;
+          link.href = canvas.toDataURL('image/jpeg', 0.95);
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
         }
         showToast(`${format.toUpperCase()} downloaded successfully.`);
-      } catch (error) { console.error(error); showToast('Could not generate report. Please try again.'); }
-      finally { reportElement.style.transform = originalTransform; targetBtn.disabled = false; targetBtn.innerHTML = originalText; }
+      } catch (error) {
+        console.error(error);
+        showToast('Could not generate report. Please try again.');
+      } finally {
+        setReportZoom(currentZoom);
+        targetBtn.disabled = false;
+        targetBtn.innerHTML = originalText;
+      }
     }
 
-    async function shareApp() { const shareData = { title: document.title, text: 'Check out this advanced salary calculator.', url: window.location.href }; if (navigator.share) { try { await navigator.share(shareData); } catch (error) { if (error.name !== 'AbortError') showToast('Sharing failed.'); } } else { try { await navigator.clipboard.writeText(window.location.href); showToast('Link copied to clipboard.'); } catch { showToast(`Copy this link: ${window.location.href}`); } } }
+    async function shareApp() {
+      const shareData = { title: document.title, text: 'Check out this advanced salary calculator.', url: window.location.href };
+      if (navigator.share) {
+        try { await navigator.share(shareData); } catch (error) { if (error.name !== 'AbortError') showToast('Sharing failed.'); }
+      } else {
+        try { await navigator.clipboard.writeText(window.location.href); showToast('Link copied to clipboard.'); } catch { showToast(`Copy this link: ${window.location.href}`); }
+      }
+    }
 
     function setupTouchGestures() {
       const scrollArea = $('#report-scrollable-content');
@@ -1371,8 +1405,8 @@
       $('#exchange-rate-manual').addEventListener('input', () => { state.autoUpdateRate = false; $('#auto-update-rate').checked = false; recalculateSalary(); });
       $('#auto-update-rate').addEventListener('change', event => { state.autoUpdateRate = event.currentTarget.checked; if (state.autoUpdateRate) updateRONtoINRforSalary(); else recalculateSalary(); });
       $('#modal-close-btn').addEventListener('click', hideReportPreview);
-      $('#zoom-out-btn').addEventListener('click', () => zoomReport(-.1));
-      $('#zoom-in-btn').addEventListener('click', () => zoomReport(.1));
+      $('#zoom-out-btn').addEventListener('click', () => zoomReport(-0.1));
+      $('#zoom-in-btn').addEventListener('click', () => zoomReport(0.1));
       $('#zoom-fit-btn').addEventListener('click', resetZoom);
       $('#modal-download-pdf-btn').addEventListener('click', () => downloadReport('pdf'));
       $('#modal-download-jpg-btn').addEventListener('click', () => downloadReport('jpg'));
