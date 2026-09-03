@@ -6,6 +6,7 @@
   const empty = document.getElementById('empty-state');
   const message = document.getElementById('empty-message');
   const buttons = [...document.querySelectorAll('.filter-tab')];
+  const noun = document.body.dataset.resultNoun || 'tool';
   let category = 'all';
 
   // Match words in any order, including accents and punctuation such as "G-code".
@@ -34,12 +35,12 @@
 
     const selected = buttons.find(button => button.dataset.category === category);
     const categoryText = category === 'all' ? '' : ` in ${selected.textContent.trim()}`;
-    count.textContent = `${visible} ${visible === 1 ? 'tool' : 'tools'}${categoryText}${query ? ` for “${query}”` : ''}`;
+    count.textContent = `${visible} ${noun}${visible === 1 ? '' : 's'}${categoryText}${query ? ` for “${query}”` : ''}`;
     clear.hidden = !search.value;
     empty.hidden = visible !== 0;
     message.textContent = query
-      ? `No tools match “${query}”${categoryText}. Try fewer words or show all tools.`
-      : `There are no tools${categoryText}. Choose another category or show all tools.`;
+      ? `No ${noun}s match “${query}”${categoryText}. Try fewer words or show all ${noun}s.`
+      : `There are no ${noun}s${categoryText}. Choose another category or show all ${noun}s.`;
   }
 
   function selectCategory(value) {

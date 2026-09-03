@@ -1,869 +1,242 @@
 <!DOCTYPE html>
-<html lang="en">
+
+<html data-theme="light" lang="en">
 <head>
-<!-- Social Bar Ad Script -->
-<script src="https://emotionallytonightintelligent.com/24/99/11/249911a0bb6cd7ff11a49086b8f131e7.js"></script>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
-  <title>Quick Private Chat by SHADER7 | Private P2P Messaging & WebRTC Calls</title>
-  <meta name="description" content="Quick Private Chat by SHADER7 is an experimental private room-code chat tool with peer-to-peer messaging and WebRTC voice/video. Maximum 4 users per room. No servers, no database logs." />
-  <meta name="keywords" content="p2p chat, peer to peer messaging, webrtc video call, private room chat, Shader7, WebRTC STUN TURN" />
-  <meta name="author" content="SHADER7" />
-  <meta name="robots" content="index, follow, max-image-preview:large" />
-  <link rel="canonical" href="https://shader7.com/berofchat/" />
-  <link rel="manifest" href="manifest.json" />
 
-  <meta property="og:title" content="Quick Private Chat by SHADER7 | Private Room-Code Chat" />
-  <meta property="og:description" content="Experimental private room-code chat by SHADER7. Maximum 4 users per room. WebRTC transport encrypted. No database logs." />
-  <meta property="og:url" content="https://shader7.com/berofchat/" />
-  <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="SHADER7" />
-  <meta property="og:image" content="https://shader7.com/screenshots/p2p-chat-app.webp" />
-
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Quick Private Chat by SHADER7 | Private P2P Messaging" />
-  <meta name="twitter:description" content="Experimental private room-code chat by SHADER7. Maximum 4 users per room. No database logs." />
-  <meta name="twitter:image" content="https://shader7.com/screenshots/p2p-chat-app.webp" />
-
-  <!-- Schema.org JSON-LD Structured Data -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebApplication",
-    "name": "Quick Private Chat by SHADER7",
-    "url": "https://shader7.com/berofchat/",
-    "applicationCategory": "CommunicationApplication",
-    "operatingSystem": "All",
-    "description": "Serverless peer-to-peer encrypted text and file sharing over WebRTC data channels by SHADER7.",
-    "offers": {
-      "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "USD"
-    },
-    "publisher": {
-      "@type": "Organization",
-      "name": "SHADER7",
-      "url": "https://shader7.com/",
-      "logo": "https://shader7.com/passport-logo.webp"
-    }
-  }
-  </script>
-
-  <meta name="theme-color" content="#090d16" />
-
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-  
-  <!-- Global Theme Manager -->
-  <script src="../js/theme.js"></script>
-
-  <!-- Real Lottie Web Component Player -->
-  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
-
-  <style>
-    :root, [data-theme="light"] {
-      --bg-page: #f8fafc;
-      --bg-card: #ffffff;
-      --bg-input: #ffffff;
-      --primary: #1d4ed8; 
-      --primary-glow: rgba(29, 78, 216, 0.08);
-      --primary-hover: #1e40af;
-      --accent-purple: #6d28d9;
-      --accent-purple-glow: rgba(109, 40, 217, 0.08);
-      --text-main: #0f172a;
-      --text-muted: #475569;
-      --text-label: #1e293b;
-      --border: rgba(15, 23, 42, 0.08);
-      --border-hover: rgba(15, 23, 42, 0.16);
-      --font-main: 'Outfit', sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
-      --glass-bg: rgba(255, 255, 255, 0.85);
-      --glass-border: rgba(29, 78, 216, 0.18);
-      --shadow: 0 20px 40px rgba(15, 23, 42, 0.06);
-      --grad-primary: linear-gradient(135deg, #1d4ed8, #6d28d9);
-    }
-
-    [data-theme="dark"] {
-      --bg-page: #090d16;
-      --bg-card: #111827;
-      --bg-input: #1f2937;
-      --primary: #3b82f6; 
-      --primary-glow: rgba(59, 130, 246, 0.1);
-      --primary-hover: #2563eb;
-      --accent-purple: #8b5cf6;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --border: rgba(255, 255, 255, 0.1);
-      --glass-bg: rgba(17, 24, 39, 0.85);
-      --shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-      font-family: var(--font-main);
-      background-color: var(--bg-page);
-      background-image: 
-        radial-gradient(circle at 10% 20%, rgba(29, 78, 216, 0.06) 0%, transparent 40%),
-        radial-gradient(circle at 90% 80%, rgba(109, 40, 217, 0.05) 0%, transparent 40%);
-      background-attachment: fixed;
-      color: var(--text-main);
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    .install-btn {
-      background: var(--grad-primary);
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 12px;
-      font-weight: 700;
-      font-size: 0.85rem;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .install-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(29, 78, 216, 0.3);
-    }
-
-    .main-wrapper {
-      max-width: 1120px;
-      margin: 0 auto;
-      padding: 20px 16px;
-    }
-
-    /* Header */
-    .app-header {
-      background: var(--glass-bg);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 16px 24px;
-      margin-bottom: 40px;
-      box-shadow: var(--shadow);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .app-header::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 3px;
-      background: var(--grad-primary);
-    }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      text-decoration: none;
-      color: var(--text-main);
-    }
-
-    .logo-icon {
-      width: 42px;
-      height: 42px;
-      border-radius: 12px;
-      display: grid;
-      place-items: center;
-      background: var(--grad-primary);
-      color: #fff;
-      font-size: 20px;
-      box-shadow: 0 8px 20px rgba(29, 78, 216, 0.2);
-    }
-
-    .logo h1 {
-      font-size: 1.4rem;
-      font-weight: 800;
-      letter-spacing: -0.5px;
-    }
-
-    .logo h1 span {
-      font-size: 0.8rem;
-      font-weight: 900;
-      color: var(--primary);
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      display: block;
-      margin-top: -2px;
-    }
-
-    .header-nav {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .nav-link {
-      color: var(--text-muted);
-      text-decoration: none;
-      font-size: 0.9rem;
-      font-weight: 600;
-      transition: color 0.2s;
-    }
-
-    .nav-link:hover {
-      color: var(--primary);
-    }
-
-    /* Buttons */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 12px 24px;
-      border-radius: 12px;
-      font-weight: 700;
-      text-decoration: none;
-      transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
-      cursor: pointer;
-      font-size: 0.95rem;
-      border: none;
-    }
-
-    .primary-btn {
-      background: var(--grad-primary);
-      color: #fff;
-      box-shadow: 0 10px 25px rgba(29, 78, 216, 0.2);
-    }
-
-    .primary-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 14px 30px rgba(29, 78, 216, 0.3);
-    }
-
-    .secondary-btn {
-      background: rgba(255, 255, 255, 0.6);
-      border: 1px solid var(--border);
-      color: var(--text-main);
-    }
-
-    .secondary-btn:hover {
-      background: rgba(255, 255, 255, 0.9);
-      border-color: var(--border-hover);
-      transform: translateY(-1px);
-    }
-
-    /* Hero Section */
-    .hero-section {
-      text-align: center;
-      padding: 60px 0 80px;
-      position: relative;
-    }
-
-    .hero-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(29, 78, 216, 0.08);
-      border: 1px solid rgba(29, 78, 216, 0.18);
-      padding: 6px 14px;
-      border-radius: 99px;
-      color: var(--primary);
-      font-size: 0.85rem;
-      font-weight: 700;
-      margin-bottom: 24px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    .hero-tag i {
-      font-size: 0.8rem;
-    }
-
-    .hero-title {
-      font-size: clamp(2.5rem, 6vw, 4.5rem);
-      font-weight: 900;
-      letter-spacing: -2px;
-      line-height: 1.1;
-      margin-bottom: 20px;
-      background: linear-gradient(135deg, var(--text-main) 40%, var(--text-muted));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .hero-title span {
-      background: var(--grad-primary);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-shadow: 0 0 40px rgba(29, 78, 216, 0.1);
-    }
-
-    .hero-desc {
-      font-size: clamp(1.05rem, 2vw, 1.25rem);
-      color: var(--text-muted);
-      max-width: 680px;
-      margin: 0 auto 35px;
-      line-height: 1.6;
-    }
-
-    .hero-ctas {
-      display: flex;
-      justify-content: center;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-
-    /* Features Grid */
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 24px;
-      margin-bottom: 80px;
-    }
-
-    .feature-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 30px;
-      transition: all 0.3s ease;
-      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
-    }
-
-    .feature-card:hover {
-      border-color: var(--glass-border);
-      transform: translateY(-4px);
-      box-shadow: 0 15px 35px rgba(29, 78, 216, 0.08);
-    }
-
-    .feature-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 14px;
-      display: grid;
-      place-items: center;
-      background: rgba(29, 78, 216, 0.08);
-      color: var(--primary);
-      font-size: 22px;
-      margin-bottom: 20px;
-    }
-
-    .feature-card.purple-feature .feature-icon {
-      background: rgba(109, 40, 217, 0.08);
-      color: var(--accent-purple);
-    }
-
-    .feature-card h3 {
-      font-size: 1.25rem;
-      font-weight: 700;
-      margin-bottom: 12px;
-    }
-
-    .feature-card p {
-      color: var(--text-muted);
-      font-size: 0.95rem;
-      line-height: 1.6;
-    }
-
-    /* Documentation Section */
-    .doc-section {
-      background: var(--glass-bg);
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 40px;
-      margin-bottom: 80px;
-      box-shadow: var(--shadow);
-    }
-
-    .doc-section h2 {
-      font-size: 1.8rem;
-      font-weight: 800;
-      margin-bottom: 24px;
-      letter-spacing: -0.5px;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .doc-section h2 i {
-      color: var(--primary);
-    }
-
-    .doc-section h3 {
-      font-size: 1.3rem;
-      font-weight: 700;
-      margin-top: 32px;
-      margin-bottom: 14px;
-      color: var(--text-main);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .doc-section p {
-      color: var(--text-muted);
-      font-size: 1rem;
-      line-height: 1.7;
-      margin-bottom: 18px;
-    }
-
-    .doc-section ul, .doc-section ol {
-      margin-left: 24px;
-      margin-bottom: 20px;
-      color: var(--text-muted);
-    }
-
-    .doc-section li {
-      margin-bottom: 8px;
-      font-size: 0.95rem;
-      line-height: 1.6;
-    }
-
-    .doc-section code {
-      background: rgba(29, 78, 216, 0.08);
-      padding: 3px 6px;
-      border-radius: 6px;
-      font-family: var(--font-mono);
-      color: var(--primary);
-      font-size: 0.9rem;
-    }
-
-    /* Tables */
-    .doc-table-wrapper {
-      overflow-x: auto;
-      margin: 24px 0;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-    }
-
-    .doc-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.92rem;
-      text-align: left;
-    }
-
-    .doc-table th, .doc-table td {
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .doc-table th {
-      background-color: rgba(29, 78, 216, 0.03);
-      font-weight: 700;
-      color: var(--primary);
-      text-transform: uppercase;
-      font-size: 0.8rem;
-      letter-spacing: 0.5px;
-    }
-
-    .doc-table td {
-      color: var(--text-muted);
-    }
-
-    .doc-table tr:last-child td {
-      border-bottom: none;
-    }
-
-    /* Math Formulas */
-    .math-block {
-      background: rgba(29, 78, 216, 0.02);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 20px;
-      margin: 20px 0;
-      text-align: center;
-      font-family: var(--font-mono);
-    }
-
-    .math-formula {
-      font-size: 1.15rem;
-      color: var(--primary);
-      display: block;
-      margin: 8px 0;
-    }
-
-    /* FAQ */
-    .faq-item {
-      margin-bottom: 24px;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 20px;
-    }
-
-    .faq-item:last-child {
-      border-bottom: none;
-      padding-bottom: 0;
-    }
-
-    .faq-item h4 {
-      font-size: 1.1rem;
-      font-weight: 700;
-      margin-bottom: 10px;
-      color: var(--text-main);
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-    }
-
-    .faq-item h4 i {
-      color: var(--primary);
-      margin-top: 4px;
-    }
-
-    .faq-item p {
-      margin-bottom: 0;
-      padding-left: 24px;
-    }
-
-    /* Callout Promo */
-    .promo-box {
-      background: linear-gradient(135deg, rgba(29, 78, 216, 0.03), rgba(109, 40, 217, 0.03));
-      border: 1px dashed rgba(29, 78, 216, 0.2);
-      border-radius: 16px;
-      padding: 30px;
-      text-align: center;
-      margin-top: 40px;
-    }
-
-    .promo-box p {
-      font-weight: 600;
-      color: var(--text-main);
-      margin-bottom: 16px;
-    }
-
-    /* Footer */
-    footer.app-footer {
-      border-top: 1px solid var(--border);
-      background-color: var(--bg-card);
-      padding: 40px 16px;
-      text-align: center;
-      color: var(--text-muted);
-      font-size: 0.85rem;
-      border-radius: 20px;
-      margin-top: 40px;
-      margin-bottom: 20px;
-      box-shadow: var(--shadow);
-    }
-
-    .footer-links {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 20px;
-      margin-top: 15px;
-    }
-
-    .footer-links a {
-      color: var(--text-muted);
-      text-decoration: none;
-      transition: color 0.2s;
-    }
-
-    .footer-links a:hover {
-      color: var(--primary);
-    }
-
-    @media (max-width: 768px) {
-      .hero-section {
-        padding: 30px 0 50px;
-      }
-      .app-header {
-        flex-direction: column;
-        gap: 14px;
-        text-align: center;
-        padding: 14px 16px;
-      }
-      .header-nav {
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 8px;
-        width: 100%;
-      }
-      .header-nav .btn, .header-nav .install-btn {
-        padding: 8px 14px;
-        font-size: 0.82rem;
-      }
-      .hero-ctas {
-        flex-direction: column;
-        width: 100%;
-        gap: 10px;
-      }
-      .hero-ctas .btn {
-        width: 100%;
-        max-width: 320px;
-        justify-content: center;
-      }
-      .doc-section {
-        padding: 20px 16px;
-      }
-    }
-  </style>
-</head>
-<body>
-
-  <div class="main-wrapper">
-    <header class="app-header">
-      <a href="./" class="logo">
-        <div class="logo-icon">
-          <i class="fa-solid fa-user-secret"></i>
-        </div>
-        <div>
-          <h1>Quick Private Chat</h1>
-          <span>by SHADER7</span>
-        </div>
-      </a>
-      <nav class="header-nav">
-        <a href="/" class="btn-shader7-home" style="display: inline-flex; align-items: center; gap: 0.45rem; background: rgba(29, 78, 216, 0.08); color: var(--primary, #1d4ed8); border: 1px solid rgba(29, 78, 216, 0.2); padding: 0.45rem 0.95rem; border-radius: 99px; font-weight: 800; font-size: 0.82rem; text-decoration: none; transition: all 0.2s;"><i class="fa-solid fa-house"></i> SHADER7 Home</a>
-        <a href="#webrtc-tech" class="nav-link">How it Works</a>
-        <a href="#faq" class="nav-link">FAQ</a>
-        <button onclick="window.toggleShader7Theme()" class="theme-toggle-btn" style="background:transparent; border:1px solid var(--border); color:var(--text-main); padding:6px 12px; border-radius:12px; cursor:pointer;" aria-label="Toggle Theme" title="Toggle Theme">
-          <i class="fa-solid fa-moon"></i>
-        </button>
-        <a href="app.html" class="btn primary-btn">Launch App <i class="fa-solid fa-arrow-right"></i></a>
-      </nav>
-    </header>
-
-    <main>
-      <!-- Hero Section -->
-      <section class="hero-section">
-        <div class="hero-tag">
-          <i class="fa-solid fa-shield-halved"></i> 100% Peer-to-Peer & Encrypted
-        </div>
-        <h1 class="hero-title">
-          Quick. Private.<br><span>Just Real Chat.</span>
-        </h1>
-        <p class="hero-desc">
-          An experimental, browser-based room chat tool with direct, serverless peer-to-peer text messaging and WebRTC voice & video. Maximum 4 users. Zero server logs.
-        </p>
-
-        <div class="hero-ctas">
-          <a href="app.html" class="btn primary-btn btn-lg"><i class="fa-solid fa-comments"></i> Start Private Room Free</a>
-          <button class="btn primary-btn btn-lg pwa-install-btn" onclick="window.triggerPwaInstall(event)" style="background: linear-gradient(135deg, #059669, #047857);">
-            <i class="fa-solid fa-download"></i> Install Web App
-          </button>
-          <a href="#webrtc-tech" class="btn secondary-btn btn-lg"><i class="fa-solid fa-circle-info"></i> How It Works</a>
-        </div>
-      </section>
-
-      <!-- Features Grid -->
-      <section class="features-grid">
-        <div class="feature-card">
-          <div class="feature-icon"><i class="fa-solid fa-database"></i></div>
-          <h3>Zero Database Logs</h3>
-          <p>We do not store your chat logs on database servers. Messages flow directly in-memory between browsers, leaving no trails behind.</p>
-        </div>
-
-        <div class="feature-card purple-feature">
-          <div class="feature-icon"><i class="fa-solid fa-key"></i></div>
-          <h3>Galois Mode E2EE</h3>
-          <p>Every message and media stream is encrypted client-side using robust AES-256-GCM block ciphers derived via Diffie-Hellman handshakes.</p>
-        </div>
-
-        <div class="feature-card">
-          <div class="feature-icon"><i class="fa-solid fa-mask"></i></div>
-          <h3>WebRTC IP Masking</h3>
-          <p>Toggle "Hide My IP" to drop local candidates and route traffic through encrypted TURN relays, masking your WAN IP from peers.</p>
-        </div>
-      </section>
-
-      <!-- Technical Section -->
-      <section id="webrtc-tech" class="doc-section">
-        <h2><i class="fa-solid fa-circle-nodes"></i> WebRTC P2P NAT Traversal, STUN/TURN, & Client-Side E2EE</h2>
-        <p>Centralized messaging platforms store your chat logs on database servers, exposing your private communications to security breaches, profiling, and server-side analysis. Quick Private Chat by SHADER7 is an experimental peer-to-peer (P2P) messaging application that establishes a direct cryptographic connection between browsers using the WebRTC protocol, completely bypassing external database storage.</p>
-        
-        <p>Unlike standard apps that use REST APIs or WebSockets to route messages through databases, WebRTC's <code>RTCDataChannel</code> allows browsers to stream encrypted bytes directly to one another. The signaling server is only utilized during the first 10 seconds to help the browsers locate one another. Once the P2P channel is active, the signaling server is disconnected, leaving zero logs or footprints on the web.</p>
-
-        <h3>WebRTC Protocol Stack: SDP, ICE, & Signaling Handshakes</h3>
-        <p>WebRTC (Web Real-Time Communication) is an open-source framework that enables real-time communication of audio, video, and data in web browsers. Before two browsers can transmit data directly, they must coordinate their network configurations. This process is called **Signaling** and is coordinated using three key protocols:</p>
-        <ul>
-            <li><strong>SDP (Session Description Protocol):</strong> A text-based format that describes the connection parameters of the browser. This includes media formats (codecs), cryptographic fingerprints (DTLS certificates), and data channel options. One browser generates an "SDP Offer", and the receiving browser responds with an "SDP Answer".</li>
-            <li><strong>Signaling Sockets:</strong> Because browsers cannot locate each other on the open web without assistance, a signaling broker routes the SDP offers and answers. Once the network mappings are established, the signaling server is fully disconnected from the message route.</li>
-            <li><strong>ICE Candidates:</strong> Interactive Connectivity Establishment (ICE) is a framework used to find all possible network paths (candidates) between the two browsers. These candidates consist of local IP addresses, public reflexive IP addresses, and relay coordinates.</li>
-        </ul>
-
-        <h3>STUN, TURN, & NAT Traversal Mechanics</h3>
-        <p>Most internet-connected devices do not have a public IPv4 address; they reside behind routers utilizing **Network Address Translation (NAT)**. NAT maps multiple private local IP addresses to a single public IP. To traverse NAT routers and establish direct connections, WebRTC relies on STUN and TURN server architectures:</p>
-        
-        <div class="doc-table-wrapper">
-          <table class="doc-table">
-              <thead>
-                  <tr>
-                      <th>Server Type</th>
-                      <th>Protocol Function</th>
-                      <th>Data Handling</th>
-                      <th>Bandwidth Cost</th>
-                  </tr>
-              </thead>
-              <tbody>
-                  <tr>
-                      <td><strong>STUN (Session Traversal Utilities for NAT)</strong></td>
-                      <td>Helps a browser discover its own public IP address and port binding behind a router.</td>
-                      <td>Does not touch message payload. Only aids in mapping coordinates.</td>
-                      <td>Extremely low. Active only during the initial 2-second setup.</td>
-                  </tr>
-                  <tr>
-                      <td><strong>TURN (Traversal Using Relays around NAT)</strong></td>
-                      <td>Acts as a secure, high-speed relay server when direct P2P connection paths are blocked by strict firewalls.</td>
-                      <td>Routes end-to-end encrypted packet blocks. Cannot read the message payload.</td>
-                      <td>High. Active throughout the entire duration of the connection.</td>
-                  </tr>
-              </tbody>
-          </table>
-        </div>
-
-        <p>The success of a direct P2P connection depends heavily on the **NAT Type** of the two router networks:</p>
-        <ol>
-            <li><strong>Full Cone NAT:</strong> Unrestricted. Any external host can send packets to the internal device once a mapping is established. Perfect for high-speed P2P connections.</li>
-            <li><strong>Restricted Cone NAT:</strong> External hosts can only send data if the internal device has previously sent a packet to their specific IP address.</li>
-            <li><strong>Port-Restricted Cone NAT:</strong> Strict. External hosts must match both the specific IP address and the specific port used by the internal device.</li>
-            <li><strong>Symmetric NAT:</strong> Extremely strict. The router allocates a brand-new public port for every single unique destination. In this state, direct P2P mapping is mathematically impossible, and the application must fallback to a **TURN relay** server to forward the traffic securely.</li>
-        </ol>
-
-        <h3>Client-Side Cryptography & Ephemeral Key Derivations</h3>
-        <p>Security is the cornerstone of Quick Private Chat. Even if your traffic is routed through a TURN relay server, your messages remain completely private. WebRTC enforces mandatory, browser-level encryption on all data channels using a dual cryptographic protocol stack:</p>
-        
-        <p><strong>1. DTLS (Datagram Transport Layer Security):</strong> During the connection handshake, the two browsers perform a secure cryptographic handshake. This is modeled on TLS (the protocol that secures HTTPS) but runs over UDP. The browsers negotiate a shared secret session key using a **Diffie-Hellman (DH)** exchange.</p>
-        
-        <p>The mathematical formulation of the Diffie-Hellman key exchange is represented as:</p>
-        <div class="math-block">
-            <span class="math-formula">A = g<sup>a</sup> mod p &nbsp;&nbsp;(Alice's Public Value)</span>
-            <span class="math-formula">B = g<sup>b</sup> mod p &nbsp;&nbsp;(Bob's Public Value)</span>
-        </div>
-        <p>Once values are exchanged over the public signaling socket, each browser calculates the shared secret key <code>S</code> independently:</p>
-        <div class="math-block">
-            <span class="math-formula">S = B<sup>a</sup> mod p = A<sup>b</sup> mod p</span>
-        </div>
-        <p>Because the private keys <code>a</code> and <code>b</code> are never transmitted over the network, an eavesdropper intercepting the traffic cannot calculate <code>S</code>, resolving the key distribution problem.</p>
-        
-        <p><strong>2. AES-256-GCM Encryption:</strong> The derived session key <code>S</code> is immediately used to initialize an **AES-256-GCM** (Advanced Encryption Standard in Galois/Counter Mode) block cipher. Every text packet and media stream is encrypted client-side inside the browser before transmission, ensuring that only the target peer can decrypt the payload.</p>
-
-        <h3>WebRTC Leak Prevention & Local Metadata Security</h3>
-        <p>While WebRTC is exceptional for privacy, it introduces a subtle vulnerability known as the **WebRTC IP Leak**. By default, WebRTC gathers all local ICE candidates (including your private Wi-Fi IP address, e.g. <code>192.168.1.50</code>, and your local subnet coordinates) to establish the fastest local connection if peers reside on the same network.</p>
-        
-        <p>To eliminate this threat vector, Quick Private Chat includes a custom **Hide My IP** toggle. When checked, the application filters out local ICE candidates and forces the network adapter to exclusively route WebRTC packets through external relay nodes (TURN servers). This masks your actual WAN IP from the peer browser, presenting only the TURN server's IP address instead.</p>
-
-        <h3>Peer Connection Troubleshooting Matrix</h3>
-        <p>Because P2P networks rely on user-managed local routers and ISP configurations, connection errors can sometimes occur. Refer to our diagnostic troubleshooting matrix below for common network errors and fixes:</p>
-        
-        <div class="doc-table-wrapper">
-          <table class="doc-table">
-              <thead>
-                  <tr>
-                      <th>Error State</th>
-                      <th>Root Cause</th>
-                      <th>Technical Resolution</th>
-                  </tr>
-              </thead>
-              <tbody>
-                  <tr>
-                      <td><strong>ICE Connection Failed</strong></td>
-                      <td>Symmetric NAT on both endpoints or blockages by local corporate firewalls.</td>
-                      <td>Enable the 'Hide My IP' toggle or connect to a standard mobile data network to bypass corporate UDP blocks.</td>
-                  </tr>
-                  <tr>
-                      <td><strong>DTLS Handshake Timeout</strong></td>
-                      <td>High latency packet loss or router discarding UDP DTLS packets.</td>
-                      <td>Ensure you have a stable network connection. Re-generate the room code to negotiate a fresh handshake.</td>
-                  </tr>
-                  <tr>
-                      <td><strong>Media Permission Error</strong></td>
-                      <td>Browser or operating system blocking camera/microphone access.</td>
-                      <td>Go to browser settings, select 'Site Permissions', and allow camera/mic access for <code>shader7.com</code>.</td>
-                  </tr>
-                  <tr>
-                      <td><strong>Room Code Mismatch</strong></td>
-                      <td>Typographical error or host went offline before client joined.</td>
-                      <td>Verify the exact 6-character room code. Rooms work only while the active host remains connected.</td>
-                  </tr>
-              </tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- FAQ Section -->
-      <section id="faq" class="doc-section">
-        <h2><i class="fa-solid fa-circle-question"></i> Frequently Asked Questions (FAQ)</h2>
-        
-        <div class="faq-item">
-          <h4><i class="fa-solid fa-circle-dot"></i> What is a TURN server and can it intercept my chat history?</h4>
-          <p>A: A TURN (Traversal Using Relays around NAT) server is used as a backup to route traffic when firewalls block direct connections. However, because messages are encrypted inside your browser using end-to-end symmetric keys, the TURN server only passes unreadable binary blocks, keeping your chat history completely private.</p>
-        </div>
-        
-        <div class="faq-item">
-          <h4><i class="fa-solid fa-circle-dot"></i> Why does my chat fail to connect on certain cellular networks?</h4>
-          <p>A: Some cellular providers enforce strict "Symmetric NAT" routing configurations that block standard peer connections. If direct STUN discovery fails, the application automatically fallbacks to TURN servers to establish the connection.</p>
-        </div>
-
-        <div class="faq-item">
-          <h4><i class="fa-solid fa-circle-dot"></i> Is my chat history lost when I close the browser window?</h4>
-          <p>A: Yes. Quick Private Chat stores your messages locally in volatile browser memory. Closing the tab immediately destroys the cryptographic keys and chat history, leaving absolutely no digital trace on your device.</p>
-        </div>
-
-        <div class="faq-item">
-          <h4><i class="fa-solid fa-circle-dot"></i> Does this app store any cookies or tracking scripts?</h4>
-          <p>A: Absolutely not. Quick Private Chat does not use any tracking scripts, tracking cookies, or analytics packages. Your session preferences (such as your display name or privacy toggle choices) are stored strictly on your device using HTML5 LocalStorage, which never leaves your machine.</p>
-        </div>
-
-        <div class="faq-item">
-          <h4><i class="fa-solid fa-circle-dot"></i> Can I share files or images through the chat?</h4>
-          <p>A: File sharing is disabled in this experimental version to maintain maximum throughput and avoid local memory constraints. The focus is entirely on providing an ultra-secure text, voice, and video messaging pipeline.</p>
-        </div>
-
-        <div class="faq-item">
-          <h4><i class="fa-solid fa-circle-dot"></i> How does the age check work? Is my Date of Birth stored?</h4>
-          <p>A: The age verification check is processed entirely locally inside your browser using standard client-side JavaScript. The app compares the current date with your input to confirm you are 19+ and saves only a simple binary consent flag (e.g. <code>qpc_tos_accepted = true</code>) in your local browser storage. Your actual birthdate is never transmitted or stored anywhere.</p>
-        </div>
-
-        <div class="faq-item">
-          <h4><i class="fa-solid fa-circle-dot"></i> Why does the voice/video call feature require special permissions?</h4>
-          <p>A: The WebRTC framework requires explicit access to your camera and microphone APIs to capture real-time media streams. These streams are converted to encrypted packets and sent directly to the other peer. No media is recorded, cached, or saved by the application.</p>
-        </div>
-
-        <div class="faq-item">
-          <h4><i class="fa-solid fa-circle-dot"></i> What is the maximum number of users that can join a single room?</h4>
-          <p>A: To ensure high performance, low latency, and stable peer connectivity, rooms are strictly limited to a maximum of 4 concurrent users. Adding more users exponentially increases the P2P connection mesh complexity, causing network degradation on mobile devices.</p>
-        </div>
-
-        <div class="promo-box">
-          <p>Want to master WebRTC protocols, Diffie-Hellman handshakes, and NAT traversal cryptography?</p>
-          <a href="/ber-of-chat-p2p-messaging-guide.html" class="btn primary-btn">Read the Ultimate P2P Messaging Guide (5,000+ Words) &rarr;</a>
-        </div>
-      </section>
-    </main>
-
-    <footer class="app-footer">
-      <div style="max-width: 1120px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 15px;">
-        <p>&copy; <script>document.write(new Date().getFullYear())</script> SHADER7 &bull; Quick Private Chat</p>
-        
-        <div class="footer-links">
-          <a href="/">Main Site</a>
-          <a href="/about.html">About Us</a>
-          <a href="/contact.html">Contact Us</a>
-          <a href="/privacy-policy.html" style="color: #60a5fa; font-weight: bold;">Privacy Policy</a>
-          <a href="/terms.html">Terms of Service</a>
-          <a href="/sitemap.html">Sitemap</a>
-        </div>
-      </div>
-    </footer>
-  </div>
-
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>Private Chat &amp; File Sharing | Shader7</title>
+<meta content="Connect with another person to exchange messages and share files through the browser." name="description"/>
+<meta content="p2p chat, peer to peer messaging, webrtc video call, private room chat, Shader7, WebRTC STUN TURN" name="keywords"/>
+<meta content="SHADER7" name="author"/>
+<meta content="index, follow, max-image-preview:large" name="robots"/>
+<link href="https://shader7.com/berofchat/" rel="canonical"/>
+<link href="manifest.json" rel="manifest"/>
+<meta content="Private Chat &amp; File Sharing" property="og:title"/>
+<meta content="Connect with another person to exchange messages and share files through the browser." property="og:description"/>
+<meta content="https://shader7.com/berofchat/" property="og:url"/>
+<meta content="website" property="og:type"/>
+<meta content="SHADER7" property="og:site_name"/>
+<meta content="https://shader7.com/screenshots/p2p-chat-app.webp" property="og:image"/>
+<meta content="summary_large_image" name="twitter:card"/>
+<meta content="Private Chat &amp; File Sharing" name="twitter:title"/>
+<meta content="Connect with another person to exchange messages and share files through the browser." name="twitter:description"/>
+<meta content="https://shader7.com/screenshots/p2p-chat-app.webp" name="twitter:image"/>
+<!-- Schema.org JSON-LD Structured Data -->
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Private Chat & File Sharing", "url": "https://shader7.com/berofchat/", "applicationCategory": "CommunicationApplication", "operatingSystem": "All", "description": "Connect with another person to exchange messages and share files through the browser.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "publisher": {"@type": "Organization", "name": "SHADER7", "url": "https://shader7.com/", "logo": "https://shader7.com/passport-logo.webp"}}</script>
+<meta content="#f8fafc" name="theme-color"/>
+<!-- Google Fonts -->
+
+
+
+
+
+<!-- Real Lottie Web Component Player -->
+
+
+<link href="/css/font-awesome.min.css" rel="stylesheet"/>
+<link href="/css/landing.css?v=20260903g" rel="stylesheet"/>
+<link href="/css/pages.css?v=20260903g" rel="stylesheet"/>
+<script defer="" src="/js/pages.js?v=20260903g"></script></head>
+<body class="site-page launch-page"><a class="skip-link" href="#main-content">
+ Skip to content
+</a>
+<header class="top-bar site-header">
+<a class="brand-link" href="/">
+<i aria-hidden="true" class="fa-solid fa-shapes">
+</i>
+  SHADER7
+  <span>
+   Web Suite
+  </span>
+</a>
+<nav aria-label="Main navigation" class="top-actions">
+<a class="about-link" href="/blog.html">
+   Guides
+  </a>
+<button aria-label="Switch to dark mode" class="theme-toggle-btn" onclick="window.toggleShader7Theme()" type="button">
+<i aria-hidden="true" class="fa-solid fa-moon">
+</i>
+</button>
+<a class="btn-primary" href="/#tools">
+   All tools
+   <i aria-hidden="true" class="fa-solid fa-arrow-right">
+</i>
+</a>
+</nav>
+</header>
+<main id="main-content">
+<nav aria-label="Breadcrumb" class="breadcrumbs">
+<a href="/">
+   All tools
+  </a>
+<span aria-hidden="true">
+   /
+  </span>
+<span aria-current="page">
+   Private Chat &amp; File Sharing
+  </span>
+</nav>
+<section aria-labelledby="launch-title" class="launch-hero">
+<div>
+<p class="hero-eyebrow">
+    Chat &amp; sharing · Free browser tool
+   </p>
+<h1 id="launch-title">
+    A room code. A conversation.
+   </h1>
+<p class="launch-intro">
+    Connect with another person to exchange messages and share files through the browser.
+   </p>
+<div class="launch-actions">
+<a class="btn-primary" href="app.html">
+     Start private chat
+     <i aria-hidden="true" class="fa-solid fa-arrow-right">
+</i>
+</a>
+<a class="text-link" href="/ber-of-chat-p2p-messaging-guide.html">
+     Read the guide
+    </a>
+</div>
+</div>
+<div class="launch-preview">
+<img alt="Private Chat &amp; File Sharing preview" decoding="async" height="360" src="/assets/home/chat.webp" width="640"/>
+</div>
+</section>
+<section aria-labelledby="features-title" class="page-section" id="templates">
+<div class="section-heading">
+<p class="hero-eyebrow">
+    What you can do
+   </p>
+<h2 id="features-title">
+    A focused tool for the job.
+   </h2>
+</div>
+<div class="feature-grid">
+<article class="feature-card">
+<span class="step-number">
+     01
+    </span>
+<h3>
+     Room-code access
+    </h3>
+<p>
+     Connect using a shared room code.
+    </p>
+</article>
+<article class="feature-card">
+<span class="step-number">
+     02
+    </span>
+<h3>
+     Direct conversation
+    </h3>
+<p>
+     Keep the session focused on the people you invite.
+    </p>
+</article>
+<article class="feature-card">
+<span class="step-number">
+     03
+    </span>
+<h3>
+     File sharing
+    </h3>
+<p>
+     Send a file while you are connected.
+    </p>
+</article>
+</div>
+</section>
+<section aria-labelledby="how-title" class="page-section how-section">
+<div>
+<p class="hero-eyebrow">
+    Getting started
+   </p>
+<h2 id="how-title">
+    From first step to finished result.
+   </h2>
+</div>
+<ol class="steps-list">
+<li>
+<span class="step-number">
+     1
+    </span>
+<p>
+     Open the chat and create or join a room.
+    </p>
+</li>
+<li>
+<span class="step-number">
+     2
+    </span>
+<p>
+     Share the room code with the other person.
+    </p>
+</li>
+<li>
+<span class="step-number">
+     3
+    </span>
+<p>
+     Start messaging or send a file.
+    </p>
+</li>
+</ol>
+</section>
+<aside class="guide-callout">
+<div>
+<p class="hero-eyebrow">
+    A little more guidance
+   </p>
+<h2>
+    Understand the task before you begin.
+   </h2>
+<a class="text-link" href="/ber-of-chat-p2p-messaging-guide.html">
+    Read the guide: How peer-to-peer chat and file sharing work
+    <span aria-hidden="true">
+     →
+    </span>
+</a>
+</div>
+<a class="btn-primary" href="app.html">
+   Start private chat
+  </a>
+</aside>
+</main>
+<footer class="site-footer">
+<div>
+<a class="brand-link" href="/">
+   SHADER7
+  </a>
+<p>
+   Useful tools for everyday tasks and precision work.
+  </p>
+</div>
+<nav aria-label="Footer navigation">
+<a href="/blog.html">
+   Guides
+  </a>
+<a href="/about.html">
+   About
+  </a>
+<a href="/contact.html">
+   Contact
+  </a>
+<a href="/faq.html">
+   Help
+  </a>
+<a href="/privacy-policy.html">
+   Privacy
+  </a>
+<a href="/terms.html">
+   Terms
+  </a>
+</nav>
+<p class="site-copyright">
+  © 2026 Shader7 · Built by Nishikant Xalxo
+ </p>
+</footer>
 </body>
 </html>
-
