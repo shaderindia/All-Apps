@@ -1,0 +1,103 @@
+/* Salary report controls and the physical A4 sheet share one layout. */
+#report-preview-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  background: #e7ecf3;
+  color: #182338;
+  color-scheme: light;
+  overscroll-behavior: contain;
+}
+#report-preview-modal .report-controls {
+  padding: max(14px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) 14px max(20px, env(safe-area-inset-left));
+  background: #fff;
+  border-bottom: 1px solid #ccd5e2;
+  display: grid;
+  gap: 14px;
+}
+.report-toolbar-row, .report-toolbar-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.report-toolbar-row { justify-content: space-between; }
+.report-title h2 { font-size: 1.12rem; margin: 0 0 2px; color: #182338; }
+.report-title p { font-size: .8rem; margin: 0; color: #526176; }
+#report-preview-modal .btn { width: auto; min-height: 40px; padding: 8px 13px; border-radius: 9px; font-size: .85rem; }
+#report-preview-modal .btn.neutral { color: #354762; background: #fff; border: 1px solid #cbd5e1; box-shadow: none; }
+#report-preview-modal .btn.neutral:hover { background: #f1f5fb; }
+#report-preview-modal .btn.primary { background: #355dd1; color: #fff; }
+#report-preview-modal .btn:focus-visible, #report-preview-modal select:focus-visible, #report-scrollable-content:focus-visible { outline: 3px solid #2563eb; outline-offset: 3px; }
+#report-preview-modal .btn[aria-pressed="true"] { background: #eaf0ff; border-color: #7c9df1; color: #2249ba; }
+#report-preview-modal .report-paper-label { display: flex; align-items: center; gap: 8px; margin: 0; font-size: .82rem; font-weight: 700; }
+#report-preview-modal select { width: auto; min-height: 40px; padding: 8px 32px 8px 10px; font-size: .82rem; background-color: #fff; color: #182338; }
+.report-zoom-group { display: flex; align-items: center; gap: 4px; }
+#report-preview-modal .report-zoom-group .btn { width: 40px; padding: 6px; }
+#zoom-level { min-width: 46px; text-align: center; font-size: .8rem; font-variant-numeric: tabular-nums; }
+#report-scrollable-content { min-height: 0; min-width: 0; overflow: auto; padding: 24px; overscroll-behavior: contain; touch-action: pan-x pan-y; }
+#report-stage { position: relative; margin: 0 auto; flex: none; }
+#report-preview-content {
+  --paper-width: 210mm;
+  --paper-height: 297mm;
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: var(--paper-width);
+  height: var(--paper-height);
+  padding: 10mm;
+  box-sizing: border-box;
+  transform-origin: top left;
+  background: #fff;
+  color: #182338;
+  font-family: Arial, sans-serif;
+  font-size: 9pt;
+  line-height: 1.4;
+  box-shadow: 0 4px 22px #24364b26, 0 0 0 1px #24364b12;
+  text-align: left;
+  -webkit-font-smoothing: antialiased;
+}
+#report-preview-content[data-orientation="landscape"] { --paper-width: 297mm; --paper-height: 210mm; }
+.report-sheet-inner { width: 100%; min-height: 100%; display: flex; flex-direction: column; gap: 16px; transform-origin: top center; overflow-wrap: anywhere; }
+.report-company-name { font-size: 16pt; font-weight: 700; color: #172c4b; line-height: 1.2; margin-bottom: 4pt; }
+.report-header { padding-bottom: 10pt; border-bottom: 2px solid #355dd1; margin-bottom: 12pt; }
+.report-header h2 { font-size: 12pt; color: #355dd1; margin: 0 0 3pt; }
+.report-header p { font-size: 8pt; color: #526176; margin: 0; }
+.report-details { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12pt; background: #f3f6fa; border: 1px solid #d9e0e9; padding: 9pt; border-radius: 5px; }
+.report-details p { font-size: 8.2pt; margin: 0 0 4pt; line-height: 1.4; }
+.report-details p:last-child { margin-bottom: 0; }
+.report-table-title { font-size: 10pt; font-weight: 700; margin: 12pt 0 7pt; }
+.report-table-container { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10pt; align-items: start; }
+.report-table { width: 100%; table-layout: fixed; border-collapse: collapse; }
+.report-table th, .report-table td { border: 1px solid #d4dce7; padding: 5pt 4pt; font-size: 8pt; line-height: 1.3; vertical-align: top; overflow-wrap: anywhere; }
+.report-table th { background: #eaf0f8; font-weight: 700; color: #172c4b; }
+.report-table th:first-child { width: 47%; }
+.report-table th:nth-child(2) { width: 23%; }
+.report-table th:last-child { width: 30%; }
+.report-table td:last-child, .report-table th:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+.report-signoff { margin-top: auto; }
+.report-footer { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14pt; padding-top: 10pt; border-top: 1px solid #cbd5e1; font-size: 8pt; }
+.report-footer p { margin: 0 0 7pt; }
+.report-footer .right { text-align: right; }
+.report-meta-note { text-align: center; font-size: 7pt; color: #66748a; margin-top: 5pt; }
+#report-preview-content[data-orientation="landscape"] .report-header { padding-bottom: 6pt; margin-bottom: 8pt; }
+#report-preview-content[data-orientation="landscape"] .report-details { padding: 6pt 9pt; }
+#report-preview-content[data-orientation="landscape"] .report-details p { margin-bottom: 2pt; }
+#report-preview-content[data-orientation="landscape"] .report-table th, #report-preview-content[data-orientation="landscape"] .report-table td { padding: 3pt 4pt; }
+.report-preview-footer { padding: 9px 20px max(9px, env(safe-area-inset-bottom)); margin: 0; text-align: center; font-size: .78rem; color: #526176; background: #fff; border-top: 1px solid #ccd5e2; }
+@media (max-width: 640px) {
+  #report-preview-modal .report-controls { padding-left: 12px; padding-right: 12px; gap: 10px; }
+  #report-preview-modal .report-toolbar-group { gap: 6px; }
+  #report-preview-modal .btn { padding: 8px 10px; min-height: 42px; }
+  #report-scrollable-content { padding: 14px; }
+  .report-format-row { gap: 8px; }
+  .report-view-group { width: 100%; justify-content: space-between; }
+  .report-title p { max-width: 220px; }
+  #modal-close-btn span { display: none; }
+  .report-preview-footer { padding-left: 12px; padding-right: 12px; font-size: .72rem; }
+}
+@media print {
+  body.salary-report-open { margin: 0 !important; padding: 0 !important; overflow: visible !important; background: #fff !important; }
+  body.salary-report-open > :not(#report-preview-modal) { display: none !important; }
+  body.salary-report-open #report-preview-modal { display: block !important; position: static; background: #fff; padding: 0; }
+  body.salary-report-open .report-controls, body.salary-report-open .report-preview-footer { display: none !important; }
+  body.salary-report-open #report-scrollable-content { overflow: visible; padding: 0; height: auto; }
+  body.salary-report-open #report-stage { width: auto !important; height: auto !important; margin: 0; }
+  body.salary-report-open #report-preview-content { position: relative; transform: none !important; margin: 0; box-shadow: none; print-color-adjust: exact; -webkit-print-color-adjust: exact; break-inside: avoid; }
+}
