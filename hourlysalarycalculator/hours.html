@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html data-theme="light" lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+  <title>
+   Hours Calculator | Monthly Work Log - Shader7
+  </title>
+  <meta content="#4361ee" name="theme-color"/>
+  <link href="https://shader7.com/hourlysalarycalculator/hours.html" rel="canonical"/>
+  <link href="/css/font-awesome.min.css" rel="stylesheet"/>
+  <link href="hours.css?v=3" rel="stylesheet"/>
+  <script defer="" src="../js/jspdf.umd.min.js">
+  </script>
+  <script defer="" src="../js/html2canvas.min.js">
+  </script>
+  <script defer="" src="hours-math.js?v=1">
+  </script>
+  <script defer="" src="hours.js?v=3">
+  </script>
+  <meta content="Calculate monthly work hours from daily entries and shift presets. Save separate monthly logs and download hours-only PDF or JPG reports." name="description"/>
+  <meta content="Hours Calculator | Monthly Work Log" property="og:title"/>
+  <meta content="Calculate monthly work hours from daily entries and shift presets. Save separate monthly logs and download hours-only PDF or JPG reports." property="og:description"/>
+  <meta content="website" property="og:type"/>
+  <meta content="https://shader7.com/hourlysalarycalculator/hours.html" property="og:url"/>
+  <script type="application/ld+json">
+   {"@context": "https://schema.org", "@type": "WebApplication", "name": "Shader7 Hours Calculator", "url": "https://shader7.com/hourlysalarycalculator/hours.html", "applicationCategory": "ProductivityApplication", "operatingSystem": "All", "description": "Calculate monthly work hours from daily entries and shift presets. Save separate monthly logs and download hours-only PDF or JPG reports.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}
+  </script>
+ </head>
+ <body>
+  <main class="page-shell">
+   <header class="hero">
+    <a aria-label="Back to calculator options" class="home-link" href="index.html">
+     ← Calculator options
+    </a>
+    <div class="hero-content">
+     <h1>
+      Monthly Hours Calculator
+     </h1>
+     <p>
+      Add daily hours and shifts, see your monthly totals, and download a work-hours report.
+     </p>
+     <div aria-label="Features" class="hero-badges">
+      <span class="badge">
+       Daily work log
+      </span>
+      <span class="badge">
+       Shift presets
+      </span>
+      <span class="badge">
+       Saved months
+      </span>
+      <span class="badge">
+       PDF/JPG report
+      </span>
+     </div>
+    </div>
+   </header>
+   <section aria-labelledby="calculator-title" class="card" id="app-section">
+    <div class="top-row">
+     <div>
+      <h2 id="calculator-title">
+       Welcome,
+       <span id="employee-display-name">
+        Guest
+       </span>!
+      </h2>
+      <p class="subtle">
+       Your hours-only logs are saved separately in this browser.
+      </p>
+     </div>
+    </div>
+    <div aria-label="Current summary" class="summary-strip">
+     <div class="summary-item">
+      <span>
+       Month
+      </span>
+      <strong id="current-period">
+       —
+      </strong>
+     </div>
+     <div class="summary-item">
+      <span>
+       Employee
+      </span>
+      <strong id="employee-info-display">
+       Not entered
+      </strong>
+     </div>
+     <div class="summary-item">
+      <span>
+       Total Hours
+      </span>
+      <strong id="summary-hours">
+       0 hrs
+      </strong>
+     </div>
+     <div class="summary-item">
+      <span>
+       Days Worked
+      </span>
+      <strong id="summary-days">
+       0 days
+      </strong>
+     </div>
+    </div>
+    <form autocomplete="on" class="form-grid" onsubmit="return false;">
+     <div class="form-group">
+      <label for="employee-name-input">
+       Employee Name
+      </label>
+      <input autocomplete="name" id="employee-name-input" maxlength="100" placeholder="Your name" type="text"/>
+     </div>
+     <div class="form-group">
+      <label for="company-name">
+       Company Name
+      </label>
+      <input autocomplete="organization" id="company-name" maxlength="100" placeholder="Company name" type="text"/>
+     </div>
+     <div class="form-group">
+      <label for="month-year-picker">
+       Select Month and Year
+      </label>
+      <input id="month-year-picker" max="9999-12" min="1900-01" type="month"/>
+     </div>
+    </form>
+    <div class="calendar-toolbar">
+     <h3>
+      Daily Work Log
+     </h3>
+     <p class="subtle">
+      A/B/C: 8 hrs · Day/Night: 12 hrs · Off: 0 hrs. Adjust hours as needed; OT keeps the hours you entered.
+     </p>
+    </div>
+    <div aria-label="Scrollable monthly work calendar" class="calendar-wrapper" id="calendar-container" role="region" tabindex="0">
+     <p class="subtle" style="padding:16px;text-align:center;">
+      Please select a month and year to generate the calendar.
+     </p>
+    </div>
+    <p class="save-status" id="save-status" role="status">
+    </p>
+    <div aria-label="Actions" class="actions">
+     <button class="btn warning" id="clear-hours-btn" type="button">
+      <i aria-hidden="true" class="fa-solid fa-trash">
+      </i>
+      Remove All Hours
+     </button>
+     <button class="btn" id="save-month-btn" type="button">
+      <i aria-hidden="true" class="fa-solid fa-floppy-disk">
+      </i>
+      Save This Month
+     </button>
+     <button class="btn secondary" id="report-btn" type="button">
+      <i aria-hidden="true" class="fa-solid fa-eye">
+      </i>
+      Generate Report
+     </button>
+     <button class="btn neutral" id="share-btn" type="button">
+      <i aria-hidden="true" class="fa-solid fa-share-nodes">
+      </i>
+      Share App
+     </button>
+    </div>
+    <div aria-label="Hours breakdown" class="hours-panel">
+     <div class="hours-box">
+      <span>
+       Weekday Hours
+      </span>
+      <strong id="weekday-hours">
+       0 hrs
+      </strong>
+     </div>
+     <div class="hours-box">
+      <span>
+       Weekend Hours
+      </span>
+      <strong id="weekend-hours">
+       0 hrs
+      </strong>
+     </div>
+     <div class="hours-box">
+      <span>
+       Night Shift Hours
+      </span>
+      <strong id="night-hours">
+       0 hrs
+      </strong>
+     </div>
+     <div class="hours-box">
+      <span>
+       C Shift Hours
+      </span>
+      <strong id="c-shift-hours">
+       0 hrs
+      </strong>
+     </div>
+     <div class="hours-box">
+      <span>
+       OT Hours
+      </span>
+      <strong id="ot-hours">
+       0 hrs
+      </strong>
+     </div>
+     <div class="hours-box">
+      <span>
+       Average / Working Day
+      </span>
+      <strong id="average-hours">
+       0 hrs
+      </strong>
+     </div>
+    </div>
+    <p class="subtle">
+     Night, C shift, and OT hours are included in weekday/weekend totals. Every hour is counted once.
+    </p>
+    <p class="subtle" id="log-status">
+    </p>
+    <p aria-live="polite" class="sr-only" id="totals-announcement" role="status">
+    </p>
+   </section>
+   <section aria-labelledby="help-title" class="card hours-help">
+    <h2 id="help-title">
+     How to calculate your hours
+    </h2>
+    <ol>
+     <li>
+      Choose the month, then enter your hours or select a shift on each working day.
+     </li>
+     <li>
+      Review the total and the weekday, weekend, and shift breakdowns. Blank days are unlogged; zero hours means a day off.
+     </li>
+     <li>
+      Use Save This Month to keep the log in this browser. Generate Report opens a preview for PDF or JPG export.
+     </li>
+    </ol>
+    <p class="subtle">
+     Entries use half-hour increments from 0 to 24 hours. Enter the working time you want to count, after any excluded breaks. OT is a label for hours you identify as overtime; the app does not apply an overtime threshold.
+    </p>
+    <p class="subtle">
+     Unsaved months stay available while this page is open. Save each month before closing. Employee and company names are optional.
+    </p>
+    <a href="index.html">
+     Back to calculator options →
+    </a>
+   </section>
+   <footer class="credits">
+    <p>
+     ©
+     <span id="copyright-year">
+     </span>
+     Shader7 · Built by Nishikant Xalxo
+    </p>
+    <a href="/">
+     All tools
+    </a>
+    ·
+    <a href="/privacy-policy.html">
+     Privacy
+    </a>
+    ·
+    <a href="/contact.html">
+     Help
+    </a>
+   </footer>
+  </main>
+  <div aria-label="Hours report preview" aria-modal="true" class="modal hidden" id="report-preview-modal" role="dialog">
+   <div class="report-controls">
+    <div class="report-controls-left">
+     <button class="btn secondary" id="modal-download-pdf-btn" title="Download PDF" type="button">
+      <i aria-hidden="true" class="fa-solid fa-file-pdf">
+      </i>
+      <span>
+       PDF
+      </span>
+     </button>
+     <button class="btn secondary" id="modal-download-jpg-btn" title="Download JPG" type="button">
+      <i aria-hidden="true" class="fa-solid fa-file-image">
+      </i>
+      <span>
+       JPG
+      </span>
+     </button>
+    </div>
+    <div class="zoom-controls">
+     <button aria-label="Zoom out" class="btn neutral icon-btn" id="zoom-out-btn" title="Zoom Out (-)" type="button">
+      <i aria-hidden="true" class="fa-solid fa-magnifying-glass-minus">
+      </i>
+     </button>
+     <button aria-label="Reset zoom to fit" class="btn neutral fit-btn" id="zoom-fit-btn" title="Fit to Screen (0)" type="button">
+      <span id="zoom-level">
+       100%
+      </span>
+     </button>
+     <button aria-label="Zoom in" class="btn neutral icon-btn" id="zoom-in-btn" title="Zoom In (+)" type="button">
+      <i aria-hidden="true" class="fa-solid fa-magnifying-glass-plus">
+      </i>
+     </button>
+    </div>
+    <button aria-label="Close preview" class="btn danger" id="modal-close-btn" title="Close (Esc)" type="button">
+     <i aria-hidden="true" class="fa-solid fa-xmark">
+     </i>
+     <span>
+      Close
+     </span>
+    </button>
+   </div>
+   <div class="report-scroll" id="report-scrollable-content">
+    <div id="report-preview-content">
+    </div>
+   </div>
+  </div>
+  <dialog aria-labelledby="clear-title" class="clear-dialog" id="clear-dialog">
+   <h2 id="clear-title">
+    Clear this month’s hours?
+   </h2>
+   <p>
+    This clears the hours and shifts currently shown. Save This Month afterward to replace its saved log.
+   </p>
+   <form method="dialog">
+    <button autofocus="" class="btn neutral">
+     Cancel
+    </button>
+    <button class="btn danger" id="confirm-clear-btn" type="button">
+     Clear hours
+    </button>
+   </form>
+  </dialog>
+  <div aria-live="polite" class="toast" id="toast" role="status">
+  </div>
+  <noscript>
+   <p class="card">
+    Enable JavaScript to enter hours and calculate your monthly total.
+   </p>
+  </noscript>
+ </body>
+</html>
