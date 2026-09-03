@@ -15,7 +15,6 @@ PAGES = [
     'cvbanao/index.html',
     'berofchat/index.html',
     'photopassportsizepro/index.html',
-    'bcal/index.html',
     'receiptpro/index.html',
     'hourlysalarycalculator/index.html',
     'fairshare/index.html',
