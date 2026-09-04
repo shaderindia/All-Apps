@@ -392,6 +392,12 @@
       gap: 12px;
     }
 
+    @media (max-width: 580px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
     label {
       display: block;
       margin-bottom: 6px;
@@ -1085,7 +1091,7 @@
           </div>
           <div class="form-group">
             <label for="turnType">Workpiece Orientation</label>
-            <select id="turnType" onchange="resetTurningResults()">
+            <select id="turnType" onchange="handleTurnTypeChange(); resetTurningResults();">
               <option value="od" selected>External Turning (OD)</option>
               <option value="id">Internal Boring (ID)</option>
             </select>
@@ -1512,9 +1518,9 @@
           <span class="kpi-sub">Q = Vc × ap × f</span>
         </div>
         <div class="kpi-card">
-          <span class="kpi-label">Theoretical Surface Ra</span>
-          <span class="kpi-value" id="calcResultRa">2.44 µm</span>
-          <span class="kpi-sub">Ra ≈ f² / (32 × rε)</span>
+          <span class="kpi-label">Surface Roughness Ra / Rz</span>
+          <span class="kpi-value" id="calcResultRa">2.44 / 9.77 µm</span>
+          <span class="kpi-sub">Ra ≈ f²/(32rε) | Rz ≈ 4×Ra</span>
         </div>
       </div>
     </div>
@@ -1695,6 +1701,36 @@ function switchView(viewId, tabBtn) {
   }
 }
 
+
+function handleTurnTypeChange() {
+  const type = document.getElementById("turnType").value;
+  const blankLabel = document.querySelector('label[for="blankDia"]');
+  const finishLabel = document.querySelector('label[for="finishDia"]');
+  const blankInput = document.getElementById("blankDia");
+  const finishInput = document.getElementById("finishDia");
+  
+  if (type === "id") {
+    if (blankLabel) blankLabel.textContent = "Pre-Drilled Hole Dia (X)";
+    if (finishLabel) finishLabel.textContent = "Final Bore Dia (X)";
+    // If blank >= finish, swap to reasonable ID defaults
+    const b = parseFloat(blankInput.value) || 30;
+    const f = parseFloat(finishInput.value) || 50;
+    if (b >= f) {
+      blankInput.value = "30";
+      finishInput.value = "50";
+    }
+  } else {
+    if (blankLabel) blankLabel.textContent = "Blank Diameter (X)";
+    if (finishLabel) finishLabel.textContent = "Target Diameter (X)";
+    const b = parseFloat(blankInput.value) || 80;
+    const f = parseFloat(finishInput.value) || 40;
+    if (f >= b) {
+      blankInput.value = "80";
+      finishInput.value = "40";
+    }
+  }
+}
+
 function showToast(msg) {
   const toast = document.getElementById('toast');
   if (!toast) return;
@@ -1825,135 +1861,134 @@ function generateSiemensTurningCode() {
   const now = new Date();
   const dateStr = now.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
   
-  let g = `; ==========================================================
-`;
-  g += `; SHADER7 SINUMERIK 840D / 828D TURNING PROGRAM
-`;
-  g += `; PROGRAM NAME: SHAFT_CYCLE95.MPF
-`;
-  g += `; CREATED: ${dateStr}
-`;
-  g += `; BLANK: Ø${blank} mm | FINISH: Ø${target} mm | LENGTH: ${length} mm
-`;
-  g += `; OPERATION: ${op.toUpperCase()} (${turnType.toUpperCase()}) | PROFILE: ${profile.toUpperCase()}
-`;
-  g += `; ==========================================================
+  const toolCallName = turnType === "id" ? 'BORING_BAR' : 'ROUGH_TURN';
+  const compDirection = turnType === "id" ? 'G41 (LEFT COMP FOR ID)' : 'G42 (RIGHT COMP FOR OD)';
 
-`;
-  
-  g += `G18 G90 G95 G54 DIAMON (ZX PLANE, FEED/REV, WORK OFFSET, DIAMETER PROGRAMMING)
-`;
-  g += `T="ROUGH_TURN" D1 (LOAD ROUGHING TOOL & OFFSET EDGE 1)
-`;
-  
+  let g = '; ==========================================================\n';
+  g += '; SHADER7 SINUMERIK 840D / 828D TURNING PROGRAM\n';
+  g += '; PROGRAM NAME: SHAFT_CYCLE95.MPF\n';
+  g += `; CREATED: ${dateStr}\n`;
+  g += `; BLANK: Ø${blank} mm | FINISH: Ø${target} mm | LENGTH: ${length} mm\n`;
+  g += `; OPERATION: ${op.toUpperCase()} (${turnType.toUpperCase()}) | PROFILE: ${profile.toUpperCase()}\n`;
+  g += '; ==========================================================\n\n';
+
+  g += 'G18 G90 G95 G54 DIAMON (ZX PLANE, FEED/REV, WORK OFFSET, DIAMETER PROGRAMMING)\n';
+  g += `T="${toolCallName}" D1 (LOAD TOOL & OFFSET EDGE 1)\n`;
+  g += `; NOTE: CYCLE95 APPLIES CUTTER COMPENSATION ${compDirection} VIA EDGE OFFSET\n`;
+
   if (speedMode === "G96") {
-    g += `G96 S${speed} M03 LIMS=${lims} (CONSTANT SURFACE SPEED ${speed} m/min, MAX ${lims} RPM)
-`;
+    g += `G96 S${speed} M03 LIMS=${lims} (CONSTANT SURFACE SPEED ${speed} m/min, MAX ${lims} RPM)\n`;
   } else {
-    g += `G97 S${speed} M03 (DIRECT SPINDLE SPEED ${speed} RPM, CW)
-`;
+    g += `G97 S${speed} M03 (DIRECT SPINDLE SPEED ${speed} RPM, CW)\n`;
   }
-  
+
   const approachX = (turnType === "od" ? blank + 4 : Math.max(0, blank - 4)).toFixed(3);
-  g += `G00 X${approachX} Z5.000 M08 (RAPID APPROACH, COOLANT ON)
+  g += `G00 X${approachX} Z5.000 M08 (RAPID APPROACH, COOLANT ON)\n\n`;
 
-`;
-
-  // Optional Facing Cut
-  if (includeFacing) {
-    g += `; --- FACE OFF PASS ---
-`;
-    g += `G00 Z0.500
-`;
-    g += `G01 Z0.000 F${(feed * 0.8).toFixed(3)}
-`;
-    g += `G01 X-1.600 (FACE PAST CENTER)
-`;
-    g += `G00 X${approachX} Z2.000
-
-`;
+  // Optional Facing Cut (OD only)
+  if (includeFacing && turnType === "od") {
+    g += '; --- FACE OFF PASS ---\n';
+    g += 'G00 Z0.500\n';
+    g += `G01 Z0.000 F${(feed * 0.8).toFixed(3)}\n`;
+    g += 'G01 X-1.600 (FACE PAST CENTER)\n';
+    g += `G00 X${approachX} Z2.000\n\n`;
   }
 
-  // CYCLE95 Stock Removal Block
+  // CYCLE95 Stock Removal Block (Siemens 840D/828D Standard: NPP, MID, FALZ, FALX, FAL, FF1, FF2, FF3, VARI, DT, DAM, _VRT)
   const mid = infeed.toFixed(3);
   const falx = allowX.toFixed(3);
   const falz = allowZ.toFixed(3);
   const rFeed = feed.toFixed(3);
+  const plungeFeed = (feed * 0.7).toFixed(3);
   const fFeed = (feed * 0.65).toFixed(3);
 
-  g += `; --- CYCLE95 STOCK REMOVAL ---
-`;
-  if (op === "rough") {
-    g += `CYCLE95("CONTOUR1", ${mid}, ${falz}, ${falx}, 0, ${rFeed}, ${fFeed}, 0.12, 1, 0, 0, 0) (ROUGH & FINISH)
-`;
-  } else if (op === "rough_only") {
-    g += `CYCLE95("CONTOUR1", ${mid}, ${falz}, ${falx}, 0, ${rFeed}, 0, 0.12, 3, 0, 0, 0) (ROUGH ONLY)
-`;
-  } else if (op === "finish_only") {
-    g += `CYCLE95("CONTOUR1", ${mid}, ${falz}, ${falx}, 0, 0, ${fFeed}, 0.12, 5, 0, 0, 0) (FINISH ONLY)
-`;
+  // Siemens VARI:
+  // External (OD): 1 = Longitudinal roughing, 9 = Complete finishing
+  // Internal (ID): 5 = Longitudinal roughing, 11 = Complete finishing
+  let variVal = 1;
+  let ff1Val = rFeed;
+  let ff3Val = fFeed;
+
+  if (turnType === "id") {
+    if (op === "finish_only") {
+      variVal = 11;
+      ff1Val = "0";
+    } else if (op === "rough_only") {
+      variVal = 5;
+      ff3Val = "0";
+    } else {
+      variVal = 5;
+    }
   } else {
-    g += `; FACING OPERATION EXECUTED ABOVE
-`;
+    if (op === "finish_only") {
+      variVal = 9;
+      ff1Val = "0";
+    } else if (op === "rough_only") {
+      variVal = 1;
+      ff3Val = "0";
+    } else {
+      variVal = 1;
+    }
   }
 
-  g += `G00 G40 X${(blank + 20).toFixed(3)} Z100.000 M09 (CANCEL NOSE COMP, RETRACT, COOLANT OFF)
-`;
-  g += `M30 (PROGRAM END / REWIND)
+  g += '; --- CYCLE95 STOCK REMOVAL ---\n';
+  if (op === "facing") {
+    g += '; FACING OPERATION EXECUTED ABOVE (NO CONTOUR ROUGHING)\n';
+  } else {
+    g += `CYCLE95("CONTOUR1", ${mid}, ${falz}, ${falx}, 0, ${ff1Val}, ${plungeFeed}, ${ff3Val}, ${variVal}, 0, 0, 0) (${op.toUpperCase()} VARI=${variVal})\n`;
+  }
 
-`;
+  g += `G00 G40 X${(blank + 20).toFixed(3)} Z100.000 M09 (CANCEL NOSE COMP, RETRACT, COOLANT OFF)\n`;
+  g += 'M30 (PROGRAM END / REWIND)\n\n';
 
   // Subprogram Contour Block
-  g += `CONTOUR1: (START OF PROFILE DEFINITION)
-`;
-  
+  g += 'CONTOUR1: (START OF PROFILE DEFINITION)\n';
+
   let startX = target;
   if (leadCorner === "chamfer") {
-    startX = Math.max(0, target - 3.0);
-    g += `G01 X${startX.toFixed(3)} Z0.000 F${fFeed}
-`;
-    g += `G01 X${target.toFixed(3)} Z-1.500 (1.5 x 45 CHAMFER)
-`;
+    const chamferStep = turnType === "id" ? 3.0 : -3.0;
+    startX = Math.max(0, target + chamferStep);
+    g += `G01 X${startX.toFixed(3)} Z0.000 F${fFeed}\n`;
+    g += `G01 X${target.toFixed(3)} Z-1.500 (1.5 x 45 CHAMFER)\n`;
   } else if (leadCorner === "radius") {
-    startX = Math.max(0, target - 4.0);
-    g += `G01 X${startX.toFixed(3)} Z0.000 F${fFeed}
-`;
-    g += `G03 X${target.toFixed(3)} Z-2.000 CR=2.000 (R2.0 CORNER RADIUS)
-`;
+    const radStep = turnType === "id" ? 4.0 : -4.0;
+    startX = Math.max(0, target + radStep);
+    g += `G01 X${startX.toFixed(3)} Z0.000 F${fFeed}\n`;
+    const arcCmd = turnType === "id" ? 'G02' : 'G03';
+    g += `${arcCmd} X${target.toFixed(3)} Z-2.000 CR=2.000 (R2.0 CORNER RADIUS)\n`;
   } else {
-    g += `G01 X${target.toFixed(3)} Z0.000 F${fFeed}
-`;
+    g += `G01 X${target.toFixed(3)} Z0.000 F${fFeed}\n`;
   }
 
   if (profile === "straight") {
-    g += `G01 X${target.toFixed(3)} Z-${length.toFixed(3)} (STRAIGHT OD)
-`;
+    g += `G01 X${target.toFixed(3)} Z-${length.toFixed(3)} (STRAIGHT ${turnType === "id" ? "BORE" : "OD"})\n`;
   } else if (profile === "step") {
-    let stepMidDiaVal = stepDia || target + (blank - target) * 0.5;
-    let stepLenVal = stepLen || length * 0.5;
-    g += `G01 X${target.toFixed(3)} Z-${stepLenVal.toFixed(3)} (FIRST STEP)
-`;
-    g += `G01 X${stepMidDiaVal.toFixed(3)} Z-${stepLenVal.toFixed(3)} (SHOULDER FACE)
-`;
-    g += `G01 X${stepMidDiaVal.toFixed(3)} Z-${length.toFixed(3)} (SECOND STEP)
-`;
+    let stepMidDiaVal = stepDia;
+    if (!stepMidDiaVal || (turnType === "od" && (stepMidDiaVal <= target || stepMidDiaVal >= blank)) || (turnType === "id" && (stepMidDiaVal <= blank || stepMidDiaVal >= target))) {
+      stepMidDiaVal = target + (blank - target) * 0.5;
+    }
+    let stepLenVal = stepLen;
+    if (!stepLenVal || stepLenVal <= 0 || stepLenVal >= length) {
+      stepLenVal = length * 0.5;
+    }
+    g += `G01 X${target.toFixed(3)} Z-${stepLenVal.toFixed(3)} (FIRST STEP)\n`;
+    g += `G01 X${stepMidDiaVal.toFixed(3)} Z-${stepLenVal.toFixed(3)} (SHOULDER FACE)\n`;
+    g += `G01 X${stepMidDiaVal.toFixed(3)} Z-${length.toFixed(3)} (SECOND STEP)\n`;
   } else if (profile === "taper") {
-    g += `G01 X${blank.toFixed(3)} Z-${length.toFixed(3)} (TAPER CONTOUR)
-`;
+    g += `G01 X${blank.toFixed(3)} Z-${length.toFixed(3)} (TAPER CONTOUR)\n`;
   } else {
-    let stepLenVal = stepLen || length * 0.5;
+    let stepLenVal = stepLen;
+    if (!stepLenVal || stepLenVal <= 0 || stepLenVal >= length) {
+      stepLenVal = length * 0.5;
+    }
     let filRad = Math.min(10, length - stepLenVal).toFixed(3);
-    g += `G01 X${target.toFixed(3)} Z-${stepLenVal.toFixed(3)}
-`;
-    g += `G02 X${blank.toFixed(3)} Z-${length.toFixed(3)} CR=${filRad} (ROUNDED SHOULDER)
-`;
+    g += `G01 X${target.toFixed(3)} Z-${stepLenVal.toFixed(3)}\n`;
+    g += `G02 X${blank.toFixed(3)} Z-${length.toFixed(3)} CR=${filRad} (ROUNDED SHOULDER)\n`;
   }
 
-  g += `G01 X${(turnType === "od" ? blank + 2 : target).toFixed(3)} Z-${length.toFixed(3)} (FACE RETRACT)
-`;
-  g += `M17 (END OF CONTOUR BLOCK)
-`;
-
+  const safeRetractX = turnType === "od" ? (blank + 2).toFixed(3) : Math.max(0, blank - 2).toFixed(3);
+  g += `G01 X${safeRetractX} Z-${length.toFixed(3)} (FACE RETRACT)\n`;
+  g += 'M17 (END OF CONTOUR BLOCK)\n\n';
   turningCode = g;
 
   // Render UI Container
@@ -2083,67 +2118,100 @@ function downloadMPFFile() {
 function calculateToolpathSteps(blank, target, length, infeed, allowX, allowZ, profile, stepDia, stepLen, includeFacing, leadCorner, turnType) {
   toolpathSteps = [];
   
-  // Safe approach
-  toolpathSteps.push({ x: blank + 4, z: 5, type: 'rapid', desc: 'RAPID TO APPROACH POSITION' });
+  if (turnType === "id") {
+    // ================= INTERNAL BORING TOOLPATH =================
+    // Safe clearance inside pre-drilled bore
+    const safeBoreX = Math.max(0, blank - 4);
+    toolpathSteps.push({ x: safeBoreX, z: 5, type: 'rapid', desc: 'APPROACH HOLE CENTER' });
 
-  if (includeFacing) {
-    toolpathSteps.push({ x: blank + 4, z: 0.5, type: 'rapid', desc: 'APPROACH FACE Z0.5' });
-    toolpathSteps.push({ x: blank + 4, z: 0.0, type: 'feed', desc: 'TOUCH FACE Z0.0' });
-    toolpathSteps.push({ x: -1.6, z: 0.0, type: 'feed', desc: 'FACING CUT PAST CENTER' });
-    toolpathSteps.push({ x: blank + 4, z: 2.0, type: 'rapid', desc: 'RETRACT FROM FACE' });
-  }
+    let currentX = blank;
+    const finalX = target - allowX;
 
-  // Roughing passes
-  let currentX = blank;
-  const finalX = target + allowX;
-
-  let resolvedStepDia = stepDia || target + (blank - target) * 0.5;
-  let resolvedStepLen = stepLen || length * 0.5;
-
-  while (currentX > finalX) {
-    currentX = Math.max(finalX, currentX - infeed * 2);
-    toolpathSteps.push({ x: currentX, z: 2, type: 'rapid', desc: `RAPID TO INFEED DIA ${currentX.toFixed(1)}` });
-
-    let cutEndZ = -length;
-    if (profile === 'step' && currentX < resolvedStepDia) {
-      cutEndZ = -resolvedStepLen;
-    } else if (profile === 'taper') {
-      const ratio = (currentX - target) / (blank - target);
-      cutEndZ = -ratio * length;
-    } else if (profile === 'profile') {
-      const ratio = (currentX - target) / (blank - target);
-      cutEndZ = Math.max(-length, -resolvedStepLen - (ratio * ratio) * (length - resolvedStepLen));
+    while (currentX < finalX) {
+      currentX = Math.min(finalX, currentX + infeed * 2);
+      toolpathSteps.push({ x: currentX, z: 2, type: 'rapid', desc: `APPROACH BORE DIA ${currentX.toFixed(1)}` });
+      toolpathSteps.push({ x: currentX, z: -length, type: 'feed', desc: `INTERNAL BORE CUT TO Z -${length.toFixed(1)}` });
+      // Retract toward center (downward in X away from bore wall)
+      toolpathSteps.push({ x: currentX - 2, z: -length + 1, type: 'rapid', desc: 'RETRACT TOWARD CENTER' });
+      toolpathSteps.push({ x: currentX - 2, z: 2, type: 'rapid', desc: 'RAPID OUT OF BORE' });
     }
 
-    toolpathSteps.push({ x: currentX, z: cutEndZ, type: 'feed', desc: `LONGITUDINAL CUT TO Z ${cutEndZ.toFixed(1)}` });
-    toolpathSteps.push({ x: currentX + 2, z: cutEndZ + 1, type: 'rapid', desc: 'DIAGONAL RETRACT' });
-    toolpathSteps.push({ x: currentX + 2, z: 2, type: 'rapid', desc: 'RAPID BACK TO Z2.0' });
-  }
-
-  // Finishing pass
-  toolpathSteps.push({ x: target, z: 2, type: 'rapid', desc: 'RAPID TO FINISHING DIA' });
-  toolpathSteps.push({ x: target, z: 0, type: 'feed', desc: 'TOUCH FACE' });
-
-  if (profile === 'straight') {
-    toolpathSteps.push({ x: target, z: -length, type: 'feed', desc: 'FINISH PROFILE TO Z END' });
-  } else if (profile === 'step') {
-    toolpathSteps.push({ x: target, z: -resolvedStepLen, type: 'feed', desc: 'STEP 1 FINISH' });
-    toolpathSteps.push({ x: resolvedStepDia, z: -resolvedStepLen, type: 'feed', desc: 'SHOULDER PLUNGE' });
-    toolpathSteps.push({ x: resolvedStepDia, z: -length, type: 'feed', desc: 'STEP 2 FINISH' });
-  } else if (profile === 'taper') {
-    toolpathSteps.push({ x: blank, z: -length, type: 'feed', desc: 'TAPER CONTOUR FINISH' });
+    // Finishing pass
+    toolpathSteps.push({ x: target, z: 2, type: 'rapid', desc: 'APPROACH TARGET BORE' });
+    toolpathSteps.push({ x: target, z: 0, type: 'feed', desc: 'TOUCH INTERNAL FACE' });
+    toolpathSteps.push({ x: target, z: -length, type: 'feed', desc: 'FINISH BORE WALL' });
+    toolpathSteps.push({ x: Math.max(0, blank - 2), z: -length, type: 'rapid', desc: 'RETRACT INWARD' });
+    toolpathSteps.push({ x: Math.max(0, blank - 2), z: 25, type: 'rapid', desc: 'SAFE RETRACT G40' });
   } else {
-    toolpathSteps.push({ x: target, z: -resolvedStepLen, type: 'feed', desc: 'STRAIGHT OD FINISH' });
-    for (let j = 1; j <= 5; j++) {
-      const t = j / 5;
-      const currZ = -resolvedStepLen + t * (-length - -resolvedStepLen);
-      const currX = target + (t * t) * (blank - target);
-      toolpathSteps.push({ x: currX, z: currZ, type: 'feed', desc: `FILLET CONTOUR ARC ${j}/5` });
-    }
-  }
+    // ================= EXTERNAL TURNING TOOLPATH =================
+    // Safe approach outside blank
+    toolpathSteps.push({ x: blank + 4, z: 5, type: 'rapid', desc: 'RAPID TO APPROACH POSITION' });
 
-  toolpathSteps.push({ x: blank + 4, z: -length, type: 'feed', desc: 'FACE CLEARANCE' });
-  toolpathSteps.push({ x: blank + 10, z: 20, type: 'rapid', desc: 'SAFE RETRACT G40' });
+    if (includeFacing) {
+      toolpathSteps.push({ x: blank + 4, z: 0.5, type: 'rapid', desc: 'APPROACH FACE Z0.5' });
+      toolpathSteps.push({ x: blank + 4, z: 0.0, type: 'feed', desc: 'TOUCH FACE Z0.0' });
+      toolpathSteps.push({ x: -1.6, z: 0.0, type: 'feed', desc: 'FACING CUT PAST CENTER' });
+      toolpathSteps.push({ x: blank + 4, z: 2.0, type: 'rapid', desc: 'RETRACT FROM FACE' });
+    }
+
+    // Roughing passes
+    let currentX = blank;
+    const finalX = target + allowX;
+
+    let resolvedStepDia = stepDia;
+    if (!resolvedStepDia || resolvedStepDia <= target || resolvedStepDia >= blank) {
+      resolvedStepDia = target + (blank - target) * 0.5;
+    }
+    let resolvedStepLen = stepLen;
+    if (!resolvedStepLen || resolvedStepLen <= 0 || resolvedStepLen >= length) {
+      resolvedStepLen = length * 0.5;
+    }
+
+    while (currentX > finalX) {
+      currentX = Math.max(finalX, currentX - infeed * 2);
+      toolpathSteps.push({ x: currentX, z: 2, type: 'rapid', desc: `RAPID TO INFEED DIA ${currentX.toFixed(1)}` });
+
+      let cutEndZ = -length;
+      if (profile === 'step' && currentX < resolvedStepDia) {
+        cutEndZ = -resolvedStepLen;
+      } else if (profile === 'taper') {
+        const ratio = (currentX - target) / (blank - target);
+        cutEndZ = -ratio * length;
+      } else if (profile === 'profile') {
+        const ratio = (currentX - target) / (blank - target);
+        cutEndZ = Math.max(-length, -resolvedStepLen - (ratio * ratio) * (length - resolvedStepLen));
+      }
+
+      toolpathSteps.push({ x: currentX, z: cutEndZ, type: 'feed', desc: `LONGITUDINAL CUT TO Z ${cutEndZ.toFixed(1)}` });
+      toolpathSteps.push({ x: currentX + 2, z: cutEndZ + 1, type: 'rapid', desc: 'DIAGONAL RETRACT' });
+      toolpathSteps.push({ x: currentX + 2, z: 2, type: 'rapid', desc: 'RAPID BACK TO Z2.0' });
+    }
+
+    // Finishing pass
+    toolpathSteps.push({ x: target, z: 2, type: 'rapid', desc: 'RAPID TO FINISHING DIA' });
+    toolpathSteps.push({ x: target, z: 0, type: 'feed', desc: 'TOUCH FACE' });
+
+    if (profile === 'straight') {
+      toolpathSteps.push({ x: target, z: -length, type: 'feed', desc: 'FINISH PROFILE TO Z END' });
+    } else if (profile === 'step') {
+      toolpathSteps.push({ x: target, z: -resolvedStepLen, type: 'feed', desc: 'STEP 1 FINISH' });
+      toolpathSteps.push({ x: resolvedStepDia, z: -resolvedStepLen, type: 'feed', desc: 'SHOULDER PLUNGE' });
+      toolpathSteps.push({ x: resolvedStepDia, z: -length, type: 'feed', desc: 'STEP 2 FINISH' });
+    } else if (profile === 'taper') {
+      toolpathSteps.push({ x: blank, z: -length, type: 'feed', desc: 'TAPER CONTOUR FINISH' });
+    } else {
+      toolpathSteps.push({ x: target, z: -resolvedStepLen, type: 'feed', desc: 'STRAIGHT OD FINISH' });
+      for (let j = 1; j <= 5; j++) {
+        const t = j / 5;
+        const currZ = -resolvedStepLen + t * (-length - -resolvedStepLen);
+        const currX = target + (t * t) * (blank - target);
+        toolpathSteps.push({ x: currX, z: currZ, type: 'feed', desc: `FILLET CONTOUR ARC ${j}/5` });
+      }
+    }
+
+    toolpathSteps.push({ x: blank + 4, z: -length, type: 'feed', desc: 'FACE CLEARANCE' });
+    toolpathSteps.push({ x: blank + 10, z: 20, type: 'rapid', desc: 'SAFE RETRACT G40' });
+  }
 
   activeStepIndex = 0;
 }
@@ -2239,8 +2307,9 @@ function executeSimStep() {
   if (activeStepIndex >= toolpathSteps.length) {
     stopTurningSim();
     const playBtn = document.getElementById("simPlayBtn");
-    if (playBtn) playBtn.innerHTML = '<i class="fa-solid fa-play"></i> Run';
-    updateSimHud("CYCLE COMPLETE", toolX, toolZ);
+    if (playBtn) playBtn.innerHTML = '<i class="fa-solid fa-rotate-left"></i> Replay';
+    updateSimHud("CYCLE COMPLETE - Click Replay to rerun", toolX, toolZ);
+    activeStepIndex = 0;
     return;
   }
   
@@ -2287,6 +2356,7 @@ function updateMaterialCutMove(zStart, xStart, zEnd, xEnd) {
     xAtHi = xAtLo;
   }
   
+  const isID = document.getElementById("turnType") && document.getElementById("turnType").value === "id";
   materialCutProfile.forEach(node => {
     if (node.z >= lo - 0.001 && node.z <= hi + 0.001) {
       let cutRadius;
@@ -2294,9 +2364,13 @@ function updateMaterialCutMove(zStart, xStart, zEnd, xEnd) {
         const t = (node.z - lo) / (hi - lo);
         cutRadius = xAtLo + t * (xAtHi - xAtLo);
       } else {
-        cutRadius = Math.min(xAtLo, xAtHi);
+        cutRadius = isID ? Math.max(xAtLo, xAtHi) : Math.min(xAtLo, xAtHi);
       }
-      node.x = Math.min(node.x, cutRadius);
+      if (isID) {
+        node.x = Math.max(node.x, cutRadius); // hole bore enlarges
+      } else {
+        node.x = Math.min(node.x, cutRadius); // OD diameter turns down
+      }
     }
   });
 }
@@ -2362,37 +2436,73 @@ function drawTurningFrame() {
     ctx.strokeRect(0, center_y - 45, chuckFaceX, 90);
   }
   
-  // Workpiece material
+  // Workpiece material rendering (OD Solid Bar vs ID Hollow Tube)
+  const isID = document.getElementById("turnType") && document.getElementById("turnType").value === "id";
   const visibleProfile = materialCutProfile.filter(n => n.z >= -visualLen - 0.01 && n.z <= 0.01);
   
   ctx.fillStyle = isDark ? "#334155" : "#64748b";
   ctx.beginPath();
-  ctx.moveTo(chuckFaceX, center_y);
-  ctx.lineTo(chuckFaceX, center_y - (visualBlankDia / 2) * xScale);
-  ctx.lineTo(z0_x - visualLen * zScale, center_y - (visualBlankDia / 2) * xScale);
-  
-  for (let i = 0; i < visibleProfile.length; i++) {
-    const node = visibleProfile[i];
-    ctx.lineTo(z0_x + node.z * zScale, center_y - node.x * xScale);
-  }
-  
-  ctx.lineTo(z0_x, center_y);
-  
-  // Mirror bottom
-  for (let i = visibleProfile.length - 1; i >= 0; i--) {
-    const node = visibleProfile[i];
-    ctx.lineTo(z0_x + node.z * zScale, center_y + node.x * xScale);
-  }
-  
-  ctx.lineTo(z0_x - visualLen * zScale, center_y + (visualBlankDia / 2) * xScale);
-  ctx.lineTo(chuckFaceX, center_y + (visualBlankDia / 2) * xScale);
-  ctx.closePath();
-  ctx.fill();
 
-  // Outline
-  ctx.strokeStyle = isDark ? "#64748b" : "#334155";
-  ctx.lineWidth = 1.4;
-  ctx.stroke();
+  if (isID) {
+    // Hollow sleeve/bushing: solid metal exists from bore outward to tube OD
+    const outerTubeR = Math.max(visualFinishDia * 0.7, visualBlankDia * 0.8);
+    // Top wall
+    ctx.moveTo(chuckFaceX, center_y - outerTubeR * xScale);
+    ctx.lineTo(z0_x, center_y - outerTubeR * xScale);
+    ctx.lineTo(z0_x, center_y - (visibleProfile.length ? visibleProfile[visibleProfile.length - 1].x : visualBlankDia/2) * xScale);
+    for (let i = visibleProfile.length - 1; i >= 0; i--) {
+      const node = visibleProfile[i];
+      ctx.lineTo(z0_x + node.z * zScale, center_y - node.x * xScale);
+    }
+    ctx.lineTo(chuckFaceX, center_y - (visibleProfile.length ? visibleProfile[0].x : visualBlankDia/2) * xScale);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = isDark ? "#64748b" : "#334155";
+    ctx.lineWidth = 1.4;
+    ctx.stroke();
+
+    // Bottom wall (mirror)
+    ctx.beginPath();
+    ctx.moveTo(chuckFaceX, center_y + outerTubeR * xScale);
+    ctx.lineTo(z0_x, center_y + outerTubeR * xScale);
+    ctx.lineTo(z0_x, center_y + (visibleProfile.length ? visibleProfile[visibleProfile.length - 1].x : visualBlankDia/2) * xScale);
+    for (let i = visibleProfile.length - 1; i >= 0; i--) {
+      const node = visibleProfile[i];
+      ctx.lineTo(z0_x + node.z * zScale, center_y + node.x * xScale);
+    }
+    ctx.lineTo(chuckFaceX, center_y + (visibleProfile.length ? visibleProfile[0].x : visualBlankDia/2) * xScale);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+  } else {
+    // Solid cylinder OD turning
+    ctx.moveTo(chuckFaceX, center_y);
+    ctx.lineTo(chuckFaceX, center_y - (visualBlankDia / 2) * xScale);
+    ctx.lineTo(z0_x - visualLen * zScale, center_y - (visualBlankDia / 2) * xScale);
+    
+    for (let i = 0; i < visibleProfile.length; i++) {
+      const node = visibleProfile[i];
+      ctx.lineTo(z0_x + node.z * zScale, center_y - node.x * xScale);
+    }
+    
+    ctx.lineTo(z0_x, center_y);
+    
+    // Mirror bottom
+    for (let i = visibleProfile.length - 1; i >= 0; i--) {
+      const node = visibleProfile[i];
+      ctx.lineTo(z0_x + node.z * zScale, center_y + node.x * xScale);
+    }
+    
+    ctx.lineTo(z0_x - visualLen * zScale, center_y + (visualBlankDia / 2) * xScale);
+    ctx.lineTo(chuckFaceX, center_y + (visualBlankDia / 2) * xScale);
+    ctx.closePath();
+    ctx.fill();
+
+    // Outline
+    ctx.strokeStyle = isDark ? "#64748b" : "#334155";
+    ctx.lineWidth = 1.4;
+    ctx.stroke();
+  }
 
   // Draw Tool Holder & Insert
   const toolPx = z0_x + toolZ * zScale;
@@ -2460,6 +2570,17 @@ function highlightGCode(text) {
 
 // ==================== VIEW 2: SIEMENS TOOL OFFSET CARD LOGIC ====================
 let setupTools = [];
+
+
+function escapeHTML(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
 
 function loadStoredTools() {
   try {
@@ -2631,7 +2752,7 @@ function renderSetupToolsList() {
     html += `
       <div class="tool-item">
         <div>
-          <div class="tool-item-title">${tool.num} &bull; D${tool.edge}</div>
+          <div class="tool-item-title">${escapeHTML(tool.num)} &bull; D${tool.edge}</div>
           <div class="tool-item-sub">Type: ${tool.type} | X: ${tool.l1.toFixed(3)} | Z: ${tool.l2.toFixed(3)} | R: ${tool.rad.toFixed(3)} | Dir: Type ${tool.dir}</div>
         </div>
         <button class="secondary-btn" onclick="deleteTool(${index})" style="border-color: var(--danger); color: var(--danger); padding: 5px 10px; font-size:0.75rem;">
@@ -2796,13 +2917,15 @@ function runQuickSpeedCalc() {
   const vf = Math.round(rpm * f);
   // MRR: Vc * ap * f
   const mrr = Math.round(vc * ap * f * 10) / 10;
-  // Surface Finish Ra in µm: (f^2 / (32 * re)) * 1000
-  const ra = Math.round(((f * f) / (32 * re)) * 1000 * 100) / 100;
+  // Surface Finish Ra & Rz in µm: Ra = (f^2 / (32 * re)) * 1000, Rz = 4 * Ra
+  const safeRe = Math.max(0.05, re);
+  const ra = Math.round(((f * f) / (32 * safeRe)) * 1000 * 100) / 100;
+  const rz = Math.round(ra * 4 * 100) / 100;
 
   document.getElementById("calcResultRpm").textContent = `${rpm} RPM`;
   document.getElementById("calcResultVf").textContent = `${vf} mm/min`;
   document.getElementById("calcResultMrr").textContent = `${mrr} cm³/min`;
-  document.getElementById("calcResultRa").textContent = `${ra} µm`;
+  document.getElementById("calcResultRa").textContent = `${ra} / ${rz} µm`;
 }
 
 function toggleProfileInputs() {
