@@ -1,1371 +1,1699 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- Social Bar Ad Script -->
-<script src="https://emotionallytonightintelligent.com/24/99/11/249911a0bb6cd7ff11a49086b8f131e7.js"></script>
   <script src="../../js/theme.js"></script>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FCJR8H4DME"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-FCJR8H4DME');
-    </script>
-
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    
-    <title>Siemens Sinumerik Turning G-Code Generator & Tool Card | SHADER7</title>
-    <meta name="description" content="Free Siemens Sinumerik (840D/828D) G-code turning calculator. Generate CYCLE95 stock removal programs, calculate speeds, and build exportable tool offset cards.">
-    <meta name="keywords" content="siemens cnc calculator, sinumerik turning cycle, cycle95 roughing, siemens g-code generator, lathe tool offset card, cnc machinist tools, shader7">
-    <meta name="author" content="Nishikant Xalxo">
-    <meta name="robots" content="index, follow">
-
-    <link rel="canonical" href="https://shader7.com/cnc-machinist/siemens/">
-
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-
-    <style>
-        :root {
-            --bg-page: #060913;
-            --bg-card: #0c1125;
-            --bg-input: #04060e;
-            --bg-input-focus: #09122d;
-            --primary: #0aa3b5; /* Siemens Teal Accent */
-            --primary-glow: rgba(10, 163, 181, 0.15);
-            --primary-hover: #0dc2d6;
-            --accent-orange: #f59e0b; /* Amber/Orange Warning/Cursor */
-            --accent-orange-glow: rgba(245, 158, 11, 0.12);
-            --accent-blue: #2563eb;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --text-label: #cbd5e1;
-            --border: #1e294b;
-            --border-hover: #2e3d75;
-            --danger: #ef4444;
-            --safe-color: #10b981;
-            --font-main: 'Outfit', sans-serif;
-            --font-mono: 'JetBrains Mono', monospace;
-            --glass-bg: rgba(12, 17, 37, 0.92);
-            --glass-border: rgba(10, 163, 181, 0.18);
-            --shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: var(--font-main);
-            background: var(--bg-page);
-            background-image: 
-                radial-gradient(circle at 10% 20%, rgba(10, 163, 181, 0.04) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(37, 99, 235, 0.04) 0%, transparent 40%);
-            background-attachment: fixed;
-            color: var(--text-main);
-            padding: 15px;
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        @media (min-width: 768px) {
-            body {
-                padding: 40px 20px;
-            }
-        }
-
-        .main-wrapper {
-            max-width: 1120px;
-            margin: 0 auto;
-        }
-
-        /* Header block */
-        .app-header {
-            background: var(--glass-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 24px;
-            margin-bottom: 35px;
-            box-shadow: var(--shadow), inset 0 1px 1px rgba(255, 255, 255, 0.05);
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .app-header::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: linear-gradient(90deg, var(--accent-blue), var(--primary), var(--accent-orange));
-        }
-
-        .header-nav {
-            width: 100%;
-            display: flex;
-            justify-content: flex-start;
-            margin-bottom: 15px;
-        }
-
-        .back-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.25s ease;
-            padding: 8px 16px;
-            border-radius: 10px;
-            border: 1px solid var(--border);
-            background: rgba(0,0,0,0.2);
-        }
-
-        .back-link:hover {
-            color: #ffffff;
-            background: rgba(255, 255, 255, 0.03);
-            border-color: var(--border-hover);
-            transform: translateX(-2px);
-        }
-
-        .back-link svg {
-            width: 14px;
-            height: 14px;
-            fill: currentColor;
-        }
-
-        .header-branding {
-            text-align: center;
-            margin-top: 5px;
-        }
-
-        .header-branding h1 {
-            font-size: 2.5rem;
-            font-weight: 900;
-            letter-spacing: 4px;
-            margin-bottom: 4px;
-            color: #ffffff;
-            text-transform: uppercase;
-        }
-
-        .header-branding h1 span {
-            color: var(--primary);
-            text-shadow: 0 0 20px var(--primary-glow);
-        }
-
-        .header-branding p {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin: 0;
-        }
-
-        /* Tab Switcher Navigation */
-        .dashboard-nav {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            margin-bottom: 30px;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 15px;
-            flex-wrap: wrap;
-        }
-
-        .dashboard-tab {
-            background: rgba(12, 17, 37, 0.6);
-            border: 1px solid var(--border);
-            color: var(--text-muted);
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .dashboard-tab:hover {
-            color: #ffffff;
-            border-color: var(--border-hover);
-            background: rgba(255,255,255,0.02);
-        }
-
-        .dashboard-tab.active {
-            color: #ffffff;
-            background: var(--primary);
-            border-color: var(--primary);
-            box-shadow: 0 4px 15px var(--primary-glow);
-        }
-
-        /* View Container styling */
-        .dashboard-view {
-            display: none;
-            animation: fadeIn 0.35s ease;
-        }
-
-        .dashboard-view.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: none; }
-        }
-
-        /* Grid layouts */
-        .app-container {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 30px;
-            align-items: start;
-        }
-
-        @media (min-width: 968px) {
-            .app-container {
-                grid-template-columns: 420px 1fr;
-            }
-        }
-
-        .panel {
-            background: var(--glass-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            padding: 30px;
-            border-radius: 20px;
-            border: 1px solid var(--glass-border);
-            box-shadow: var(--shadow), inset 0 1px 1px rgba(255, 255, 255, 0.05);
-            transition: all 0.3s;
-        }
-
-        .panel:hover {
-            border-color: rgba(10, 163, 181, 0.28);
-        }
-
-        .panel-title {
-            font-size: 1.25rem;
-            font-weight: 800;
-            margin-bottom: 25px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: #ffffff;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 14px;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
-
-        .panel-title svg {
-            width: 22px;
-            height: 22px;
-            fill: var(--primary);
-            filter: drop-shadow(0 0 5px var(--primary-glow));
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 0.8rem;
-            color: var(--text-label);
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .input-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .input-suffix {
-            position: absolute;
-            right: 14px;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid var(--border);
-            padding: 3px 8px;
-            border-radius: 6px;
-            color: var(--text-muted);
-            font-size: 0.75rem;
-            font-weight: 700;
-            font-family: var(--font-mono);
-            pointer-events: none;
-            transition: all 0.2s;
-        }
-
-        input:focus ~ .input-suffix, select:focus ~ .input-suffix {
-            border-color: var(--primary);
-            color: var(--primary);
-            background: rgba(10, 163, 181, 0.05);
-        }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 13px 16px;
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            background: var(--bg-input);
-            color: var(--text-main);
-            font-family: var(--font-main);
-            font-size: 0.95rem; 
-            font-weight: 600;
-            transition: all 0.25s ease;
-            appearance: none;
-        }
-
-        input {
-            padding-right: 48px;
-        }
-
-        select {
-            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%230aa3b5%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
-            background-repeat: no-repeat;
-            background-position: right 18px top 50%;
-            background-size: 11px auto;
-            padding-right: 40px;
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 80px;
-            font-family: var(--font-mono);
-            font-size: 0.85rem;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: var(--bg-input-focus);
-            box-shadow: 0 0 0 3px var(--primary-glow);
-        }
-
-        /* Buttons */
-        button.action-btn {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, var(--primary), #087f8d);
-            color: #01282c;
-            font-weight: 800;
-            font-size: 1rem;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
-            box-shadow: 0 4px 20px var(--primary-glow);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-        }
-
-        button.action-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(10, 163, 181, 0.4);
-            background: linear-gradient(135deg, var(--primary-hover), var(--primary));
-        }
-
-        button.action-btn:active {
-            transform: translateY(1px);
-        }
-
-        button.secondary-btn {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text-main);
-            padding: 10px 16px;
-            border-radius: 8px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            letter-spacing: 0.5px;
-        }
-
-        button.secondary-btn:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-            background: rgba(10, 163, 181, 0.05);
-        }
-
-        /* G-code output editor panel */
-        .gcode-wrapper {
-            margin-top: 25px;
-        }
-
-        .gcode-panel {
-            background: #020409;
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .gcode-header-bar {
-            background: #080c1b;
-            border-bottom: 1px solid var(--border);
-            padding: 10px 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .gcode-filename {
-            font-family: var(--font-mono);
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .gcode-filename::before {
-            content: '';
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--primary);
-            box-shadow: 0 0 8px var(--primary);
-        }
-
-        .gcode-container {
-            padding: 20px;
-            font-family: var(--font-mono);
-            font-size: 0.9rem;
-            line-height: 1.6;
-            overflow-y: auto;
-            overflow-x: auto;
-            max-height: 480px;
-        }
-
-        .gcode-copy-btn {
-            background: var(--border);
-            color: var(--text-main);
-            border: 1px solid var(--border-hover);
-            padding: 6px 14px;
-            font-size: 0.72rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .gcode-copy-btn:hover {
-            background: var(--primary);
-            color: #01282c;
-            border-color: var(--primary);
-        }
-
-        /* Code highlight tokens */
-        .gcode-comment { color: #5c6370; font-style: italic; }
-        .gcode-cmd { color: #f43f5e; font-weight: 700; } /* G-code commands */
-        .gcode-coord { color: #38bdf8; font-weight: 600; } /* Axes coordinates */
-        .gcode-coord .gcode-val { color: #7dd3fc; }
-        .gcode-feed { color: #34d399; font-weight: 600; }
-        .gcode-feed .gcode-val { color: #6ee7b7; }
-        .gcode-speed { color: #f59e0b; font-weight: 600; }
-        .gcode-speed .gcode-val { color: #fcd34d; }
-        .gcode-tool { color: #a855f7; font-weight: 600; }
-        .gcode-tool .gcode-val { color: #d8b4fe; }
-
-        .gcode-line {
-            padding: 2px 8px;
-            border-radius: 4px;
-            border-left: 3px solid transparent;
-            transition: all 0.2s;
-        }
-
-        .gcode-line:hover {
-            background: rgba(255, 255, 255, 0.02);
-        }
-
-        .gcode-line.active-line {
-            background: rgba(10, 163, 181, 0.15) !important;
-            border-left-color: var(--primary) !important;
-            color: #ffffff;
-            font-weight: 700;
-            box-shadow: inset 0 0 10px rgba(10, 163, 181, 0.08);
-        }
-
-        /* Interactive Simulator Bar */
-        .sim-controls-bar {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 12px;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-        }
-
-        .sim-btn-group {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-
-        .sim-block-monitor {
-            font-family: var(--font-mono);
-            font-size: 0.72rem;
-            color: var(--primary);
-            font-weight: 700;
-            background: rgba(10, 163, 181, 0.08);
-            padding: 6px 12px;
-            border-radius: 8px;
-            border: 1px solid rgba(10, 163, 181, 0.2);
-            flex: 1 1 auto;
-            min-width: 180px;
-            height: 40px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        /* Empty states */
-        .empty-state {
-            color: var(--text-muted);
-            text-align: center;
-            padding: 50px 30px;
-            font-size: 0.95rem;
-            border: 2px dashed var(--border);
-            border-radius: 16px;
-            background: rgba(0,0,0,0.1);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-        }
-
-        .empty-state p {
-            max-width: 320px;
-            margin: 0 auto;
-        }
-
-        /* Documentation & Hub layouts */
-        .docs-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 20px;
-        }
-
-        @media (min-width: 768px) {
-            .docs-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-
-        .docs-card {
-            background: rgba(12, 17, 37, 0.5);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 20px;
-            transition: all 0.3s;
-        }
-
-        .docs-card:hover {
-            border-color: var(--border-hover);
-            transform: translateY(-2px);
-        }
-
-        .docs-card h3 {
-            font-size: 1.05rem;
-            font-weight: 800;
-            color: #ffffff;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .docs-card h3 span {
-            color: var(--primary);
-            font-family: var(--font-mono);
-        }
-
-        .docs-card p {
-            font-size: 0.88rem;
-            color: var(--text-muted);
-            line-height: 1.6;
-        }
-
-        .docs-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.82rem;
-            margin-top: 10px;
-        }
-
-        .docs-table th, .docs-table td {
-            text-align: left;
-            padding: 8px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .docs-table th {
-            color: var(--primary);
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-
-        .docs-table td code {
-            font-family: var(--font-mono);
-            color: var(--accent-orange);
-            background: rgba(245, 158, 11, 0.06);
-            padding: 2px 4px;
-            border-radius: 4px;
-        }
-
-        /* Interactive Offset tool card list */
-        .tool-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-top: 20px;
-        }
-
-        .tool-item {
-            background: rgba(4, 6, 14, 0.6);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: all 0.2s;
-        }
-
-        .tool-item:hover {
-            border-color: var(--border-hover);
-            background: rgba(10, 163, 181, 0.02);
-        }
-
-        .tool-item-details {
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
-        }
-
-        .tool-item-title {
-            font-weight: 800;
-            color: #ffffff;
-            font-size: 0.95rem;
-        }
-
-        .tool-item-sub {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            font-family: var(--font-mono);
-        }
-
-        .tool-item-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        /* Cutting Direction Tool Tip Graphic Helper */
-        .dir-helper-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 45px);
-            grid-template-rows: repeat(3, 45px);
-            gap: 6px;
-            justify-content: center;
-            margin: 15px auto;
-            width: 150px;
-        }
-
-        .dir-cell {
-            border: 1px solid var(--border);
-            background: var(--bg-input);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-            position: relative;
-        }
-
-        .dir-cell:hover {
-            border-color: var(--primary);
-            color: #ffffff;
-        }
-
-        .dir-cell.active {
-            background: var(--primary);
-            border-color: var(--primary);
-            color: #01282c;
-            box-shadow: 0 0 10px var(--primary-glow);
-        }
-
-        .dir-cell.disabled {
-            opacity: 0.25;
-            cursor: not-allowed;
-            pointer-events: none;
-        }
-
-        /* Printable setup card stylesheet overrides */
-        @media print {
-            body {
-                background: #ffffff !important;
-                color: #000000 !important;
-                padding: 0 !important;
-            }
-            
-            .app-header, .dashboard-nav, .panel, #turning-view, #docs-view, .gcode-copy-btn, .sim-controls-bar, footer, #tool-card-input-panel {
-                display: none !important;
-            }
-            
-            .dashboard-view.active {
-                display: block !important;
-            }
-
-            #tool-card-view {
-                display: block !important;
-            }
-
-            .print-only-card-wrapper {
-                display: block !important;
-                width: 100% !important;
-            }
-        }
-
-        .print-only-card-wrapper {
-            display: none;
-            background: #ffffff;
-            color: #000000;
-            padding: 30px;
-            border: 2px solid #000000;
-            border-radius: 8px;
-        }
-
-        .print-card-title {
-            text-align: center;
-            font-size: 1.5rem;
-            font-weight: 800;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #000000;
-            padding-bottom: 10px;
-            text-transform: uppercase;
-        }
-
-        .print-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-
-        .print-table th, .print-table td {
-            border: 1px solid #000000;
-            padding: 8px;
-            text-align: center;
-            font-size: 0.85rem;
-        }
-
-        .print-table th {
-            background: #f1f5f9;
-            font-weight: 700;
-        }
-
-        /* Info alert box */
-        .info-box {
-            padding: 15px 20px;
-            border-radius: 12px;
-            font-size: 0.9rem;
-            margin-top: 18px;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            border-left: 4px solid var(--primary);
-            background: var(--primary-glow);
-            color: var(--text-main);
-        }
-
-        .info-box-title {
-            font-weight: 800;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-transform: uppercase;
-            font-size: 0.82rem;
-            letter-spacing: 0.5px;
-            color: var(--primary);
-        }
-        .hidden {
-            display: none !important;
-        }
-    </style>
-<link rel="stylesheet" href="/css/app-banners.css?v=20260904-banners"/>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-FCJR8H4DME"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-FCJR8H4DME');
+  </script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  
+  <title>Siemens Sinumerik Turning G-Code Generator & Tool Setup Suite | SHADER7</title>
+  <meta name="description" content="Free professional Siemens Sinumerik (840D/828D/808D) CNC turning suite. Generate CYCLE95 roughing & finishing programs, live 2D toolpath simulator, speed/feed calculator, and exportable .TOA tool offset cards.">
+  <meta name="keywords" content="siemens cnc calculator, sinumerik turning cycle, cycle95 roughing, siemens g-code generator, lathe tool offset card, .toa download, cnc machinist tools, shader7">
+  <meta name="author" content="Nishikant Xalxo">
+  <meta name="robots" content="index, follow">
+
+  <link rel="canonical" href="https://shader7.com/cnc-machinist/siemens/">
+  <meta property="og:title" content="Siemens Sinumerik Turning G-Code Generator & Tool Setup Suite | SHADER7">
+  <meta property="og:description" content="Generate production-ready Sinumerik 840D/828D CYCLE95 turning programs, test in real-time 2D simulator, and export .TOA tool offset archives.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://shader7.com/cnc-machinist/siemens/">
+  <meta property="og:image" content="https://shader7.com/assets/banners/siemens-1280.webp">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- FontAwesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <style>
+    :root {
+      --bg-page: #060913;
+      --bg-card: #0c1125;
+      --bg-input: #04060e;
+      --bg-input-focus: #09122d;
+      --primary: #0aa3b5; /* Siemens Teal Accent */
+      --primary-glow: rgba(10, 163, 181, 0.18);
+      --primary-hover: #0dc2d6;
+      --accent-orange: #f59e0b;
+      --accent-orange-glow: rgba(245, 158, 11, 0.15);
+      --accent-blue: #2563eb;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-label: #cbd5e1;
+      --border: #1e294b;
+      --border-hover: #2e3d75;
+      --danger: #ef4444;
+      --safe-color: #10b981;
+      --font-main: 'Outfit', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --glass-bg: rgba(12, 17, 37, 0.94);
+      --glass-border: rgba(10, 163, 181, 0.22);
+      --shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+    }
+
+    [data-theme="light"] {
+      --bg-page: #f1f5f9;
+      --bg-card: #ffffff;
+      --bg-input: #ffffff;
+      --bg-input-focus: #f0fdfa;
+      --primary: #0891b2;
+      --primary-glow: rgba(8, 145, 178, 0.18);
+      --primary-hover: #0e7490;
+      --accent-orange: #d97706;
+      --accent-orange-glow: rgba(217, 119, 6, 0.15);
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --text-label: #334155;
+      --border: #cbd5e1;
+      --border-hover: #94a3b8;
+      --glass-bg: rgba(255, 255, 255, 0.96);
+      --glass-border: rgba(8, 145, 178, 0.28);
+      --shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background: var(--bg-page);
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(10, 163, 181, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(37, 99, 235, 0.05) 0%, transparent 40%);
+      background-attachment: fixed;
+      color: var(--text-main);
+      padding: 12px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    @media (min-width: 768px) {
+      body {
+        padding: 30px 20px;
+      }
+    }
+
+    .main-wrapper {
+      max-width: 1160px;
+      margin: 0 auto;
+    }
+
+    /* Header block */
+    .app-header {
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 20px 24px;
+      margin-bottom: 25px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .app-header::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent-blue), var(--primary), var(--accent-orange));
+    }
+
+    .header-nav {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .nav-links-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .nav-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: all 0.2s ease;
+      padding: 7px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,0.15);
+    }
+
+    [data-theme="light"] .nav-pill {
+      background: rgba(255,255,255,0.7);
+    }
+
+    .nav-pill:hover {
+      color: var(--text-main);
+      border-color: var(--primary);
+      transform: translateY(-1px);
+    }
+
+    .nav-pill.primary {
+      color: var(--primary);
+      border-color: var(--primary);
+      background: var(--primary-glow);
+    }
+
+    .theme-toggle-btn {
+      background: rgba(0,0,0,0.2);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      transition: all 0.2s ease;
+    }
+
+    [data-theme="light"] .theme-toggle-btn {
+      background: rgba(255,255,255,0.8);
+    }
+
+    .theme-toggle-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      transform: scale(1.05);
+    }
+
+    .header-branding {
+      text-align: center;
+      margin-top: 5px;
+    }
+
+    .header-branding h1 {
+      font-size: 2.2rem;
+      font-weight: 900;
+      letter-spacing: 3px;
+      margin-bottom: 4px;
+      color: var(--text-main);
+      text-transform: uppercase;
+    }
+
+    .header-branding h1 span {
+      color: var(--primary);
+      text-shadow: 0 0 20px var(--primary-glow);
+    }
+
+    .header-branding p {
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin: 0;
+    }
+
+    /* Tab Switcher Navigation */
+    .dashboard-nav {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 25px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .dashboard-tab {
+      background: rgba(12, 17, 37, 0.6);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 10px 18px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    [data-theme="light"] .dashboard-tab {
+      background: rgba(255, 255, 255, 0.7);
+    }
+
+    .dashboard-tab:hover {
+      color: var(--text-main);
+      border-color: var(--border-hover);
+      background: rgba(255,255,255,0.05);
+    }
+
+    .dashboard-tab.active {
+      color: #01282c;
+      background: linear-gradient(135deg, var(--primary-hover), var(--primary));
+      border-color: var(--primary);
+      box-shadow: 0 4px 15px var(--primary-glow);
+      font-weight: 800;
+    }
+
+    [data-theme="light"] .dashboard-tab.active {
+      color: #ffffff;
+      background: var(--primary);
+    }
+
+    /* View Container styling */
+    .dashboard-view {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .dashboard-view.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    /* Grid layouts */
+    .app-container {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    @media (min-width: 968px) {
+      .app-container {
+        grid-template-columns: 430px 1fr;
+      }
+    }
+
+    .panel {
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      padding: 24px;
+      border-radius: 20px;
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--shadow);
+      transition: border-color 0.25s ease;
+    }
+
+    .panel:hover {
+      border-color: rgba(10, 163, 181, 0.35);
+    }
+
+    .panel-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-main);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .panel-title i {
+      color: var(--primary);
+      filter: drop-shadow(0 0 5px var(--primary-glow));
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.76rem;
+      color: var(--text-label);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-suffix {
+      position: absolute;
+      right: 12px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
+      padding: 2px 7px;
+      border-radius: 6px;
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      pointer-events: none;
+    }
+
+    [data-theme="light"] .input-suffix {
+      background: #f1f5f9;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 11px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--bg-input);
+      color: var(--text-main);
+      font-family: var(--font-main);
+      font-size: 0.92rem; 
+      font-weight: 600;
+      transition: all 0.2s ease;
+      appearance: none;
+    }
+
+    input {
+      padding-right: 48px;
+    }
+
+    select {
+      background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%230aa3b5%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px top 50%;
+      background-size: 10px auto;
+      padding-right: 36px;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: var(--bg-input-focus);
+      box-shadow: 0 0 0 3px var(--primary-glow);
+    }
+
+    /* Action Buttons */
+    button.action-btn {
+      width: 100%;
+      padding: 13px 18px;
+      background: linear-gradient(135deg, var(--primary), #087f8d);
+      color: #01282c;
+      font-weight: 800;
+      font-size: 0.95rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+      box-shadow: 0 4px 18px var(--primary-glow);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+
+    [data-theme="light"] button.action-btn {
+      color: #ffffff;
+    }
+
+    button.action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 22px rgba(10, 163, 181, 0.4);
+      background: linear-gradient(135deg, var(--primary-hover), var(--primary));
+    }
+
+    button.secondary-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-transform: uppercase;
+      font-size: 0.78rem;
+      letter-spacing: 0.5px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    button.secondary-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: var(--primary-glow);
+    }
+
+    /* Diagnostics KPI Grid */
+    .diagnostics-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    @media (min-width: 640px) {
+      .diagnostics-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    .kpi-card {
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    [data-theme="light"] .kpi-card {
+      background: #f8fafc;
+    }
+
+    .kpi-label {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+    }
+
+    .kpi-value {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--primary);
+      font-family: var(--font-mono);
+    }
+
+    .kpi-sub {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+    }
+
+    /* Simulation View & DRO */
+    .sim-container-box {
+      background: #020409;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 20px;
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.5);
+    }
+
+    .sim-top-hud {
+      background: #080d1e;
+      border-bottom: 1px solid var(--border);
+      padding: 8px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .dro-readouts {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .dro-val {
+      font-weight: 800;
+      color: #38bdf8;
+    }
+
+    .dro-val span {
+      color: var(--text-muted);
+      font-size: 0.7rem;
+    }
+
+    .sim-canvas-wrap {
+      position: relative;
+      width: 100%;
+      height: 260px;
+    }
+
+    #turningCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .sim-controls-footer {
+      background: #080d1e;
+      border-top: 1px solid var(--border);
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .sim-btn-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sim-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.76rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .sim-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .sim-btn.primary {
+      background: var(--primary);
+      color: #01282c;
+      border-color: var(--primary);
+      font-weight: 800;
+    }
+
+    /* G-code output editor panel */
+    .gcode-panel {
+      background: #020409;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .gcode-header-bar {
+      background: #080c1b;
+      border-bottom: 1px solid var(--border);
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .gcode-filename {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .gcode-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .gcode-copy-btn, .gcode-dl-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-transform: uppercase;
+    }
+
+    .gcode-dl-btn {
+      background: linear-gradient(135deg, var(--primary), #087f8d);
+      color: #01282c;
+      border-color: var(--primary);
+      font-weight: 800;
+    }
+
+    .gcode-copy-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .gcode-dl-btn:hover {
+      filter: brightness(1.1);
+    }
+
+    .gcode-container {
+      padding: 16px;
+      overflow-x: auto;
+      max-height: 380px;
+      font-family: var(--font-mono);
+      font-size: 0.86rem;
+      line-height: 1.6;
+      color: #e2e8f0;
+      background: #020409;
+    }
+
+    .gcode-line {
+      display: block;
+      white-space: pre;
+    }
+
+    .gcode-comment { color: #64748b; font-style: italic; }
+    .gcode-cmd { color: #38bdf8; font-weight: 700; }
+    .gcode-coord { color: #f59e0b; font-weight: 700; }
+    .gcode-val { color: #ffffff; }
+    .gcode-feed { color: #34d399; font-weight: 700; }
+    .gcode-speed { color: #a78bfa; font-weight: 700; }
+    .gcode-tool { color: #f43f5e; font-weight: 700; }
+
+    /* Interactive Direction Selector */
+    .dir-helper-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      width: 100%;
+      max-width: 240px;
+      margin: 0 auto 15px;
+      background: #020409;
+      padding: 8px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .dir-cell {
+      aspect-ratio: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-muted);
+      font-weight: 800;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .dir-cell:hover {
+      border-color: var(--primary);
+      color: var(--text-main);
+      background: rgba(10, 163, 181, 0.1);
+    }
+
+    .dir-cell.active {
+      background: var(--primary);
+      color: #01282c;
+      border-color: var(--primary);
+      box-shadow: 0 0 12px var(--primary-glow);
+    }
+
+    /* Tool setup list */
+    .tool-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .tool-item {
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.2s;
+    }
+
+    [data-theme="light"] .tool-item {
+      background: #ffffff;
+    }
+
+    .tool-item:hover {
+      border-color: var(--primary);
+    }
+
+    .tool-item-title {
+      font-weight: 800;
+      color: var(--primary);
+      font-size: 0.95rem;
+    }
+
+    .tool-item-sub {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+      font-family: var(--font-mono);
+    }
+
+    /* Presets row */
+    .presets-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .preset-pill {
+      background: rgba(10, 163, 181, 0.08);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+
+    .preset-pill:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: var(--primary-glow);
+    }
+
+    /* Documentation Hub Styles */
+    .docs-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+
+    @media (min-width: 840px) {
+      .docs-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .docs-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .docs-card h3 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .docs-card h3 span {
+      color: var(--primary);
+    }
+
+    .docs-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      margin-top: 6px;
+    }
+
+    .docs-table th, .docs-table td {
+      border: 1px solid var(--border);
+      padding: 8px 10px;
+      text-align: left;
+    }
+
+    .docs-table th {
+      background: rgba(0, 0, 0, 0.3);
+      color: var(--primary);
+      font-weight: 800;
+    }
+
+    [data-theme="light"] .docs-table th {
+      background: #f1f5f9;
+    }
+
+    .docs-table td code {
+      font-family: var(--font-mono);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+
+    .empty-state {
+      padding: 50px 20px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .empty-state i {
+      font-size: 2.2rem;
+      color: var(--border);
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .toast-msg {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #0f172a;
+      color: #ffffff;
+      border: 1px solid var(--primary);
+      padding: 10px 20px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      z-index: 9999;
+      transition: transform 0.25s ease, opacity 0.25s ease;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .toast-msg.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* Print Setup Card Styles */
+    @media print {
+      body * { visibility: hidden; }
+      #printCardWrapper, #printCardWrapper * { visibility: visible; }
+      #printCardWrapper {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        background: #fff;
+        color: #000;
+        padding: 20px;
+      }
+      .docs-table th, .docs-table td { border-color: #999; }
+    }
+
+    .print-only-card-wrapper {
+      display: none;
+    }
+
+    @media print {
+      .print-only-card-wrapper {
+        display: block !important;
+      }
+    }
+
+    .hidden { display: none !important; }
+  </style>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "SoftwareApplication",
+        "name": "Siemens Sinumerik Turning & Setup Toolkit",
+        "operatingSystem": "All (Web Browser)",
+        "applicationCategory": "EngineeringApplication",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "description": "Professional CNC turning G-code generator for Siemens Sinumerik 840D, 828D, and 808D controllers with CYCLE95 stock removal cycles, 2D simulation, and .TOA tool offset exporter."
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "SHADER7", "item": "https://shader7.com/" },
+          { "@type": "ListItem", "position": 2, "name": "CNC Machinist Hub", "item": "https://shader7.com/cnc-machinist/" },
+          { "@type": "ListItem", "position": 3, "name": "Siemens Sinumerik Toolkit", "item": "https://shader7.com/cnc-machinist/siemens/" }
+        ]
+      }
+    ]
+  }
+  </script>
 </head>
 <body>
 
 <div class="main-wrapper">
-    <header class="app-header">
-        <div class="header-nav" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-            <a href="/" class="btn-shader7-home" style="display: inline-flex; align-items: center; gap: 0.45rem; background: rgba(59, 130, 246, 0.12); color: var(--primary, #00d2ff); border: 1px solid rgba(0, 210, 255, 0.3); padding: 0.45rem 0.95rem; border-radius: 99px; font-weight: 800; font-size: 0.82rem; text-decoration: none; transition: all 0.2s;"><i class="fa-solid fa-house"></i> SHADER7 Home</a>
-            <a href="../" class="back-link">
-                <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"></path></svg>
-                Back to CNC Hub
-            </a>
-        </div>
-        <div class="header-branding">
-            <h1>SINUMERIK<span>840D</span></h1>
-            <p>Siemens Turning & Setup Toolkit</p>
-        </div>
-    </header>
-<figure class="app-banner" aria-hidden="true"><img alt="" decoding="async" height="360" loading="eager" src="/assets/banners/siemens-640.webp" srcset="/assets/banners/siemens-640.webp 640w, /assets/banners/siemens-1280.webp 1280w" sizes="(max-width: 480px) calc(100vw - 32px), 400px" width="640"/></figure>
-
-    <!-- Tabbed Dashboard Selector -->
-    <div class="dashboard-nav">
-        <button class="dashboard-tab active" onclick="switchView('docs-view', this)">
-            &#9888;™ï¸ Sinumerik Hub
-        </button>
-        <button class="dashboard-tab" onclick="switchView('turning-view', this)">
-            🌀 Turning WebApp (CYCLE95)
-        </button>
-        <button class="dashboard-tab" onclick="switchView('tool-card-view', this)">
-            🗂️ Tool Offset Card
-        </button>
+  <!-- Header block -->
+  <header class="app-header">
+    <div class="header-nav">
+      <div class="nav-links-group">
+        <a href="/" class="nav-pill"><i class="fa-solid fa-house"></i> Home</a>
+        <a href="../" class="nav-pill primary"><i class="fa-solid fa-layer-group"></i> CNC Hub</a>
+        <a href="../../#tools" class="nav-pill"><i class="fa-solid fa-screwdriver-wrench"></i> All Apps</a>
+      </div>
+      <button class="theme-toggle-btn" onclick="window.toggleShader7Theme()" title="Toggle Theme" aria-label="Toggle Theme">
+        <i class="fa-solid fa-moon"></i>
+      </button>
     </div>
+    <div class="header-branding">
+      <h1>SINUMERIK <span>840D / 828D</span></h1>
+      <p>Siemens Turning, CYCLE95 Generator &amp; Setup Suite</p>
+    </div>
+  </header>
 
-    <!-- ================= VIEW 1: SIEMENS LANDING & QUICK REF ================= -->
-    <div id="docs-view" class="dashboard-view active">
-        <div class="panel" style="margin-bottom: 30px;">
-            <h2 class="panel-title" style="border-bottom: none; margin-bottom: 0;">
-                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"></path></svg>
-                Welcome to the Sinumerik G-Code Suite
-            </h2>
-            <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 10px; line-height: 1.7;">
-                Siemens Sinumerik controls (including the 840D, 828D, and 808D) utilize an extremely powerful, high-level CNC programming language. Unlike ISO standard G-code (Fanuc/Haas), Siemens supports <b>named variables, parameterizable canned cycles, local contour labels, and advanced tool management</b>. This suite provides professional shop-floor tools to write correct Siemens turning code and generate standardized offset setup cards.
-            </p>
+  <!-- Tabbed Dashboard Selector -->
+  <div class="dashboard-nav">
+    <button class="dashboard-tab active" onclick="switchView('turning-view', this)">
+      <i class="fa-solid fa-arrows-spin"></i> Turning WebApp (CYCLE95)
+    </button>
+    <button class="dashboard-tab" onclick="switchView('tool-card-view', this)">
+      <i class="fa-solid fa-table-list"></i> Tool Offset Card (.TOA)
+    </button>
+    <button class="dashboard-tab" onclick="switchView('calc-view', this)">
+      <i class="fa-solid fa-calculator"></i> Speeds &amp; Feeds Calc
+    </button>
+    <button class="dashboard-tab" onclick="switchView('docs-view', this)">
+      <i class="fa-solid fa-book-bookmark"></i> Sinumerik Hub &amp; Guide
+    </button>
+  </div>
+
+  <!-- ================= VIEW 1: TURNING WEBAPP (CYCLE95) ================= -->
+  <div id="turning-view" class="dashboard-view active">
+    <div class="app-container">
+      <!-- Left Sidebar Controls -->
+      <div class="panel">
+        <div class="panel-title">
+          <i class="fa-solid fa-sliders"></i>
+          Turning Parameters
         </div>
 
-        <div class="docs-grid">
-            <!-- Card 1: G-Code Basics -->
-            <div class="docs-card">
-                <h3><span>G-Code</span> Turning Fundamentals</h3>
-                <p>Turning on Siemens systems is programmed in the <b>G18 Z-X plane</b>. Tool coordinate axes are defined as:</p>
-                <table class="docs-table">
-                    <thead>
-                        <tr>
-                            <th>Command</th>
-                            <th>Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><code>G18</code></td>
-                            <td>Select ZX Plane (Default for Lathe turning)</td>
-                        </tr>
-                        <tr>
-                            <td><code>G95</code></td>
-                            <td>Feed per Revolution (e.g., F0.2 = 0.2mm/rev)</td>
-                        </tr>
-                        <tr>
-                            <td><code>G96</code></td>
-                            <td>Constant Cutting Speed active (S is Surface m/min)</td>
-                        </tr>
-                        <tr>
-                            <td><code>LIMS</code></td>
-                            <td>Spindle RPM Limit during G96 (e.g., LIMS=3000)</td>
-                        </tr>
-                        <tr>
-                            <td><code>G97</code></td>
-                            <td>Constant Spindle Speed active (S is Spindle RPM)</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Card 2: Canned Cycles -->
-            <div class="docs-card">
-                <h3><span>Cycles</span> Sinumerik Lathe Cycles</h3>
-                <p>Siemens uses built-in cycle parameters to automate complex operations instead of long, manual coordinates:</p>
-                <table class="docs-table">
-                    <thead>
-                        <tr>
-                            <th>Cycle</th>
-                            <th>Operation</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><code>CYCLE95</code></td>
-                            <td>Stock Removal / Contour Roughing & Finishing</td>
-                        </tr>
-                        <tr>
-                            <td><code>CYCLE93</code></td>
-                            <td>Grooving & Part-off Cycle</td>
-                        </tr>
-                        <tr>
-                            <td><code>CYCLE97</code></td>
-                            <td>Thread Cutting (Single/Multi-start)</td>
-                        </tr>
-                        <tr>
-                            <td><code>CYCLE98</code></td>
-                            <td>Thread Chain (Continuous threads)</td>
-                        </tr>
-                        <tr>
-                            <td><code>CYCLE99</code></td>
-                            <td>Simple Threading Cycle</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Card 3: Tool Edge Comp -->
-            <div class="docs-card">
-                <h3><span>T & D</span> Tool Names & Cutting Edges</h3>
-                <p>In Siemens controls, tools are selected by their alphanumeric name or number, and the active cutting edge offset is designated by a <b>D-number</b>:</p>
-                <ul style="margin-left: 20px; margin-top: 10px; font-size: 0.85rem; color: var(--text-muted);">
-                    <li style="margin-bottom: 6px;"><code>T="ROUGH_80" D1</code>: Call tool ROUGH_80 and activate its 1st cutting edge offsets.</li>
-                    <li style="margin-bottom: 6px;"><b>Tool Radius Compensation</b> is activated with <code>G41</code> (left of path) or <code>G42</code> (right of path), and cancelled with <code>G40</code>.</li>
-                    <li style="margin-bottom: 6px;">The tool point orientation (direction 1-9) must be accurately defined in the offsets page for radius compensation to calculate correctly.</li>
-                </ul>
-            </div>
-
-            <!-- Card 4: Quick Contour Guide -->
-            <div class="docs-card">
-                <h3><span>CYCLE95</span> Contour Programming</h3>
-                <p>Siemens contour cycles can reference an internal block range using starting and ending labels, making separate subprogram files unnecessary:</p>
-                <pre style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; font-family: var(--font-mono); font-size: 0.75rem; margin-top: 10px; border: 1px solid var(--border); color: var(--primary);">
-; Call cycle95 roughing
-CYCLE95("CONTOUR1:CONTOUR1_END", 2.0, 0.2, 0.1, 0, 0.2, 0.15, 1, 1)
-...
-CONTOUR1:
-G01 X20.0 Z0.0
-G01 X30.0 Z-10.0
-G01 Z-40.0
-CONTOUR1_END:
-M17</pre>
-            </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="turnOp">Machining Mode</label>
+            <select id="turnOp" onchange="resetTurningResults()">
+              <option value="rough" selected>Roughing &amp; Finishing (CYCLE95)</option>
+              <option value="rough_only">Roughing Only (CYCLE95)</option>
+              <option value="finish_only">Finishing Only (CYCLE95)</option>
+              <option value="facing">Facing Cut Only (G01 Transverse)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="turnType">Workpiece Orientation</label>
+            <select id="turnType" onchange="resetTurningResults()">
+              <option value="od" selected>External Turning (OD)</option>
+              <option value="id">Internal Boring (ID)</option>
+            </select>
+          </div>
         </div>
 
-        <div style="margin-top: 35px; text-align: center;">
-            <button class="action-btn" onclick="document.querySelectorAll('.dashboard-tab')[1].click()" style="max-width: 320px; margin: 0 auto;">
-                Open Turning G-Code Generator &rarr;
+        <div class="form-row">
+          <div class="form-group">
+            <label for="blankDia">Blank Diameter (X)</label>
+            <div class="input-wrapper">
+              <input type="number" id="blankDia" value="80" step="1" oninput="resetTurningResults()">
+              <div class="input-suffix">mm</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="finishDia">Target Diameter (X)</label>
+            <div class="input-wrapper">
+              <input type="number" id="finishDia" value="40" step="1" oninput="resetTurningResults()">
+              <div class="input-suffix">mm</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="turnLen">Turned Length (Z)</label>
+            <div class="input-wrapper">
+              <input type="number" id="turnLen" value="60" step="1" oninput="resetTurningResults()">
+              <div class="input-suffix">mm</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="turnInfeed">Depth of Cut (MID / ap)</label>
+            <div class="input-wrapper">
+              <input type="number" id="turnInfeed" value="2.0" step="0.5" oninput="resetTurningResults()">
+              <div class="input-suffix">mm</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="allowX">Finishing Allow. X (FALX)</label>
+            <div class="input-wrapper">
+              <input type="number" id="allowX" value="0.4" step="0.1" oninput="resetTurningResults()">
+              <div class="input-suffix">mm</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="allowZ">Finishing Allow. Z (FALZ)</label>
+            <div class="input-wrapper">
+              <input type="number" id="allowZ" value="0.1" step="0.05" oninput="resetTurningResults()">
+              <div class="input-suffix">mm</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="leadCorner">Front Edge Feature</label>
+            <select id="leadCorner" onchange="resetTurningResults()">
+              <option value="none">Sharp / None</option>
+              <option value="chamfer" selected>Lead-in Chamfer (1.5 × 45°)</option>
+              <option value="radius">Corner Fillet Radius (R2.0)</option>
+            </select>
+          </div>
+          <div class="form-group" style="display: flex; flex-direction: column; justify-content: flex-end;">
+            <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+              <input type="checkbox" id="includeFacing" checked onchange="resetTurningResults()" style="width: auto; padding: 0;">
+              <span>Include Face-Off Pass</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="turnSpeedMode">Spindle Mode</label>
+            <select id="turnSpeedMode" onchange="toggleSpeedModeInput(); resetTurningResults();">
+              <option value="G96" selected>G96 (CSS m/min)</option>
+              <option value="G97">G97 (Fixed RPM)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label id="speedLabel" for="turnSpeed">Cutting Speed (S)</label>
+            <div class="input-wrapper">
+              <input type="number" id="turnSpeed" value="220" step="10" oninput="resetTurningResults()">
+              <div id="speedSuffix" class="input-suffix">m/min</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group" id="limsGroup">
+          <label for="turnLims">Max Spindle Speed (LIMS)</label>
+          <div class="input-wrapper">
+            <input type="number" id="turnLims" value="3000" step="100" oninput="resetTurningResults()">
+            <div class="input-suffix">RPM</div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="turnFeed">Roughing Feed (FF1)</label>
+            <div class="input-wrapper">
+              <input type="number" id="turnFeed" value="0.25" step="0.05" oninput="resetTurningResults()">
+              <div class="input-suffix">mm/r</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="toolRadius">Tool Nose Radius</label>
+            <div class="input-wrapper">
+              <input type="number" id="toolRadius" value="0.8" step="0.4" oninput="resetTurningResults()">
+              <div class="input-suffix">mm</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="contourStyle">Profile Geometry Shape</label>
+          <select id="contourStyle" onchange="toggleProfileInputs(); resetTurningResults();">
+            <option value="straight" selected>Straight Cylinder (Single Diameter)</option>
+            <option value="step">Stepped Shaft (Two-Step Shoulder)</option>
+            <option value="taper">Tapered Shaft (Conical Angle)</option>
+            <option value="profile">Profiled Curved (Stepped with Radius Fillet)</option>
+          </select>
+        </div>
+
+        <div class="form-row hidden" id="stepParamsRow">
+          <div class="form-group">
+            <label for="stepDia">Step Cut Diameter</label>
+            <div class="input-wrapper">
+              <input type="number" id="stepDia" value="60" step="1" oninput="resetTurningResults()">
+              <div class="input-suffix">mm</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="stepLen">Step Cut Length</label>
+            <div class="input-wrapper">
+              <input type="number" id="stepLen" value="30" step="1" oninput="resetTurningResults()">
+              <div class="input-suffix">mm</div>
+            </div>
+          </div>
+        </div>
+
+        <button class="action-btn" onclick="generateSiemensTurningCode()">
+          <i class="fa-solid fa-code"></i> Generate Sinumerik Program
+        </button>
+      </div>
+
+      <!-- Right Output & Simulator Panel -->
+      <div class="panel" style="display: flex; flex-direction: column;">
+        <div class="panel-title">
+          <i class="fa-solid fa-tv"></i>
+          Live Path Visualizer &amp; Sinumerik Program
+        </div>
+
+        <div id="turningResultsContainer" style="flex: 1; display: flex; flex-direction: column;">
+          <div class="empty-state">
+            <i class="fa-solid fa-compass-drafting"></i>
+            <p>Configure turning parameters on the left and click <b>Generate Sinumerik Program</b> to initialize the live toolpath simulator and G-code export.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= VIEW 2: SIEMENS TOOL OFFSET CARD ================= -->
+  <div id="tool-card-view" class="dashboard-view">
+    <div class="app-container" id="tool-card-input-panel">
+      <!-- Sidebar Controls -->
+      <div class="panel">
+        <div class="panel-title">
+          <i class="fa-solid fa-screwdriver-wrench"></i> Add Tool to Offset Setup
+        </div>
+
+        <label>Quick Preset Lathe Tools</label>
+        <div class="presets-bar">
+          <span class="preset-pill" onclick="applyToolPreset('cnmg')">+ CNMG 120408 (Rougher)</span>
+          <span class="preset-pill" onclick="applyToolPreset('dnmg')">+ DNMG 150404 (Finisher)</span>
+          <span class="preset-pill" onclick="applyToolPreset('groove')">+ Parting Blade 3mm</span>
+          <span class="preset-pill" onclick="applyToolPreset('thread')">+ Thread Chaser 60°</span>
+          <span class="preset-pill" onclick="applyToolPreset('drill')">+ U-Drill Ø20</span>
+          <span class="preset-pill" onclick="applyToolPreset('boring')">+ Boring Bar CCMT</span>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="toolNum">Tool ID / Name</label>
+            <input type="text" id="toolNum" placeholder="e.g. T1 or ROUGH_80">
+          </div>
+          <div class="form-group">
+            <label for="edgeNum">Active Edge (D)</label>
+            <input type="number" id="edgeNum" value="1" min="1">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="toolType">Siemens Tool Type Code</label>
+          <select id="toolType" onchange="suggestToolParameters()">
+            <option value="500">500 - Roughing Turning Tool</option>
+            <option value="510">510 - Finishing Turning Tool</option>
+            <option value="520">520 - Plunge / Grooving Tool</option>
+            <option value="540">540 - Thread Turning Tool</option>
+            <option value="200">200 - Twist / Indexable Drill</option>
+            <option value="120">120 - Endmill Cutter (Driven Tool)</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="offsetL1">Length 1 (X Geometry)</label>
+            <div class="input-wrapper">
+              <input type="number" id="offsetL1" value="124.520" step="0.001">
+              <div class="input-suffix">mm</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="offsetL2">Length 2 (Z Geometry)</label>
+            <div class="input-wrapper">
+              <input type="number" id="offsetL2" value="84.230" step="0.001">
+              <div class="input-suffix">mm</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="offsetRad">Tool Nose Radius (R)</label>
+            <div class="input-wrapper">
+              <input type="number" id="offsetRad" value="0.800" step="0.1">
+              <div class="input-suffix">mm</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="offsetType">Cutting Edge Position</label>
+            <select id="offsetType" onchange="updateDirectionGraphic()">
+              <option value="3" selected>Type 3 (OD Front / Left-Up)</option>
+              <option value="2">Type 2 (Left-Down)</option>
+              <option value="1">Type 1 (Right-Up)</option>
+              <option value="4">Type 4 (Right-Down)</option>
+              <option value="5">Type 5 (Straight-Down)</option>
+              <option value="6">Type 6 (Straight-Right)</option>
+              <option value="7">Type 7 (Straight-Up)</option>
+              <option value="8">Type 8 (Straight-Left)</option>
+              <option value="9">Type 9 (Cutter Center / Drill)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Interactive Direction Selector -->
+        <div style="margin-bottom: 16px;">
+          <label style="text-align: center; display: block;">Click Cutting Edge Quadrant (Type 1-9)</label>
+          <div class="dir-helper-grid">
+            <div class="dir-cell" data-dir="1" onclick="selectPointDir(1)">1</div>
+            <div class="dir-cell" data-dir="7" onclick="selectPointDir(7)">7</div>
+            <div class="dir-cell" data-dir="2" onclick="selectPointDir(2)">2</div>
+            <div class="dir-cell" data-dir="8" onclick="selectPointDir(8)">8</div>
+            <div class="dir-cell" data-dir="9" onclick="selectPointDir(9)">9</div>
+            <div class="dir-cell" data-dir="6" onclick="selectPointDir(6)">6</div>
+            <div class="dir-cell" data-dir="4" onclick="selectPointDir(4)">4</div>
+            <div class="dir-cell" data-dir="5" onclick="selectPointDir(5)">5</div>
+            <div class="dir-cell active" data-dir="3" onclick="selectPointDir(3)">3</div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="wearL1">Wear X (ΔX)</label>
+            <div class="input-wrapper">
+              <input type="number" id="wearL1" value="0.000" step="0.001">
+              <div class="input-suffix">mm</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="wearL2">Wear Z (ΔZ)</label>
+            <div class="input-wrapper">
+              <input type="number" id="wearL2" value="0.000" step="0.001">
+              <div class="input-suffix">mm</div>
+            </div>
+          </div>
+        </div>
+
+        <button class="action-btn" onclick="addToolToSetupCard()">
+          <i class="fa-solid fa-plus"></i> Add Tool to Setup Card
+        </button>
+      </div>
+
+      <!-- Setup Card Output Panel -->
+      <div class="panel" style="display: flex; flex-direction: column;">
+        <div class="panel-title" style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 8px;">
+          <span><i class="fa-solid fa-list-check"></i> Sinumerik Tool Offset Table</span>
+          <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+            <button class="secondary-btn" onclick="downloadTOAArchive()" title="Download Siemens .TOA archive file">
+              <i class="fa-solid fa-file-arrow-down"></i> .TOA Archive
             </button>
+            <button class="secondary-btn" onclick="downloadCSVOffsets()" title="Export CSV for Excel">
+              <i class="fa-solid fa-file-csv"></i> CSV
+            </button>
+            <button class="secondary-btn" onclick="window.print()">
+              <i class="fa-solid fa-print"></i> Print
+            </button>
+          </div>
         </div>
+
+        <div id="toolListContainer" style="flex: 1; display: flex; flex-direction: column;">
+          <div class="empty-state">
+            <i class="fa-solid fa-table-list"></i>
+            <p>No tools added to the offset setup card yet. Fill in offsets on the left or click a Quick Preset.</p>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- ================= VIEW 2: TURNING WEBAPP (CYCLE95) ================= -->
-    <div id="turning-view" class="dashboard-view">
-        <div class="app-container">
-            <!-- Left Sidebar Controls -->
-            <div class="panel">
-                <div class="panel-title">
-                    <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"></path></svg>
-                    Turning Parameters
-                </div>
+    <!-- Printable Tool Card Template -->
+    <div id="printCardWrapper" class="print-only-card-wrapper">
+      <div style="text-align: center; font-size: 1.4rem; font-weight: 900; margin-bottom: 8px; font-family: var(--font-main);">SHADER7 SINUMERIK SETUP CARD</div>
+      <div style="display:flex; justify-content:space-between; font-size:0.82rem; margin-bottom: 15px; font-family:var(--font-mono); border-bottom: 1px solid #000; padding-bottom: 6px;">
+        <span>PROGRAM: SH7_TURNING_CYCLE.MPF</span>
+        <span>DATE: <span id="printDateSpan"></span></span>
+        <span>CONTROL: SIEMENS 840D / 828D</span>
+      </div>
+      <table class="docs-table" style="width: 100%; border: 1px solid #000; font-size: 0.85rem;">
+        <thead>
+          <tr style="background: #eee;">
+            <th>Tool ID</th>
+            <th>Edge (D)</th>
+            <th>Type</th>
+            <th>Length X (L1)</th>
+            <th>Length Z (L2)</th>
+            <th>Radius (R)</th>
+            <th>Point Dir</th>
+            <th>Wear X</th>
+            <th>Wear Z</th>
+          </tr>
+        </thead>
+        <tbody id="printCardTableBody">
+          <tr><td colspan="9" style="text-align: center;">No tools loaded in setup.</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top: 40px; font-size:0.8rem; font-style:italic; text-align:center;">
+        Ensure tool nose radius compensation (G41/G42) is calibrated prior to executing CYCLE95 programs. Always verify clearances on first dry run.
+      </div>
+    </div>
+  </div>
 
-                <div class="form-group">
-                    <label for="turnOp">Machining Operation</label>
-                    <select id="turnOp" onchange="resetTurningResults()">
-                        <option value="rough">Roughing &amp; Finishing (CYCLE95)</option>
-                        <option value="rough_only">Roughing Only</option>
-                        <option value="finish_only">Finishing Only</option>
-                    </select>
-                </div>
+  <!-- ================= VIEW 3: SPEEDS & FEEDS QUICK CALCULATOR ================= -->
+  <div id="calc-view" class="dashboard-view">
+    <div class="panel" style="margin-bottom: 24px;">
+      <div class="panel-title">
+        <i class="fa-solid fa-gauge-high"></i> Turning Speeds, Feeds &amp; Power Calculator
+      </div>
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">
+        Quickly compute exact spindle RPM (\(n\)), surface cutting speed (\(V_c\)), material removal rates, and theoretical surface finish (\(Ra\)) for Siemens turning programs.
+      </p>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="blankDia">Blank Diameter</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="blankDia" value="80" step="1" oninput="resetTurningResults()">
-                            <div class="input-suffix">mm</div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="finishDia">Target Diameter</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="finishDia" value="40" step="1" oninput="resetTurningResults()">
-                            <div class="input-suffix">mm</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="turnLen">Turned Length</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="turnLen" value="60" step="1" oninput="resetTurningResults()">
-                            <div class="input-suffix">mm</div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="turnInfeed">Depth of Cut (ap)</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="turnInfeed" value="2.0" step="0.5" oninput="resetTurningResults()">
-                            <div class="input-suffix">mm</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="allowX">Finishing Allow. X</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="allowX" value="0.4" step="0.1" oninput="resetTurningResults()">
-                            <div class="input-suffix">mm</div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="allowZ">Finishing Allow. Z</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="allowZ" value="0.1" step="0.05" oninput="resetTurningResults()">
-                            <div class="input-suffix">mm</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="turnSpeedMode">Spindle Mode</label>
-                        <select id="turnSpeedMode" onchange="toggleSpeedModeInput(); resetTurningResults();">
-                            <option value="G96" selected>G96 (CSS m/min)</option>
-                            <option value="G97">G97 (Fixed RPM)</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label id="speedLabel" for="turnSpeed">Cutting Speed (S)</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="turnSpeed" value="220" step="10" oninput="resetTurningResults()">
-                            <div id="speedSuffix" class="input-suffix">m/min</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group" id="limsGroup">
-                    <label for="turnLims">Max Spindle Speed (LIMS)</label>
-                    <div class="input-wrapper">
-                        <input type="number" id="turnLims" value="3000" step="100" oninput="resetTurningResults()">
-                        <div class="input-suffix">RPM</div>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="turnFeed">Roughing Feed (F)</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="turnFeed" value="0.25" step="0.05" oninput="resetTurningResults()">
-                            <div class="input-suffix">mm/r</div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="toolRadius">Tool Nose Radius</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="toolRadius" value="0.8" step="0.4" oninput="resetTurningResults()">
-                            <div class="input-suffix">mm</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="contourStyle">Profile Geometry Shape</label>
-                    <select id="contourStyle" onchange="toggleProfileInputs(); resetTurningResults();">
-                        <option value="straight" selected>Straight Cylinder (Single Diameter)</option>
-                        <option value="step">Stepped Shaft (Two-Step Shoulder)</option>
-                        <option value="taper">Tapered Shaft (Conical Angle)</option>
-                        <option value="profile">Profiled Curved (Stepped with Radius fillet)</option>
-                    </select>
-                </div>
-
-                <div class="form-row hidden" id="stepParamsRow">
-                    <div class="form-group">
-                        <label for="stepDia">Step Cut Diameter</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="stepDia" value="60" step="1" oninput="resetTurningResults()">
-                            <div class="input-suffix">mm</div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="stepLen">Step Cut Length</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="stepLen" value="30" step="1" oninput="resetTurningResults()">
-                            <div class="input-suffix">mm</div>
-                        </div>
-                    </div>
-                </div>
-
-                <button class="action-btn" onclick="generateSiemensTurningCode()">
-                    <svg style="width:18px; height:18px; fill:currentColor;" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"></path></svg>
-                    Generate Turning Code
-                </button>
-            </div>
-
-            <!-- Right Dashboard View -->
-            <div class="panel" style="display: flex; flex-direction: column;">
-                <div class="panel-title">
-                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"></path></svg>
-                    Live Path Visualizer & G-Code
-                </div>
-
-                <div id="turningResultsContainer" style="flex: 1; display: flex; flex-direction: column;">
-                    <div class="empty-state" style="padding: 60px 20px;">
-                        <p>Configure tool geometries and turning dimensions, then click Generate Turning Code to load the live toolpath simulator.</p>
-                    </div>
-                </div>
-            </div>
+      <div class="form-row" style="margin-bottom: 18px;">
+        <div class="form-group">
+          <label for="matPreset">Material Preset</label>
+          <select id="matPreset" onchange="applyMaterialPreset()">
+            <option value="mild_steel" selected>Mild Steel (1018 / 1045) - Vc 200 m/min</option>
+            <option value="alloy_steel">Alloy Steel (4140 / 4340) - Vc 160 m/min</option>
+            <option value="stainless">Stainless Steel (304 / 316) - Vc 130 m/min</option>
+            <option value="cast_iron">Cast Iron (GG25 / Ductile) - Vc 180 m/min</option>
+            <option value="aluminum">Aluminum Alloy (6061 / 7075) - Vc 500 m/min</option>
+            <option value="brass">Brass / Bronze - Vc 300 m/min</option>
+          </select>
         </div>
+        <div class="form-group">
+          <label for="calcDia">Cutting Diameter (D)</label>
+          <div class="input-wrapper">
+            <input type="number" id="calcDia" value="60" step="1" oninput="runQuickSpeedCalc()">
+            <div class="input-suffix">mm</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="calcVc">Cutting Speed (Vc)</label>
+          <div class="input-wrapper">
+            <input type="number" id="calcVc" value="200" step="10" oninput="runQuickSpeedCalc()">
+            <div class="input-suffix">m/min</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="calcFeed">Feed Rate (f)</label>
+          <div class="input-wrapper">
+            <input type="number" id="calcFeed" value="0.25" step="0.05" oninput="runQuickSpeedCalc()">
+            <div class="input-suffix">mm/r</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="calcAp">Depth of Cut (ap)</label>
+          <div class="input-wrapper">
+            <input type="number" id="calcAp" value="2.0" step="0.5" oninput="runQuickSpeedCalc()">
+            <div class="input-suffix">mm</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="calcRe">Tool Nose Radius (rε)</label>
+          <div class="input-wrapper">
+            <input type="number" id="calcRe" value="0.8" step="0.4" oninput="runQuickSpeedCalc()">
+            <div class="input-suffix">mm</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="diagnostics-grid" style="margin-top: 20px;">
+        <div class="kpi-card">
+          <span class="kpi-label">Calculated Spindle Speed</span>
+          <span class="kpi-value" id="calcResultRpm">1061 RPM</span>
+          <span class="kpi-sub">n = (Vc × 1000) / (π × D)</span>
+        </div>
+        <div class="kpi-card">
+          <span class="kpi-label">Table Feed Speed</span>
+          <span class="kpi-value" id="calcResultVf">265 mm/min</span>
+          <span class="kpi-sub">Vf = n × f</span>
+        </div>
+        <div class="kpi-card">
+          <span class="kpi-label">Material Removal Rate (MRR)</span>
+          <span class="kpi-value" id="calcResultMrr">100 cm³/min</span>
+          <span class="kpi-sub">Q = Vc × ap × f</span>
+        </div>
+        <div class="kpi-card">
+          <span class="kpi-label">Theoretical Surface Ra</span>
+          <span class="kpi-value" id="calcResultRa">2.44 µm</span>
+          <span class="kpi-sub">Ra ≈ f² / (32 × rε)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= VIEW 4: SIEMENS LANDING & QUICK REF ================= -->
+  <div id="docs-view" class="dashboard-view">
+    <div class="panel" style="margin-bottom: 24px;">
+      <h2 class="panel-title" style="border-bottom: none; margin-bottom: 0;">
+        <i class="fa-solid fa-circle-info"></i> Welcome to the Sinumerik G-Code Suite
+      </h2>
+      <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 10px; line-height: 1.7;">
+        Siemens Sinumerik controls (including the 840D, 828D, and 808D) utilize a sophisticated, high-level CNC programming language. Unlike ISO standard G-code (Fanuc/Haas), Siemens supports <b>named variables, parameterizable canned cycles, local contour labels, and advanced tool management</b>. This suite provides professional shop-floor tools to write correct Siemens turning code and generate standardized offset setup cards.
+      </p>
     </div>
 
-    <!-- ================= VIEW 3: SIEMENS TOOL OFFSET CARD ================= -->
-    <div id="tool-card-view" class="dashboard-view">
-        <div class="app-container" id="tool-card-input-panel">
-            <!-- Sidebar Setup Controls -->
-            <div class="panel">
-                <div class="panel-title">
-                    <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"></path></svg>
-                    Add Tool to Setup Card
-                </div>
+    <div class="docs-grid">
+      <!-- Card 1: G-Code Basics -->
+      <div class="docs-card">
+        <h3><span>G-Code</span> Turning Fundamentals</h3>
+        <p style="font-size: 0.88rem; color: var(--text-muted);">Turning on Siemens systems is programmed in the <b>G18 Z-X plane</b>. Key preparatory commands:</p>
+        <table class="docs-table">
+          <thead>
+            <tr><th>Command</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>G18</code></td><td>Select ZX Plane (Standard for Lathes)</td></tr>
+            <tr><td><code>G95</code></td><td>Feed per Revolution (e.g. F0.25 = 0.25 mm/rev)</td></tr>
+            <tr><td><code>G96</code></td><td>Constant Surface Speed (CSS in m/min)</td></tr>
+            <tr><td><code>LIMS=...</code></td><td>Spindle RPM Clamping Limit during G96</td></tr>
+            <tr><td><code>G97</code></td><td>Constant Spindle Speed (Direct RPM)</td></tr>
+            <tr><td><code>DIAMON</code></td><td>Diameter programming active for X axis</td></tr>
+            <tr><td><code>G41 / G42</code></td><td>Tool nose radius compensation Left / Right</td></tr>
+            <tr><td><code>G40</code></td><td>Cancel tool nose radius compensation</td></tr>
+          </tbody>
+        </table>
+      </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="toolNum">Tool ID (T Number)</label>
-                        <input type="text" id="toolNum" placeholder="e.g. T1 or ROUGH_80">
-                    </div>
-                    <div class="form-group">
-                        <label for="edgeNum">Active Edge (D Number)</label>
-                        <input type="number" id="edgeNum" value="1" min="1">
-                    </div>
-                </div>
+      <!-- Card 2: Canned Cycles -->
+      <div class="docs-card">
+        <h3><span>Cycles</span> Sinumerik Lathe Cycles</h3>
+        <p style="font-size: 0.88rem; color: var(--text-muted);">Siemens uses built-in parameterizable canned cycles for automated machining:</p>
+        <table class="docs-table">
+          <thead>
+            <tr><th>Cycle</th><th>Operation Description</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>CYCLE95</code></td><td>Stock Removal / Contour Roughing &amp; Finishing</td></tr>
+            <tr><td><code>CYCLE93</code></td><td>Grooving &amp; Part-off Cycle</td></tr>
+            <tr><td><code>CYCLE97</code></td><td>Thread Cutting (Metric, Whitworth, API)</td></tr>
+            <tr><td><code>CYCLE98</code></td><td>Thread Chain (Continuous threads)</td></tr>
+            <tr><td><code>CYCLE83</code></td><td>Deep Hole Drilling with Peck &amp; Chip Break</td></tr>
+            <tr><td><code>CYCLE84</code></td><td>Rigid Tapping without Floating Chuck</td></tr>
+          </tbody>
+        </table>
+      </div>
 
-                <div class="form-group">
-                    <label for="toolType">Siemens Tool Type</label>
-                    <select id="toolType" onchange="suggestToolParameters()">
-                        <option value="500">500 - Roughing Turning Tool (Rougher)</option>
-                        <option value="510">510 - Finishing Turning Tool (Finisher)</option>
-                        <option value="520">520 - Plunge/Grooving Turning Tool</option>
-                        <option value="540">540 - Thread Turning Tool</option>
-                        <option value="120">120 - Endmill Cutter (Milling)</option>
-                        <option value="200">200 - Twist Drill Bit (Drilling)</option>
-                    </select>
-                </div>
+      <!-- Card 3: CYCLE95 Parameters Breakdown -->
+      <div class="docs-card" style="grid-column: 1 / -1;">
+        <h3><span>CYCLE95</span> Parameter Reference Breakdown</h3>
+        <p style="font-size: 0.88rem; color: var(--text-muted);">Syntax: <code>CYCLE95(NPP, MID, FALZ, FALX, FAL, FF1, FF2, FF3, VARI, DT, DAM, _VRT)</code></p>
+        <table class="docs-table">
+          <thead>
+            <tr>
+              <th>Parameter</th>
+              <th>Name</th>
+              <th>Explanation &amp; Values</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>NPP</code></td>
+              <td>Contour Name</td>
+              <td>Name of the contour subprogram string (e.g. <code>"CONTOUR1"</code>) or label block.</td>
+            </tr>
+            <tr>
+              <td><code>MID</code></td>
+              <td>Infeed Depth</td>
+              <td>Maximum depth of cut per pass along radius (\(a_p\)), programmed as positive number.</td>
+            </tr>
+            <tr>
+              <td><code>FALZ / FALX</code></td>
+              <td>Finishing Allowance</td>
+              <td>Finishing allowance on longitudinal axis Z (FALZ) and diameter axis X (FALX).</td>
+            </tr>
+            <tr>
+              <td><code>FF1</code></td>
+              <td>Roughing Feed</td>
+              <td>Feedrate for roughing passes along parallel contour lines.</td>
+            </tr>
+            <tr>
+              <td><code>FF2</code></td>
+              <td>Plunge Feed</td>
+              <td>Feedrate for downward plunge moves into undercut contours.</td>
+            </tr>
+            <tr>
+              <td><code>FF3</code></td>
+              <td>Finishing Feed</td>
+              <td>Feedrate for the final contour-following finishing cut.</td>
+            </tr>
+            <tr>
+              <td><code>VARI</code></td>
+              <td>Machining Type</td>
+              <td>
+                <b>1:</b> Ext. Long. Roughing | <b>2:</b> Ext. Face Roughing | <b>3:</b> Ext. Parallel Roughing<br>
+                <b>5:</b> Int. Long. Roughing | <b>9:</b> Complete Ext. Cut | <b>11:</b> Complete Int. Cut
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="offsetL1">Length 1 (Geometry X)</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="offsetL1" value="124.520" step="0.001">
-                            <div class="input-suffix">mm</div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="offsetL2">Length 2 (Geometry Z)</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="offsetL2" value="84.230" step="0.001">
-                            <div class="input-suffix">mm</div>
-                        </div>
-                    </div>
-                </div>
+      <!-- Card 4: Siemens vs Fanuc -->
+      <div class="docs-card">
+        <h3><span>Compare</span> Sinumerik vs. Fanuc Lathe</h3>
+        <table class="docs-table">
+          <thead><tr><th>Feature</th><th>Siemens Sinumerik</th><th>Fanuc / ISO</th></tr></thead>
+          <tbody>
+            <tr><td>Tool Call</td><td><code>T="ROUGH" D1</code> or <code>T1 D1</code></td><td><code>T0101</code></td></tr>
+            <tr><td>CSS Clamp</td><td><code>G96 S200 LIMS=3000</code></td><td><code>G50 S3000</code></td></tr>
+            <tr><td>Rough Cycle</td><td><code>CYCLE95(...)</code></td><td><code>G71 U... R... / G71 P... Q...</code></td></tr>
+            <tr><td>Thread Cycle</td><td><code>CYCLE97(...)</code></td><td><code>G76 P... Q... R...</code></td></tr>
+            <tr><td>Contour End</td><td><code>M17</code></td><td><code>M99</code></td></tr>
+          </tbody>
+        </table>
+      </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="offsetRad">Tool Radius (R)</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="offsetRad" value="0.800" step="0.1">
-                            <div class="input-suffix">mm</div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="offsetType">Point Direction (Type 1-9)</label>
-                        <select id="offsetType" onchange="updateDirectionGraphic()">
-                            <option value="3" selected>Type 3 (OD Front Post / Left-Up)</option>
-                            <option value="2">Type 2 (Left-Down)</option>
-                            <option value="1">Type 1 (Right-Up)</option>
-                            <option value="4">Type 4 (Right-Down)</option>
-                            <option value="5">Type 5 (Straight-Down)</option>
-                            <option value="6">Type 6 (Straight-Right)</option>
-                            <option value="7">Type 7 (Straight-Up)</option>
-                            <option value="8">Type 8 (Straight-Left)</option>
-                            <option value="9">Type 9 (Cutter Center / Drill)</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Interactive Direction Selector -->
-                <div style="margin-bottom: 20px;">
-                    <label style="text-align: center; display: block;">Click Point Direction Quadrant</label>
-                    <div class="dir-helper-grid">
-                        <div class="dir-cell" data-dir="1" onclick="selectPointDir(1)">1</div>
-                        <div class="dir-cell" data-dir="7" onclick="selectPointDir(7)">7</div>
-                        <div class="dir-cell" data-dir="2" onclick="selectPointDir(2)">2</div>
-                        <div class="dir-cell" data-dir="8" onclick="selectPointDir(8)">8</div>
-                        <div class="dir-cell" data-dir="9" onclick="selectPointDir(9)">9</div>
-                        <div class="dir-cell" data-dir="6" onclick="selectPointDir(6)">6</div>
-                        <div class="dir-cell" data-dir="4" onclick="selectPointDir(4)">4</div>
-                        <div class="dir-cell" data-dir="5" onclick="selectPointDir(5)">5</div>
-                        <div class="dir-cell active" data-dir="3" onclick="selectPointDir(3)">3</div>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="wearL1">Wear Length 1 (X)</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="wearL1" value="0.000" step="0.001">
-                            <div class="input-suffix">mm</div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="wearL2">Wear Length 2 (Z)</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="wearL2" value="0.000" step="0.001">
-                            <div class="input-suffix">mm</div>
-                        </div>
-                    </div>
-                </div>
-
-                <button class="action-btn" onclick="addToolToSetupCard()">
-                    <svg style="width:18px; height:18px; fill:currentColor;" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path></svg>
-                    Add Tool to Card
-                </button>
-            </div>
-
-            <!-- Setup Card Output Panel -->
-            <div class="panel" style="display: flex; flex-direction: column;">
-                <div class="panel-title" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                    <span>Sinumerik Tool List</span>
-                    <button class="secondary-btn" onclick="window.print()">Print setup Card</button>
-                </div>
-
-                <div id="toolListContainer" style="flex: 1; display: flex; flex-direction: column;">
-                    <div class="empty-state">
-                        <p>No tools added to the offset setup card yet. Fill in offsets on the left and click Add Tool.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Printable Tool Card Template (hidden in screen, visible in print) -->
-        <div id="printCardWrapper" class="print-only-card-wrapper">
-            <div class="print-card-title">SHADER7 SINUMERIK SETUP CARD</div>
-            <div style="display:flex; justify-content:space-between; font-size:0.82rem; margin-bottom: 20px; font-family:var(--font-mono);">
-                <span>PROGRAM: SH7_TURNING_CYCLE.MPF</span>
-                <span>DATE: <script>document.write(new Date().toLocaleDateString())</script></span>
-                <span>CONTROL: SIEMENS 840D/828D</span>
-            </div>
-            <table class="print-table">
-                <thead>
-                    <tr>
-                        <th>T Number (Tool)</th>
-                        <th>D (Edge)</th>
-                        <th>Type</th>
-                        <th>Length X (L1)</th>
-                        <th>Length Z (L2)</th>
-                        <th>Radius (R)</th>
-                        <th>Point Dir (T)</th>
-                        <th>Wear X</th>
-                        <th>Wear Z</th>
-                    </tr>
-                </thead>
-                <tbody id="printCardTableBody">
-                    <tr>
-                        <td colspan="9">No tools loaded in setup.</td>
-                    </tr>
-                </tbody>
-            </table>
-            <div style="margin-top: 50px; font-size:0.8rem; font-style:italic; text-align:center;">
-                Ensure tool nose compensation is calibrated prior to executing CYCLE95 programs. Check all clearances on dry run.
-            </div>
-        </div>
+      <!-- Card 5: Tool Cutting Edge Position -->
+      <div class="docs-card">
+        <h3><span>Types 1-9</span> Cutting Edge Position (T Position)</h3>
+        <p style="font-size: 0.88rem; color: var(--text-muted);">Specifies the quadrant position of the tool nose relative to the holder center for G41/G42 tool nose compensation:</p>
+        <table class="docs-table">
+          <thead><tr><th>Type</th><th>Orientation Description</th><th>Common Tool</th></tr></thead>
+          <tbody>
+            <tr><td><code>Type 3</code></td><td>Points Left &amp; Up (Quadrant 3)</td><td>Standard OD Right-Hand Turning</td></tr>
+            <tr><td><code>Type 2</code></td><td>Points Left &amp; Down (Quadrant 2)</td><td>Boring Bar (ID Turning)</td></tr>
+            <tr><td><code>Type 1</code></td><td>Points Right &amp; Up (Quadrant 1)</td><td>Back Turning / Reverse OD</td></tr>
+            <tr><td><code>Type 7 / 8</code></td><td>Straight Face / OD Grooving</td><td>Parting / Grooving Insert</td></tr>
+            <tr><td><code>Type 9</code></td><td>Theoretical Tool Center</td><td>Drills, Center Drills, Taps</td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
+  </div>
 </div>
 
-<footer style="width: 100%; border-top: 1px solid #334155; background-color: #0c1125; padding: 30px 16px; text-align: center; color: #94a3b8; font-size: 0.85rem; font-family: 'Inter', system-ui, -apple-system, sans-serif; margin-top: 40px; border-radius: 12px; margin-bottom: 20px;">
-    <div style="max-width: 1120px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 15px;">
-        <p style="margin: 0;">&copy; <script>document.write(new Date().getFullYear())</script> SHADER7 &bull; CNC Machinist Toolkit</p>
-        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 16px;">
-            <a href="/" style="color: #94a3b8; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">Main Site</a>
-            <a href="/about.html" style="color: #94a3b8; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">About Us</a>
-            <a href="/contact.html" style="color: #94a3b8; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">Contact Us</a>
-            <a href="/privacy-policy.html" style="color: #60a5fa; text-decoration: none; transition: color 0.2s; font-weight: bold;" onmouseover="this.style.color='#93c5fd'" onmouseout="this.style.color='#60a5fa'">Privacy Policy</a>
-            <a href="/terms.html" style="color: #94a3b8; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">Terms of Service</a>
-            <a href="/sitemap.html" style="color: #94a3b8; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">Sitemap</a>
-        </div>
+<div id="toast" class="toast-msg"></div>
+
+<footer style="width: 100%; border-top: 1px solid var(--border); background-color: var(--glass-bg); padding: 30px 16px; text-align: center; color: var(--text-muted); font-size: 0.85rem; font-family: 'Inter', system-ui, -apple-system, sans-serif; margin-top: 40px; border-radius: 16px; margin-bottom: 20px;">
+  <div style="max-width: 1120px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 14px;">
+    <p style="margin: 0;">&copy; <span id="footerYear"></span> SHADER7 &bull; Siemens Sinumerik CNC Suite</p>
+    <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 16px;">
+      <a href="/" style="color: var(--text-muted); text-decoration: none;">Main Site</a>
+      <a href="/cnc-machinist/" style="color: var(--primary); text-decoration: none; font-weight: 700;">CNC Machinist Hub</a>
+      <a href="/about.html" style="color: var(--text-muted); text-decoration: none;">About Us</a>
+      <a href="/contact.html" style="color: var(--text-muted); text-decoration: none;">Contact Us</a>
+      <a href="/privacy-policy.html" style="color: #60a5fa; text-decoration: none; font-weight: bold;">Privacy Policy</a>
+      <a href="/terms.html" style="color: var(--text-muted); text-decoration: none;">Terms of Service</a>
+      <a href="/sitemap.html" style="color: var(--text-muted); text-decoration: none;">Sitemap</a>
     </div>
+  </div>
 </footer>
 
 <script>
+'use strict';
+
 // ==================== TABS SWITCHER CONTROLS ====================
 function switchView(viewId, tabBtn) {
-    // Deactivate all views and tabs
-    document.querySelectorAll('.dashboard-view').forEach(v => v.classList.remove('active'));
-    document.querySelectorAll('.dashboard-tab').forEach(t => t.classList.remove('active'));
-    
-    // Activate clicked
-    document.getElementById(viewId).classList.add('active');
-    tabBtn.classList.add('active');
-    
-    if (viewId === 'turning-view') {
-        // Redraw canvas if needed
-        setTimeout(initTurningCanvas, 100);
-    }
+  document.querySelectorAll('.dashboard-view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.dashboard-tab').forEach(t => t.classList.remove('active'));
+  
+  const targetView = document.getElementById(viewId);
+  if (targetView) targetView.classList.add('active');
+  if (tabBtn) tabBtn.classList.add('active');
+  
+  if (viewId === 'turning-view') {
+    setTimeout(initTurningCanvas, 60);
+  }
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  if (!toast) return;
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(showToast.timer);
+  showToast.timer = setTimeout(() => {
+    toast.classList.remove('show');
+  }, 2400);
 }
 
 function toggleSpeedModeInput() {
-    const mode = document.getElementById("turnSpeedMode").value;
-    const label = document.getElementById("speedLabel");
-    const suffix = document.getElementById("speedSuffix");
-    const limsGroup = document.getElementById("limsGroup");
-    
-    if (mode === "G96") {
-        label.textContent = "Cutting Speed (S)";
-        suffix.textContent = "m/min";
-        if (limsGroup) limsGroup.classList.remove("hidden");
-    } else {
-        label.textContent = "Spindle Speed (S)";
-        suffix.textContent = "RPM";
-        if (limsGroup) limsGroup.classList.add("hidden");
-    }
+  const mode = document.getElementById("turnSpeedMode").value;
+  const label = document.getElementById("speedLabel");
+  const suffix = document.getElementById("speedSuffix");
+  const limsGroup = document.getElementById("limsGroup");
+  
+  if (mode === "G96") {
+    label.textContent = "Cutting Speed (S)";
+    suffix.textContent = "m/min";
+    if (limsGroup) limsGroup.classList.remove("hidden");
+  } else {
+    label.textContent = "Spindle Speed (S)";
+    suffix.textContent = "RPM";
+    if (limsGroup) limsGroup.classList.add("hidden");
+  }
 }
 
-// ==================== VIEW 2: TURNING CYCLE GENERATOR LOGIC ====================
+// ==================== VIEW 1: TURNING CYCLE GENERATOR LOGIC ====================
 let turningCode = "";
 let simActive = false;
 let simInterval = null;
+let simSpeedMultiplier = 1;
 let toolpathSteps = [];
-let activeStepIndex = -1;
+let activeStepIndex = 0;
 
-// Workpiece & visualizer sizes
 let visualBlankDia = 80;
 let visualFinishDia = 40;
 let visualLen = 60;
@@ -1375,862 +1703,1080 @@ let turnCanvas = null;
 let turnCtx = null;
 let toolX = 0;
 let toolZ = 0;
-let materialCutProfile = []; // polygon representing remaining material
+let materialCutProfile = [];
 
 function resetTurningResults() {
-    const container = document.getElementById("turningResultsContainer");
-    container.innerHTML = `
-        <div class="empty-state" style="padding: 60px 20px;">
-            <p>Configure tool geometries and turning dimensions, then click Generate Turning Code to load the live toolpath simulator.</p>
-        </div>
-    `;
-    stopTurningSim();
+  const container = document.getElementById("turningResultsContainer");
+  if (!container) return;
+  container.innerHTML = `
+    <div class="empty-state">
+      <i class="fa-solid fa-compass-drafting"></i>
+      <p>Configure turning parameters on the left and click <b>Generate Sinumerik Program</b> to initialize the live toolpath simulator and G-code export.</p>
+    </div>
+  `;
+  stopTurningSim();
 }
 
 function generateSiemensTurningCode() {
-    const op = document.getElementById("turnOp").value;
-    const blank = parseFloat(document.getElementById("blankDia").value);
-    const target = parseFloat(document.getElementById("finishDia").value);
-    const length = parseFloat(document.getElementById("turnLen").value);
-    const infeed = parseFloat(document.getElementById("turnInfeed").value);
-    const allowX = parseFloat(document.getElementById("allowX").value);
-    const allowZ = parseFloat(document.getElementById("allowZ").value);
-    const speedMode = document.getElementById("turnSpeedMode").value;
-    const speed = parseFloat(document.getElementById("turnSpeed").value);
-    const lims = parseFloat(document.getElementById("turnLims").value);
-    const feed = parseFloat(document.getElementById("turnFeed").value);
-    const radius = parseFloat(document.getElementById("toolRadius").value);
-    const profile = document.getElementById("contourStyle").value;
+  const op = document.getElementById("turnOp").value;
+  const turnType = document.getElementById("turnType").value;
+  const blank = parseFloat(document.getElementById("blankDia").value);
+  const target = parseFloat(document.getElementById("finishDia").value);
+  const length = parseFloat(document.getElementById("turnLen").value);
+  const infeed = parseFloat(document.getElementById("turnInfeed").value);
+  const allowX = parseFloat(document.getElementById("allowX").value) || 0;
+  const allowZ = parseFloat(document.getElementById("allowZ").value) || 0;
+  const speedMode = document.getElementById("turnSpeedMode").value;
+  const speed = parseFloat(document.getElementById("turnSpeed").value);
+  const lims = parseFloat(document.getElementById("turnLims").value) || 3000;
+  const feed = parseFloat(document.getElementById("turnFeed").value);
+  const radius = parseFloat(document.getElementById("toolRadius").value) || 0.8;
+  const profile = document.getElementById("contourStyle").value;
+  const leadCorner = document.getElementById("leadCorner").value;
+  const includeFacing = document.getElementById("includeFacing").checked;
 
-    if (!blank || blank <= 0 || !target || target <= 0 || !length || length <= 0) {
-        alert("Please enter valid positive dimensions for blank diameter, finished diameter, and length.");
-        return;
-    }
+  if (!blank || blank <= 0 || !target || target <= 0 || !length || length <= 0) {
+    showToast("Please enter valid positive dimensions.");
+    return;
+  }
 
-    if (target >= blank) {
-        alert("Target Finished Diameter must be smaller than Blank Diameter.");
-        return;
-    }
+  if (turnType === "od" && target >= blank) {
+    showToast("Target Finished Diameter must be smaller than Blank Diameter for OD turning.");
+    return;
+  }
+  if (turnType === "id" && target <= blank) {
+    showToast("Target Finished Diameter must be larger than Initial Bore for ID turning.");
+    return;
+  }
 
-    if (!infeed || infeed <= 0) {
-        alert("Depth of cut (ap) must be a positive number.");
-        return;
-    }
+  if (!infeed || infeed <= 0) {
+    showToast("Depth of cut (ap) must be a positive number.");
+    return;
+  }
 
-    if (!feed || feed <= 0) {
-        alert("Feedrate must be a positive number.");
-        return;
-    }
+  if (!feed || feed <= 0) {
+    showToast("Feedrate must be a positive number.");
+    return;
+  }
 
-    const stepDia = parseFloat(document.getElementById("stepDia").value) || 0;
-    const stepLen = parseFloat(document.getElementById("stepLen").value) || 0;
-    // Build toolpath steps for animation
-    calculateToolpathSteps(blank, target, length, infeed, allowX, allowZ, profile, stepDia, stepLen);
+  const stepDia = parseFloat(document.getElementById("stepDia").value) || 0;
+  const stepLen = parseFloat(document.getElementById("stepLen").value) || 0;
 
-    // Build G-code
-    let g = `; SHADER7 SIEMENS SINUMERIK TURNING CODE\n`;
-    g += `; OPERATION: ${op.toUpperCase()}, SHAPE: ${profile.toUpperCase()}\n`;
-    g += `G18 G90 G95 G54 (ZX WORKPLANE, FEED/REV)\n`;
-    g += `T="ROUGH_TURN" D1 (CALL TOOL & EDGE OFFSET)\n`;
-    
-    if (speedMode === "G96") {
-        g += `G96 S${speed} M03 LIMS=${lims} (CSS ACTIVE, spindle limit ${lims} RPM)\n`;
-    } else {
-        g += `G97 S${speed} M03 (FIXED RPM ACTIVE)\n`;
-    }
-    
-    const startX = (blank + 6).toFixed(3);
-    const startZ = "5.000";
-    g += `G00 X${startX} Z${startZ} M08 (RAPID TO START, COOLANT ON)\n`;
-    
-    // Use CYCLE95 or direct manual cycles depending on operation
-    const mid = infeed.toFixed(3);
-    const falx = allowX.toFixed(3);
-    const falz = allowZ.toFixed(3);
-    const rFeed = feed.toFixed(3);
-    const fFeed = (feed * 0.6).toFixed(3); // finisher feed is usually slower
+  // Real-time calculations
+  const pi = Math.PI;
+  const rpmAtBlank = Math.round((speed * 1000) / (pi * blank));
+  const rpmAtTarget = Math.round((speed * 1000) / (pi * target));
+  const effectiveMaxRpm = speedMode === "G96" ? Math.min(lims, rpmAtTarget) : speed;
+  const effectiveMinRpm = speedMode === "G96" ? Math.min(lims, rpmAtBlank) : speed;
+  
+  const totalStockRad = Math.abs(blank - target) / 2;
+  const roughPasses = Math.max(1, Math.ceil((totalStockRad - (allowX / 2)) / infeed));
+  const mrr = Math.round(speed * infeed * feed * 10) / 10;
+  
+  // Approximate cycle time
+  const avgRpm = (effectiveMinRpm + effectiveMaxRpm) / 2;
+  const passTimeSec = (length / (avgRpm * feed)) * 60;
+  const totalEstSec = Math.round(passTimeSec * (roughPasses + 1.2) + (includeFacing ? 6 : 0));
+  const estMin = Math.floor(totalEstSec / 60);
+  const estSec = totalEstSec % 60;
+  const timeString = `${estMin}m ${estSec}s`;
 
-    if (op === "rough") {
-        g += `CYCLE95("CONTOUR1", ${mid}, ${falx}, ${falz}, 0, ${rFeed}, ${fFeed}, 0.12, 1, 0, 0, 0) (ROUGH & FINISH CYCLE)\n`;
-    } else if (op === "rough_only") {
-        g += `CYCLE95("CONTOUR1", ${mid}, ${falx}, ${falz}, 0, ${rFeed}, 0, 0.12, 3, 0, 0, 0) (ROUGH ONLY CYCLE)\n`;
-    } else {
-        g += `CYCLE95("CONTOUR1", ${mid}, ${falx}, ${falz}, 0, 0, ${fFeed}, 0.12, 5, 0, 0, 0) (FINISH ONLY CYCLE)\n`;
-    }
+  // Build toolpath steps for simulator
+  calculateToolpathSteps(blank, target, length, infeed, allowX, allowZ, profile, stepDia, stepLen, includeFacing, leadCorner, turnType);
 
-    g += `G00 G40 X150.0 Z100.0 M09 (CANCEL COMP, SAFE RETRACT, COOLANT OFF)\n`;
-    g += `M30 (PROGRAM END)\n\n`;
-    
-    // Add contour definition
-    g += `CONTOUR1: (START OF PROFILE GEOMETRY)\n`;
-    g += `G01 X${target.toFixed(3)} Z2.000 F${rFeed} (START POINT AT TARGET DIA, SAFE Z CLEARANCE)\n`;
-    g += `G01 X${target.toFixed(3)} Z0.000 (TOUCH FACE)\n`;
-    
-    if (profile === "straight") {
-        g += `G01 X${target.toFixed(3)} Z-${length.toFixed(3)} (STRAIGHT CYLINDER CUT)\n`;
-    } else if (profile === "step") {
-        let stepMidDiaVal = stepDia;
-        if (!stepMidDiaVal || stepMidDiaVal <= target || stepMidDiaVal >= blank) {
-            stepMidDiaVal = target + (blank - target) * 0.5;
-        }
-        const stepMidDia = stepMidDiaVal.toFixed(3);
-        
-        let stepLenVal = stepLen;
-        if (!stepLenVal || stepLenVal <= 0 || stepLenVal >= length) {
-            stepLenVal = length * 0.5;
-        }
-        const stepZ = stepLenVal.toFixed(3);
-        
-        g += `G01 X${target.toFixed(3)} Z-${stepZ} (FIRST STEP CUT)\n`;
-        g += `G01 X${stepMidDia} Z-${stepZ} (SECOND FACE PLUNGE)\n`;
-        g += `G01 X${stepMidDia} Z-${length.toFixed(3)} (SECOND STEP CUT)\n`;
-    } else if (profile === "taper") {
-        g += `G01 X${blank.toFixed(3)} Z-${length.toFixed(3)} (TAPER PROFILE)\n`;
-    } else {
-        // profiled curves
-        let stepLenVal = stepLen;
-        if (!stepLenVal || stepLenVal <= 0 || stepLenVal >= length) {
-            stepLenVal = length * 0.5;
-        }
-        const straightZ = stepLenVal.toFixed(3);
-        const filRad = Math.min(10, length - stepLenVal).toFixed(3);
-        g += `G01 X${target.toFixed(3)} Z-${straightZ}\n`;
-        g += `G02 X${blank.toFixed(3)} Z-${length.toFixed(3)} CR=${filRad} (ROUNDED PROFILE)\n`;
-    }
-    
-    g += `G01 X${blank.toFixed(3)} Z-${length.toFixed(3)} (FACE RETRACT TO BLANK)\n`;
-    g += `M17 (END OF CONTOUR)\n`;
+  // Generate Sinumerik G-Code Program
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  
+  let g = `; ==========================================================
+`;
+  g += `; SHADER7 SINUMERIK 840D / 828D TURNING PROGRAM
+`;
+  g += `; PROGRAM NAME: SHAFT_CYCLE95.MPF
+`;
+  g += `; CREATED: ${dateStr}
+`;
+  g += `; BLANK: Ø${blank} mm | FINISH: Ø${target} mm | LENGTH: ${length} mm
+`;
+  g += `; OPERATION: ${op.toUpperCase()} (${turnType.toUpperCase()}) | PROFILE: ${profile.toUpperCase()}
+`;
+  g += `; ==========================================================
 
-    turningCode = g;
+`;
+  
+  g += `G18 G90 G95 G54 DIAMON (ZX PLANE, FEED/REV, WORK OFFSET, DIAMETER PROGRAMMING)
+`;
+  g += `T="ROUGH_TURN" D1 (LOAD ROUGHING TOOL & OFFSET EDGE 1)
+`;
+  
+  if (speedMode === "G96") {
+    g += `G96 S${speed} M03 LIMS=${lims} (CONSTANT SURFACE SPEED ${speed} m/min, MAX ${lims} RPM)
+`;
+  } else {
+    g += `G97 S${speed} M03 (DIRECT SPINDLE SPEED ${speed} RPM, CW)
+`;
+  }
+  
+  const approachX = (turnType === "od" ? blank + 4 : Math.max(0, blank - 4)).toFixed(3);
+  g += `G00 X${approachX} Z5.000 M08 (RAPID APPROACH, COOLANT ON)
 
-    // Display elements
-    const container = document.getElementById("turningResultsContainer");
-    container.innerHTML = `
-        <div class="sim-controls-bar">
-            <div class="sim-btn-group">
-                <button id="simPlayBtn" class="gcode-copy-btn" onclick="toggleTurningSim()" style="background: var(--primary); color: #01282c; border-color: var(--primary);">▶ Run</button>
-                <button class="gcode-copy-btn" onclick="resetTurningSim()">🔄 Reset</button>
-            </div>
-            
-            <div class="sim-block-monitor">
-                <div style="display: flex; align-items: center; gap: 4px; width: 100%;">
-                    <span style="color: var(--text-muted); font-size: 0.62rem; font-weight: 800; text-transform: uppercase;">BLK:</span> 
-                    <span id="simGCodeText" style="color: var(--primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 800; font-size: 0.72rem;">G00 X${startX} Z${startZ}</span>
-                </div>
-            </div>
+`;
+
+  // Optional Facing Cut
+  if (includeFacing) {
+    g += `; --- FACE OFF PASS ---
+`;
+    g += `G00 Z0.500
+`;
+    g += `G01 Z0.000 F${(feed * 0.8).toFixed(3)}
+`;
+    g += `G01 X-1.600 (FACE PAST CENTER)
+`;
+    g += `G00 X${approachX} Z2.000
+
+`;
+  }
+
+  // CYCLE95 Stock Removal Block
+  const mid = infeed.toFixed(3);
+  const falx = allowX.toFixed(3);
+  const falz = allowZ.toFixed(3);
+  const rFeed = feed.toFixed(3);
+  const fFeed = (feed * 0.65).toFixed(3);
+
+  g += `; --- CYCLE95 STOCK REMOVAL ---
+`;
+  if (op === "rough") {
+    g += `CYCLE95("CONTOUR1", ${mid}, ${falz}, ${falx}, 0, ${rFeed}, ${fFeed}, 0.12, 1, 0, 0, 0) (ROUGH & FINISH)
+`;
+  } else if (op === "rough_only") {
+    g += `CYCLE95("CONTOUR1", ${mid}, ${falz}, ${falx}, 0, ${rFeed}, 0, 0.12, 3, 0, 0, 0) (ROUGH ONLY)
+`;
+  } else if (op === "finish_only") {
+    g += `CYCLE95("CONTOUR1", ${mid}, ${falz}, ${falx}, 0, 0, ${fFeed}, 0.12, 5, 0, 0, 0) (FINISH ONLY)
+`;
+  } else {
+    g += `; FACING OPERATION EXECUTED ABOVE
+`;
+  }
+
+  g += `G00 G40 X${(blank + 20).toFixed(3)} Z100.000 M09 (CANCEL NOSE COMP, RETRACT, COOLANT OFF)
+`;
+  g += `M30 (PROGRAM END / REWIND)
+
+`;
+
+  // Subprogram Contour Block
+  g += `CONTOUR1: (START OF PROFILE DEFINITION)
+`;
+  
+  let startX = target;
+  if (leadCorner === "chamfer") {
+    startX = Math.max(0, target - 3.0);
+    g += `G01 X${startX.toFixed(3)} Z0.000 F${fFeed}
+`;
+    g += `G01 X${target.toFixed(3)} Z-1.500 (1.5 x 45 CHAMFER)
+`;
+  } else if (leadCorner === "radius") {
+    startX = Math.max(0, target - 4.0);
+    g += `G01 X${startX.toFixed(3)} Z0.000 F${fFeed}
+`;
+    g += `G03 X${target.toFixed(3)} Z-2.000 CR=2.000 (R2.0 CORNER RADIUS)
+`;
+  } else {
+    g += `G01 X${target.toFixed(3)} Z0.000 F${fFeed}
+`;
+  }
+
+  if (profile === "straight") {
+    g += `G01 X${target.toFixed(3)} Z-${length.toFixed(3)} (STRAIGHT OD)
+`;
+  } else if (profile === "step") {
+    let stepMidDiaVal = stepDia || target + (blank - target) * 0.5;
+    let stepLenVal = stepLen || length * 0.5;
+    g += `G01 X${target.toFixed(3)} Z-${stepLenVal.toFixed(3)} (FIRST STEP)
+`;
+    g += `G01 X${stepMidDiaVal.toFixed(3)} Z-${stepLenVal.toFixed(3)} (SHOULDER FACE)
+`;
+    g += `G01 X${stepMidDiaVal.toFixed(3)} Z-${length.toFixed(3)} (SECOND STEP)
+`;
+  } else if (profile === "taper") {
+    g += `G01 X${blank.toFixed(3)} Z-${length.toFixed(3)} (TAPER CONTOUR)
+`;
+  } else {
+    let stepLenVal = stepLen || length * 0.5;
+    let filRad = Math.min(10, length - stepLenVal).toFixed(3);
+    g += `G01 X${target.toFixed(3)} Z-${stepLenVal.toFixed(3)}
+`;
+    g += `G02 X${blank.toFixed(3)} Z-${length.toFixed(3)} CR=${filRad} (ROUNDED SHOULDER)
+`;
+  }
+
+  g += `G01 X${(turnType === "od" ? blank + 2 : target).toFixed(3)} Z-${length.toFixed(3)} (FACE RETRACT)
+`;
+  g += `M17 (END OF CONTOUR BLOCK)
+`;
+
+  turningCode = g;
+
+  // Render UI Container
+  const container = document.getElementById("turningResultsContainer");
+  container.innerHTML = `
+    <!-- Machining KPIs -->
+    <div class="diagnostics-grid">
+      <div class="kpi-card">
+        <span class="kpi-label">Spindle RPM (G96)</span>
+        <span class="kpi-value">${effectiveMinRpm} - ${effectiveMaxRpm}</span>
+        <span class="kpi-sub">LIMS Limit: ${lims} RPM</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Roughing Passes</span>
+        <span class="kpi-value">${roughPasses} Passes</span>
+        <span class="kpi-sub">ap: ${infeed} mm/pass</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Material Removal Rate</span>
+        <span class="kpi-value">${mrr} cm³/min</span>
+        <span class="kpi-sub">Roughing efficiency</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Est. Cycle Time</span>
+        <span class="kpi-value">${timeString}</span>
+        <span class="kpi-sub">At ${feed} mm/rev feed</span>
+      </div>
+    </div>
+
+    <!-- Simulator Box -->
+    <div class="sim-container-box">
+      <div class="sim-top-hud">
+        <div class="dro-readouts">
+          <div class="dro-val">X: <span id="droX">00.000</span> mm</div>
+          <div class="dro-val">Z: <span id="droZ">00.000</span> mm</div>
+          <div class="dro-val">FEED: <span id="droFeed">${feed}</span></div>
+        </div>
+        <div style="color: var(--primary); font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 280px;" id="simGCodeText">
+          IDLE: Ready
+        </div>
+      </div>
+
+      <div class="sim-canvas-wrap">
+        <canvas id="turningCanvas"></canvas>
+      </div>
+
+      <div class="sim-controls-footer">
+        <div class="sim-btn-group">
+          <button id="simPlayBtn" class="sim-btn primary" onclick="toggleTurningSim()">
+            <i class="fa-solid fa-play"></i> Run
+          </button>
+          <button class="sim-btn" onclick="stepTurningSim()" title="Single Step block">
+            <i class="fa-solid fa-forward-step"></i> Step
+          </button>
+          <button class="sim-btn" onclick="resetTurningSim()">
+            <i class="fa-solid fa-rotate-left"></i> Reset
+          </button>
         </div>
 
-        <div style="position: relative; width: 100%; height: 260px; background: #020409; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 20px;">
-            <canvas id="turningCanvas" style="width: 100%; height: 100%; display: block;"></canvas>
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">SPEED:</span>
+          <select id="simSpeedSelect" onchange="setSimSpeed(this.value)" style="width: 76px; padding: 4px 8px; font-size: 0.76rem;">
+            <option value="0.5">0.5×</option>
+            <option value="1" selected>1×</option>
+            <option value="2">2×</option>
+            <option value="4">4×</option>
+          </select>
         </div>
+      </div>
+    </div>
 
-        <div class="gcode-panel">
-            <div class="gcode-header-bar">
-                <div class="gcode-filename">shader7_turning.mpf</div>
-                <button class="gcode-copy-btn" onclick="copyTurningGCode()">Copy G-Code</button>
-            </div>
-            <div class="gcode-container">
-                <pre id="turningGCodeBox" style="margin: 0; white-space: pre-wrap; font-family: inherit; font-size: 0.88rem; line-height: 1.6;">${highlightGCode(g)}</pre>
-            </div>
+    <!-- G-code Output Panel -->
+    <div class="gcode-panel">
+      <div class="gcode-header-bar">
+        <div class="gcode-filename">
+          <i class="fa-solid fa-file-code"></i> SHAFT_CYCLE95.MPF
         </div>
-    `;
+        <div class="gcode-actions">
+          <button class="gcode-copy-btn" onclick="copyTurningGCode()">
+            <i class="fa-regular fa-copy"></i> Copy
+          </button>
+          <button class="gcode-dl-btn" onclick="downloadMPFFile()">
+            <i class="fa-solid fa-download"></i> Download .MPF
+          </button>
+        </div>
+      </div>
+      <div class="gcode-container">
+        <pre id="turningGCodeBox">${highlightGCode(g)}</pre>
+      </div>
+    </div>
+  `;
 
-    initTurningCanvas();
+  initTurningCanvas();
+}
+
+function setSimSpeed(val) {
+  simSpeedMultiplier = parseFloat(val) || 1;
+  if (simActive) {
+    stopTurningSim();
+    toggleTurningSim();
+  }
 }
 
 function copyTurningGCode() {
-    navigator.clipboard.writeText(turningCode).then(() => {
-        const btn = document.querySelector(".gcode-copy-btn");
-        btn.textContent = "Copied!";
-        btn.style.background = "var(--primary)";
-        btn.style.color = "#01282c";
-        setTimeout(() => {
-            btn.textContent = "Copy G-Code";
-            btn.style.background = "var(--border)";
-            btn.style.color = "var(--text-main)";
-        }, 2000);
-    });
+  if (!turningCode) return;
+  navigator.clipboard.writeText(turningCode).then(() => {
+    showToast("Sinumerik G-code copied to clipboard!");
+  }).catch(() => {
+    showToast("Copied code.");
+  });
 }
 
-function calculateToolpathSteps(blank, target, length, infeed, allowX, allowZ, profile, stepDia, stepLen) {
-    toolpathSteps = [];
-    
-    // 1. Safe start position
-    toolpathSteps.push({ x: blank + 6, z: 5, type: 'rapid', desc: 'RAPID TO APPROACH POSITION' });
+function downloadMPFFile() {
+  if (!turningCode) return;
+  const blob = new Blob([turningCode], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = "SHAFT_CYCLE95.MPF";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast("SHAFT_CYCLE95.MPF downloaded!");
+}
 
-    // 2. Compute roughing passes
-    let currentX = blank;
-    const finalX = target + allowX; // roughing final diameter
+function calculateToolpathSteps(blank, target, length, infeed, allowX, allowZ, profile, stepDia, stepLen, includeFacing, leadCorner, turnType) {
+  toolpathSteps = [];
+  
+  // Safe approach
+  toolpathSteps.push({ x: blank + 4, z: 5, type: 'rapid', desc: 'RAPID TO APPROACH POSITION' });
 
-    let resolvedStepDia = stepDia;
-    if (!resolvedStepDia || resolvedStepDia <= target || resolvedStepDia >= blank) {
-        resolvedStepDia = target + (blank - target) * 0.5;
-    }
+  if (includeFacing) {
+    toolpathSteps.push({ x: blank + 4, z: 0.5, type: 'rapid', desc: 'APPROACH FACE Z0.5' });
+    toolpathSteps.push({ x: blank + 4, z: 0.0, type: 'feed', desc: 'TOUCH FACE Z0.0' });
+    toolpathSteps.push({ x: -1.6, z: 0.0, type: 'feed', desc: 'FACING CUT PAST CENTER' });
+    toolpathSteps.push({ x: blank + 4, z: 2.0, type: 'rapid', desc: 'RETRACT FROM FACE' });
+  }
 
-    let resolvedStepLen = stepLen;
-    if (!resolvedStepLen || resolvedStepLen <= 0 || resolvedStepLen >= length) {
-        resolvedStepLen = length * 0.5;
-    }
+  // Roughing passes
+  let currentX = blank;
+  const finalX = target + allowX;
 
-    while (currentX > finalX) {
-        currentX = Math.max(finalX, currentX - infeed * 2); // turning cuts infeed on radius, so dia decreases by 2*infeed
-        
-        // Rapid down to cut diameter
-        toolpathSteps.push({ x: currentX, z: 2, type: 'rapid', desc: `RAPID TO CUT DEPTH DIA ${currentX.toFixed(2)}` });
-        
-        // Cut longitudinal feed in Z
-        // Compute correct non-gouging intersection Z coordinate for this roughing pass diameter
-        let cutEndZ = -length;
-        if (profile === 'straight') {
-            cutEndZ = -length; // straight goes all the way
-        } else if (profile === 'step') {
-            if (currentX < resolvedStepDia) {
-                cutEndZ = -resolvedStepLen; // stepped cut ends early at the shoulder
-            } else {
-                cutEndZ = -length; // outer step goes all the way
-            }
-        } else if (profile === 'taper') {
-            // Taper intersection formula: Z = -((currentX - target) / (blank - target)) * length
-            const ratio = (currentX - target) / (blank - target);
-            cutEndZ = -ratio * length;
-        } else {
-            // profile (curved fillet) intersection formula
-            const ratio = (currentX - target) / (blank - target);
-            const curveZ = -resolvedStepLen - (ratio * ratio) * (length - resolvedStepLen);
-            cutEndZ = Math.max(-length, curveZ);
-        }
-        
-        // ponytail: roughing cuts to exact profile boundary in the simulation
-        // (the allowZ finishing offset is a CYCLE95 parameter, not a visual sim parameter)
-        toolpathSteps.push({ x: currentX, z: cutEndZ, type: 'feed', desc: `LONGITUDINAL CUT TO Z ${cutEndZ.toFixed(1)}` });
-        
-        // Retract tool diagonally
-        toolpathSteps.push({ x: currentX + 3, z: cutEndZ + 1.5, type: 'rapid', desc: 'DIAGONAL RETRACT' });
-        
-        // Rapid back to Z start
-        toolpathSteps.push({ x: currentX + 3, z: 2, type: 'rapid', desc: 'RAPID BACK TO Z CLEARANCE' });
-    }
+  let resolvedStepDia = stepDia || target + (blank - target) * 0.5;
+  let resolvedStepLen = stepLen || length * 0.5;
 
-    // 3. Finishing pass (tracks the actual profile contour exactly)
-    toolpathSteps.push({ x: target, z: 2, type: 'rapid', desc: 'RAPID DOWN FOR FINISHING PASS' });
-    
-    if (profile === 'straight') {
-        toolpathSteps.push({ x: target, z: 0, type: 'feed', desc: 'FACE CONTACT' });
-        toolpathSteps.push({ x: target, z: -length, type: 'feed', desc: 'STRAIGHT PROFILE CUT' });
-    } else if (profile === 'step') {
-        const stepZ = resolvedStepLen;
-        toolpathSteps.push({ x: target, z: 0, type: 'feed', desc: 'FACE CONTACT' });
-        toolpathSteps.push({ x: target, z: -stepZ, type: 'feed', desc: 'TURN STEP 1' });
-        toolpathSteps.push({ x: resolvedStepDia, z: -stepZ, type: 'feed', desc: 'FACE PLUNGE' });
-        toolpathSteps.push({ x: resolvedStepDia, z: -length, type: 'feed', desc: 'TURN STEP 2' });
+  while (currentX > finalX) {
+    currentX = Math.max(finalX, currentX - infeed * 2);
+    toolpathSteps.push({ x: currentX, z: 2, type: 'rapid', desc: `RAPID TO INFEED DIA ${currentX.toFixed(1)}` });
+
+    let cutEndZ = -length;
+    if (profile === 'step' && currentX < resolvedStepDia) {
+      cutEndZ = -resolvedStepLen;
     } else if (profile === 'taper') {
-        toolpathSteps.push({ x: target, z: 0, type: 'feed', desc: 'FACE CONTACT' });
-        toolpathSteps.push({ x: blank, z: -length, type: 'feed', desc: 'TAPER PROFILE CUT' });
-    } else {
-        // profile (high-fidelity segmented curve interpolation to match G02 arc)
-        toolpathSteps.push({ x: target, z: 0, type: 'feed', desc: 'FACE CONTACT' });
-        toolpathSteps.push({ x: target, z: -resolvedStepLen, type: 'feed', desc: 'STRAIGHT OD PROFILE' });
-        
-        const startZ = -resolvedStepLen;
-        const endZ = -length;
-        const startX = target;
-        const endX = blank;
-        
-        for (let j = 1; j <= 5; j++) {
-            const t = j / 5;
-            const currZ = startZ + t * (endZ - startZ);
-            const currX = startX + (t * t) * (endX - startX); // quadratic curve path tracking
-            toolpathSteps.push({ x: currX, z: currZ, type: 'feed', desc: `FILLET CONTOUR STEP ${j}/5` });
-        }
+      const ratio = (currentX - target) / (blank - target);
+      cutEndZ = -ratio * length;
+    } else if (profile === 'profile') {
+      const ratio = (currentX - target) / (blank - target);
+      cutEndZ = Math.max(-length, -resolvedStepLen - (ratio * ratio) * (length - resolvedStepLen));
     }
-    
-    // Clear contour out
-    toolpathSteps.push({ x: blank, z: -length, type: 'feed', desc: 'FACE RETRACT TO BLANK' });
-    
-    // Retract G40 safe
-    toolpathSteps.push({ x: blank + 12, z: 20, type: 'rapid', desc: 'CANCEL RADIUS COMP & RETRACT' });
-    
-    activeStepIndex = 0;
+
+    toolpathSteps.push({ x: currentX, z: cutEndZ, type: 'feed', desc: `LONGITUDINAL CUT TO Z ${cutEndZ.toFixed(1)}` });
+    toolpathSteps.push({ x: currentX + 2, z: cutEndZ + 1, type: 'rapid', desc: 'DIAGONAL RETRACT' });
+    toolpathSteps.push({ x: currentX + 2, z: 2, type: 'rapid', desc: 'RAPID BACK TO Z2.0' });
+  }
+
+  // Finishing pass
+  toolpathSteps.push({ x: target, z: 2, type: 'rapid', desc: 'RAPID TO FINISHING DIA' });
+  toolpathSteps.push({ x: target, z: 0, type: 'feed', desc: 'TOUCH FACE' });
+
+  if (profile === 'straight') {
+    toolpathSteps.push({ x: target, z: -length, type: 'feed', desc: 'FINISH PROFILE TO Z END' });
+  } else if (profile === 'step') {
+    toolpathSteps.push({ x: target, z: -resolvedStepLen, type: 'feed', desc: 'STEP 1 FINISH' });
+    toolpathSteps.push({ x: resolvedStepDia, z: -resolvedStepLen, type: 'feed', desc: 'SHOULDER PLUNGE' });
+    toolpathSteps.push({ x: resolvedStepDia, z: -length, type: 'feed', desc: 'STEP 2 FINISH' });
+  } else if (profile === 'taper') {
+    toolpathSteps.push({ x: blank, z: -length, type: 'feed', desc: 'TAPER CONTOUR FINISH' });
+  } else {
+    toolpathSteps.push({ x: target, z: -resolvedStepLen, type: 'feed', desc: 'STRAIGHT OD FINISH' });
+    for (let j = 1; j <= 5; j++) {
+      const t = j / 5;
+      const currZ = -resolvedStepLen + t * (-length - -resolvedStepLen);
+      const currX = target + (t * t) * (blank - target);
+      toolpathSteps.push({ x: currX, z: currZ, type: 'feed', desc: `FILLET CONTOUR ARC ${j}/5` });
+    }
+  }
+
+  toolpathSteps.push({ x: blank + 4, z: -length, type: 'feed', desc: 'FACE CLEARANCE' });
+  toolpathSteps.push({ x: blank + 10, z: 20, type: 'rapid', desc: 'SAFE RETRACT G40' });
+
+  activeStepIndex = 0;
 }
 
 function initTurningCanvas(isResize = false) {
-    turnCanvas = document.getElementById("turningCanvas");
-    if (!turnCanvas) return;
-    
-    turnCtx = turnCanvas.getContext("2d");
-    const rect = turnCanvas.getBoundingClientRect();
-    turnCanvas.width = rect.width;
-    turnCanvas.height = rect.height;
-    
-    // Set active values
-    visualBlankDia = parseFloat(document.getElementById("blankDia").value) || 80;
-    visualFinishDia = parseFloat(document.getElementById("finishDia").value) || 40;
-    visualLen = parseFloat(document.getElementById("turnLen").value) || 60;
-    
-    // ponytail: avoid resetting simulation and workpiece profile during window resize
-    if (isResize) {
-        drawTurningFrame();
-    } else {
-        resetTurningSim();
-    }
+  turnCanvas = document.getElementById("turningCanvas");
+  if (!turnCanvas) return;
+  
+  turnCtx = turnCanvas.getContext("2d");
+  const rect = turnCanvas.getBoundingClientRect();
+  turnCanvas.width = rect.width;
+  turnCanvas.height = rect.height;
+  
+  visualBlankDia = parseFloat(document.getElementById("blankDia").value) || 80;
+  visualFinishDia = parseFloat(document.getElementById("finishDia").value) || 40;
+  visualLen = parseFloat(document.getElementById("turnLen").value) || 60;
+  
+  if (isResize) {
+    drawTurningFrame();
+  } else {
+    resetTurningSim();
+  }
 }
 
 function resetTurningSim() {
-    stopTurningSim();
-    activeStepIndex = 0;
-    
-    if (toolpathSteps.length > 0) {
-        toolX = toolpathSteps[0].x;
-        toolZ = toolpathSteps[0].z;
-    } else {
-        toolX = visualBlankDia + 6;
-        toolZ = 5;
-    }
-    
-    // ponytail: build material profile as a 0.5mm-resolution grid strictly within workpiece bounds [-visualLen, 0]
-    materialCutProfile = [];
-    const blankR = visualBlankDia / 2;
-    const step = 0.5;
-    for (let z = -visualLen; z <= 0; z += step) {
-        materialCutProfile.push({ z: Math.round(z * 1000) / 1000, x: blankR });
-    }
-    // guarantee exact endpoints
-    if (materialCutProfile.length === 0 || materialCutProfile[0].z > -visualLen) {
-        materialCutProfile.unshift({ z: -visualLen, x: blankR });
-    }
-    if (materialCutProfile[materialCutProfile.length - 1].z < 0) {
-        materialCutProfile.push({ z: 0, x: blankR });
-    }
+  stopTurningSim();
+  activeStepIndex = 0;
+  
+  if (toolpathSteps.length > 0) {
+    toolX = toolpathSteps[0].x;
+    toolZ = toolpathSteps[0].z;
+  } else {
+    toolX = visualBlankDia + 4;
+    toolZ = 5;
+  }
 
-    drawTurningFrame();
-    
-    const playBtn = document.getElementById("simPlayBtn");
-    if (playBtn) playBtn.textContent = "▶ Run";
-    
-    const monText = document.getElementById("simGCodeText");
-    if (monText) monText.textContent = `G00 X${toolX.toFixed(2)} Z${toolZ.toFixed(2)}`;
+  materialCutProfile = [];
+  const blankR = visualBlankDia / 2;
+  const step = 0.5;
+  for (let z = -visualLen; z <= 0; z += step) {
+    materialCutProfile.push({ z: Math.round(z * 1000) / 1000, x: blankR });
+  }
+  if (materialCutProfile.length === 0 || materialCutProfile[0].z > -visualLen) {
+    materialCutProfile.unshift({ z: -visualLen, x: blankR });
+  }
+  if (materialCutProfile[materialCutProfile.length - 1].z < 0) {
+    materialCutProfile.push({ z: 0, x: blankR });
+  }
+
+  drawTurningFrame();
+  updateSimHud("IDLE: Ready to run", toolX, toolZ);
+
+  const playBtn = document.getElementById("simPlayBtn");
+  if (playBtn) playBtn.innerHTML = '<i class="fa-solid fa-play"></i> Run';
 }
 
 function stopTurningSim() {
-    simActive = false;
-    if (simInterval) {
-        clearInterval(simInterval);
-        simInterval = null;
-    }
+  simActive = false;
+  if (simInterval) {
+    clearInterval(simInterval);
+    simInterval = null;
+  }
 }
 
 function toggleTurningSim() {
+  const playBtn = document.getElementById("simPlayBtn");
+  if (!playBtn) return;
+
+  if (simActive) {
+    stopTurningSim();
+    playBtn.innerHTML = '<i class="fa-solid fa-play"></i> Run';
+  } else {
+    if (activeStepIndex === 0 || activeStepIndex >= toolpathSteps.length) {
+      resetTurningSim();
+    }
+    
+    simActive = true;
+    playBtn.innerHTML = '<i class="fa-solid fa-pause"></i> Pause';
+    
+    const intervalTime = Math.max(60, 320 / simSpeedMultiplier);
+    simInterval = setInterval(executeSimStep, intervalTime);
+  }
+}
+
+function stepTurningSim() {
+  stopTurningSim();
+  const playBtn = document.getElementById("simPlayBtn");
+  if (playBtn) playBtn.innerHTML = '<i class="fa-solid fa-play"></i> Run';
+  executeSimStep();
+}
+
+function executeSimStep() {
+  if (activeStepIndex >= toolpathSteps.length) {
+    stopTurningSim();
     const playBtn = document.getElementById("simPlayBtn");
-    if (!playBtn) return;
-
-    if (simActive) {
-        stopTurningSim();
-        playBtn.textContent = "▶ Run";
-    } else {
-        // ponytail: automatically reset profile when starting from the beginning
-        if (activeStepIndex === 0 || activeStepIndex >= toolpathSteps.length) {
-            resetTurningSim();
-        }
-        
-        simActive = true;
-        playBtn.textContent = "⏸ Pause";
-        
-        simInterval = setInterval(() => {
-            if (activeStepIndex >= toolpathSteps.length) {
-                stopTurningSim();
-                playBtn.textContent = "▶ Run";
-                activeStepIndex = 0;
-                return;
-            }
-            
-            const step = toolpathSteps[activeStepIndex];
-            const prevX = toolX;
-            const prevZ = toolZ;
-            
-            // Move tool towards step target
-            toolX = step.x;
-            toolZ = step.z;
-            
-            // Update monitor text
-            const monText = document.getElementById("simGCodeText");
-            if (monText) {
-                const cmdCode = step.type === 'rapid' ? 'G00' : 'G01';
-                monText.textContent = `${cmdCode} X${toolX.toFixed(2)} Z${toolZ.toFixed(2)} (${step.desc})`;
-            }
-            
-            // Perform simulated metal removal over the motion range if feeding!
-            if (step.type === 'feed') {
-                updateMaterialCutMove(prevZ, prevX / 2, toolZ, toolX / 2);
-            }
-            
-            drawTurningFrame();
-            activeStepIndex++;
-        }, 350);
-    }
+    if (playBtn) playBtn.innerHTML = '<i class="fa-solid fa-play"></i> Run';
+    updateSimHud("CYCLE COMPLETE", toolX, toolZ);
+    return;
+  }
+  
+  const step = toolpathSteps[activeStepIndex];
+  const prevX = toolX;
+  const prevZ = toolZ;
+  
+  toolX = step.x;
+  toolZ = step.z;
+  
+  const cmdCode = step.type === 'rapid' ? 'G00' : 'G01';
+  updateSimHud(`${cmdCode} X${toolX.toFixed(2)} Z${toolZ.toFixed(2)} (${step.desc})`, toolX, toolZ);
+  
+  if (step.type === 'feed') {
+    updateMaterialCutMove(prevZ, prevX / 2, toolZ, toolX / 2);
+  }
+  
+  drawTurningFrame();
+  activeStepIndex++;
 }
 
-// Insert or update a node in the workpiece profile, strictly within workpiece bounds
-function insertProfileNode(z, x) {
-    // ponytail: hard clamp to workpiece &mdash; no nodes outside material
-    if (z < -visualLen - 0.01 || z > 0.01) return;
-    z = Math.max(-visualLen, Math.min(0, z));
-    
-    for (let i = 0; i < materialCutProfile.length; i++) {
-        if (Math.abs(materialCutProfile[i].z - z) < 0.001) {
-            materialCutProfile[i].x = Math.min(materialCutProfile[i].x, x);
-            return;
-        }
-    }
-    
-    materialCutProfile.push({ z: z, x: x });
-    materialCutProfile.sort((a, b) => a.z - b.z);
+function updateSimHud(desc, x, z) {
+  const gcodeText = document.getElementById("simGCodeText");
+  const droX = document.getElementById("droX");
+  const droZ = document.getElementById("droZ");
+  if (gcodeText) gcodeText.textContent = desc;
+  if (droX) droX.textContent = Number(x).toFixed(3);
+  if (droZ) droZ.textContent = Number(z).toFixed(3);
 }
 
-// Metal removal: clamp to workpiece, update grid nodes in cut range
 function updateMaterialCutMove(zStart, xStart, zEnd, xEnd) {
-    // Clamp cut range to workpiece bounds
-    const rawMinZ = Math.min(zStart, zEnd);
-    const rawMaxZ = Math.max(zStart, zEnd);
-    const lo = Math.max(-visualLen, rawMinZ);
-    const hi = Math.min(0, rawMaxZ);
-    if (lo > hi) return; // entirely outside workpiece
-    
-    // Compute clamped tool radii at the clamped Z boundaries
-    let xAtLo = xStart, xAtHi = xStart;
-    if (Math.abs(zEnd - zStart) > 0.001) {
-        const tLo = (lo - zStart) / (zEnd - zStart);
-        const tHi = (hi - zStart) / (zEnd - zStart);
-        xAtLo = xStart + tLo * (xEnd - xStart);
-        xAtHi = xStart + tHi * (xEnd - xStart);
-    } else {
-        // Constant Z move (face plunge) &mdash; use the smaller radius
-        xAtLo = Math.min(xStart, xEnd);
-        xAtHi = xAtLo;
+  const lo = Math.max(-visualLen, Math.min(zStart, zEnd));
+  const hi = Math.min(0, Math.max(zStart, zEnd));
+  if (lo > hi) return;
+  
+  let xAtLo = xStart, xAtHi = xStart;
+  if (Math.abs(zEnd - zStart) > 0.001) {
+    const tLo = (lo - zStart) / (zEnd - zStart);
+    const tHi = (hi - zStart) / (zEnd - zStart);
+    xAtLo = xStart + tLo * (xEnd - xStart);
+    xAtHi = xStart + tHi * (xEnd - xStart);
+  } else {
+    xAtLo = Math.min(xStart, xEnd);
+    xAtHi = xAtLo;
+  }
+  
+  materialCutProfile.forEach(node => {
+    if (node.z >= lo - 0.001 && node.z <= hi + 0.001) {
+      let cutRadius;
+      if (Math.abs(hi - lo) > 0.001) {
+        const t = (node.z - lo) / (hi - lo);
+        cutRadius = xAtLo + t * (xAtHi - xAtLo);
+      } else {
+        cutRadius = Math.min(xAtLo, xAtHi);
+      }
+      node.x = Math.min(node.x, cutRadius);
     }
-    
-    // Update existing nodes in the clamped Z range
-    materialCutProfile.forEach(node => {
-        if (node.z >= lo - 0.001 && node.z <= hi + 0.001) {
-            let cutRadius;
-            if (Math.abs(hi - lo) > 0.001) {
-                const t = (node.z - lo) / (hi - lo);
-                cutRadius = xAtLo + t * (xAtHi - xAtLo);
-            } else {
-                cutRadius = Math.min(xAtLo, xAtHi);
-            }
-            node.x = Math.min(node.x, cutRadius);
-        }
-    });
-    
-    // Insert exact boundary nodes at clamped positions
-    insertProfileNode(lo, xAtLo);
-    insertProfileNode(hi, xAtHi);
+  });
 }
 
 function drawTurningFrame() {
-    if (!turnCtx || !turnCanvas) return;
-    
-    const ctx = turnCtx;
-    const w = turnCanvas.width;
-    const h = turnCanvas.height;
-    
-    ctx.fillStyle = "#020409";
-    ctx.fillRect(0, 0, w, h);
-    
-    // Draw center lathe grid line
-    ctx.strokeStyle = "rgba(10, 163, 181, 0.15)";
-    ctx.lineWidth = 1;
-    ctx.setLineDash([6, 4]);
-    ctx.beginPath();
-    ctx.moveTo(0, h / 2);
-    ctx.lineTo(w, h / 2);
-    ctx.stroke();
-    ctx.setLineDash([]); // Reset
-    
-    // Dynamic scaling based on canvas size and workpiece dimensions
-    const zScale = Math.min(4.5, ((w - 180) * 0.75) / visualLen);
-    const xScale = Math.min(2.5, ((h / 2) * 0.55) / (visualBlankDia / 2));
-    
-    const z0_x = w - 100;
-    const center_y = h / 2;
-    const chuckFaceX = Math.max(50, z0_x - (visualLen + 25) * zScale);
-    
-    // Draw visual lathe chuck jaws on the left extending to the blank start face
-    ctx.fillStyle = "#1e294b";
-    ctx.fillRect(0, center_y - 65, chuckFaceX, 130);
-    ctx.strokeStyle = "rgba(10, 163, 181, 0.4)";
-    ctx.lineWidth = 2;
-    ctx.strokeRect(0, center_y - 65, chuckFaceX, 130);
-    
-    // ponytail: filter profile nodes to workpiece bounds to prevent drawing artifacts
-    const visibleProfile = materialCutProfile.filter(n => n.z >= -visualLen - 0.01 && n.z <= 0.01);
-    
-    // 1. Draw remaining metallic workpiece blank (symmetric top/bottom)
-    ctx.fillStyle = "#334155";
-    ctx.beginPath();
-    
-    // Top profile path
-    ctx.moveTo(chuckFaceX, center_y);
-    ctx.lineTo(chuckFaceX, center_y - (visualBlankDia / 2) * xScale); // vertical left end at chuck
-    ctx.lineTo(z0_x - visualLen * zScale, center_y - (visualBlankDia / 2) * xScale); // straight line to start of cut profile
-    
-    for (let i = 0; i < visibleProfile.length; i++) {
-        const node = visibleProfile[i];
-        const px = z0_x + node.z * zScale;
-        const py = center_y - node.x * xScale;
-        ctx.lineTo(px, py);
-    }
-    
-    // Face line
-    ctx.lineTo(z0_x, center_y);
-    
-    // Bottom profile path (mirror)
-    for (let i = visibleProfile.length - 1; i >= 0; i--) {
-        const node = visibleProfile[i];
-        const px = z0_x + node.z * zScale;
-        const py = center_y + node.x * xScale;
-        ctx.lineTo(px, py);
-    }
-    
-    ctx.lineTo(z0_x - visualLen * zScale, center_y + (visualBlankDia / 2) * xScale);
-    ctx.lineTo(chuckFaceX, center_y + (visualBlankDia / 2) * xScale); // straight line to chuck
-    ctx.lineTo(chuckFaceX, center_y);
-    ctx.closePath();
-    ctx.fill();
-    
-    // Draw outline of workpiece cut shape
-    ctx.strokeStyle = "#475569";
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    // Top Outline
-    ctx.moveTo(chuckFaceX, center_y - (visualBlankDia/2)*xScale);
-    ctx.lineTo(z0_x - visualLen * zScale, center_y - (visualBlankDia/2)*xScale);
-    for (let i = 0; i < visibleProfile.length; i++) {
-        const node = visibleProfile[i];
-        ctx.lineTo(z0_x + node.z * zScale, center_y - node.x * xScale);
-    }
-    ctx.lineTo(z0_x, center_y);
-    ctx.stroke();
-    
-    // 2. Draw target final turning profile overlay (dashed cyan line)
-    ctx.strokeStyle = "rgba(10, 163, 181, 0.45)";
-    ctx.lineWidth = 1;
-    ctx.setLineDash([3, 3]);
-    
-    const profileStyle = document.getElementById("contourStyle").value;
-    ctx.beginPath();
-    ctx.moveTo(z0_x, center_y);
-    
-    if (profileStyle === 'straight') {
-        ctx.lineTo(z0_x, center_y - (visualFinishDia / 2) * xScale);
-        ctx.lineTo(z0_x - visualLen * zScale, center_y - (visualFinishDia / 2) * xScale);
-    } else if (profileStyle === 'step') {
-        const stepDiaInput = parseFloat(document.getElementById("stepDia").value);
-        let resolvedStepDia = stepDiaInput;
-        if (!resolvedStepDia || resolvedStepDia <= visualFinishDia || resolvedStepDia >= visualBlankDia) {
-            resolvedStepDia = visualFinishDia + (visualBlankDia - visualFinishDia) * 0.5;
-        }
-        
-        const stepLenInput = parseFloat(document.getElementById("stepLen").value);
-        let resolvedStepLen = stepLenInput;
-        if (!resolvedStepLen || resolvedStepLen <= 0 || resolvedStepLen >= visualLen) {
-            resolvedStepLen = visualLen * 0.5;
-        }
-        const stepZ = resolvedStepLen;
-        
-        ctx.lineTo(z0_x, center_y - (visualFinishDia / 2) * xScale);
-        ctx.lineTo(z0_x - stepZ * zScale, center_y - (visualFinishDia / 2) * xScale);
-        ctx.lineTo(z0_x - stepZ * zScale, center_y - (resolvedStepDia / 2) * xScale);
-        ctx.lineTo(z0_x - visualLen * zScale, center_y - (resolvedStepDia / 2) * xScale);
-    } else if (profileStyle === 'taper') {
-        ctx.lineTo(z0_x, center_y - (visualFinishDia / 2) * xScale);
-        ctx.lineTo(z0_x - visualLen * zScale, center_y - (visualBlankDia / 2) * xScale);
-    } else {
-        // curved profile
-        const stepLenInput = parseFloat(document.getElementById("stepLen").value);
-        let resolvedStepLen = stepLenInput;
-        if (!resolvedStepLen || resolvedStepLen <= 0 || resolvedStepLen >= visualLen) {
-            resolvedStepLen = visualLen * 0.5;
-        }
-        const straightZ = resolvedStepLen;
-        
-        ctx.lineTo(z0_x, center_y - (visualFinishDia / 2) * xScale);
-        ctx.lineTo(z0_x - straightZ * zScale, center_y - (visualFinishDia / 2) * xScale);
-        // arc fillet
-        ctx.quadraticCurveTo(
-            z0_x - straightZ * zScale - 8, center_y - (visualBlankDia / 2) * xScale,
-            z0_x - visualLen * zScale, center_y - (visualBlankDia / 2) * xScale
-        );
-    }
-    ctx.stroke();
-    ctx.setLineDash([]);
-    
-    // 3. Draw Cutting Tool Holder & Insert (Rhombic Golden insert)
-    const toolPx = z0_x + toolZ * zScale;
-    const toolPy = center_y - (toolX / 2) * xScale;
-    
-    // Draw tool steel holder block
-    ctx.fillStyle = "#1e293b";
-    ctx.beginPath();
-    ctx.moveTo(toolPx, toolPy);
-    ctx.lineTo(toolPx + 15, toolPy - 25);
-    ctx.lineTo(toolPx + 40, toolPy - 25);
-    ctx.lineTo(toolPx + 40, toolPy - 5);
-    ctx.closePath();
-    ctx.fill();
-    ctx.strokeStyle = "#475569";
-    ctx.lineWidth = 1;
-    ctx.stroke();
-    
-    // Draw gold diamond carbide insert
-    ctx.fillStyle = "#eab308"; // Golden yellow insert
-    ctx.beginPath();
-    ctx.moveTo(toolPx, toolPy); // tip point contact
-    ctx.lineTo(toolPx + 8, toolPy - 10);
-    ctx.lineTo(toolPx + 18, toolPy - 6);
-    ctx.lineTo(toolPx + 10, toolPy + 4);
-    ctx.closePath();
-    ctx.fill();
-    ctx.strokeStyle = "#ffffff";
-    ctx.stroke();
-    
-    // Draw tool nose circle point highlight
-    ctx.fillStyle = "var(--primary)";
-    ctx.beginPath();
-    ctx.arc(toolPx, toolPy, 2.5, 0, Math.PI*2);
-    ctx.fill();
+  if (!turnCtx || !turnCanvas) return;
+  const ctx = turnCtx;
+  const w = turnCanvas.width;
+  const h = turnCanvas.height;
+  
+  ctx.fillStyle = "#020409";
+  ctx.fillRect(0, 0, w, h);
+  
+  // Centerline
+  ctx.strokeStyle = "rgba(10, 163, 181, 0.2)";
+  ctx.lineWidth = 1;
+  ctx.setLineDash([6, 4]);
+  ctx.beginPath();
+  ctx.moveTo(0, h / 2);
+  ctx.lineTo(w, h / 2);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  
+  // Scales
+  const zScale = Math.min(4.8, ((w - 160) * 0.75) / visualLen);
+  const xScale = Math.min(2.8, ((h / 2) * 0.58) / (visualBlankDia / 2));
+  
+  const z0_x = w - 90;
+  const center_y = h / 2;
+  const chuckFaceX = Math.max(45, z0_x - (visualLen + 22) * zScale);
+  
+  // Chuck Jaws
+  ctx.fillStyle = "#1e294b";
+  ctx.fillRect(0, center_y - 60, chuckFaceX, 120);
+  ctx.strokeStyle = "rgba(10, 163, 181, 0.4)";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(0, center_y - 60, chuckFaceX, 120);
+  
+  // Workpiece material
+  const visibleProfile = materialCutProfile.filter(n => n.z >= -visualLen - 0.01 && n.z <= 0.01);
+  
+  ctx.fillStyle = "#334155";
+  ctx.beginPath();
+  ctx.moveTo(chuckFaceX, center_y);
+  ctx.lineTo(chuckFaceX, center_y - (visualBlankDia / 2) * xScale);
+  ctx.lineTo(z0_x - visualLen * zScale, center_y - (visualBlankDia / 2) * xScale);
+  
+  for (let i = 0; i < visibleProfile.length; i++) {
+    const node = visibleProfile[i];
+    ctx.lineTo(z0_x + node.z * zScale, center_y - node.x * xScale);
+  }
+  
+  ctx.lineTo(z0_x, center_y);
+  
+  // Mirror bottom
+  for (let i = visibleProfile.length - 1; i >= 0; i--) {
+    const node = visibleProfile[i];
+    ctx.lineTo(z0_x + node.z * zScale, center_y + node.x * xScale);
+  }
+  
+  ctx.lineTo(z0_x - visualLen * zScale, center_y + (visualBlankDia / 2) * xScale);
+  ctx.lineTo(chuckFaceX, center_y + (visualBlankDia / 2) * xScale);
+  ctx.closePath();
+  ctx.fill();
+
+  // Outline
+  ctx.strokeStyle = "#64748b";
+  ctx.lineWidth = 1.2;
+  ctx.stroke();
+
+  // Draw Tool Holder & Insert
+  const toolPx = z0_x + toolZ * zScale;
+  const toolPy = center_y - (toolX / 2) * xScale;
+  
+  // Steel shank
+  ctx.fillStyle = "#0f172a";
+  ctx.beginPath();
+  ctx.moveTo(toolPx, toolPy);
+  ctx.lineTo(toolPx + 14, toolPy - 24);
+  ctx.lineTo(toolPx + 38, toolPy - 24);
+  ctx.lineTo(toolPx + 38, toolPy - 4);
+  ctx.closePath();
+  ctx.fill();
+  ctx.strokeStyle = "#475569";
+  ctx.stroke();
+  
+  // Gold carbide insert
+  ctx.fillStyle = "#eab308";
+  ctx.beginPath();
+  ctx.moveTo(toolPx, toolPy);
+  ctx.lineTo(toolPx + 8, toolPy - 10);
+  ctx.lineTo(toolPx + 16, toolPy - 6);
+  ctx.lineTo(toolPx + 8, toolPy + 3);
+  ctx.closePath();
+  ctx.fill();
+  ctx.strokeStyle = "#ffffff";
+  ctx.stroke();
+
+  // Nose point highlight
+  ctx.fillStyle = "#38bdf8";
+  ctx.beginPath();
+  ctx.arc(toolPx, toolPy, 2.5, 0, Math.PI * 2);
+  ctx.fill();
 }
 
-// Regex G-code Highlighter
+// Regex Syntax Highlighter for Sinumerik
 function highlightGCode(text) {
-    if (!text) return "";
-    const lines = text.split('\n');
-    let html = "";
+  if (!text) return "";
+  const lines = text.split('
+');
+  let html = "";
+  
+  for (let i = 0; i < lines.length; i++) {
+    let line = lines[i];
+    if (!line.trim() && i === lines.length - 1) continue;
     
-    for (let i = 0; i < lines.length; i++) {
-        let line = lines[i];
-        if (!line.trim() && i === lines.length - 1) continue;
-        
-        let escaped = line
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;");
-        
-        // Comments
-        escaped = escaped.replace(/(\(.*?\))/g, '<span class="gcode-comment">$1</span>');
-        escaped = escaped.replace(/(;.*?)$/g, '<span class="gcode-comment">$1</span>');
-        
-        // Siemens Cycles and G codes
-        escaped = escaped.replace(/\b(G\d{2,3}|M\d{2,3}|CYCLE95|LIMS|NPP|MID|FALZ|FALX|FAL|FF1|FF2|FF3|VARI|DT|DAM)\b/gi, '<span class="gcode-cmd">$1</span>');
-        
-        // Coordinates
-        escaped = escaped.replace(/\b([XZR])(-?\d+\.?\d*)\b/gi, '<span class="gcode-coord">$1<span class="gcode-val">$2</span></span>');
-        
-        // Feeds, Speeds, Pecks, Tools, Offsets
-        escaped = escaped.replace(/\b(F)(-?\d+\.?\d*)\b/gi, '<span class="gcode-feed">$1<span class="gcode-val">$2</span></span>');
-        escaped = escaped.replace(/\b(S)(\d+)\b/gi, '<span class="gcode-speed">$1<span class="gcode-val">$2</span></span>');
-        escaped = escaped.replace(/\b([DT])(\d+)\b/gi, '<span class="gcode-tool">$1<span class="gcode-val">$2</span></span>');
-        escaped = escaped.replace(/\b(T=)(".*?")/gi, '<span class="gcode-tool">$1<span class="gcode-val">$2</span></span>');
-        
-        html += `<div class="gcode-line" id="gcode-line-${i}">${escaped}</div>`;
-    }
+    let escaped = line
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
     
-    return html;
+    escaped = escaped.replace(/(\(.*?\))/g, '<span class="gcode-comment">$1</span>');
+    escaped = escaped.replace(/(;.*?)$/g, '<span class="gcode-comment">$1</span>');
+    escaped = escaped.replace(/\b(G\d{2,3}|M\d{2,3}|CYCLE\d{2,3}|LIMS|NPP|MID|FALZ|FALX|FAL|FF1|FF2|FF3|VARI|DT|DAM|DIAMON|DIAMOF)\b/gi, '<span class="gcode-cmd">$1</span>');
+    escaped = escaped.replace(/\b([XZR])(-?\d+\.?\d*)\b/gi, '<span class="gcode-coord">$1<span class="gcode-val">$2</span></span>');
+    escaped = escaped.replace(/\b(F)(-?\d+\.?\d*)\b/gi, '<span class="gcode-feed">$1<span class="gcode-val">$2</span></span>');
+    escaped = escaped.replace(/\b(S)(\d+)\b/gi, '<span class="gcode-speed">$1<span class="gcode-val">$2</span></span>');
+    escaped = escaped.replace(/\b([DT])(\d+)\b/gi, '<span class="gcode-tool">$1<span class="gcode-val">$2</span></span>');
+    escaped = escaped.replace(/\b(T=)(".*?")/gi, '<span class="gcode-tool">$1<span class="gcode-val">$2</span></span>');
+    
+    html += `<div class="gcode-line">${escaped}</div>`;
+  }
+  return html;
 }
 
-// ==================== VIEW 3: SIEMENS TOOL OFFSET CARD LOGIC ====================
-let setupTools = [
-    { num: 'T1 (ROUGH_80)', edge: 1, type: '500 - Rougher', l1: 124.520, l2: 84.230, rad: 0.800, dir: 3, wx: 0.000, wz: 0.000 },
-    { num: 'T2 (FINISH_35)', edge: 1, type: '510 - Finisher', l1: 125.105, l2: 83.945, rad: 0.400, dir: 3, wx: 0.000, wz: 0.000 }
-];
+// ==================== VIEW 2: SIEMENS TOOL OFFSET CARD LOGIC ====================
+let setupTools = [];
+
+function loadStoredTools() {
+  try {
+    const raw = localStorage.getItem('siemens_setup_tools');
+    if (raw) {
+      setupTools = JSON.parse(raw);
+    } else {
+      setupTools = [
+        { num: 'T1 (CNMG_ROUGH)', edge: 1, type: '500 - Rougher', l1: 124.520, l2: 84.230, rad: 0.800, dir: 3, wx: 0.000, wz: 0.000 },
+        { num: 'T2 (DNMG_FINISH)', edge: 1, type: '510 - Finisher', l1: 125.105, l2: 83.945, rad: 0.400, dir: 3, wx: 0.000, wz: 0.000 }
+      ];
+    }
+  } catch (e) {
+    setupTools = [
+      { num: 'T1 (CNMG_ROUGH)', edge: 1, type: '500 - Rougher', l1: 124.520, l2: 84.230, rad: 0.800, dir: 3, wx: 0.000, wz: 0.000 }
+    ];
+  }
+}
+
+function saveStoredTools() {
+  try {
+    localStorage.setItem('siemens_setup_tools', JSON.stringify(setupTools));
+  } catch (e) {}
+}
+
+function applyToolPreset(preset) {
+  const tNum = document.getElementById("toolNum");
+  const tType = document.getElementById("toolType");
+  const l1 = document.getElementById("offsetL1");
+  const l2 = document.getElementById("offsetL2");
+  const rad = document.getElementById("offsetRad");
+  const dir = document.getElementById("offsetType");
+
+  if (preset === 'cnmg') {
+    tNum.value = `T${setupTools.length + 1} (CNMG_120408)`;
+    tType.value = "500";
+    l1.value = "124.500";
+    l2.value = "85.200";
+    rad.value = "0.800";
+    selectPointDir(3);
+  } else if (preset === 'dnmg') {
+    tNum.value = `T${setupTools.length + 1} (DNMG_150404)`;
+    tType.value = "510";
+    l1.value = "125.100";
+    l2.value = "84.900";
+    rad.value = "0.400";
+    selectPointDir(3);
+  } else if (preset === 'groove') {
+    tNum.value = `T${setupTools.length + 1} (GROOVE_3MM)`;
+    tType.value = "520";
+    l1.value = "120.400";
+    l2.value = "80.100";
+    rad.value = "0.200";
+    selectPointDir(3);
+  } else if (preset === 'thread') {
+    tNum.value = `T${setupTools.length + 1} (THREAD_60DEG)`;
+    tType.value = "540";
+    l1.value = "122.800";
+    l2.value = "82.400";
+    rad.value = "0.100";
+    selectPointDir(3);
+  } else if (preset === 'drill') {
+    tNum.value = `T${setupTools.length + 1} (UDRILL_D20)`;
+    tType.value = "200";
+    l1.value = "110.000";
+    l2.value = "0.000";
+    rad.value = "10.000";
+    selectPointDir(9);
+  } else if (preset === 'boring') {
+    tNum.value = `T${setupTools.length + 1} (BORING_CCMT)`;
+    tType.value = "500";
+    l1.value = "88.600";
+    l2.value = "120.000";
+    rad.value = "0.400";
+    selectPointDir(2);
+  }
+}
 
 function suggestToolParameters() {
-    const type = document.getElementById("toolType").value;
-    const l1Input = document.getElementById("offsetL1");
-    const l2Input = document.getElementById("offsetL2");
-    const radInput = document.getElementById("offsetRad");
-    const dirSelect = document.getElementById("offsetType");
-    
-    if (type === "120") {
-        l1Input.value = "95.450";
-        l2Input.value = "0.000";
-        radInput.value = "6.000"; // 12mm endmill radius
-        dirSelect.value = "9";
-    } else if (type === "200") {
-        l1Input.value = "110.300";
-        l2Input.value = "0.000";
-        radInput.value = "4.000"; // 8mm drill radius
-        dirSelect.value = "9";
-    } else {
-        l1Input.value = "124.520";
-        l2Input.value = "84.230";
-        radInput.value = "0.800";
-        dirSelect.value = "3";
-    }
-    updateDirectionGraphic();
+  const type = document.getElementById("toolType").value;
+  const l1Input = document.getElementById("offsetL1");
+  const l2Input = document.getElementById("offsetL2");
+  const radInput = document.getElementById("offsetRad");
+  
+  if (type === "200") {
+    l1Input.value = "110.000";
+    l2Input.value = "0.000";
+    radInput.value = "5.000";
+    selectPointDir(9);
+  } else if (type === "120") {
+    l1Input.value = "95.000";
+    l2Input.value = "0.000";
+    radInput.value = "6.000";
+    selectPointDir(9);
+  } else {
+    l1Input.value = "124.520";
+    l2Input.value = "84.230";
+    radInput.value = "0.800";
+    selectPointDir(3);
+  }
 }
 
 function updateDirectionGraphic() {
-    const dir = parseInt(document.getElementById("offsetType").value);
-    selectPointDir(dir, false);
+  const dir = parseInt(document.getElementById("offsetType").value);
+  selectPointDir(dir, false);
 }
 
 function selectPointDir(dir, updateSelectEl = true) {
-    // Reset all highlights
-    document.querySelectorAll('.dir-cell').forEach(cell => cell.classList.remove('active'));
-    
-    // Add active highlight
-    const cell = document.querySelector(`.dir-cell[data-dir="${dir}"]`);
-    if (cell) cell.classList.add('active');
-    
-    if (updateSelectEl) {
-        document.getElementById("offsetType").value = dir;
-    }
+  document.querySelectorAll('.dir-cell').forEach(cell => cell.classList.remove('active'));
+  const cell = document.querySelector(`.dir-cell[data-dir="${dir}"]`);
+  if (cell) cell.classList.add('active');
+  if (updateSelectEl) {
+    document.getElementById("offsetType").value = dir;
+  }
 }
 
 function addToolToSetupCard() {
-    const num = document.getElementById("toolNum").value.trim() || `T${setupTools.length + 1}`;
-    const edge = parseInt(document.getElementById("edgeNum").value) || 1;
-    const typeText = document.getElementById("toolType").options[document.getElementById("toolType").selectedIndex].text;
-    const l1 = parseFloat(document.getElementById("offsetL1").value) || 0;
-    const l2 = parseFloat(document.getElementById("offsetL2").value) || 0;
-    const rad = parseFloat(document.getElementById("offsetRad").value) || 0;
-    const dir = parseInt(document.getElementById("offsetType").value) || 3;
-    const wx = parseFloat(document.getElementById("wearL1").value) || 0;
-    const wz = parseFloat(document.getElementById("wearL2").value) || 0;
-    
-    // Add to list
-    setupTools.push({
-        num: num,
-        edge: edge,
-        type: typeText.split(' - ')[1] || typeText,
-        l1: l1,
-        l2: l2,
-        rad: rad,
-        dir: dir,
-        wx: wx,
-        wz: wz
-    });
-    
-    // Reset form fields lightly
-    document.getElementById("toolNum").value = "";
-    
-    renderSetupToolsList();
+  const num = document.getElementById("toolNum").value.trim() || `T${setupTools.length + 1}`;
+  const edge = parseInt(document.getElementById("edgeNum").value) || 1;
+  const typeText = document.getElementById("toolType").options[document.getElementById("toolType").selectedIndex].text;
+  const l1 = parseFloat(document.getElementById("offsetL1").value) || 0;
+  const l2 = parseFloat(document.getElementById("offsetL2").value) || 0;
+  const rad = parseFloat(document.getElementById("offsetRad").value) || 0;
+  const dir = parseInt(document.getElementById("offsetType").value) || 3;
+  const wx = parseFloat(document.getElementById("wearL1").value) || 0;
+  const wz = parseFloat(document.getElementById("wearL2").value) || 0;
+
+  setupTools.push({
+    num: num,
+    edge: edge,
+    type: typeText.split(' - ')[1] || typeText,
+    l1: l1,
+    l2: l2,
+    rad: rad,
+    dir: dir,
+    wx: wx,
+    wz: wz
+  });
+
+  saveStoredTools();
+  document.getElementById("toolNum").value = "";
+  renderSetupToolsList();
+  showToast(`${num} added to offset setup card.`);
 }
 
 function deleteTool(index) {
-    setupTools.splice(index, 1);
-    renderSetupToolsList();
+  setupTools.splice(index, 1);
+  saveStoredTools();
+  renderSetupToolsList();
 }
 
 function renderSetupToolsList() {
-    const listContainer = document.getElementById("toolListContainer");
-    const printTableBody = document.getElementById("printCardTableBody");
-    
-    if (setupTools.length === 0) {
-        listContainer.innerHTML = `
-            <div class="empty-state">
-                <p>No tools added to the offset setup card yet. Fill in offsets on the left and click Add Tool.</p>
-            </div>
-        `;
-        printTableBody.innerHTML = `
-            <tr>
-                <td colspan="9">No tools loaded in setup.</td>
-            </tr>
-        `;
-        return;
-    }
-    
-    // Render Screen Tool Setup List
-    let html = `<div class="tool-list">`;
-    setupTools.forEach((tool, index) => {
-        html += `
-            <div class="tool-item">
-                <div class="tool-item-details">
-                    <span class="tool-item-title">${tool.num} D${tool.edge}</span>
-                    <span class="tool-item-sub">Type: ${tool.type} | X: ${tool.l1.toFixed(3)} | Z: ${tool.l2.toFixed(3)} | R: ${tool.rad.toFixed(3)} | Dir: ${tool.dir}</span>
-                </div>
-                <div class="tool-item-actions">
-                    <button class="secondary-btn" onclick="deleteTool(${index})" style="border-color: var(--danger); color: var(--danger); padding: 4px 10px; font-size:0.7rem;">Delete</button>
-                </div>
-            </div>
-        `;
-    });
-    html += `</div>`;
-    listContainer.innerHTML = html;
-    
-    // Render Printable Table body
-    let printHtml = "";
-    setupTools.forEach((tool) => {
-        printHtml += `
-            <tr>
-                <td><b>${tool.num}</b></td>
-                <td>D${tool.edge}</td>
-                <td>${tool.type}</td>
-                <td>${tool.l1.toFixed(3)}</td>
-                <td>${tool.l2.toFixed(3)}</td>
-                <td>${tool.rad.toFixed(3)}</td>
-                <td>Type ${tool.dir}</td>
-                <td>${tool.wx.toFixed(3)}</td>
-                <td>${tool.wz.toFixed(3)}</td>
-            </tr>
-        `;
-    });
-    printTableBody.innerHTML = printHtml;
+  const listContainer = document.getElementById("toolListContainer");
+  const printTableBody = document.getElementById("printCardTableBody");
+  
+  if (setupTools.length === 0) {
+    listContainer.innerHTML = `
+      <div class="empty-state">
+        <i class="fa-solid fa-table-list"></i>
+        <p>No tools added to the offset setup card yet. Fill in offsets on the left or choose a Quick Preset.</p>
+      </div>
+    `;
+    printTableBody.innerHTML = `<tr><td colspan="9" style="text-align:center;">No tools loaded in setup.</td></tr>`;
+    return;
+  }
+
+  let html = `<div class="tool-list">`;
+  setupTools.forEach((tool, index) => {
+    html += `
+      <div class="tool-item">
+        <div>
+          <div class="tool-item-title">${tool.num} &bull; D${tool.edge}</div>
+          <div class="tool-item-sub">Type: ${tool.type} | X: ${tool.l1.toFixed(3)} | Z: ${tool.l2.toFixed(3)} | R: ${tool.rad.toFixed(3)} | Dir: Type ${tool.dir}</div>
+        </div>
+        <button class="secondary-btn" onclick="deleteTool(${index})" style="border-color: var(--danger); color: var(--danger); padding: 5px 10px; font-size:0.75rem;">
+          <i class="fa-solid fa-trash-can"></i>
+        </button>
+      </div>
+    `;
+  });
+  html += `</div>`;
+  listContainer.innerHTML = html;
+
+  let printHtml = "";
+  setupTools.forEach((tool) => {
+    printHtml += `
+      <tr>
+        <td><b>${tool.num}</b></td>
+        <td>D${tool.edge}</td>
+        <td>${tool.type}</td>
+        <td>${tool.l1.toFixed(3)}</td>
+        <td>${tool.l2.toFixed(3)}</td>
+        <td>${tool.rad.toFixed(3)}</td>
+        <td>Type ${tool.dir}</td>
+        <td>${tool.wx.toFixed(3)}</td>
+        <td>${tool.wz.toFixed(3)}</td>
+      </tr>
+    `;
+  });
+  printTableBody.innerHTML = printHtml;
+}
+
+// Download Sinumerik .TOA Tool Offset Archive
+function downloadTOAArchive() {
+  if (setupTools.length === 0) {
+    showToast("Add at least one tool to download .TOA archive.");
+    return;
+  }
+
+  let toa = `;$PATH=/_N_TO_DIR
+`;
+  toa += `; SHADER7 SINUMERIK TOOL OFFSET ARCHIVE
+`;
+  toa += `; DATE: ${new Date().toISOString().slice(0, 10)}
+`;
+  toa += `; CONTROL: SIEMENS 840D / 828D / 808D
+
+`;
+
+  setupTools.forEach((tool, i) => {
+    const tIdx = i + 1;
+    const dIdx = tool.edge || 1;
+    let typeCode = 500;
+    if (tool.type.toLowerCase().includes("finish")) typeCode = 510;
+    else if (tool.type.toLowerCase().includes("groov")) typeCode = 520;
+    else if (tool.type.toLowerCase().includes("thread")) typeCode = 540;
+    else if (tool.type.toLowerCase().includes("drill")) typeCode = 200;
+    else if (tool.type.toLowerCase().includes("mill")) typeCode = 120;
+
+    toa += `; --- ${tool.num} ---
+`;
+    toa += `$TC_DP1[${tIdx},${dIdx}]=${typeCode} ; Tool Type
+`;
+    toa += `$TC_DP2[${tIdx},${dIdx}]=${tool.dir} ; Cutting Edge Position
+`;
+    toa += `$TC_DP3[${tIdx},${dIdx}]=${tool.l1.toFixed(3)} ; Length 1 (X)
+`;
+    toa += `$TC_DP4[${tIdx},${dIdx}]=${tool.l2.toFixed(3)} ; Length 2 (Z)
+`;
+    toa += `$TC_DP6[${tIdx},${dIdx}]=${tool.rad.toFixed(3)} ; Radius (R)
+`;
+    toa += `$TC_DP12[${tIdx},${dIdx}]=${tool.wx.toFixed(3)} ; Wear X
+`;
+    toa += `$TC_DP13[${tIdx},${dIdx}]=${tool.wz.toFixed(3)} ; Wear Z
+
+`;
+  });
+
+  toa += `M17
+`;
+
+  const blob = new Blob([toa], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = "TOOL_OFFSET.TOA";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast("TOOL_OFFSET.TOA archive downloaded!");
+}
+
+// Export CSV Table
+function downloadCSVOffsets() {
+  if (setupTools.length === 0) {
+    showToast("Add tools before exporting CSV.");
+    return;
+  }
+
+  let csv = "Tool_ID,Edge_D,Type,Length_X,Length_Z,Radius_R,Point_Dir,Wear_X,Wear_Z
+";
+  setupTools.forEach(t => {
+    csv += `"${t.num}",${t.edge},"${t.type}",${t.l1.toFixed(3)},${t.l2.toFixed(3)},${t.rad.toFixed(3)},${t.dir},${t.wx.toFixed(3)},${t.wz.toFixed(3)}
+`;
+  });
+
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = "siemens_tool_offsets.csv";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast("siemens_tool_offsets.csv downloaded!");
+}
+
+// ==================== VIEW 3: SPEEDS & FEEDS QUICK CALCULATOR ====================
+function applyMaterialPreset() {
+  const preset = document.getElementById("matPreset").value;
+  const vcInput = document.getElementById("calcVc");
+  const feedInput = document.getElementById("calcFeed");
+  const apInput = document.getElementById("calcAp");
+
+  if (preset === "mild_steel") {
+    vcInput.value = "200";
+    feedInput.value = "0.25";
+    apInput.value = "2.0";
+  } else if (preset === "alloy_steel") {
+    vcInput.value = "160";
+    feedInput.value = "0.20";
+    apInput.value = "1.5";
+  } else if (preset === "stainless") {
+    vcInput.value = "130";
+    feedInput.value = "0.18";
+    apInput.value = "1.5";
+  } else if (preset === "cast_iron") {
+    vcInput.value = "180";
+    feedInput.value = "0.30";
+    apInput.value = "2.5";
+  } else if (preset === "aluminum") {
+    vcInput.value = "500";
+    feedInput.value = "0.35";
+    apInput.value = "3.0";
+  } else if (preset === "brass") {
+    vcInput.value = "300";
+    feedInput.value = "0.28";
+    apInput.value = "2.0";
+  }
+  runQuickSpeedCalc();
+}
+
+function runQuickSpeedCalc() {
+  const d = parseFloat(document.getElementById("calcDia").value) || 50;
+  const vc = parseFloat(document.getElementById("calcVc").value) || 200;
+  const f = parseFloat(document.getElementById("calcFeed").value) || 0.25;
+  const ap = parseFloat(document.getElementById("calcAp").value) || 2.0;
+  const re = parseFloat(document.getElementById("calcRe").value) || 0.8;
+
+  // Spindle RPM
+  const rpm = Math.round((vc * 1000) / (Math.PI * d));
+  // Table Feed
+  const vf = Math.round(rpm * f);
+  // MRR: Vc * ap * f
+  const mrr = Math.round(vc * ap * f * 10) / 10;
+  // Surface Finish Ra in µm: (f^2 / (32 * re)) * 1000
+  const ra = Math.round(((f * f) / (32 * re)) * 1000 * 100) / 100;
+
+  document.getElementById("calcResultRpm").textContent = `${rpm} RPM`;
+  document.getElementById("calcResultVf").textContent = `${vf} mm/min`;
+  document.getElementById("calcResultMrr").textContent = `${mrr} cm³/min`;
+  document.getElementById("calcResultRa").textContent = `${ra} µm`;
 }
 
 function toggleProfileInputs() {
-    const profile = document.getElementById("contourStyle").value;
-    const stepParamsRow = document.getElementById("stepParamsRow");
-    if (!stepParamsRow) return;
-    
-    if (profile === "step" || profile === "profile") {
-        stepParamsRow.classList.remove("hidden");
-        const blank = parseFloat(document.getElementById("blankDia").value) || 80;
-        const target = parseFloat(document.getElementById("finishDia").value) || 40;
-        const totalLen = parseFloat(document.getElementById("turnLen").value) || 60;
-        
-        const stepDiaInput = document.getElementById("stepDia");
-        if (stepDiaInput && (!stepDiaInput.value || stepDiaInput.value === "60")) {
-            stepDiaInput.value = Math.round(target + (blank - target) * 0.5);
-        }
-        
-        const stepLenInput = document.getElementById("stepLen");
-        if (stepLenInput && (!stepLenInput.value || stepLenInput.value === "30")) {
-            stepLenInput.value = Math.round(totalLen * 0.5);
-        }
-        
-        // ponytail: hide stepDia since it is not used in the curved profile (curves to blank)
-        const stepDiaGroup = stepDiaInput ? stepDiaInput.closest('.form-group') : null;
-        if (profile === "profile") {
-            if (stepDiaGroup) stepDiaGroup.classList.add("hidden");
-            stepParamsRow.style.gridTemplateColumns = "1fr";
-        } else {
-            if (stepDiaGroup) stepDiaGroup.classList.remove("hidden");
-            stepParamsRow.style.gridTemplateColumns = "1fr 1fr";
-        }
-    } else {
-        stepParamsRow.classList.add("hidden");
-    }
+  const profile = document.getElementById("contourStyle").value;
+  const stepParamsRow = document.getElementById("stepParamsRow");
+  if (!stepParamsRow) return;
+  
+  if (profile === "step" || profile === "profile") {
+    stepParamsRow.classList.remove("hidden");
+  } else {
+    stepParamsRow.classList.add("hidden");
+  }
 }
 
-// Initial setup loads
+// Initial setup
 window.addEventListener('load', () => {
-    suggestToolParameters();
-    renderSetupToolsList();
-    toggleProfileInputs();
+  const yearEl = document.getElementById("footerYear");
+  if (yearEl) yearEl.textContent = new Date().getFullYear();
+  const printDate = document.getElementById("printDateSpan");
+  if (printDate) printDate.textContent = new Date().toLocaleDateString();
+
+  loadStoredTools();
+  renderSetupToolsList();
+  suggestToolParameters();
+  toggleProfileInputs();
+  runQuickSpeedCalc();
+  generateSiemensTurningCode();
 });
 
-// Handle responsive canvas redraw on window resize
 window.addEventListener('resize', () => {
-    const turningView = document.getElementById('turning-view');
-    if (turningView && turningView.classList.contains('active')) {
-        initTurningCanvas(true);
-    }
+  const turningView = document.getElementById('turning-view');
+  if (turningView && turningView.classList.contains('active')) {
+    initTurningCanvas(true);
+  }
 });
 </script>
 
 </body>
 </html>
-
-
