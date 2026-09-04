@@ -10,7 +10,7 @@
   <title>Create Passport Size Photo Online Free | Passport Size Photo Editor Free</title>
   <link rel="icon" type="image/jpeg" href="logo.jpg">
   <link rel="apple-touch-icon" href="logo.jpg">
-  <meta name="description" content="Create passport size photo online free with our free passport size photo editor. Automatically remove background, add formal suit overlays, crop to 2x2 and 35x45mm specs, and export 4x6 print sheets.">
+  <meta name="description" content="Create passport size photo online free with our free passport size photo editor. Remove backgrounds, choose a photo size, crop your image, and export A4 or 4x6 sheets as PDF, JPG or PNG.">
   <meta name="keywords" content="create passport size photo online free, passport size photo editor free, free passport photo creator, online passport generator, biometric photo maker pro, id photo creator online">
   <link rel="canonical" href="https://shader7.com/photopassportsizepro/app.html" />
 
@@ -614,6 +614,23 @@
       text-transform: uppercase;
       margin-bottom: 6px;
     }
+
+    .workflow-nav { display:flex; flex-wrap:wrap; gap:10px; margin:0 0 20px; }
+    .workflow-nav a { padding:10px 14px; border:1px solid var(--glass-border); border-radius:999px; background:var(--glass-bg); color:var(--primary); text-decoration:none; font-weight:600; }
+    #upload-section, #settings-section, #preview-panel { scroll-margin-top:24px; }
+    .helper-text { color:var(--text-muted); font-size:.85rem; line-height:1.6; margin:10px 0 16px; overflow-wrap:anywhere; }
+    .preset-field { margin:10px 0; }
+    .layout-status { padding:12px 14px; border-radius:10px; background:rgba(99,102,241,.1); font-weight:600; line-height:1.5; }
+    .layout-status.layout-error { background:rgba(239,68,68,.1); color:var(--text-main); border:1px solid #ef4444; }
+    button:disabled { opacity:.5; cursor:not-allowed; transform:none !important; }
+    #upload-status { min-height:1.5em; }
+    @media(max-width:600px) {
+      .btn-main, .btn-secondary, .ai-remove-btn { white-space:normal; max-width:100%; overflow-wrap:anywhere; text-align:center; }
+      .split-view > *, .editor-toolbar > *, .header-content { min-width:0; }
+      .workflow-nav a { flex:1 1 140px; text-align:center; }
+      .canvas-wrapper { padding:10px; min-height:160px; }
+      .paper-options { flex-direction:column; }
+    }
   </style>
 
   <script type="application/ld+json">
@@ -626,7 +643,7 @@
         "name": "What are the standard dimensions for a passport photo?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Passport photo size requirements vary by country. For the United States and India, the standard size is 2x2 inches (51x51 mm). For the United Kingdom, Europe, Australia, and Canada, the standard size is 35x45 mm (3.5x4.5 cm). This online tool supports pre-configured templates for all these standard sizes."
+          "text": "Use the size requested for your specific document. The app offers 35 × 45 mm, 2 × 2 inches, 50 × 70 mm, 300 × 400 px, and custom dimensions. A size preset does not verify whether a photo meets application requirements."
         }
       },
       {
@@ -642,7 +659,7 @@
         "name": "What background color is required for passport photos?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Most international passport regulations require a plain white or off-white background. Some countries accept light gray or light blue backgrounds for visa and ID photos. Our tool allows you to instantly replace your background with official swatches (white, gray, light blue) or use a custom color picker."
+          "text": "Check the background colour requested for your document. After removing the background, choose a colour swatch or custom colour, then inspect the edges around your hair and clothing."
         }
       },
       {
@@ -694,6 +711,7 @@
   </header>
 
   <main>
+    <nav class="workflow-nav" aria-label="Photo workflow"><a href="#upload-section">1. Upload &amp; crop</a><a href="#settings-section">2. Size &amp; layout</a><a href="#preview-panel">3. Preview &amp; download</a></nav>
     <div style="max-width: 960px; margin: 0 auto 2rem auto; overflow: hidden; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);">
       <img class="app-banner-image" src="/assets/banners/passport-640.webp" srcset="/assets/banners/passport-640.webp 640w, /assets/banners/passport-1280.webp 1280w" sizes="(max-width: 1000px) calc(100vw - 32px), 960px" alt="" decoding="async" loading="eager" style="width:100%;height:auto;aspect-ratio:16/9;display:block;" width="640" height="360">
     </div>
@@ -730,7 +748,7 @@
       </a>
     </div>
 
-    <section class="card">
+    <section class="card" id="upload-section">
       <h2><i class="fa fa-image" aria-hidden="true"></i> 1. Upload &amp; Edit</h2>
 
       <div class="upload-wrapper">
@@ -743,6 +761,7 @@
         </div>
       </div>
 
+      <p id="upload-status" class="helper-text" role="status" aria-live="polite">JPG, PNG, WebP and other browser-supported images. Maximum 25 MB.</p>
       <div id="editor-container" class="hidden">
         <div class="editor-toolbar-wrapper">
           <div class="editor-toolbar">
@@ -769,12 +788,12 @@
                 <input type="color" id="bg-color-picker" value="#ffffff" aria-label="Custom background color">
               </div>
             </div>
-            <div class="ai-status-msg" id="ai-status"></div>
+            <div class="ai-status-msg" id="ai-status" role="status" aria-live="polite"></div>
           </div>
         </div>
 
         <div class="crop-container" id="crop-container">
-          <img loading="lazy" id="image-to-crop" src="" alt="Image to crop">
+          <img id="image-to-crop" src="" alt="Image to crop">
           <div id="bg-processing" class="processing-overlay hidden" aria-hidden="true">
             <div class="spinner"></div>
             <p id="processing-msg">Removing background...</p>
@@ -791,7 +810,7 @@
             <h3>Quick Actions</h3>
             <div class="btn-pill-group">
               <button class="btn-main" id="autofix-btn" type="button">
-                <i class="fa fa-wand-magic-sparkles"></i> Auto-Fix (300Ã—400 &amp; 35 px)
+                <i class="fa fa-wand-magic-sparkles"></i> Reset 300 × 400 px
               </button>
               <button class="btn-secondary" id="max-photos-btn" type="button">
                 <i class="fa fa-th"></i> Max Photos Per Page
@@ -799,7 +818,9 @@
             </div>
           </div>
           <div class="settings-group">
-            <h3>Photo &amp; DPI</h3>
+            <h3>Photo size</h3>
+            <div class="form-group preset-field"><label for="photo-preset">Size preset</label><select id="photo-preset"><option value="300x400">300 × 400 px</option><option value="35x45">35 × 45 mm</option><option value="2x2">2 × 2 inches</option><option value="50x70">50 × 70 mm</option><option value="custom">Custom dimensions</option></select></div>
+            <p class="helper-text">Choose the dimensions required for your document. Presets set the size; they do not check photo eligibility.</p>
             <div class="form-row">
               <div class="form-group">
                 <label for="unit">Unit</label>
@@ -827,12 +848,12 @@
           </div>
           <div class="settings-group">
             <h3>Paper &amp; Layout</h3>
-            <div class="form-row">
+            <div class="form-row paper-options">
               <div class="form-group">
                 <label for="page-size">Paper Size</label>
                 <select id="page-size">
-                  <option value="a4">A4 (210 Ã— 297 mm)</option>
-                  <option value="4r">4R (4" Ã— 6")</option>
+                  <option value="a4">A4 (210 × 297 mm)</option>
+                  <option value="4r">4R (4" × 6")</option>
                   <option value="custom">Custom</option>
                 </select>
               </div>
@@ -884,21 +905,25 @@
           </div>
         </div>
 
-        <div class="preview-panel">
-          <h3>Print Preview (scale-accurate, not squeezed)</h3>
+        <div class="preview-panel" id="preview-panel">
+          <h3>Print sheet preview</h3>
+          <p id="layout-status" class="layout-status" role="status" aria-live="polite"></p>
+          <p id="sheet-details" class="helper-text"></p>
           <div class="canvas-wrapper">
             <canvas id="output-canvas" aria-label="Print preview canvas"></canvas>
           </div>
+          <p class="helper-text">Choose PDF to preserve the paper dimensions, then print at 100% / actual size. For JPG or PNG, set the paper dimensions shown above. The sheet stays white in either app theme.</p>
           <div class="download-actions">
             <div class="form-group" style="max-width:120px;">
               <label for="format">Download Format</label>
               <select id="format">
                 <option value="jpg">JPG</option>
                 <option value="png">PNG</option>
+                <option value="pdf">PDF (print size)</option>
               </select>
             </div>
-            <button class="btn-main" id="download-btn" type="button"><i class="fa fa-download"></i> Download</button>
-            <button class="btn-main" id="download-hq-btn" type="button"><i class="fa fa-star"></i> HQ Download</button>
+            <button class="btn-main" id="download-btn" type="button" disabled><i class="fa fa-download"></i> Download</button>
+            <button class="btn-main" id="download-hq-btn" type="button" disabled><i class="fa fa-star"></i> Best-quality JPG</button>
           </div>
         </div>
       </div>
@@ -927,45 +952,19 @@
     <!-- Rich Educational Guide & Resources -->
     <section class="edu-guide-section">
       <h2 style="font-size: clamp(1.4rem, 4vw, 1.8rem); font-weight: 700; color: var(--primary);"><i class="fa fa-book-open"></i> Passport & Visa Photo Masterclass</h2>
-      <p style="color: var(--text-muted); margin-top: 0.25rem; font-size: 0.95rem;">Step-by-step DIY guidelines and official international parameters to guarantee visa approval.</p>
+      <p style="color: var(--text-muted); margin-top: 0.25rem; font-size: 0.95rem;">Tips for preparing your photo. Confirm the requirements with the authority requesting your document.</p>
 
       <div class="edu-grid">
-        <div class="edu-card">
-          <h3>Official Dimensional Ratios</h3>
-          <p>Government agencies enforce tight tolerances for facial alignment and framing in passport photography. Here are the core specifications:</p>
-          <ul>
-            <li><strong>Face Proportion:</strong> Your head (from the chin to the top of your hair) must occupy between 50% to 69% of the photo's overall height.</li>
-            <li><strong>Eye Height:</strong> Your eyes must align precisely with a level line situated 56% to 69% from the bottom of the photo edge.</li>
-            <li><strong>Digital Size:</strong> Recommended digital dimensions are 600px &times; 600px square, with a file resolution of exactly 300 DPI for high fidelity.</li>
-          </ul>
-        </div>
-
-        <div class="edu-card">
-          <h3>DIY Studio-Quality Lighting</h3>
-          <p>Proper lighting is the key to passing biometric passport scanners. Harsh shadows on your face or background are the number one cause of visa photo rejection:</p>
-          <ul>
-            <li><strong>Flat Lighting:</strong> Position yourself directly facing a bright window to get uniform, diffused front-light across your facial features.</li>
-            <li><strong>Eliminate Shadows:</strong> Avoid overhead lights or single side lamps. Use dual soft-lights positioned at 45-degree angles to balance contours.</li>
-            <li><strong>Plain Background:</strong> Background must be solid, even, and free of texture. Our client-side AI background remover replaces background elements automatically.</li>
-          </ul>
-        </div>
-
-        <div class="edu-card">
-          <h3>Preparation Checklist</h3>
-          <p>Be sure to complete this physical checklist before uploading your picture or taking a photo with your smartphone camera:</p>
-          <ul>
-            <li><strong>Neutral Expression:</strong> Look straight at the camera with a natural, unsmiling expression. Keep both eyes open and mouth closed.</li>
-            <li><strong>Attire & Accessories:</strong> Wear daily casual clothing. Uniforms, hats, or headcoverings (except for religious purposes) are not permitted. Glasses must be removed to avoid lens glare.</li>
-            <li><strong>High Contrast:</strong> Wear dark or colored clothing to contrast clearly against the required off-white/white background.</li>
-          </ul>
-        </div>
+        <div class="edu-card"><h3>Choose your photo size</h3><p>Select a preset or enter custom width and height. Set the unit first and confirm the dimensions required for your document.</p></div>
+        <div class="edu-card"><h3>Inspect your crop</h3><p>Keep the whole head in view and check the original image at a useful zoom. After background removal, inspect hair and clothing edges before exporting.</p></div>
+        <div class="edu-card"><h3>Check the print sheet</h3><p>Choose A4, 4 × 6 inches, or custom paper. The preview shows how many photos fit. Use PDF and print at actual size to preserve the paper dimensions.</p></div>
       </div>
 
       <div class="faq-container">
         <h3><i class="fa fa-question-circle"></i> Frequently Asked Questions</h3>
         <details class="faq-item">
           <summary class="faq-summary">What are the standard dimensions for a passport photo?</summary>
-          <p>Passport photo size requirements vary by country. For the United States and India, the standard size is 2x2 inches (51x51 mm). For the United Kingdom, Europe, Australia, and Canada, the standard size is 35x45 mm (3.5x4.5 cm). This online tool supports pre-configured templates for all these standard sizes.</p>
+          <p>Use the size requested for your specific document. The app offers 35 × 45 mm, 2 × 2 inches, 50 × 70 mm, 300 × 400 px, and custom dimensions. A size preset does not verify whether a photo meets application requirements.</p>
         </details>
 
         <details class="faq-item">
@@ -975,7 +974,7 @@
 
         <details class="faq-item">
           <summary class="faq-summary">What background color is required for passport photos?</summary>
-          <p>Most international passport regulations require a plain white or off-white background. Some countries accept light gray or light blue backgrounds for visa and ID photos. Our tool allows you to instantly replace your background with official swatches (white, gray, light blue) or use a custom color picker.</p>
+          <p>Check the background colour requested for your document. After removing the background, choose a colour swatch or custom colour, then inspect the edges around your hair and clothing.</p>
         </details>
 
         <details class="faq-item">
@@ -995,7 +994,7 @@
 
         <details class="faq-item">
           <summary class="faq-summary">Can I make a passport size photo with a blue background?</summary>
-          <p>Yes, absolutely! Many international passport and visa applications require specific background colors (like a white, light blue, or gray background). With Passport Photo Maker PRO, you can use the AI Background Remover to instantly isolate your silhouette, then click the blue background swatch or choose any custom shade from the color picker to set your background instantly.</p>
+          <p>Yes. Remove the background, then select the blue swatch or choose a custom shade. Confirm that the chosen colour is accepted for your intended document.</p>
         </details>
       </div>
 
@@ -1038,7 +1037,7 @@
   </footer>
 
   <div class="modal-glass" id="info-modal" aria-hidden="true">
-    <div class="modal-content" role="dialog" aria-labelledby="modal-title">
+    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modal-title">
       <button class="close-btn" id="close-info" aria-label="Close"><i class="fa fa-times"></i></button>
       <h2 id="modal-title"><i class="fa fa-info-circle"></i> How to Use</h2>
       <ul>
@@ -1046,55 +1045,16 @@
         <li>Use <b>Remove Background</b> &mdash; AI will process it locally on your device.</li>
         <li>Pick a background color from the swatches (white, blue, gray, custom) &mdash; updates live.</li>
         <li>Adjust crop so your face is correctly framed.</li>
-        <li>Use <b>Auto-Fix</b> to set 300Ã—400 px photos with 35 px margins &amp; gaps.</li>
+        <li>Choose a <b>Size preset</b>, or enter custom dimensions. Reset restores 300 × 400 px with 35 px margins and gaps.</li>
         <li>Check preview, enable cutlines / borders if desired.</li>
         <li>Download and print on your printer or at a print shop.</li>
       </ul>
     </div>
-    <div class="app-info-section">
-        <h3>ISO/IEC 19794-5 Biometric Standards for Passport Photography</h3>
-        <p>Creating travel documents requires strict compliance with international biometric standards set by the International Civil Aviation Organization (ICAO) and standard ISO/IEC 19794-5. Biometric face recognition engines process facial coordinates to ensure that passports can be scanned at electronic gates worldwide. Our Passport Photo PRO utility uses localized canvas operations to format photos precisely to these specs without server-side compression loss.</p>
-        
-        <p>The core biometric geometric ratio equations used inside our cropper are:</p>
-        <ul>
-            <li><strong>Head Height Percentage:</strong> The vertical distance from the chin to the top of the hair must occupy between <code>70% and 80%</code> of the total vertical frame height: <code>0.7 * H_frame &lt;= H_head &lt;= 0.8 * H_frame</code>.</li>
-            <li><strong>Eye Line Location:</strong> The distance from the bottom margin of the photo to the horizontal line passing through the centers of both eyes must be between <code>50% and 69%</code> of the frame height: <code>0.5 * H_frame &lt;= Y_eyes &lt;= 0.69 * H_frame</code>.</li>
-        </ul>
-
-        <h3>Step-by-Step DIY Biometric Lighting & Shoot Setup</h3>
-        <ol>
-            <li><strong>Establish a 3-Point Lighting Setup:</strong> To eliminate dark backgrounds and neck shadows, use a key light (main source at 45 degrees), a fill light (soft ambient source on the opposite side), and a dedicated background light pointing directly at your plain light-grey backdrop.</li>
-            <li><strong>Camera Positioning:</strong> Position your camera lens exactly at eye level. Looking upward or downward distorts facial metrics, causing automated biometric checks to raise a flag.</li>
-            <li><strong>Face and Gaze Position:</strong> Maintain a neutral facial expression, with no smiling, frowning, or head-tilt. Keep both eyes completely open and looking directly into the camera lens.</li>
-            <li><strong>Export and Print:</strong> Export the processed biometric sheet at 300 DPI on professional glossy photo paper (minimum weight of 180 gsm) to preserve edge definition.</li>
-        </ol>
-
-        <h3>Global Visa Specifications Matrix</h3>
-        <p>Different jurisdictions enforce varying crop dimensions for travel visas and passports. The PRO version includes preset ratios to cover all major international requirements:</p>
-        <ul>
-            <li><strong>United States & India:</strong> <code>2" x 2" (51mm x 51mm)</code>, with head height occupying 25mm to 35mm from chin to hair.</li>
-            <li><strong>Schengen (Europe) & United Kingdom:</strong> <code>35mm x 45mm</code>, with head height occupying 32mm to 36mm.</li>
-            <li><strong>Canada:</strong> <code>50mm x 70mm</code>, with the face height measuring 31mm to 36mm.</li>
-        </ul>
-
-        <h3>Passport Photo PRO Frequently Asked Questions (FAQ)</h3>
-        <p><strong>Q: Can I wear glasses in my passport photo?</strong><br>
-        A: In many countries (including the United States), glasses are strictly prohibited unless you have a signed medical statement. Even if allowed, there must be no glare on the lenses, and the frames must not obscure any part of your eyes.</p>
-        
-        <p><strong>Q: What is the ideal DPI for printing passport sheets?</strong><br>
-        A: You should print at a minimum of 300 DPI (Dots Per Inch). Printing at lower resolutions causes pixelation along borders, which can trigger biometric scanning errors during customs checks.</p>
-
-        <p><strong>Q: Why is my background color showing shadows?</strong><br>
-        A: Shadows occur when the subject stands too close to the wall or background screen. Stand approximately 2 to 3 feet (0.6 to 0.9 meters) away from the wall, and place a light source behind you pointing at the backdrop.</p>
-
-        <div class="guide-promo-box">
-            <p>Want to master 3-point studio lighting setups, biometric ratios, and camera distance mechanics?</p>
-            <a href="/passport-photo-lighting-setup.html" class="promo-btn">Read the Ultimate Biometric Lighting Guide (5,000+ Words) &rarr;</a>
-        </div>
-    </div>
   </div>
 
   <script src="../js/cropper.min.js"></script>
+  <script src="layout.js?v=20260904-improvements"></script>
+  <script src="../js/jspdf.umd.min.js"></script>
 
   <script>
     document.addEventListener('DOMContentLoaded', initializeApp);
@@ -1151,6 +1111,17 @@
       let bgColor = '#ffffff';
       let previousUnit = 'px';
       let activeSwatch = null;
+      let cropReady = false;
+      let cropRequest = 0;
+      let uploadRequest = 0;
+      let imageGeneration = 0;
+      let compositeRequest = 0;
+      let renderFrame = 0;
+      let exporting = false;
+      const uploadStatus = document.getElementById('upload-status');
+      const layoutStatus = document.getElementById('layout-status');
+      const sheetDetails = document.getElementById('sheet-details');
+      const photoPreset = document.getElementById('photo-preset');
 
       const BG_SWATCHES = [
         { color: '#ffffff', label: 'White' },
@@ -1187,6 +1158,12 @@
         renderCanvas();
       }
 
+      function setBackgroundBusy(busy) {
+        els.removeBgBtn.disabled = busy;
+        els.bgColorPicker.disabled = busy;
+        els.colorSwatches.querySelectorAll('button').forEach(button => { button.disabled = busy; });
+      }
+
       function applyBgColorToImage() {
         if (!bgRemovedBase64) return; 
         compositeTransparentPNG(bgRemovedBase64, bgColor, (compositeURL) => {
@@ -1195,8 +1172,18 @@
       }
 
       function compositeTransparentPNG(base64PNG, color, callback) {
+        const request = ++compositeRequest;
+        const generation = imageGeneration;
+        const fail = () => {
+          if (request !== compositeRequest || generation !== imageGeneration) return;
+          hideProcessingOverlay(); setBackgroundBusy(false);
+          setStatus('error', 'Could not apply the background. Try again.');
+        };
         const img = new Image();
+        img.onerror = fail;
         img.onload = () => {
+          if (request !== compositeRequest || generation !== imageGeneration) return;
+          try {
           const c = document.createElement('canvas');
           c.width = img.naturalWidth;
           c.height = img.naturalHeight;
@@ -1207,8 +1194,11 @@
           }
           ctx.drawImage(img, 0, 0);
           c.toBlob(blob => {
+            if (request !== compositeRequest || generation !== imageGeneration) return;
+            if (!blob) { fail(); return; }
             callback(URL.createObjectURL(blob));
           }, 'image/png');
+          } catch { fail(); }
         };
         img.src = base64PNG;
       }
@@ -1219,8 +1209,10 @@
           return;
         }
 
-        setStatus('loading', 'Initializing AI (Downloading model on first run)...');
-        els.removeBgBtn.disabled = true;
+        const generation = imageGeneration;
+        const file = currentFile;
+        setStatus('loading', 'Loading background removal. The first run may take a moment…');
+        setBackgroundBusy(true);
         showProcessingOverlay('AI is extracting the subject...');
 
         try {
@@ -1231,24 +1223,28 @@
             throw new Error("Could not locate the AI extraction function.");
           }
 
-          const transparentBlob = await imglyRemoveBackground(currentFile);
+          const transparentBlob = await imglyRemoveBackground(file);
 
+          if (generation !== imageGeneration) return;
           const reader = new FileReader();
-          reader.onloadend = () => {
+          reader.onerror = () => { if (generation !== imageGeneration) return; hideProcessingOverlay(); setBackgroundBusy(false); setStatus('error', 'Could not read the processed photo. Please try again.'); };
+          reader.onload = () => {
+            if (generation !== imageGeneration) return;
             bgRemovedBase64 = reader.result;
             compositeTransparentPNG(bgRemovedBase64, bgColor, (compositeURL) => {
               startCropper(compositeURL, false);
               hideProcessingOverlay();
-              els.removeBgBtn.disabled = false;
-              setStatus('success', '&#10003; Background removed perfectly! Pick a color below.');
+              setBackgroundBusy(false);
+              setStatus('success', 'Background removed. Check the edges and choose a background colour.');
             });
           };
           reader.readAsDataURL(transparentBlob);
 
         } catch (err) {
+          if (generation !== imageGeneration) return;
           console.error('AI Error:', err);
           hideProcessingOverlay();
-          els.removeBgBtn.disabled = false;
+          setBackgroundBusy(false);
 
           let errorMessage = 'AI Removal failed.';
           if (window.location.protocol === 'file:') {
@@ -1300,10 +1296,10 @@
       }
 
       function init() {
-        isDark = localStorage.getItem('theme') === 'dark';
+        try { isDark = localStorage.getItem('theme') === 'dark'; } catch { isDark = false; }
         if (isDark) { document.body.classList.add('dark'); updateThemeIcon(); }
-        if (!els.customWidth.value) els.customWidth.value = 210;
-        if (!els.customHeight.value) els.customHeight.value = 297;
+        if (!els.customWidth.value) els.customWidth.value = Math.round(toPx(210, 'mm'));
+        if (!els.customHeight.value) els.customHeight.value = Math.round(toPx(297, 'mm'));
         els.unit.value = 'px';
         previousUnit = 'px';
         buildSwatches();
@@ -1355,17 +1351,28 @@
           el.addEventListener('change', handleSettingsChange);
         });
 
+        photoPreset.addEventListener('change', () => {
+          const presets = { '300x400': ['px',300,400], '35x45': ['mm',35,45], '2x2': ['inch',2,2], '50x70': ['mm',50,70] };
+          const preset = presets[photoPreset.value];
+          if (!preset) return;
+          els.unit.value = preset[0]; handleUnitChange();
+          els.photoWidth.value = preset[1]; els.photoHeight.value = preset[2];
+          updateCropperAspectRatio(); renderCanvas();
+        });
         els.autofixBtn.addEventListener('click', autoFixLayout);
         els.maxPhotosBtn.addEventListener('click', maxPhotosPerPage);
+        els.format.addEventListener('change', () => els.downloadHQBtn.classList.toggle('hidden', els.format.value !== 'jpg'));
         els.downloadBtn.addEventListener('click', () => downloadOutput(false));
         els.downloadHQBtn.addEventListener('click', () => downloadOutput(true));
         els.themeBtn.addEventListener('click', toggleTheme);
 
-        els.infoBtn.addEventListener('click', () => { els.infoModal.classList.add('active'); els.infoModal.setAttribute('aria-hidden','false'); });
+        els.infoBtn.addEventListener('click', () => { els.infoModal.classList.add('active'); els.infoModal.setAttribute('aria-hidden','false'); els.closeInfo.focus(); });
         els.closeInfo.addEventListener('click', closeModal);
         els.infoModal.addEventListener('click', e => { if (e.target === els.infoModal) closeModal(); });
         document.addEventListener('keydown', e => { if (e.key === 'Escape' && els.infoModal.classList.contains('active')) closeModal(); });
-        window.addEventListener('resize', () => renderCanvas());
+        els.infoModal.addEventListener('keydown', e => {
+          if (e.key === 'Tab') { e.preventDefault(); els.closeInfo.focus(); }
+        });
         window.addEventListener('beforeunload', cleanupImageURLs);
       }
 
@@ -1373,11 +1380,11 @@
         const el = e.target;
         if (el === els.pageSize) handlePageSizeChange();
         if (el === els.unit) handleUnitChange();
-        if (el === els.photoWidth || el === els.photoHeight) updateCropperAspectRatio();
+        if (el === els.photoWidth || el === els.photoHeight) { photoPreset.value = 'custom'; updateCropperAspectRatio(); }
         renderCanvas();
       }
 
-      function closeModal() { els.infoModal.classList.remove('active'); els.infoModal.setAttribute('aria-hidden','true'); }
+      function closeModal() { els.infoModal.classList.remove('active'); els.infoModal.setAttribute('aria-hidden','true'); els.infoBtn.focus(); }
 
       function handleFileSelect(e) {
         const file = e.target.files && e.target.files[0];
@@ -1386,36 +1393,50 @@
       }
 
       function handleFile(file) {
-        const allowedExtensions = ['jpg','jpeg','png','webp','bmp','gif','tif','tiff','avif','heic','heif'];
-        const ext = (file.name || '').includes('.') ? file.name.split('.').pop().toLowerCase() : '';
-        if (!ext || !allowedExtensions.includes(ext)) { alert('Unsupported format. Supported: JPG, PNG, WEBP, BMP, GIF, TIFF, AVIF, HEIC.'); return; }
-        if (file.size > 25 * 1024 * 1024) { alert('File too large. Max 25MB.'); return; }
-
-        cleanupImageURLs();
-        bgRemovedBase64 = null;
-        currentFile = file;
-        originalImageURL = URL.createObjectURL(file);
-        currentImageURL = originalImageURL;
-        els.editorContainer.classList.remove('hidden');
-        setStatus('', '');
-
-        const cropContainer = document.querySelector('.crop-container');
-        if (cropContainer) { cropContainer.classList.add('pulse-effect'); setTimeout(() => cropContainer.classList.remove('pulse-effect'), 1200); }
-        startCropper(currentImageURL, true);
+        const request = ++uploadRequest;
+        const ext = (file.name || '').split('.').pop().toLowerCase();
+        if (!file.type.startsWith('image/') && !['jpg','jpeg','png','webp','bmp','gif','tif','tiff','avif','heic','heif'].includes(ext)) {
+          uploadStatus.textContent = 'Choose an image file, such as JPG, PNG or WebP.'; return;
+        }
+        if (!file.size || file.size > 25 * 1024 * 1024) { uploadStatus.textContent = 'Choose a non-empty image smaller than 25 MB.'; return; }
+        const candidate = URL.createObjectURL(file);
+        const probe = new Image();
+        uploadStatus.textContent = 'Opening photo…';
+        probe.onerror = () => { URL.revokeObjectURL(candidate); if (request === uploadRequest) uploadStatus.textContent = 'This image could not be opened. Try exporting it as JPG or PNG. Your previous photo is unchanged.'; };
+        probe.onload = () => {
+          if (request !== uploadRequest) { URL.revokeObjectURL(candidate); return; }
+          if (!probe.naturalWidth || probe.naturalWidth * probe.naturalHeight > 40000000) {
+            URL.revokeObjectURL(candidate); uploadStatus.textContent = 'Choose an image up to 40 megapixels. Your previous photo is unchanged.'; return;
+          }
+          imageGeneration++; compositeRequest++;
+          cleanupImageURLs();
+          bgRemovedBase64 = null; currentFile = file; originalImageURL = candidate;
+          els.editorContainer.classList.remove('hidden');
+          hideProcessingOverlay(); setBackgroundBusy(false); setStatus('', '');
+          uploadStatus.textContent = `${file.name} · ${probe.naturalWidth} × ${probe.naturalHeight} px`;
+          startCropper(candidate, true);
+        };
+        probe.src = candidate;
       }
 
       function cleanupImageURLs() {
-        if (originalImageURL) { URL.revokeObjectURL(originalImageURL); originalImageURL = null; }
-        if (currentImageURL && currentImageURL !== originalImageURL) { URL.revokeObjectURL(currentImageURL); currentImageURL = null; }
+        new Set([originalImageURL, currentImageURL]).forEach(url => { if (url) URL.revokeObjectURL(url); });
+        originalImageURL = null; currentImageURL = null;
       }
 
       function startCropper(url, isNewFile = false) {
+        const request = ++cropRequest;
+        cropReady = false;
         if (cropper) { cropper.destroy(); cropper = null; }
+        if (currentImageURL && currentImageURL !== originalImageURL && currentImageURL !== url) URL.revokeObjectURL(currentImageURL);
+        currentImageURL = url;
         const img = els.imageToCrop;
-        img.src = url;
-        if (isNewFile) currentImageURL = url;
+        img.onload = null; img.onerror = null;
+        renderCanvas();
 
         function initializeCropper() {
+          if (request !== cropRequest) return;
+          img.onload = null;
           try {
             cropper = new Cropper(img, {
               viewMode: 1,
@@ -1429,28 +1450,30 @@
               cropBoxMovable: true,
               cropBoxResizable: true,
               toggleDragModeOnDblclick: false,
-              ready() { updateCropperAspectRatio(); renderCanvas(); },
+              ready() { if (request !== cropRequest) return; cropReady = true; updateCropperAspectRatio(); renderCanvas(); },
+              crop() { if (cropReady) renderCanvas(); },
               cropend() { renderCanvas(); }
             });
           } catch (error) {
             console.error('Cropper initialization error:', error);
-            alert('Failed to initialize cropper. Please try again with a different image.');
+            uploadStatus.textContent = 'The photo editor could not start. Reload the page and try again.';
+            cropReady = false; renderCanvas();
           }
         }
 
-        if (img.complete && img.naturalWidth) { initializeCropper(); }
-        else { img.onload = initializeCropper; }
+        img.onload = initializeCropper;
         img.onerror = function() {
           console.error('Image failed to load');
-          alert('Failed to load image. Your browser might not support this format.');
-          cleanupImageURLs();
+          uploadStatus.textContent = 'Could not open the photo. Try a JPG or PNG image.';
+          cropReady = false; cleanupImageURLs(); renderCanvas();
         };
+        img.src = url;
       }
 
       function getAspectRatio() {
-        const w = validateNumber(els.photoWidth.value || 300, 1, 10000);
-        const h = validateNumber(els.photoHeight.value || 400, 1, 10000);
-        return w / h;
+        const w = Number(els.photoWidth.value);
+        const h = Number(els.photoHeight.value);
+        return Number.isFinite(w) && Number.isFinite(h) && w > 0 && h > 0 ? w / h : NaN;
       }
 
       function updateCropperAspectRatio() {
@@ -1475,7 +1498,7 @@
       function getDims() {
         const unit = els.unit.value;
         return {
-          w: toPx(els.photoWidth.value || 300, unit), h: toPx(els.photoHeight.value || 400, unit),
+          w: toPx(els.photoWidth.value, unit), h: toPx(els.photoHeight.value, unit),
           gapH: toPx(els.hSpacing.value || 0, unit), gapV: toPx(els.vSpacing.value || 0, unit),
           marginT: toPx(els.marginTop.value || 0, unit), marginL: toPx(els.marginLeft.value || 0, unit)
         };
@@ -1484,8 +1507,8 @@
         const unit = els.unit.value; const type = els.pageSize.value;
         if (type === 'a4') return { w: toPx(210,'mm'), h: toPx(297,'mm') };
         if (type === '4r') return { w: toPx(4,'inch'), h: toPx(6,'inch') };
-        const w = els.customWidth.value ? toPx(els.customWidth.value, unit) : toPx(210,'mm');
-        const h = els.customHeight.value ? toPx(els.customHeight.value, unit) : toPx(297,'mm');
+        const w = toPx(els.customWidth.value, unit);
+        const h = toPx(els.customHeight.value, unit);
         return { w, h };
       }
 
@@ -1503,6 +1526,8 @@
           input.value = newUnit === 'px' ? Math.round(newVal) : newVal.toFixed(2);
         });
         previousUnit = newUnit;
+        inputs.forEach(input => { input.step = newUnit === 'px' ? '1' : '0.01'; });
+        [els.photoWidth,els.photoHeight,els.customWidth,els.customHeight].forEach(input => { input.min = newUnit === 'px' ? '1' : '0.01'; });
         updateCropperAspectRatio();
         renderCanvas();
       }
@@ -1510,26 +1535,16 @@
       function handlePageSizeChange() {
         const isCustom = els.pageSize.value === 'custom';
         els.customPageSize.classList.toggle('hidden', !isCustom);
-        if (isCustom) { if (!els.customWidth.value) els.customWidth.value = 210; if (!els.customHeight.value) els.customHeight.value = 297; }
+        if (isCustom) { if (!els.customWidth.value) els.customWidth.value = fromPx(toPx(210,'mm'), els.unit.value).toFixed(2); if (!els.customHeight.value) els.customHeight.value = fromPx(toPx(297,'mm'), els.unit.value).toFixed(2); }
         renderCanvas();
       }
 
-      function computePerRow(dims, page) {
-        const available = page.w - dims.marginL;
-        if (available <= dims.w) return 1;
-        const denom = dims.w + dims.gapH;
-        if (denom <= 0) return 1;
-        return Math.max(1, Math.floor((available - dims.w) / denom) + 1);
-      }
-      function computeMaxRows(dims, page) {
-        const available = page.h - dims.marginT;
-        if (available <= dims.h) return 1;
-        const denom = dims.h + dims.gapV;
-        if (denom <= 0) return 1;
-        return Math.max(1, Math.floor((available - dims.h) / denom) + 1);
-      }
+      function computePerRow(dims, page) { return PassportLayout.calculateLayout(dims, page, 1).columns; }
+      function computeMaxRows(dims, page) { return PassportLayout.calculateLayout(dims, page, 1).rows; }
 
       function autoFixLayout() {
+        photoPreset.value = '300x400';
+        els.unit.value = 'px'; handleUnitChange();
         const unit = els.unit.value;
         function pxToCurrent(px) { const val = fromPx(px, unit); return unit === 'px' ? Math.round(val) : val.toFixed(2); }
         els.photoWidth.value = pxToCurrent(300);
@@ -1548,7 +1563,9 @@
 
       function maxPhotosPerPage() {
         const dims = getDims(); const page = getPageSize();
-        els.numPhotos.value = computePerRow(dims, page) * computeMaxRows(dims, page);
+        const capacity = computePerRow(dims, page) * computeMaxRows(dims, page);
+        if (!capacity) { renderCanvas(); return; }
+        els.numPhotos.value = Math.min(200, capacity);
         renderCanvas();
         const orig = els.maxPhotosBtn.innerHTML;
         els.maxPhotosBtn.innerHTML = '<i class="fa fa-check"></i> Maxed';
@@ -1557,18 +1574,33 @@
       }
 
       function renderCanvas() {
+        if (renderFrame) cancelAnimationFrame(renderFrame);
+        renderFrame = requestAnimationFrame(() => { renderFrame = 0; renderCanvasNow(); });
+      }
+
+      function renderCanvasNow() {
         const canvas = els.outputCanvas;
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
         const page = getPageSize(); const dims = getDims();
-        const count = Math.max(1, parseInt(els.numPhotos.value || '1', 10) || 1);
+        const count = Number(els.numPhotos.value);
+        const layout = PassportLayout.calculateLayout(dims, page, count);
+        const dpiValid = !!els.dpi.value && els.dpi.checkValidity();
+        const message = !dpiValid ? 'Enter a DPI from 72 to 1200.' : layout.error;
+        const ready = dpiValid && layout.valid && cropReady && !!cropper;
+        els.downloadBtn.disabled = els.downloadHQBtn.disabled = exporting || !ready;
+        sheetDetails.textContent = layout.capacity ? `${Math.round(page.w)} × ${Math.round(page.h)} px · ${(page.w / getDPI() * 25.4).toFixed(1)} × ${(page.h / getDPI() * 25.4).toFixed(1)} mm · ${getDPI()} DPI · ${layout.capacity} photos fit` : '';
+        layoutStatus.textContent = message || (!cropReady ? 'Upload a photo to create your print sheet.' : `${count} photos ready on one sheet.`);
+        layoutStatus.classList.toggle('layout-error', !!message);
+        canvas.parentElement.classList.toggle('hidden', !dpiValid || !layout.valid);
+        if (!dpiValid || !layout.valid) { canvas.width = 1; canvas.height = 1; return false; }
         const pageW = Math.max(1, Math.round(page.w));
         const pageH = Math.max(1, Math.round(page.h));
         canvas.width = pageW; canvas.height = pageH;
         canvas.style.width = '100%'; canvas.style.height = 'auto';
-        ctx.fillStyle = isDark ? '#111827' : '#ffffff';
+        ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, pageW, pageH);
-        if (!cropper) return;
+        if (!cropper || !cropReady) return false;
 
         const perRow = computePerRow(dims, page);
         if (perRow < 1) return;
@@ -1576,14 +1608,19 @@
         if (maxRows < 1) return;
         const photosToDraw = Math.min(count, perRow * maxRows);
 
-        const cropCanvas = cropper.getCroppedCanvas({
+        let cropCanvas;
+        try { cropCanvas = cropper.getCroppedCanvas({
           width: Math.max(1, Math.round(dims.w)),
           height: Math.max(1, Math.round(dims.h)),
           imageSmoothingEnabled: true,
           imageSmoothingQuality: 'high',
           fillColor: bgColor === 'transparent' ? 'rgba(0,0,0,0)' : bgColor
-        });
-        if (!cropCanvas) return;
+        }); } catch (error) { cropCanvas = null; }
+        if (!cropCanvas) {
+          els.downloadBtn.disabled = els.downloadHQBtn.disabled = true;
+          layoutStatus.textContent = 'The image could not be rendered. Lower the DPI or try a smaller image.';
+          layoutStatus.classList.add('layout-error'); return false;
+        }
 
         const showBorder = els.addBorder.checked;
         for (let i = 0; i < photosToDraw; i++) {
@@ -1644,34 +1681,52 @@
           }
           ctx.restore();
         }
+        return true;
       }
 
       function downloadOutput(highQuality) {
-        if (highQuality) {
-          }
+        if (exporting || !renderCanvasNow()) return;
         const ext = els.format.value || 'jpg';
         const mime = ext === 'jpg' ? 'image/jpeg' : 'image/png';
         const quality = highQuality ? 1.0 : 0.92;
-        const filename = 'passport-photo-' + Date.now() + '.' + ext;
+        const filename = `passport-sheet-${els.outputCanvas.width}x${els.outputCanvas.height}-${getDPI()}dpi.${ext}`;
+        const paper = getPageSize();
+        const printWidth = paper.w / getDPI() * 25.4;
+        const printHeight = paper.h / getDPI() * 25.4;
+        exporting = true;
+        els.downloadBtn.disabled = els.downloadHQBtn.disabled = true;
         const btn = highQuality ? els.downloadHQBtn : els.downloadBtn;
-        const orig = btn.innerHTML;
-        btn.disabled = true; btn.innerHTML = '<i class="fa fa-check"></i> Downloaded'; btn.classList.add('btn-success');
-        els.outputCanvas.toBlob(blob => {
-          if (!blob) { alert('Error: Could not generate image. Please try again.'); btn.innerHTML = orig; btn.disabled = false; btn.classList.remove('btn-success'); return; }
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.href = url; link.download = filename;
-          document.body.appendChild(link); link.click();
-          setTimeout(() => { document.body.removeChild(link); URL.revokeObjectURL(url); }, 200);
-        }, mime, quality);
-        setTimeout(() => { btn.innerHTML = orig; btn.disabled = false; btn.classList.remove('btn-success'); }, 2000);
+        const originalLabel = btn.innerHTML;
+        btn.textContent = 'Preparing…';
+        const finish = message => {
+          exporting = false; btn.innerHTML = originalLabel; renderCanvasNow();
+          if (message) layoutStatus.textContent = message;
+        };
+        try {
+          if (ext === 'pdf') {
+            if (!window.jspdf?.jsPDF) { finish('PDF tools could not load. Reload the page or choose JPG / PNG.'); return; }
+            const pdf = new window.jspdf.jsPDF({ orientation: printWidth > printHeight ? 'landscape' : 'portrait', unit: 'mm', format: [printWidth, printHeight], compress: true });
+            pdf.addImage(els.outputCanvas, 'PNG', 0, 0, printWidth, printHeight, undefined, 'FAST');
+            pdf.save(filename);
+            finish('Your PDF download is ready. Print at 100% / actual size.'); return;
+          }
+          els.outputCanvas.toBlob(blob => {
+            if (!blob) { finish('Export failed. Lower the DPI and try again.'); return; }
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url; link.download = filename;
+            document.body.appendChild(link); link.click(); link.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 10000);
+            finish('Your print sheet download is ready.');
+          }, mime, quality);
+        } catch (error) { finish('Export failed. Lower the DPI and try again.'); }
       }
 
       function toggleTheme() {
         isDark = !isDark;
         document.body.classList.toggle('dark', isDark);
-        localStorage.setItem('theme', isDark ? 'dark' : 'light');
-        updateThemeIcon(); renderCanvas();
+        try { localStorage.setItem('theme', isDark ? 'dark' : 'light'); } catch { /* Theme still works without storage. */ }
+        updateThemeIcon();
       }
       function updateThemeIcon() {
         const icon = els.themeBtn.querySelector('i');
