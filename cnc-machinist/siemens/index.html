@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <script src="../../js/theme.js"></script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-FCJR8H4DME"></script>
@@ -34,17 +34,55 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
   <style>
-    :root {
+    :root, [data-theme="light"] {
+      --bg-page: #f8fafc;
+      --bg-card: #ffffff;
+      --bg-input: #ffffff;
+      --bg-input-focus: #f0fdfa;
+      --primary: #0891b2; /* Siemens Cyan/Teal */
+      --primary-glow: rgba(8, 145, 178, 0.16);
+      --primary-hover: #0e7490;
+      --accent-orange: #d97706;
+      --accent-orange-glow: rgba(217, 119, 6, 0.14);
+      --accent-blue: #2563eb;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --text-label: #334155;
+      --border: #cbd5e1;
+      --border-hover: #94a3b8;
+      --danger: #dc2626;
+      --safe-color: #059669;
+      --font-main: 'Outfit', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --glass-bg: #ffffff;
+      --glass-border: #e2e8f0;
+      --shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.08), 0 2px 6px -1px rgba(15, 23, 42, 0.04);
+      --code-bg: #ffffff;
+      --code-header-bg: #f8fafc;
+      --sim-box-bg: #ffffff;
+      --sim-hud-bg: #f8fafc;
+      --canvas-bg: #f8fafc;
+      --dro-val-color: #0284c7;
+      --gcode-cmd-color: #0284c7;
+      --gcode-coord-color: #d97706;
+      --gcode-val-color: #0f172a;
+      --gcode-feed-color: #059669;
+      --gcode-speed-color: #7c3aed;
+      --gcode-tool-color: #e11d48;
+      --gcode-comment-color: #64748b;
+    }
+
+    [data-theme="dark"] {
       --bg-page: #060913;
       --bg-card: #0c1125;
       --bg-input: #04060e;
       --bg-input-focus: #09122d;
-      --primary: #0aa3b5; /* Siemens Teal Accent */
+      --primary: #0aa3b5;
       --primary-glow: rgba(10, 163, 181, 0.18);
       --primary-hover: #0dc2d6;
       --accent-orange: #f59e0b;
       --accent-orange-glow: rgba(245, 158, 11, 0.15);
-      --accent-blue: #2563eb;
+      --accent-blue: #3b82f6;
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
       --text-label: #cbd5e1;
@@ -52,31 +90,22 @@
       --border-hover: #2e3d75;
       --danger: #ef4444;
       --safe-color: #10b981;
-      --font-main: 'Outfit', sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
       --glass-bg: rgba(12, 17, 37, 0.94);
       --glass-border: rgba(10, 163, 181, 0.22);
       --shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
-    }
-
-    [data-theme="light"] {
-      --bg-page: #f1f5f9;
-      --bg-card: #ffffff;
-      --bg-input: #ffffff;
-      --bg-input-focus: #f0fdfa;
-      --primary: #0891b2;
-      --primary-glow: rgba(8, 145, 178, 0.18);
-      --primary-hover: #0e7490;
-      --accent-orange: #d97706;
-      --accent-orange-glow: rgba(217, 119, 6, 0.15);
-      --text-main: #0f172a;
-      --text-muted: #64748b;
-      --text-label: #334155;
-      --border: #cbd5e1;
-      --border-hover: #94a3b8;
-      --glass-bg: rgba(255, 255, 255, 0.96);
-      --glass-border: rgba(8, 145, 178, 0.28);
-      --shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+      --code-bg: #020409;
+      --code-header-bg: #080c1b;
+      --sim-box-bg: #020409;
+      --sim-hud-bg: #080d1e;
+      --canvas-bg: #020409;
+      --dro-val-color: #38bdf8;
+      --gcode-cmd-color: #38bdf8;
+      --gcode-coord-color: #f59e0b;
+      --gcode-val-color: #ffffff;
+      --gcode-feed-color: #34d399;
+      --gcode-speed-color: #a78bfa;
+      --gcode-tool-color: #f43f5e;
+      --gcode-comment-color: #64748b;
     }
 
     * {
@@ -89,8 +118,8 @@
       font-family: var(--font-main);
       background: var(--bg-page);
       background-image: 
-        radial-gradient(circle at 10% 20%, rgba(10, 163, 181, 0.05) 0%, transparent 40%),
-        radial-gradient(circle at 90% 80%, rgba(37, 99, 235, 0.05) 0%, transparent 40%);
+        radial-gradient(circle at 10% 20%, rgba(8, 145, 178, 0.04) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(37, 99, 235, 0.03) 0%, transparent 40%);
       background-attachment: fixed;
       color: var(--text-main);
       padding: 12px;
@@ -499,17 +528,19 @@
     }
 
     .kpi-card {
-      background: rgba(0, 0, 0, 0.25);
+      background: #f8fafc;
       border: 1px solid var(--border);
       border-radius: 10px;
       padding: 10px 12px;
       display: flex;
       flex-direction: column;
       gap: 2px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
     }
 
-    [data-theme="light"] .kpi-card {
-      background: #f8fafc;
+    [data-theme="dark"] .kpi-card {
+      background: rgba(0, 0, 0, 0.35);
+      border-color: var(--border);
     }
 
     .kpi-label {
@@ -534,16 +565,16 @@
 
     /* Simulation View & DRO */
     .sim-container-box {
-      background: #020409;
+      background: var(--sim-box-bg);
       border: 1px solid var(--border);
       border-radius: 14px;
       overflow: hidden;
       margin-bottom: 20px;
-      box-shadow: inset 0 2px 8px rgba(0,0,0,0.5);
+      box-shadow: var(--shadow);
     }
 
     .sim-top-hud {
-      background: #080d1e;
+      background: var(--sim-hud-bg);
       border-bottom: 1px solid var(--border);
       padding: 8px 14px;
       display: flex;
@@ -563,7 +594,7 @@
 
     .dro-val {
       font-weight: 800;
-      color: #38bdf8;
+      color: var(--dro-val-color);
     }
 
     .dro-val span {
@@ -584,7 +615,7 @@
     }
 
     .sim-controls-footer {
-      background: #080d1e;
+      background: var(--sim-hud-bg);
       border-top: 1px solid var(--border);
       padding: 10px 14px;
       display: flex;
@@ -629,7 +660,7 @@
 
     /* G-code output editor panel */
     .gcode-panel {
-      background: #020409;
+      background: var(--code-bg);
       border: 1px solid var(--border);
       border-radius: 14px;
       overflow: hidden;
@@ -639,7 +670,7 @@
     }
 
     .gcode-header-bar {
-      background: #080c1b;
+      background: var(--code-header-bg);
       border-bottom: 1px solid var(--border);
       padding: 10px 16px;
       display: flex;
@@ -703,8 +734,8 @@
       font-family: var(--font-mono);
       font-size: 0.86rem;
       line-height: 1.6;
-      color: #e2e8f0;
-      background: #020409;
+      color: var(--text-main);
+      background: var(--code-bg);
     }
 
     .gcode-line {
@@ -712,13 +743,13 @@
       white-space: pre;
     }
 
-    .gcode-comment { color: #64748b; font-style: italic; }
-    .gcode-cmd { color: #38bdf8; font-weight: 700; }
-    .gcode-coord { color: #f59e0b; font-weight: 700; }
-    .gcode-val { color: #ffffff; }
-    .gcode-feed { color: #34d399; font-weight: 700; }
-    .gcode-speed { color: #a78bfa; font-weight: 700; }
-    .gcode-tool { color: #f43f5e; font-weight: 700; }
+    .gcode-comment { color: var(--gcode-comment-color); font-style: italic; }
+    .gcode-cmd { color: var(--gcode-cmd-color); font-weight: 700; }
+    .gcode-coord { color: var(--gcode-coord-color); font-weight: 700; }
+    .gcode-val { color: var(--gcode-val-color); }
+    .gcode-feed { color: var(--gcode-feed-color); font-weight: 700; }
+    .gcode-speed { color: var(--gcode-speed-color); font-weight: 700; }
+    .gcode-tool { color: var(--gcode-tool-color); font-weight: 700; }
 
     /* Interactive Direction Selector */
     .dir-helper-grid {
@@ -728,7 +759,7 @@
       width: 100%;
       max-width: 240px;
       margin: 0 auto 15px;
-      background: #020409;
+      background: var(--bg-page);
       padding: 8px;
       border-radius: 12px;
       border: 1px solid var(--border);
@@ -811,15 +842,21 @@
     }
 
     .preset-pill {
-      background: rgba(10, 163, 181, 0.08);
-      border: 1px solid var(--border);
-      color: var(--text-main);
+      background: #f0fdfa;
+      border: 1px solid #99f6e4;
+      color: #0f766e;
       padding: 5px 10px;
       border-radius: 6px;
       font-size: 0.72rem;
       font-weight: 700;
       cursor: pointer;
       transition: all 0.18s;
+    }
+
+    [data-theme="dark"] .preset-pill {
+      background: rgba(10, 163, 181, 0.1);
+      border-color: var(--border);
+      color: var(--text-main);
     }
 
     .preset-pill:hover {
@@ -2269,14 +2306,34 @@ function drawTurningFrame() {
   const ctx = turnCtx;
   const w = turnCanvas.width;
   const h = turnCanvas.height;
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
   
-  ctx.fillStyle = "#020409";
+  // Canvas background
+  ctx.fillStyle = isDark ? "#020409" : "#f8fafc";
   ctx.fillRect(0, 0, w, h);
+
+  // Subtle coordinate grid for light mode
+  if (!isDark) {
+    ctx.strokeStyle = "#e2e8f0";
+    ctx.lineWidth = 1;
+    for (let gx = 0; gx < w; gx += 40) {
+      ctx.beginPath();
+      ctx.moveTo(gx, 0);
+      ctx.lineTo(gx, h);
+      ctx.stroke();
+    }
+    for (let gy = 0; gy < h; gy += 40) {
+      ctx.beginPath();
+      ctx.moveTo(0, gy);
+      ctx.lineTo(w, gy);
+      ctx.stroke();
+    }
+  }
   
-  // Centerline
-  ctx.strokeStyle = "rgba(10, 163, 181, 0.2)";
+  // Lathe Centerline
+  ctx.strokeStyle = isDark ? "rgba(10, 163, 181, 0.25)" : "rgba(8, 145, 178, 0.4)";
   ctx.lineWidth = 1;
-  ctx.setLineDash([6, 4]);
+  ctx.setLineDash([8, 4]);
   ctx.beginPath();
   ctx.moveTo(0, h / 2);
   ctx.lineTo(w, h / 2);
@@ -2292,16 +2349,23 @@ function drawTurningFrame() {
   const chuckFaceX = Math.max(45, z0_x - (visualLen + 22) * zScale);
   
   // Chuck Jaws
-  ctx.fillStyle = "#1e294b";
+  ctx.fillStyle = isDark ? "#1e294b" : "#94a3b8";
   ctx.fillRect(0, center_y - 60, chuckFaceX, 120);
-  ctx.strokeStyle = "rgba(10, 163, 181, 0.4)";
+  ctx.strokeStyle = isDark ? "rgba(10, 163, 181, 0.4)" : "#64748b";
   ctx.lineWidth = 2;
   ctx.strokeRect(0, center_y - 60, chuckFaceX, 120);
+  
+  // Chuck stepped detail lines in light mode
+  if (!isDark) {
+    ctx.strokeStyle = "#cbd5e1";
+    ctx.lineWidth = 1;
+    ctx.strokeRect(0, center_y - 45, chuckFaceX, 90);
+  }
   
   // Workpiece material
   const visibleProfile = materialCutProfile.filter(n => n.z >= -visualLen - 0.01 && n.z <= 0.01);
   
-  ctx.fillStyle = "#334155";
+  ctx.fillStyle = isDark ? "#334155" : "#64748b";
   ctx.beginPath();
   ctx.moveTo(chuckFaceX, center_y);
   ctx.lineTo(chuckFaceX, center_y - (visualBlankDia / 2) * xScale);
@@ -2326,8 +2390,8 @@ function drawTurningFrame() {
   ctx.fill();
 
   // Outline
-  ctx.strokeStyle = "#64748b";
-  ctx.lineWidth = 1.2;
+  ctx.strokeStyle = isDark ? "#64748b" : "#334155";
+  ctx.lineWidth = 1.4;
   ctx.stroke();
 
   // Draw Tool Holder & Insert
@@ -2335,7 +2399,7 @@ function drawTurningFrame() {
   const toolPy = center_y - (toolX / 2) * xScale;
   
   // Steel shank
-  ctx.fillStyle = "#0f172a";
+  ctx.fillStyle = "#1e293b";
   ctx.beginPath();
   ctx.moveTo(toolPx, toolPy);
   ctx.lineTo(toolPx + 14, toolPy - 24);
@@ -2347,7 +2411,7 @@ function drawTurningFrame() {
   ctx.stroke();
   
   // Gold carbide insert
-  ctx.fillStyle = "#eab308";
+  ctx.fillStyle = isDark ? "#eab308" : "#f59e0b";
   ctx.beginPath();
   ctx.moveTo(toolPx, toolPy);
   ctx.lineTo(toolPx + 8, toolPy - 10);
@@ -2355,13 +2419,13 @@ function drawTurningFrame() {
   ctx.lineTo(toolPx + 8, toolPy + 3);
   ctx.closePath();
   ctx.fill();
-  ctx.strokeStyle = "#ffffff";
+  ctx.strokeStyle = isDark ? "#ffffff" : "#b45309";
   ctx.stroke();
 
   // Nose point highlight
-  ctx.fillStyle = "#38bdf8";
+  ctx.fillStyle = isDark ? "#38bdf8" : "#0284c7";
   ctx.beginPath();
-  ctx.arc(toolPx, toolPy, 2.5, 0, Math.PI * 2);
+  ctx.arc(toolPx, toolPy, 2.8, 0, Math.PI * 2);
   ctx.fill();
 }
 
@@ -2769,6 +2833,17 @@ window.addEventListener('load', () => {
   runQuickSpeedCalc();
   generateSiemensTurningCode();
 });
+
+
+// Re-draw canvas on theme change
+const observer = new MutationObserver((mutations) => {
+  mutations.forEach((mutation) => {
+    if (mutation.type === "attributes" && mutation.attributeName === "data-theme") {
+      if (turnCanvas) drawTurningFrame();
+    }
+  });
+});
+observer.observe(document.documentElement, { attributes: true });
 
 window.addEventListener('resize', () => {
   const turningView = document.getElementById('turning-view');
