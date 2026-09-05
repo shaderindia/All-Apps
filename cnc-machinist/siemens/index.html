@@ -13,23 +13,21 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
   
-  <title>Siemens Sinumerik Turning G-Code Generator & Tool Setup Suite | SHADER7</title>
-  <meta name="description" content="Free professional Siemens Sinumerik (840D/828D/808D) CNC turning suite. Generate CYCLE95 roughing & finishing programs, live 2D toolpath simulator, speed/feed calculator, and exportable .TOA tool offset cards.">
+  <title>Siemens Sinumerik CYCLE95 Helper &amp; Tool Setup | SHADER7</title>
+  <meta name="description" content="Build and review Siemens Sinumerik CYCLE95 turning programs for 840D, 828D and 808D. Simulate OD or ID paths, calculate speeds and feeds, and export tool-offset setup files.">
   <meta name="keywords" content="siemens cnc calculator, sinumerik turning cycle, cycle95 roughing, siemens g-code generator, lathe tool offset card, .toa download, cnc machinist tools, shader7">
   <meta name="author" content="Nishikant Xalxo">
   <meta name="robots" content="index, follow">
 
-  <link rel="canonical" href="https://shader7.com/cnc-machinist/siemens/">
-  <meta property="og:title" content="Siemens Sinumerik Turning G-Code Generator & Tool Setup Suite | SHADER7">
-  <meta property="og:description" content="Generate production-ready Sinumerik 840D/828D CYCLE95 turning programs, test in real-time 2D simulator, and export .TOA tool offset archives.">
+  <link rel="canonical" href="https://www.shader7.com/cnc-machinist/siemens/">
+  <meta property="og:title" content="Siemens Sinumerik CYCLE95 Helper &amp; Tool Setup | SHADER7">
+  <meta property="og:description" content="Build and review Sinumerik CYCLE95 OD and ID turning programs, simulate toolpaths, calculate cutting data, and prepare tool-offset setup files.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://shader7.com/cnc-machinist/siemens/">
+  <meta property="og:url" content="https://www.shader7.com/cnc-machinist/siemens/">
   <meta property="og:image" content="https://shader7.com/assets/banners/siemens-1280.webp">
 
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="preload" href="/fonts/Inter-Variable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/css/fonts.css">
   <!-- FontAwesome 6 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
@@ -52,7 +50,7 @@
       --border-hover: #94a3b8;
       --danger: #dc2626;
       --safe-color: #059669;
-      --font-main: 'Outfit', sans-serif;
+      --font-main: 'Inter', system-ui, sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
       --glass-bg: #ffffff;
       --glass-border: #e2e8f0;
@@ -133,6 +131,8 @@
         padding: 30px 20px;
       }
     }
+
+    html, body { max-width: 100%; overflow-x: clip; }
 
     .main-wrapper {
       max-width: 1160px;
@@ -344,7 +344,7 @@
 
     @media (min-width: 968px) {
       .app-container {
-        grid-template-columns: 430px 1fr;
+        grid-template-columns: 390px minmax(0, 1fr);
       }
     }
 
@@ -357,6 +357,7 @@
       border: 1px solid var(--glass-border);
       box-shadow: var(--shadow);
       transition: border-color 0.25s ease;
+      min-width: 0;
     }
 
     .panel:hover {
@@ -773,6 +774,7 @@
 
     .dir-cell {
       aspect-ratio: 1;
+      padding: 0;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -1002,6 +1004,40 @@
     }
 
     .hidden { display: none !important; }
+
+    .safety-banner {
+      display:flex; align-items:flex-start; gap:10px; margin:-8px 0 22px; padding:12px 15px;
+      color:var(--text-label); background:#fff8e7; border:1px solid #e8c56d; border-radius:12px;
+      font-size:.8rem; line-height:1.55;
+    }
+    [data-theme="dark"] .safety-banner { background:#342b18; border-color:#735d2f; color:#f6dfac; }
+    .cycle-options { border:1px solid var(--border); border-radius:12px; margin:4px 0 18px; }
+    .cycle-options > summary { cursor:pointer; padding:12px 14px; font-size:.82rem; font-weight:750; color:var(--text-label); }
+    .cycle-options-content { padding:0 14px 2px; }
+    .inline-error { padding:10px 12px; margin:0 0 14px; color:#991b1b; background:#fef2f2; border:1px solid #fecaca; border-radius:9px; font-size:.8rem; font-weight:650; }
+    [data-theme="dark"] .inline-error { color:#fecaca; background:#3b1717; border-color:#7f1d1d; }
+    .field-note { color:var(--text-muted); font-size:.72rem; line-height:1.5; margin-top:6px; }
+    .panel, .dashboard-view, .app-container, #turningResultsContainer { max-width:100%; min-width:0; }
+    @media (max-width: 760px) {
+      body { padding:8px; }
+      .app-header { padding:15px; border-radius:14px; margin-bottom:14px; }
+      .header-branding h1 { font-size:1.45rem; letter-spacing:1px; }
+      .header-branding p { font-size:.72rem; letter-spacing:.7px; }
+      .dashboard-nav { flex-wrap:nowrap; justify-content:flex-start; overflow-x:auto; padding:0 0 10px; margin-bottom:14px; scrollbar-width:thin; }
+      .dashboard-tab { flex:0 0 auto; padding:9px 12px; font-size:.72rem; }
+      .panel { padding:16px; border-radius:14px; }
+      .diagnostics-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      .sim-canvas-wrap { height:220px; }
+      .gcode-container { font-size:.72rem; }
+    }
+    @media (max-width: 420px) {
+      .nav-links-group .nav-pill:first-child, .nav-links-group .nav-pill:last-child { display:none; }
+      .form-row { grid-template-columns:1fr; }
+      .diagnostics-grid { grid-template-columns:1fr 1fr; }
+      .dro-readouts { gap:7px; flex-wrap:wrap; }
+      .gcode-actions { width:100%; }
+      .gcode-actions button { flex:1; justify-content:center; }
+    }
   </style>
 
   <script type="application/ld+json">
@@ -1018,14 +1054,14 @@
           "price": "0",
           "priceCurrency": "USD"
         },
-        "description": "Professional CNC turning G-code generator for Siemens Sinumerik 840D, 828D, and 808D controllers with CYCLE95 stock removal cycles, 2D simulation, and .TOA tool offset exporter."
+        "description": "CNC turning helper for Siemens Sinumerik 840D, 828D, and 808D controls with CYCLE95 program generation, 2D simulation, cutting-data calculations, and tool-offset setup export."
       },
       {
         "@type": "BreadcrumbList",
         "itemListElement": [
-          { "@type": "ListItem", "position": 1, "name": "SHADER7", "item": "https://shader7.com/" },
-          { "@type": "ListItem", "position": 2, "name": "CNC Machinist Hub", "item": "https://shader7.com/cnc-machinist/" },
-          { "@type": "ListItem", "position": 3, "name": "Siemens Sinumerik Toolkit", "item": "https://shader7.com/cnc-machinist/siemens/" }
+          { "@type": "ListItem", "position": 1, "name": "SHADER7", "item": "https://www.shader7.com/" },
+          { "@type": "ListItem", "position": 2, "name": "CNC Machinist Hub", "item": "https://www.shader7.com/cnc-machinist/" },
+          { "@type": "ListItem", "position": 3, "name": "Siemens Sinumerik Toolkit", "item": "https://www.shader7.com/cnc-machinist/siemens/" }
         ]
       }
     ]
@@ -1052,6 +1088,8 @@
       <p>Siemens Turning, CYCLE95 Generator &amp; Setup Suite</p>
     </div>
   </header>
+
+  <aside class="safety-banner" aria-label="Machine safety notice"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i><span><strong>Verify before machining.</strong> Control options, OEM cycles, tool data and machine kinematics vary. Run the exported program in the control simulator, use single block and dry run, and confirm clearances at reduced rapid override.</span></aside>
 
   <!-- Tabbed Dashboard Selector -->
   <div class="dashboard-nav">
@@ -1082,7 +1120,7 @@
         <div class="form-row">
           <div class="form-group">
             <label for="turnOp">Machining Mode</label>
-            <select id="turnOp" onchange="resetTurningResults()">
+            <select id="turnOp" onchange="handleOperationChange(); resetTurningResults()">
               <option value="rough" selected>Roughing &amp; Finishing (CYCLE95)</option>
               <option value="rough_only">Roughing Only (CYCLE95)</option>
               <option value="finish_only">Finishing Only (CYCLE95)</option>
@@ -1102,14 +1140,14 @@
           <div class="form-group">
             <label for="blankDia">Blank Diameter (X)</label>
             <div class="input-wrapper">
-              <input type="number" id="blankDia" value="80" step="1" oninput="resetTurningResults()">
+              <input type="number" id="blankDia" value="80" step="1" min="0.001" required oninput="resetTurningResults()">
               <div class="input-suffix">mm</div>
             </div>
           </div>
           <div class="form-group">
             <label for="finishDia">Target Diameter (X)</label>
             <div class="input-wrapper">
-              <input type="number" id="finishDia" value="40" step="1" oninput="resetTurningResults()">
+              <input type="number" id="finishDia" value="40" step="1" min="0.001" required oninput="resetTurningResults()">
               <div class="input-suffix">mm</div>
             </div>
           </div>
@@ -1119,14 +1157,14 @@
           <div class="form-group">
             <label for="turnLen">Turned Length (Z)</label>
             <div class="input-wrapper">
-              <input type="number" id="turnLen" value="60" step="1" oninput="resetTurningResults()">
+              <input type="number" id="turnLen" value="60" step="1" min="0.001" required oninput="resetTurningResults()">
               <div class="input-suffix">mm</div>
             </div>
           </div>
           <div class="form-group">
             <label for="turnInfeed">Depth of Cut (MID / ap)</label>
             <div class="input-wrapper">
-              <input type="number" id="turnInfeed" value="2.0" step="0.5" oninput="resetTurningResults()">
+              <input type="number" id="turnInfeed" value="2.0" step="0.5" min="0.001" required oninput="resetTurningResults()">
               <div class="input-suffix">mm</div>
             </div>
           </div>
@@ -1136,14 +1174,14 @@
           <div class="form-group">
             <label for="allowX">Finishing Allow. X (FALX)</label>
             <div class="input-wrapper">
-              <input type="number" id="allowX" value="0.4" step="0.1" oninput="resetTurningResults()">
+              <input type="number" id="allowX" value="0.4" step="0.1" min="0" required oninput="resetTurningResults()">
               <div class="input-suffix">mm</div>
             </div>
           </div>
           <div class="form-group">
             <label for="allowZ">Finishing Allow. Z (FALZ)</label>
             <div class="input-wrapper">
-              <input type="number" id="allowZ" value="0.1" step="0.05" oninput="resetTurningResults()">
+              <input type="number" id="allowZ" value="0.1" step="0.05" min="0" required oninput="resetTurningResults()">
               <div class="input-suffix">mm</div>
             </div>
           </div>
@@ -1177,7 +1215,7 @@
           <div class="form-group">
             <label id="speedLabel" for="turnSpeed">Cutting Speed (S)</label>
             <div class="input-wrapper">
-              <input type="number" id="turnSpeed" value="220" step="10" oninput="resetTurningResults()">
+              <input type="number" id="turnSpeed" value="220" step="10" min="1" required oninput="resetTurningResults()">
               <div id="speedSuffix" class="input-suffix">m/min</div>
             </div>
           </div>
@@ -1186,7 +1224,7 @@
         <div class="form-group" id="limsGroup">
           <label for="turnLims">Max Spindle Speed (LIMS)</label>
           <div class="input-wrapper">
-            <input type="number" id="turnLims" value="3000" step="100" oninput="resetTurningResults()">
+            <input type="number" id="turnLims" value="3000" step="100" min="1" required oninput="resetTurningResults()">
             <div class="input-suffix">RPM</div>
           </div>
         </div>
@@ -1195,16 +1233,13 @@
           <div class="form-group">
             <label for="turnFeed">Roughing Feed (FF1)</label>
             <div class="input-wrapper">
-              <input type="number" id="turnFeed" value="0.25" step="0.05" oninput="resetTurningResults()">
+              <input type="number" id="turnFeed" value="0.25" step="0.05" min="0.001" required oninput="resetTurningResults()">
               <div class="input-suffix">mm/r</div>
             </div>
           </div>
           <div class="form-group">
-            <label for="toolRadius">Tool Nose Radius</label>
-            <div class="input-wrapper">
-              <input type="number" id="toolRadius" value="0.8" step="0.4" oninput="resetTurningResults()">
-              <div class="input-suffix">mm</div>
-            </div>
+            <label>Active offset</label>
+            <p class="field-note">The program calls D1. CYCLE95 reads tool nose radius and orientation from that offset.</p>
           </div>
         </div>
 
@@ -1222,20 +1257,29 @@
           <div class="form-group">
             <label for="stepDia">Step Cut Diameter</label>
             <div class="input-wrapper">
-              <input type="number" id="stepDia" value="60" step="1" oninput="resetTurningResults()">
+              <input type="number" id="stepDia" value="60" step="1" min="0.001" oninput="resetTurningResults()">
               <div class="input-suffix">mm</div>
             </div>
           </div>
           <div class="form-group">
             <label for="stepLen">Step Cut Length</label>
             <div class="input-wrapper">
-              <input type="number" id="stepLen" value="30" step="1" oninput="resetTurningResults()">
+              <input type="number" id="stepLen" value="30" step="1" min="0.001" oninput="resetTurningResults()">
               <div class="input-suffix">mm</div>
             </div>
           </div>
         </div>
 
-        <button class="action-btn" onclick="generateSiemensTurningCode()">
+        <details class="cycle-options">
+          <summary>CYCLE95 feeds &amp; chip control</summary>
+          <div class="cycle-options-content">
+            <div class="form-row"><div class="form-group"><label for="turnPlungeFeed">Plunge feed (FF2)</label><div class="input-wrapper"><input type="number" id="turnPlungeFeed" value="0.175" step="0.005" min="0.001" required oninput="resetTurningResults()"><div class="input-suffix">mm/r</div></div></div><div class="form-group"><label for="turnFinishFeed">Finishing feed (FF3)</label><div class="input-wrapper"><input type="number" id="turnFinishFeed" value="0.160" step="0.005" min="0.001" required oninput="resetTurningResults()"><div class="input-suffix">mm/r</div></div></div></div>
+            <div class="form-row"><div class="form-group"><label for="turnDwell">Chip dwell (DT)</label><div class="input-wrapper"><input type="number" id="turnDwell" value="0" step="0.1" min="0" required oninput="resetTurningResults()"><div class="input-suffix">s</div></div></div><div class="form-group"><label for="turnChipLength">Chip path (DAM)</label><div class="input-wrapper"><input type="number" id="turnChipLength" value="0" step="1" min="0" required oninput="resetTurningResults()"><div class="input-suffix">mm</div></div></div></div>
+            <div class="form-group"><label for="turnLiftOff">Contour lift-off (_VRT)</label><div class="input-wrapper"><input type="number" id="turnLiftOff" value="0.5" step="0.1" min="0" required oninput="resetTurningResults()"><div class="input-suffix">mm</div></div><p class="field-note">MID and _VRT are positive radius values. Confirm the cycle settings used by your control software version.</p></div>
+          </div>
+        </details>
+        <p id="turningError" class="inline-error" role="alert" hidden></p>
+        <button class="action-btn" id="generateTurningBtn" onclick="generateSiemensTurningCode()">
           <i class="fa-solid fa-code"></i> Generate Sinumerik Program
         </button>
       </div>
@@ -1278,12 +1322,13 @@
 
         <div class="form-row">
           <div class="form-group">
-            <label for="toolNum">Tool ID / Name</label>
-            <input type="text" id="toolNum" placeholder="e.g. T1 or ROUGH_80">
+            <label for="toolNum">Tool number &amp; name</label>
+            <input type="text" id="toolNum" placeholder="e.g. T12 (ROUGH_OD)" aria-describedby="toolNumHelp">
+            <p id="toolNumHelp" class="field-note">Must begin with the numeric T data record used by your control.</p>
           </div>
           <div class="form-group">
             <label for="edgeNum">Active Edge (D)</label>
-            <input type="number" id="edgeNum" value="1" min="1">
+            <input type="number" id="edgeNum" value="1" min="1" max="99" step="1">
           </div>
         </div>
 
@@ -1320,7 +1365,7 @@
           <div class="form-group">
             <label for="offsetRad">Tool Nose Radius (R)</label>
             <div class="input-wrapper">
-              <input type="number" id="offsetRad" value="0.800" step="0.1">
+              <input type="number" id="offsetRad" value="0.800" step="0.1" min="0">
               <div class="input-suffix">mm</div>
             </div>
           </div>
@@ -1344,15 +1389,15 @@
         <div style="margin-bottom: 16px;">
           <label style="text-align: center; display: block;">Click Cutting Edge Quadrant (Type 1-9)</label>
           <div class="dir-helper-grid">
-            <div class="dir-cell" data-dir="1" onclick="selectPointDir(1)">1</div>
-            <div class="dir-cell" data-dir="7" onclick="selectPointDir(7)">7</div>
-            <div class="dir-cell" data-dir="2" onclick="selectPointDir(2)">2</div>
-            <div class="dir-cell" data-dir="8" onclick="selectPointDir(8)">8</div>
-            <div class="dir-cell" data-dir="9" onclick="selectPointDir(9)">9</div>
-            <div class="dir-cell" data-dir="6" onclick="selectPointDir(6)">6</div>
-            <div class="dir-cell" data-dir="4" onclick="selectPointDir(4)">4</div>
-            <div class="dir-cell" data-dir="5" onclick="selectPointDir(5)">5</div>
-            <div class="dir-cell active" data-dir="3" onclick="selectPointDir(3)">3</div>
+            <button type="button" class="dir-cell" data-dir="1" onclick="selectPointDir(1)" aria-label="Cutting edge position 1">1</button>
+            <button type="button" class="dir-cell" data-dir="7" onclick="selectPointDir(7)" aria-label="Cutting edge position 7">7</button>
+            <button type="button" class="dir-cell" data-dir="2" onclick="selectPointDir(2)" aria-label="Cutting edge position 2">2</button>
+            <button type="button" class="dir-cell" data-dir="8" onclick="selectPointDir(8)" aria-label="Cutting edge position 8">8</button>
+            <button type="button" class="dir-cell" data-dir="9" onclick="selectPointDir(9)" aria-label="Cutting edge position 9">9</button>
+            <button type="button" class="dir-cell" data-dir="6" onclick="selectPointDir(6)" aria-label="Cutting edge position 6">6</button>
+            <button type="button" class="dir-cell" data-dir="4" onclick="selectPointDir(4)" aria-label="Cutting edge position 4">4</button>
+            <button type="button" class="dir-cell" data-dir="5" onclick="selectPointDir(5)" aria-label="Cutting edge position 5">5</button>
+            <button type="button" class="dir-cell active" data-dir="3" onclick="selectPointDir(3)" aria-label="Cutting edge position 3">3</button>
           </div>
         </div>
 
@@ -1376,6 +1421,7 @@
         <button class="action-btn" onclick="addToolToSetupCard()">
           <i class="fa-solid fa-plus"></i> Add Tool to Setup Card
         </button>
+        <p id="toolError" class="inline-error" role="alert" hidden></p>
       </div>
 
       <!-- Setup Card Output Panel -->
@@ -1401,6 +1447,7 @@
             <p>No tools added to the offset setup card yet. Fill in offsets on the left or click a Quick Preset.</p>
           </div>
         </div>
+        <p class="field-note" style="margin-top: 12px;">The .TOA export uses the numeric part of each T identifier as the Sinumerik tool data-record number. Confirm the record and edge numbers against the target control before importing.</p>
       </div>
     </div>
 
@@ -1443,7 +1490,7 @@
         <i class="fa-solid fa-gauge-high"></i> Turning Speeds, Feeds &amp; Power Calculator
       </div>
       <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">
-        Quickly compute exact spindle RPM (\(n\)), surface cutting speed (\(V_c\)), material removal rates, and theoretical surface finish (\(Ra\)) for Siemens turning programs.
+        Estimate spindle RPM (\(n\)), axial feed rate, material removal rate, and theoretical surface finish (\(Ra\)) for Siemens turning programs.
       </p>
 
       <div class="form-row" style="margin-bottom: 18px;">
@@ -1461,7 +1508,7 @@
         <div class="form-group">
           <label for="calcDia">Cutting Diameter (D)</label>
           <div class="input-wrapper">
-            <input type="number" id="calcDia" value="60" step="1" oninput="runQuickSpeedCalc()">
+            <input type="number" id="calcDia" value="60" step="1" min="0.001" required oninput="runQuickSpeedCalc()">
             <div class="input-suffix">mm</div>
           </div>
         </div>
@@ -1471,14 +1518,14 @@
         <div class="form-group">
           <label for="calcVc">Cutting Speed (Vc)</label>
           <div class="input-wrapper">
-            <input type="number" id="calcVc" value="200" step="10" oninput="runQuickSpeedCalc()">
+            <input type="number" id="calcVc" value="200" step="10" min="0.001" required oninput="runQuickSpeedCalc()">
             <div class="input-suffix">m/min</div>
           </div>
         </div>
         <div class="form-group">
           <label for="calcFeed">Feed Rate (f)</label>
           <div class="input-wrapper">
-            <input type="number" id="calcFeed" value="0.25" step="0.05" oninput="runQuickSpeedCalc()">
+            <input type="number" id="calcFeed" value="0.25" step="0.05" min="0.001" required oninput="runQuickSpeedCalc()">
             <div class="input-suffix">mm/r</div>
           </div>
         </div>
@@ -1488,14 +1535,14 @@
         <div class="form-group">
           <label for="calcAp">Depth of Cut (ap)</label>
           <div class="input-wrapper">
-            <input type="number" id="calcAp" value="2.0" step="0.5" oninput="runQuickSpeedCalc()">
+            <input type="number" id="calcAp" value="2.0" step="0.5" min="0.001" required oninput="runQuickSpeedCalc()">
             <div class="input-suffix">mm</div>
           </div>
         </div>
         <div class="form-group">
           <label for="calcRe">Tool Nose Radius (rε)</label>
           <div class="input-wrapper">
-            <input type="number" id="calcRe" value="0.8" step="0.4" oninput="runQuickSpeedCalc()">
+            <input type="number" id="calcRe" value="0.8" step="0.4" min="0.001" required oninput="runQuickSpeedCalc()">
             <div class="input-suffix">mm</div>
           </div>
         </div>
@@ -1508,7 +1555,7 @@
           <span class="kpi-sub">n = (Vc × 1000) / (π × D)</span>
         </div>
         <div class="kpi-card">
-          <span class="kpi-label">Table Feed Speed</span>
+          <span class="kpi-label">Axial Feed Rate</span>
           <span class="kpi-value" id="calcResultVf">265 mm/min</span>
           <span class="kpi-sub">Vf = n × f</span>
         </div>
@@ -1523,6 +1570,7 @@
           <span class="kpi-sub">Ra ≈ f²/(32rε) | Rz ≈ 4×Ra</span>
         </div>
       </div>
+      <p id="calcError" class="inline-error" role="alert" hidden></p>
     </div>
   </div>
 
@@ -1594,7 +1642,7 @@
             <tr>
               <td><code>NPP</code></td>
               <td>Contour Name</td>
-              <td>Name of the contour subprogram string (e.g. <code>"CONTOUR1"</code>) or label block.</td>
+              <td>Contour subprogram name or an inline label range. Generated programs use <code>"CONTOUR_START:CONTOUR_END"</code> so the MPF stays self-contained.</td>
             </tr>
             <tr>
               <td><code>MID</code></td>
@@ -1625,8 +1673,8 @@
               <td><code>VARI</code></td>
               <td>Machining Type</td>
               <td>
-                <b>1:</b> Ext. Long. Roughing | <b>2:</b> Ext. Face Roughing | <b>3:</b> Ext. Parallel Roughing<br>
-                <b>5:</b> Int. Long. Roughing | <b>9:</b> Complete Ext. Cut | <b>11:</b> Complete Int. Cut
+                <b>1–4 rough:</b> longitudinal external, face external, longitudinal internal, face internal.<br>
+                <b>5–8 finish:</b> the same four orientations. <b>9–12 complete:</b> the same four orientations. This generator uses 1/3, 5/7 and 9/11 for longitudinal OD/ID.
               </td>
             </tr>
           </tbody>
@@ -1684,6 +1732,7 @@
   </div>
 </footer>
 
+<script src="siemens-core.js?v=20260905-2"></script>
 <script>
 'use strict';
 
@@ -1708,6 +1757,7 @@ function handleTurnTypeChange() {
   const finishLabel = document.querySelector('label[for="finishDia"]');
   const blankInput = document.getElementById("blankDia");
   const finishInput = document.getElementById("finishDia");
+  const stepInput = document.getElementById('stepDia');
   
   if (type === "id") {
     if (blankLabel) blankLabel.textContent = "Pre-Drilled Hole Dia (X)";
@@ -1719,6 +1769,8 @@ function handleTurnTypeChange() {
       blankInput.value = "30";
       finishInput.value = "50";
     }
+    const idBlank = Number(blankInput.value), idFinish = Number(finishInput.value);
+    if (stepInput) stepInput.value = ((idBlank + idFinish) / 2).toFixed(1);
   } else {
     if (blankLabel) blankLabel.textContent = "Blank Diameter (X)";
     if (finishLabel) finishLabel.textContent = "Target Diameter (X)";
@@ -1728,7 +1780,32 @@ function handleTurnTypeChange() {
       blankInput.value = "80";
       finishInput.value = "40";
     }
+    const odBlank = Number(blankInput.value), odFinish = Number(finishInput.value);
+    if (stepInput) stepInput.value = ((odBlank + odFinish) / 2).toFixed(1);
   }
+}
+
+function handleOperationChange() {
+  const facing = document.getElementById('turnOp').value === 'facing';
+  const type = document.getElementById('turnType');
+  const face = document.getElementById('includeFacing');
+  if (facing) {
+    type.value = 'od';
+    type.disabled = true;
+    face.checked = true;
+    face.disabled = true;
+    handleTurnTypeChange();
+  } else {
+    type.disabled = false;
+    face.disabled = false;
+  }
+}
+
+function showInlineError(id, message = '') {
+  const element = document.getElementById(id);
+  if (!element) return;
+  element.textContent = message;
+  element.hidden = !message;
 }
 
 function showToast(msg) {
@@ -1788,93 +1865,74 @@ function resetTurningResults() {
     </div>
   `;
   stopTurningSim();
+  showInlineError('turningError');
 }
 
 function generateSiemensTurningCode() {
-  const op = document.getElementById("turnOp").value;
-  const turnType = document.getElementById("turnType").value;
-  const blank = parseFloat(document.getElementById("blankDia").value);
-  const target = parseFloat(document.getElementById("finishDia").value);
-  const length = parseFloat(document.getElementById("turnLen").value);
-  const infeed = parseFloat(document.getElementById("turnInfeed").value);
-  const allowX = parseFloat(document.getElementById("allowX").value) || 0;
-  const allowZ = parseFloat(document.getElementById("allowZ").value) || 0;
-  const speedMode = document.getElementById("turnSpeedMode").value;
-  const speed = parseFloat(document.getElementById("turnSpeed").value);
-  const lims = parseFloat(document.getElementById("turnLims").value) || 3000;
-  const feed = parseFloat(document.getElementById("turnFeed").value);
-  const radius = parseFloat(document.getElementById("toolRadius").value) || 0.8;
-  const profile = document.getElementById("contourStyle").value;
-  const leadCorner = document.getElementById("leadCorner").value;
-  const includeFacing = document.getElementById("includeFacing").checked;
-
-  if (!blank || blank <= 0 || !target || target <= 0 || !length || length <= 0) {
-    showToast("Please enter valid positive dimensions.");
+  const raw = {
+    operation:document.getElementById('turnOp').value,
+    turnType:document.getElementById('turnType').value,
+    blank:document.getElementById('blankDia').value,
+    target:document.getElementById('finishDia').value,
+    length:document.getElementById('turnLen').value,
+    infeed:document.getElementById('turnInfeed').value,
+    allowX:document.getElementById('allowX').value,
+    allowZ:document.getElementById('allowZ').value,
+    speedMode:document.getElementById('turnSpeedMode').value,
+    speed:document.getElementById('turnSpeed').value,
+    lims:document.getElementById('turnLims').value,
+    roughFeed:document.getElementById('turnFeed').value,
+    plungeFeed:document.getElementById('turnPlungeFeed').value,
+    finishFeed:document.getElementById('turnFinishFeed').value,
+    dwell:document.getElementById('turnDwell').value,
+    chipLength:document.getElementById('turnChipLength').value,
+    liftOff:document.getElementById('turnLiftOff').value,
+    profile:document.getElementById('contourStyle').value,
+    stepDia:document.getElementById('stepDia').value,
+    stepLen:document.getElementById('stepLen').value,
+    includeFacing:document.getElementById('includeFacing').checked
+  };
+  let metrics;
+  try {
+    metrics = SiemensCore.turningMetrics(raw);
+  } catch (error) {
+    showInlineError('turningError', error.message);
+    showToast(error.message);
+    document.getElementById('turningError').scrollIntoView({block:'nearest'});
     return;
   }
-
-  if (turnType === "od" && target >= blank) {
-    showToast("Target Finished Diameter must be smaller than Blank Diameter for OD turning.");
-    return;
-  }
-  if (turnType === "id" && target <= blank) {
-    showToast("Target Finished Diameter must be larger than Initial Bore for ID turning.");
-    return;
-  }
-
-  if (!infeed || infeed <= 0) {
-    showToast("Depth of cut (ap) must be a positive number.");
-    return;
-  }
-
-  if (!feed || feed <= 0) {
-    showToast("Feedrate must be a positive number.");
-    return;
-  }
-
-  const stepDia = parseFloat(document.getElementById("stepDia").value) || 0;
-  const stepLen = parseFloat(document.getElementById("stepLen").value) || 0;
-
-  // Real-time calculations
-  const pi = Math.PI;
-  const rpmAtBlank = Math.round((speed * 1000) / (pi * blank));
-  const rpmAtTarget = Math.round((speed * 1000) / (pi * target));
-  const effectiveMaxRpm = speedMode === "G96" ? Math.min(lims, rpmAtTarget) : speed;
-  const effectiveMinRpm = speedMode === "G96" ? Math.min(lims, rpmAtBlank) : speed;
-  
-  const totalStockRad = Math.abs(blank - target) / 2;
-  const roughPasses = Math.max(1, Math.ceil((totalStockRad - (allowX / 2)) / infeed));
-  const mrr = Math.round(speed * infeed * feed * 10) / 10;
-  
-  // Approximate cycle time
-  const avgRpm = (effectiveMinRpm + effectiveMaxRpm) / 2;
-  const passTimeSec = (length / (avgRpm * feed)) * 60;
-  const totalEstSec = Math.round(passTimeSec * (roughPasses + 1.2) + (includeFacing ? 6 : 0));
+  showInlineError('turningError');
+  const p = metrics.params;
+  const op=p.operation, turnType=p.turnType, blank=p.blank, target=p.target, length=p.length;
+  const infeed=p.infeed, allowX=p.allowX, allowZ=p.allowZ, speedMode=p.speedMode, speed=p.speed;
+  const lims=p.lims, feed=p.roughFeed, profile=p.profile, stepDia=p.stepDia, stepLen=p.stepLen;
+  const leadCorner=document.getElementById('leadCorner').value, includeFacing=p.includeFacing;
+  const roughPasses=metrics.roughPasses, effectiveMinRpm=metrics.minRpm, effectiveMaxRpm=metrics.maxRpm, mrr=metrics.mrr;
+  const totalEstSec = metrics.estimatedSeconds;
   const estMin = Math.floor(totalEstSec / 60);
   const estSec = totalEstSec % 60;
   const timeString = `${estMin}m ${estSec}s`;
 
   // Build toolpath steps for simulator
-  calculateToolpathSteps(blank, target, length, infeed, allowX, allowZ, profile, stepDia, stepLen, includeFacing, leadCorner, turnType);
+  calculateToolpathSteps(blank, target, length, infeed, allowX, allowZ, profile, stepDia, stepLen, includeFacing, leadCorner, turnType, op);
 
   // Generate Sinumerik G-Code Program
   const now = new Date();
   const dateStr = now.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
   
-  const toolCallName = turnType === "id" ? 'BORING_BAR' : 'ROUGH_TURN';
-  const compDirection = turnType === "id" ? 'G41 (LEFT COMP FOR ID)' : 'G42 (RIGHT COMP FOR OD)';
+  const toolCallName = turnType === "id" ? 'BORING_BAR' : op === 'finish_only' ? 'FINISH_TURN' : 'ROUGH_TURN';
 
   let g = '; ==========================================================\n';
   g += '; SHADER7 SINUMERIK 840D / 828D TURNING PROGRAM\n';
   g += '; PROGRAM NAME: SHAFT_CYCLE95.MPF\n';
   g += `; CREATED: ${dateStr}\n`;
   g += `; BLANK: Ø${blank} mm | FINISH: Ø${target} mm | LENGTH: ${length} mm\n`;
-  g += `; OPERATION: ${op.toUpperCase()} (${turnType.toUpperCase()}) | PROFILE: ${profile.toUpperCase()}\n`;
+  g += `; OPERATION: ${op === 'rough' ? 'COMPLETE ROUGH + FINISH' : op.toUpperCase()} (${turnType.toUpperCase()}) | PROFILE: ${profile.toUpperCase()}\n`;
   g += '; ==========================================================\n\n';
 
   g += 'G18 G90 G95 G54 DIAMON (ZX PLANE, FEED/REV, WORK OFFSET, DIAMETER PROGRAMMING)\n';
   g += `T="${toolCallName}" D1 (LOAD TOOL & OFFSET EDGE 1)\n`;
-  g += `; NOTE: CYCLE95 APPLIES CUTTER COMPENSATION ${compDirection} VIA EDGE OFFSET\n`;
+  g += '; NOTE: CYCLE95 MANAGES TOOL-RADIUS COMPENSATION FROM THE ACTIVE D OFFSET\n';
 
   if (speedMode === "G96") {
     g += `G96 S${speed} M03 LIMS=${lims} (CONSTANT SURFACE SPEED ${speed} m/min, MAX ${lims} RPM)\n`;
@@ -1885,8 +1943,8 @@ function generateSiemensTurningCode() {
   const approachX = (turnType === "od" ? blank + 4 : Math.max(0, blank - 4)).toFixed(3);
   g += `G00 X${approachX} Z5.000 M08 (RAPID APPROACH, COOLANT ON)\n\n`;
 
-  // Optional Facing Cut (OD only)
-  if (includeFacing && turnType === "od") {
+  // Optional facing cut, or the entire operation in facing-only mode.
+  if ((includeFacing || op === 'facing') && turnType === "od") {
     g += '; --- FACE OFF PASS ---\n';
     g += 'G00 Z0.500\n';
     g += `G01 Z0.000 F${(feed * 0.8).toFixed(3)}\n`;
@@ -1895,100 +1953,68 @@ function generateSiemensTurningCode() {
   }
 
   // CYCLE95 Stock Removal Block (Siemens 840D/828D Standard: NPP, MID, FALZ, FALX, FAL, FF1, FF2, FF3, VARI, DT, DAM, _VRT)
-  const mid = infeed.toFixed(3);
-  const falx = allowX.toFixed(3);
-  const falz = allowZ.toFixed(3);
-  const rFeed = feed.toFixed(3);
-  const plungeFeed = (feed * 0.7).toFixed(3);
-  const fFeed = (feed * 0.65).toFixed(3);
-
-  // Siemens VARI:
-  // External (OD): 1 = Longitudinal roughing, 9 = Complete finishing
-  // Internal (ID): 5 = Longitudinal roughing, 11 = Complete finishing
-  let variVal = 1;
-  let ff1Val = rFeed;
-  let ff3Val = fFeed;
-
-  if (turnType === "id") {
-    if (op === "finish_only") {
-      variVal = 11;
-      ff1Val = "0";
-    } else if (op === "rough_only") {
-      variVal = 5;
-      ff3Val = "0";
-    } else {
-      variVal = 5;
-    }
-  } else {
-    if (op === "finish_only") {
-      variVal = 9;
-      ff1Val = "0";
-    } else if (op === "rough_only") {
-      variVal = 1;
-      ff3Val = "0";
-    } else {
-      variVal = 1;
-    }
-  }
+  const fFeed = p.finishFeed.toFixed(3);
 
   g += '; --- CYCLE95 STOCK REMOVAL ---\n';
   if (op === "facing") {
-    g += '; FACING OPERATION EXECUTED ABOVE (NO CONTOUR ROUGHING)\n';
+    g += '; FACING-ONLY OPERATION COMPLETE (NO CYCLE95 CALL)\n';
   } else {
-    g += `CYCLE95("CONTOUR1", ${mid}, ${falz}, ${falx}, 0, ${ff1Val}, ${plungeFeed}, ${ff3Val}, ${variVal}, 0, 0, 0) (${op.toUpperCase()} VARI=${variVal})\n`;
+    const cycle = SiemensCore.cycle95Call(p, 'CONTOUR_START:CONTOUR_END');
+    const cycleMode = op === 'rough' ? 'COMPLETE' : op.toUpperCase();
+    g += `${cycle.line} (${cycleMode} · LONGITUDINAL ${turnType.toUpperCase()} · VARI=${cycle.vari})\n`;
   }
 
-  g += `G00 G40 X${(blank + 20).toFixed(3)} Z100.000 M09 (CANCEL NOSE COMP, RETRACT, COOLANT OFF)\n`;
-  g += 'M30 (PROGRAM END / REWIND)\n\n';
+  const retractX = turnType === 'id' ? Math.max(0, blank - 4) : blank + 20;
+  g += `G00 G40 X${retractX.toFixed(3)} M09 (RADIAL CLEARANCE, CANCEL COMP, COOLANT OFF)\n`;
+  g += 'G00 Z100.000 (RETRACT ALONG Z AFTER RADIAL CLEARANCE)\n';
+  g += 'M05 (SPINDLE STOP)\n';
+  if (op === 'facing') g += 'M30 (PROGRAM END / REWIND)\n';
+  else g += 'GOTOF PROGRAM_END (SKIP INLINE CONTOUR DURING NORMAL EXECUTION)\n\n';
 
-  // Subprogram Contour Block
-  g += 'CONTOUR1: (START OF PROFILE DEFINITION)\n';
+  // Inline contour range read by CYCLE95.
+  if (op !== 'facing') g += 'CONTOUR_START: (START OF CYCLE95 PROFILE DEFINITION)\n';
 
   let startX = target;
-  if (leadCorner === "chamfer") {
+  if (op !== 'facing' && leadCorner === "chamfer") {
     const chamferStep = turnType === "id" ? 3.0 : -3.0;
     startX = Math.max(0, target + chamferStep);
     g += `G01 X${startX.toFixed(3)} Z0.000 F${fFeed}\n`;
     g += `G01 X${target.toFixed(3)} Z-1.500 (1.5 x 45 CHAMFER)\n`;
-  } else if (leadCorner === "radius") {
+  } else if (op !== 'facing' && leadCorner === "radius") {
     const radStep = turnType === "id" ? 4.0 : -4.0;
     startX = Math.max(0, target + radStep);
     g += `G01 X${startX.toFixed(3)} Z0.000 F${fFeed}\n`;
     const arcCmd = turnType === "id" ? 'G02' : 'G03';
     g += `${arcCmd} X${target.toFixed(3)} Z-2.000 CR=2.000 (R2.0 CORNER RADIUS)\n`;
-  } else {
+  } else if (op !== 'facing') {
     g += `G01 X${target.toFixed(3)} Z0.000 F${fFeed}\n`;
   }
 
-  if (profile === "straight") {
+  if (op === 'facing') {
+    // No contour subprogram is emitted for a facing-only operation.
+  } else if (profile === "straight") {
     g += `G01 X${target.toFixed(3)} Z-${length.toFixed(3)} (STRAIGHT ${turnType === "id" ? "BORE" : "OD"})\n`;
   } else if (profile === "step") {
-    let stepMidDiaVal = stepDia;
-    if (!stepMidDiaVal || (turnType === "od" && (stepMidDiaVal <= target || stepMidDiaVal >= blank)) || (turnType === "id" && (stepMidDiaVal <= blank || stepMidDiaVal >= target))) {
-      stepMidDiaVal = target + (blank - target) * 0.5;
-    }
-    let stepLenVal = stepLen;
-    if (!stepLenVal || stepLenVal <= 0 || stepLenVal >= length) {
-      stepLenVal = length * 0.5;
-    }
+    const stepMidDiaVal = stepDia;
+    const stepLenVal = stepLen;
     g += `G01 X${target.toFixed(3)} Z-${stepLenVal.toFixed(3)} (FIRST STEP)\n`;
     g += `G01 X${stepMidDiaVal.toFixed(3)} Z-${stepLenVal.toFixed(3)} (SHOULDER FACE)\n`;
     g += `G01 X${stepMidDiaVal.toFixed(3)} Z-${length.toFixed(3)} (SECOND STEP)\n`;
   } else if (profile === "taper") {
     g += `G01 X${blank.toFixed(3)} Z-${length.toFixed(3)} (TAPER CONTOUR)\n`;
   } else {
-    let stepLenVal = stepLen;
-    if (!stepLenVal || stepLenVal <= 0 || stepLenVal >= length) {
-      stepLenVal = length * 0.5;
-    }
-    let filRad = Math.min(10, length - stepLenVal).toFixed(3);
-    g += `G01 X${target.toFixed(3)} Z-${stepLenVal.toFixed(3)}\n`;
-    g += `G02 X${blank.toFixed(3)} Z-${length.toFixed(3)} CR=${filRad} (ROUNDED SHOULDER)\n`;
+    const filRad = Math.max(0.1, Math.min(2, stepLen, length - stepLen, Math.abs(stepDia - target) / 2));
+    g += `G01 X${target.toFixed(3)} Z-${stepLen.toFixed(3)} RND=${filRad.toFixed(3)} (FILLET INTO SHOULDER)\n`;
+    g += `G01 X${stepDia.toFixed(3)} Z-${stepLen.toFixed(3)} (ROUNDED SHOULDER FACE)\n`;
+    g += `G01 X${stepDia.toFixed(3)} Z-${length.toFixed(3)} (SECOND DIAMETER)\n`;
   }
 
-  const safeRetractX = turnType === "od" ? (blank + 2).toFixed(3) : Math.max(0, blank - 2).toFixed(3);
-  g += `G01 X${safeRetractX} Z-${length.toFixed(3)} (FACE RETRACT)\n`;
-  g += 'M17 (END OF CONTOUR BLOCK)\n\n';
+  if (op !== 'facing') {
+    const safeRetractX = turnType === "od" ? (blank + 2).toFixed(3) : Math.max(0, blank - 2).toFixed(3);
+    g += `G01 X${safeRetractX} Z-${length.toFixed(3)} (END FACE TO CLEARANCE DIAMETER)\n`;
+    g += 'CONTOUR_END: (END OF INLINE CONTOUR RANGE)\n\n';
+    g += 'PROGRAM_END:\nM30 (PROGRAM END / REWIND)\n';
+  }
   turningCode = g;
 
   // Render UI Container
@@ -1997,24 +2023,24 @@ function generateSiemensTurningCode() {
     <!-- Machining KPIs -->
     <div class="diagnostics-grid">
       <div class="kpi-card">
-        <span class="kpi-label">Spindle RPM (G96)</span>
-        <span class="kpi-value">${effectiveMinRpm} - ${effectiveMaxRpm}</span>
-        <span class="kpi-sub">LIMS Limit: ${lims} RPM</span>
+        <span class="kpi-label">Spindle RPM (${speedMode})</span>
+        <span class="kpi-value">${effectiveMinRpm === effectiveMaxRpm ? effectiveMinRpm : `${effectiveMinRpm} – ${effectiveMaxRpm}`}</span>
+        <span class="kpi-sub">${speedMode === 'G96' ? `LIMS limit: ${lims} RPM` : 'Fixed spindle speed'}</span>
       </div>
       <div class="kpi-card">
         <span class="kpi-label">Roughing Passes</span>
-        <span class="kpi-value">${roughPasses} Passes</span>
-        <span class="kpi-sub">ap: ${infeed} mm/pass</span>
+        <span class="kpi-value">${roughPasses}</span>
+        <span class="kpi-sub">${roughPasses ? `MID: ${infeed} mm radius/pass` : 'No roughing in this mode'}</span>
       </div>
       <div class="kpi-card">
         <span class="kpi-label">Material Removal Rate</span>
-        <span class="kpi-value">${mrr} cm³/min</span>
-        <span class="kpi-sub">Roughing efficiency</span>
+        <span class="kpi-value">${op === 'finish_only' ? '—' : `${mrr} cm³/min`}</span>
+        <span class="kpi-sub">${op === 'finish_only' ? 'Not estimated for finishing' : 'Theoretical roughing rate'}</span>
       </div>
       <div class="kpi-card">
         <span class="kpi-label">Est. Cycle Time</span>
         <span class="kpi-value">${timeString}</span>
-        <span class="kpi-sub">At ${feed} mm/rev feed</span>
+        <span class="kpi-sub">Motion-only estimate</span>
       </div>
     </div>
 
@@ -2097,7 +2123,7 @@ function copyTurningGCode() {
   navigator.clipboard.writeText(turningCode).then(() => {
     showToast("Sinumerik G-code copied to clipboard!");
   }).catch(() => {
-    showToast("Copied code.");
+    showToast("Copy failed. Select the program text and copy it manually.");
   });
 }
 
@@ -2115,8 +2141,21 @@ function downloadMPFFile() {
   showToast("SHAFT_CYCLE95.MPF downloaded!");
 }
 
-function calculateToolpathSteps(blank, target, length, infeed, allowX, allowZ, profile, stepDia, stepLen, includeFacing, leadCorner, turnType) {
+function calculateToolpathSteps(blank, target, length, infeed, allowX, allowZ, profile, stepDia, stepLen, includeFacing, leadCorner, turnType, operation) {
   toolpathSteps = [];
+  const doRoughing = operation === 'rough' || operation === 'rough_only';
+  const doFinishing = operation === 'rough' || operation === 'finish_only';
+
+  if (operation === 'facing') {
+    toolpathSteps.push({ x: blank + 4, z: 5, type:'rapid', desc:'RAPID TO FACE APPROACH' });
+    toolpathSteps.push({ x: blank + 4, z: .5, type:'rapid', desc:'APPROACH FACE Z0.5' });
+    toolpathSteps.push({ x: blank + 4, z: 0, type:'feed', desc:'TOUCH FACE Z0' });
+    toolpathSteps.push({ x: -1.6, z: 0, type:'feed', desc:'FACE PAST CENTER' });
+    toolpathSteps.push({ x: blank + 20, z: 2, type:'rapid', desc:'RADIAL CLEARANCE' });
+    toolpathSteps.push({ x: blank + 20, z: 20, type:'rapid', desc:'SAFE Z RETRACT' });
+    activeStepIndex = 0;
+    return;
+  }
   
   if (turnType === "id") {
     // ================= INTERNAL BORING TOOLPATH =================
@@ -2126,21 +2165,33 @@ function calculateToolpathSteps(blank, target, length, infeed, allowX, allowZ, p
 
     let currentX = blank;
     const finalX = target - allowX;
+    const resolvedStepDia = stepDia;
+    const resolvedStepLen = stepLen;
 
-    while (currentX < finalX) {
+    while (doRoughing && currentX < finalX) {
       currentX = Math.min(finalX, currentX + infeed * 2);
       toolpathSteps.push({ x: currentX, z: 2, type: 'rapid', desc: `APPROACH BORE DIA ${currentX.toFixed(1)}` });
-      toolpathSteps.push({ x: currentX, z: -length, type: 'feed', desc: `INTERNAL BORE CUT TO Z -${length.toFixed(1)}` });
+      let cutEndZ = -length;
+      if ((profile === 'step' || profile === 'profile') && currentX > resolvedStepDia) cutEndZ = -resolvedStepLen;
+      else if (profile === 'taper') cutEndZ = -((target - currentX) / (target - blank)) * length;
+      toolpathSteps.push({ x: currentX, z: cutEndZ, type: 'feed', desc: `INTERNAL BORE CUT TO Z ${cutEndZ.toFixed(1)}` });
       // Retract toward center (downward in X away from bore wall)
-      toolpathSteps.push({ x: currentX - 2, z: -length + 1, type: 'rapid', desc: 'RETRACT TOWARD CENTER' });
+      toolpathSteps.push({ x: currentX - 2, z: cutEndZ + 1, type: 'rapid', desc: 'RETRACT TOWARD CENTER' });
       toolpathSteps.push({ x: currentX - 2, z: 2, type: 'rapid', desc: 'RAPID OUT OF BORE' });
     }
 
-    // Finishing pass
-    toolpathSteps.push({ x: target, z: 2, type: 'rapid', desc: 'APPROACH TARGET BORE' });
-    toolpathSteps.push({ x: target, z: 0, type: 'feed', desc: 'TOUCH INTERNAL FACE' });
-    toolpathSteps.push({ x: target, z: -length, type: 'feed', desc: 'FINISH BORE WALL' });
-    toolpathSteps.push({ x: Math.max(0, blank - 2), z: -length, type: 'rapid', desc: 'RETRACT INWARD' });
+    if (doFinishing) {
+      toolpathSteps.push({ x: target, z: 2, type: 'rapid', desc: 'APPROACH TARGET BORE' });
+      toolpathSteps.push({ x: target, z: 0, type: 'feed', desc: 'TOUCH INTERNAL FACE' });
+      if (profile === 'straight') toolpathSteps.push({ x: target, z: -length, type: 'feed', desc: 'FINISH BORE WALL' });
+      else if (profile === 'taper') toolpathSteps.push({ x: blank, z: -length, type: 'feed', desc: 'FINISH INTERNAL TAPER' });
+      else {
+        toolpathSteps.push({ x: target, z: -resolvedStepLen, type: 'feed', desc:'FINISH FIRST BORE' });
+        toolpathSteps.push({ x: resolvedStepDia, z: -resolvedStepLen, type:'feed', desc:profile === 'profile' ? 'FINISH ROUNDED SHOULDER' : 'FINISH SHOULDER' });
+        toolpathSteps.push({ x: resolvedStepDia, z: -length, type:'feed', desc:'FINISH SECOND BORE' });
+      }
+      toolpathSteps.push({ x: Math.max(0, blank - 2), z: -length, type: 'rapid', desc: 'RETRACT INWARD' });
+    }
     toolpathSteps.push({ x: Math.max(0, blank - 2), z: 25, type: 'rapid', desc: 'SAFE RETRACT G40' });
   } else {
     // ================= EXTERNAL TURNING TOOLPATH =================
@@ -2167,7 +2218,7 @@ function calculateToolpathSteps(blank, target, length, infeed, allowX, allowZ, p
       resolvedStepLen = length * 0.5;
     }
 
-    while (currentX > finalX) {
+    while (doRoughing && currentX > finalX) {
       currentX = Math.max(finalX, currentX - infeed * 2);
       toolpathSteps.push({ x: currentX, z: 2, type: 'rapid', desc: `RAPID TO INFEED DIA ${currentX.toFixed(1)}` });
 
@@ -2177,9 +2228,8 @@ function calculateToolpathSteps(blank, target, length, infeed, allowX, allowZ, p
       } else if (profile === 'taper') {
         const ratio = (currentX - target) / (blank - target);
         cutEndZ = -ratio * length;
-      } else if (profile === 'profile') {
-        const ratio = (currentX - target) / (blank - target);
-        cutEndZ = Math.max(-length, -resolvedStepLen - (ratio * ratio) * (length - resolvedStepLen));
+      } else if (profile === 'profile' && currentX < resolvedStepDia) {
+        cutEndZ = -resolvedStepLen;
       }
 
       toolpathSteps.push({ x: currentX, z: cutEndZ, type: 'feed', desc: `LONGITUDINAL CUT TO Z ${cutEndZ.toFixed(1)}` });
@@ -2188,8 +2238,9 @@ function calculateToolpathSteps(blank, target, length, infeed, allowX, allowZ, p
     }
 
     // Finishing pass
-    toolpathSteps.push({ x: target, z: 2, type: 'rapid', desc: 'RAPID TO FINISHING DIA' });
-    toolpathSteps.push({ x: target, z: 0, type: 'feed', desc: 'TOUCH FACE' });
+    if (doFinishing) {
+      toolpathSteps.push({ x: target, z: 2, type: 'rapid', desc: 'RAPID TO FINISHING DIA' });
+      toolpathSteps.push({ x: target, z: 0, type: 'feed', desc: 'TOUCH FACE' });
 
     if (profile === 'straight') {
       toolpathSteps.push({ x: target, z: -length, type: 'feed', desc: 'FINISH PROFILE TO Z END' });
@@ -2200,13 +2251,10 @@ function calculateToolpathSteps(blank, target, length, infeed, allowX, allowZ, p
     } else if (profile === 'taper') {
       toolpathSteps.push({ x: blank, z: -length, type: 'feed', desc: 'TAPER CONTOUR FINISH' });
     } else {
-      toolpathSteps.push({ x: target, z: -resolvedStepLen, type: 'feed', desc: 'STRAIGHT OD FINISH' });
-      for (let j = 1; j <= 5; j++) {
-        const t = j / 5;
-        const currZ = -resolvedStepLen + t * (-length - -resolvedStepLen);
-        const currX = target + (t * t) * (blank - target);
-        toolpathSteps.push({ x: currX, z: currZ, type: 'feed', desc: `FILLET CONTOUR ARC ${j}/5` });
-      }
+      toolpathSteps.push({ x: target, z: -resolvedStepLen, type: 'feed', desc: 'FIRST OD FINISH' });
+      toolpathSteps.push({ x: resolvedStepDia, z: -resolvedStepLen, type:'feed', desc:'ROUNDED SHOULDER FINISH' });
+      toolpathSteps.push({ x: resolvedStepDia, z: -length, type:'feed', desc:'SECOND OD FINISH' });
+    }
     }
 
     toolpathSteps.push({ x: blank + 4, z: -length, type: 'feed', desc: 'FACE CLEARANCE' });
@@ -2571,6 +2619,13 @@ function highlightGCode(text) {
 // ==================== VIEW 2: SIEMENS TOOL OFFSET CARD LOGIC ====================
 let setupTools = [];
 
+function nextToolNumber() {
+  const used = new Set(setupTools.map(tool => Number(tool.tNo) || 0));
+  let value = 1;
+  while (used.has(value)) value++;
+  return value;
+}
+
 
 function escapeHTML(str) {
   if (!str) return '';
@@ -2586,16 +2641,17 @@ function loadStoredTools() {
   try {
     const raw = localStorage.getItem('siemens_setup_tools');
     if (raw) {
-      setupTools = JSON.parse(raw);
+      const stored = JSON.parse(raw);
+      setupTools = Array.isArray(stored) ? stored.map(SiemensCore.normalizeStoredTool) : [];
     } else {
       setupTools = [
-        { num: 'T1 (CNMG_ROUGH)', edge: 1, type: '500 - Rougher', l1: 124.520, l2: 84.230, rad: 0.800, dir: 3, wx: 0.000, wz: 0.000 },
-        { num: 'T2 (DNMG_FINISH)', edge: 1, type: '510 - Finisher', l1: 125.105, l2: 83.945, rad: 0.400, dir: 3, wx: 0.000, wz: 0.000 }
+        { num: 'T1 (CNMG_ROUGH)', tNo:1, edge: 1, type: 'Roughing Turning Tool', typeCode:500, l1: 124.520, l2: 84.230, rad: 0.800, dir: 3, wx: 0.000, wz: 0.000 },
+        { num: 'T2 (DNMG_FINISH)', tNo:2, edge: 1, type: 'Finishing Turning Tool', typeCode:510, l1: 125.105, l2: 83.945, rad: 0.400, dir: 3, wx: 0.000, wz: 0.000 }
       ];
     }
   } catch (e) {
     setupTools = [
-      { num: 'T1 (CNMG_ROUGH)', edge: 1, type: '500 - Rougher', l1: 124.520, l2: 84.230, rad: 0.800, dir: 3, wx: 0.000, wz: 0.000 }
+      { num: 'T1 (CNMG_ROUGH)', tNo:1, edge: 1, type: 'Roughing Turning Tool', typeCode:500, l1: 124.520, l2: 84.230, rad: 0.800, dir: 3, wx: 0.000, wz: 0.000 }
     ];
   }
 }
@@ -2615,42 +2671,42 @@ function applyToolPreset(preset) {
   const dir = document.getElementById("offsetType");
 
   if (preset === 'cnmg') {
-    tNum.value = `T${setupTools.length + 1} (CNMG_120408)`;
+    tNum.value = `T${nextToolNumber()} (CNMG_120408)`;
     tType.value = "500";
     l1.value = "124.500";
     l2.value = "85.200";
     rad.value = "0.800";
     selectPointDir(3);
   } else if (preset === 'dnmg') {
-    tNum.value = `T${setupTools.length + 1} (DNMG_150404)`;
+    tNum.value = `T${nextToolNumber()} (DNMG_150404)`;
     tType.value = "510";
     l1.value = "125.100";
     l2.value = "84.900";
     rad.value = "0.400";
     selectPointDir(3);
   } else if (preset === 'groove') {
-    tNum.value = `T${setupTools.length + 1} (GROOVE_3MM)`;
+    tNum.value = `T${nextToolNumber()} (GROOVE_3MM)`;
     tType.value = "520";
     l1.value = "120.400";
     l2.value = "80.100";
     rad.value = "0.200";
     selectPointDir(3);
   } else if (preset === 'thread') {
-    tNum.value = `T${setupTools.length + 1} (THREAD_60DEG)`;
+    tNum.value = `T${nextToolNumber()} (THREAD_60DEG)`;
     tType.value = "540";
     l1.value = "122.800";
     l2.value = "82.400";
     rad.value = "0.100";
     selectPointDir(3);
   } else if (preset === 'drill') {
-    tNum.value = `T${setupTools.length + 1} (UDRILL_D20)`;
+    tNum.value = `T${nextToolNumber()} (UDRILL_D20)`;
     tType.value = "200";
     l1.value = "110.000";
     l2.value = "0.000";
     rad.value = "10.000";
     selectPointDir(9);
   } else if (preset === 'boring') {
-    tNum.value = `T${setupTools.length + 1} (BORING_CCMT)`;
+    tNum.value = `T${nextToolNumber()} (BORING_CCMT)`;
     tType.value = "500";
     l1.value = "88.600";
     l2.value = "120.000";
@@ -2698,20 +2754,34 @@ function selectPointDir(dir, updateSelectEl = true) {
 }
 
 function addToolToSetupCard() {
-  const num = document.getElementById("toolNum").value.trim() || `T${setupTools.length + 1}`;
-  const edge = parseInt(document.getElementById("edgeNum").value) || 1;
-  const typeText = document.getElementById("toolType").options[document.getElementById("toolType").selectedIndex].text;
-  const l1 = parseFloat(document.getElementById("offsetL1").value) || 0;
-  const l2 = parseFloat(document.getElementById("offsetL2").value) || 0;
-  const rad = parseFloat(document.getElementById("offsetRad").value) || 0;
-  const dir = parseInt(document.getElementById("offsetType").value) || 3;
-  const wx = parseFloat(document.getElementById("wearL1").value) || 0;
-  const wz = parseFloat(document.getElementById("wearL2").value) || 0;
+  const num = document.getElementById("toolNum").value.trim() || `T${nextToolNumber()}`;
+  const edge = Number(document.getElementById("edgeNum").value);
+  const typeSelect = document.getElementById("toolType");
+  const typeText = typeSelect.options[typeSelect.selectedIndex].text;
+  const typeCode = Number(typeSelect.value);
+  const l1 = Number(document.getElementById("offsetL1").value);
+  const l2 = Number(document.getElementById("offsetL2").value);
+  const rad = Number(document.getElementById("offsetRad").value);
+  const dir = Number(document.getElementById("offsetType").value);
+  const wx = Number(document.getElementById("wearL1").value);
+  const wz = Number(document.getElementById("wearL2").value);
+  let tNo;
+  try {
+    tNo = SiemensCore.parseToolNumber(num);
+    if (!Number.isInteger(edge) || edge < 1 || edge > 99) throw new Error('Active edge must be a whole number from D1 to D99.');
+    if (![l1,l2,rad,wx,wz].every(Number.isFinite) || rad < 0) throw new Error('Enter valid geometry, radius and wear values.');
+    if (setupTools.some(tool => Number(tool.tNo) === tNo && Number(tool.edge) === edge)) throw new Error(`T${tNo} D${edge} is already in the setup card.`);
+  } catch (error) {
+    showInlineError('toolError', error.message);
+    return;
+  }
+  showInlineError('toolError');
 
   setupTools.push({
-    num: num,
+    num, tNo,
     edge: edge,
     type: typeText.split(' - ')[1] || typeText,
+    typeCode,
     l1: l1,
     l2: l2,
     rad: rad,
@@ -2752,10 +2822,10 @@ function renderSetupToolsList() {
     html += `
       <div class="tool-item">
         <div>
-          <div class="tool-item-title">${escapeHTML(tool.num)} &bull; D${tool.edge}</div>
-          <div class="tool-item-sub">Type: ${tool.type} | X: ${tool.l1.toFixed(3)} | Z: ${tool.l2.toFixed(3)} | R: ${tool.rad.toFixed(3)} | Dir: Type ${tool.dir}</div>
+          <div class="tool-item-title">${escapeHTML(tool.num)} &bull; T${tool.tNo} D${tool.edge}</div>
+          <div class="tool-item-sub">Type: ${escapeHTML(tool.type)} | X: ${tool.l1.toFixed(3)} | Z: ${tool.l2.toFixed(3)} | R: ${tool.rad.toFixed(3)} | Dir: Type ${tool.dir}</div>
         </div>
-        <button class="secondary-btn" onclick="deleteTool(${index})" style="border-color: var(--danger); color: var(--danger); padding: 5px 10px; font-size:0.75rem;">
+        <button class="secondary-btn" onclick="deleteTool(${index})" aria-label="Remove ${escapeHTML(tool.num)}" title="Remove ${escapeHTML(tool.num)}" style="border-color: var(--danger); color: var(--danger); padding: 5px 10px; font-size:0.75rem;">
           <i class="fa-solid fa-trash-can"></i>
         </button>
       </div>
@@ -2768,9 +2838,9 @@ function renderSetupToolsList() {
   setupTools.forEach((tool) => {
     printHtml += `
       <tr>
-        <td><b>${tool.num}</b></td>
+        <td><b>${escapeHTML(tool.num)}</b></td>
         <td>D${tool.edge}</td>
-        <td>${tool.type}</td>
+        <td>${escapeHTML(tool.type)}</td>
         <td>${tool.l1.toFixed(3)}</td>
         <td>${tool.l2.toFixed(3)}</td>
         <td>${tool.rad.toFixed(3)}</td>
@@ -2790,47 +2860,13 @@ function downloadTOAArchive() {
     return;
   }
 
-  let toa = `;$PATH=/_N_TO_DIR
-`;
-  toa += `; SHADER7 SINUMERIK TOOL OFFSET ARCHIVE
-`;
-  toa += `; DATE: ${new Date().toISOString().slice(0, 10)}
-`;
-  toa += `; CONTROL: SIEMENS 840D / 828D / 808D
-
-`;
-
-  setupTools.forEach((tool, i) => {
-    const tIdx = i + 1;
-    const dIdx = tool.edge || 1;
-    let typeCode = 500;
-    if (tool.type.toLowerCase().includes("finish")) typeCode = 510;
-    else if (tool.type.toLowerCase().includes("groov")) typeCode = 520;
-    else if (tool.type.toLowerCase().includes("thread")) typeCode = 540;
-    else if (tool.type.toLowerCase().includes("drill")) typeCode = 200;
-    else if (tool.type.toLowerCase().includes("mill")) typeCode = 120;
-
-    toa += `; --- ${tool.num} ---
-`;
-    toa += `$TC_DP1[${tIdx},${dIdx}]=${typeCode} ; Tool Type
-`;
-    toa += `$TC_DP2[${tIdx},${dIdx}]=${tool.dir} ; Cutting Edge Position
-`;
-    toa += `$TC_DP3[${tIdx},${dIdx}]=${tool.l1.toFixed(3)} ; Length 1 (X)
-`;
-    toa += `$TC_DP4[${tIdx},${dIdx}]=${tool.l2.toFixed(3)} ; Length 2 (Z)
-`;
-    toa += `$TC_DP6[${tIdx},${dIdx}]=${tool.rad.toFixed(3)} ; Radius (R)
-`;
-    toa += `$TC_DP12[${tIdx},${dIdx}]=${tool.wx.toFixed(3)} ; Wear X
-`;
-    toa += `$TC_DP13[${tIdx},${dIdx}]=${tool.wz.toFixed(3)} ; Wear Z
-
-`;
-  });
-
-  toa += `M17
-`;
+  let toa;
+  try {
+    toa = SiemensCore.buildTOAArchive(setupTools);
+  } catch (error) {
+    showInlineError('toolError', error.message);
+    return;
+  }
 
   const blob = new Blob([toa], { type: 'text/plain;charset=utf-8' });
   const url = URL.createObjectURL(blob);
@@ -2905,27 +2941,25 @@ function applyMaterialPreset() {
 }
 
 function runQuickSpeedCalc() {
-  const d = parseFloat(document.getElementById("calcDia").value) || 50;
-  const vc = parseFloat(document.getElementById("calcVc").value) || 200;
-  const f = parseFloat(document.getElementById("calcFeed").value) || 0.25;
-  const ap = parseFloat(document.getElementById("calcAp").value) || 2.0;
-  const re = parseFloat(document.getElementById("calcRe").value) || 0.8;
-
-  // Spindle RPM
-  const rpm = Math.round((vc * 1000) / (Math.PI * d));
-  // Table Feed
-  const vf = Math.round(rpm * f);
-  // MRR: Vc * ap * f
-  const mrr = Math.round(vc * ap * f * 10) / 10;
-  // Surface Finish Ra & Rz in µm: Ra = (f^2 / (32 * re)) * 1000, Rz = 4 * Ra
-  const safeRe = Math.max(0.05, re);
-  const ra = Math.round(((f * f) / (32 * safeRe)) * 1000 * 100) / 100;
-  const rz = Math.round(ra * 4 * 100) / 100;
-
-  document.getElementById("calcResultRpm").textContent = `${rpm} RPM`;
-  document.getElementById("calcResultVf").textContent = `${vf} mm/min`;
-  document.getElementById("calcResultMrr").textContent = `${mrr} cm³/min`;
-  document.getElementById("calcResultRa").textContent = `${ra} / ${rz} µm`;
+  let result;
+  try {
+    result = SiemensCore.calculateSpeedFeed({
+      diameter:document.getElementById('calcDia').value,
+      cuttingSpeed:document.getElementById('calcVc').value,
+      feed:document.getElementById('calcFeed').value,
+      depth:document.getElementById('calcAp').value,
+      radius:document.getElementById('calcRe').value
+    });
+  } catch (error) {
+    ['calcResultRpm','calcResultVf','calcResultMrr','calcResultRa'].forEach(id => document.getElementById(id).textContent = '—');
+    showInlineError('calcError', error.message);
+    return;
+  }
+  showInlineError('calcError');
+  document.getElementById("calcResultRpm").textContent = `${result.rpm} RPM`;
+  document.getElementById("calcResultVf").textContent = `${result.tableFeed} mm/min`;
+  document.getElementById("calcResultMrr").textContent = `${result.mrr} cm³/min`;
+  document.getElementById("calcResultRa").textContent = `${result.ra} / ${result.rz} µm`;
 }
 
 function toggleProfileInputs() {
@@ -2950,6 +2984,7 @@ window.addEventListener('load', () => {
   loadStoredTools();
   renderSetupToolsList();
   suggestToolParameters();
+  handleOperationChange();
   toggleProfileInputs();
   runQuickSpeedCalc();
   generateSiemensTurningCode();
