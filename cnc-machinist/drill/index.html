@@ -1146,8 +1146,8 @@
                 <label for="coordPlane">Coordinate Plane</label>
                 <select id="coordPlane">
                     <option value="G17" selected>G17 - X-Y Plane (Z Axis)</option>
-                    <option disabled value="G18">G18 - Z-X Plane (Y Axis)</option>
-                    <option disabled value="G19">G19 - Y-Z Plane (X Axis)</option>
+                    <option value="G18">G18 - Z-X Plane (Y Axis)</option>
+                    <option value="G19">G19 - Y-Z Plane (X Axis)</option>
                 </select>
             </div>
 
@@ -1167,6 +1167,17 @@
                 <div class="input-wrapper">
                     <input type="number" id="diameter" min="0.001" step="any" placeholder="e.g. 6">
                     <div class="input-suffix">mm</div>
+                </div>
+                <div class="quick-chips" id="quickChips" aria-label="Common drill and tap sizes">
+                    <span class="quick-chip-label">Presets:</span>
+                    <button type="button" class="preset-chip" onclick="applyPreset(3)">Ø3</button>
+                    <button type="button" class="preset-chip" onclick="applyPreset(4)">Ø4</button>
+                    <button type="button" class="preset-chip" onclick="applyPreset(5)">Ø5</button>
+                    <button type="button" class="preset-chip" onclick="applyPreset(6)">Ø6</button>
+                    <button type="button" class="preset-chip" onclick="applyPreset(8)">Ø8</button>
+                    <button type="button" class="preset-chip" onclick="applyPreset(10)">Ø10</button>
+                    <button type="button" class="preset-chip" onclick="applyPreset(12)">Ø12</button>
+                    <button type="button" class="preset-chip" onclick="applyPreset(16)">Ø16</button>
                 </div>
             </div>
 
@@ -1194,6 +1205,8 @@
                     <option value="alloy">Alloy / Tool Steel</option>
                     <option value="stainless">Stainless Steel</option>
                     <option value="aluminum">Aluminum Alloy</option>
+                    <option value="castiron">Cast Iron (Grey / Ductile)</option>
+                    <option value="brass">Brass / Bronze / Copper</option>
                 </select>
             </div>
 
@@ -1278,7 +1291,7 @@
             <div class="accordion-item active">
                 <button class="accordion-header" onclick="toggleAccordion(this)">
                     <span class="accordion-title-wrapper">
-                        <span class="accordion-icon">📋ˆ</span>
+                        <span class="accordion-icon">📋</span>
                         CNC Speeds & Feeds Theory & Real-World Equations
                     </span>
                     <span class="accordion-chevron"></span>
@@ -1322,7 +1335,7 @@
             <div class="accordion-item">
                 <button class="accordion-header" onclick="toggleAccordion(this)">
                     <span class="accordion-title-wrapper">
-                        <span class="accordion-icon">&#9888;¡</span>
+                        <span class="accordion-icon">⚡</span>
                         Shop-Floor Tapping Integration: Rigid Tapping (G84)
                     </span>
                     <span class="accordion-chevron"></span>
@@ -1339,7 +1352,7 @@
             <div class="accordion-item">
                 <button class="accordion-header" onclick="toggleAccordion(this)">
                     <span class="accordion-title-wrapper">
-                        <span class="accordion-icon">▼</span>
+                        <span class="accordion-icon">❓</span>
                         Drilling & Tapping Frequently Asked Questions (FAQ)
                     </span>
                     <span class="accordion-chevron"></span>
@@ -1393,14 +1406,29 @@ const resultEl = document.getElementById("result");
 
 // ISO metric coarse pitch table
 const pitchTable = [
- {d:3,p:0.5},{d:4,p:0.7},{d:5,p:0.8},{d:6,p:1.0},
- {d:8,p:1.25},{d:10,p:1.5},{d:12,p:1.75},
- {d:16,p:2.0},{d:20,p:2.5},{d:24,p:3.0},
- {d:30,p:3.5},{d:36,p:4.0},{d:42,p:4.5}
+ {d:1.6,p:0.35},{d:2,p:0.4},{d:2.5,p:0.45},{d:3,p:0.5},
+ {d:3.5,p:0.6},{d:4,p:0.7},{d:5,p:0.8},{d:6,p:1.0},
+ {d:7,p:1.0},{d:8,p:1.25},{d:10,p:1.5},{d:12,p:1.75},
+ {d:14,p:2.0},{d:16,p:2.0},{d:18,p:2.5},{d:20,p:2.5},
+ {d:22,p:2.5},{d:24,p:3.0},{d:27,p:3.0},{d:30,p:3.5},
+ {d:33,p:3.5},{d:36,p:4.0},{d:39,p:4.0},{d:42,p:4.5}
 ];
 
 function getPitch(d){
     return pitchTable.find(item => Math.abs(item.d - d) < 0.0001)?.p || '';
+}
+
+function getTapDrill(d, pitch){
+    if (!d || !pitch || d <= pitch) return null;
+    return Number((d - pitch).toFixed(2));
+}
+
+function applyPreset(d) {
+    diaEl.value = d;
+    if (opEl.value === "tap") {
+        pitchEl.value = getPitch(d);
+    }
+    calculate();
 }
 
 function resetResults() {
@@ -1426,7 +1454,9 @@ document.querySelectorAll('input, select').forEach(el => {
 // Show/Hide Pitch and Cycle Inputs based on Operation & Auto-fill coarse pitch
 function handleOperationChange() {
     const cycleGroup = document.getElementById("cycleGroup");
-    if (opEl.value === "tap") {
+    const chipsEl = document.getElementById("quickChips");
+    const isTap = opEl.value === "tap";
+    if (isTap) {
         pitchGroup.classList.remove("hidden");
         if (cycleGroup) cycleGroup.classList.add("hidden");
         const D = parseFloat(diaEl.value);
@@ -1436,6 +1466,12 @@ function handleOperationChange() {
     } else {
         pitchGroup.classList.add("hidden");
         if (cycleGroup) cycleGroup.classList.remove("hidden");
+    }
+    if (chipsEl) {
+        chipsEl.innerHTML = `
+            <span class="quick-chip-label">Presets:</span>
+            ${[3, 4, 5, 6, 8, 10, 12, 16].map(d => `<button type="button" class="preset-chip" onclick="applyPreset(${d})">${isTap ? 'M' + d : 'Ø' + d}</button>`).join('')}
+        `;
     }
 }
 
@@ -1466,6 +1502,26 @@ function drillFeedPerRev(d){
 function getSyncedTap(baseRpm, pitch) {
     const r = Math.max(1, Math.round(baseRpm));
     return {r, f: Number((r * pitch).toFixed(6))};
+}
+
+function calculateDrillMetrics(op, dia, depth, rpm, feed, pitch, cycle) {
+    const tipLength = op === 'drill' ? Number((dia * 0.3).toFixed(2)) : 0;
+    const effectiveDepth = depth > 0 ? depth : Number((dia * 2).toFixed(2));
+    const totalTravel = effectiveDepth + tipLength + 2.0;
+    let feedTimeSec = feed > 0 ? (totalTravel / feed) * 60 : 0;
+    if (op === 'tap') {
+        feedTimeSec = (effectiveDepth / feed) * 60 * 2 + 0.5;
+    } else if (cycle === 'G83') {
+        const q = Math.max(dia * 0.75, 1.0);
+        const pecks = Math.ceil(effectiveDepth / q);
+        feedTimeSec = (totalTravel / feed) * 60 + pecks * 0.25;
+    } else if (cycle === 'G82') {
+        feedTimeSec += 1.0;
+    }
+    const cycleTimeSec = Math.max(0.5, Math.round(feedTimeSec * 10) / 10);
+    const mrr = op === 'drill' ? Number(((Math.PI * Math.pow(dia, 2) / 4) * feed / 1000).toFixed(2)) : 0;
+    const vc = Number(((Math.PI * dia * rpm) / 1000).toFixed(2));
+    return { tipLength, effectiveDepth, totalTravel, cycleTimeSec, mrr, vc };
 }
 
 // Global simulation state variables
@@ -1529,17 +1585,21 @@ function calculate(){
         mild:{hss:22,hssco:28,carbide:80},
         alloy:{hss:18,hssco:24,carbide:70},
         stainless:{hss:14,hssco:20,carbide:60},
-        aluminum:{hss:60,hssco:80,carbide:200}
+        aluminum:{hss:60,hssco:80,carbide:200},
+        castiron:{hss:20,hssco:26,carbide:80},
+        brass:{hss:45,hssco:60,carbide:140}
     };
 
     const tapV = {
         mild:{hss:6,hssco:8,carbide:18},
         alloy:{hss:5,hssco:7,carbide:15},
         stainless:{hss:4,hssco:6,carbide:12},
-        aluminum:{hss:10,hssco:12,carbide:30}
+        aluminum:{hss:10,hssco:12,carbide:30},
+        castiron:{hss:8,hssco:10,carbide:20},
+        brass:{hss:12,hssco:15,carbide:25}
     };
 
-    const V = customVc || (op==="drill") ? drillV[mat][tool] : tapV[mat][tool];
+    const V = customVc ? customVc : (op === "drill" ? drillV[mat][tool] : tapV[mat][tool]);
 
     // Initial mathematically standard RPMs
     const requestedRpm = (1000 * V) / (Math.PI * D);
@@ -1550,7 +1610,7 @@ function calculate(){
     let stdRpmVal = 0;
     let stdFeedVal = 0;
     let pitchVal = 0;
-    let peckWarning = `<div class="info-box">RPM limit: ${maxRpm}. Actual cutting speed: ${(Math.PI * D * rpmStdRaw / 1000).toFixed(2)} m/min.${requestedRpm > maxRpm ? " Spindle limit applied; feed recalculated." : ""} Blank depth uses 2 × diameter. These are starting estimates; confirm cutting data and the sample program on your control.</div>`;
+    let peckWarning = `<div class="info-box"><div class="info-box-title">⚙️ Machine Telemetry &amp; Speed Limits</div><p style="font-size:0.84rem; margin:0;">RPM limit: <strong>${maxRpm} RPM</strong>. Actual cutting speed: <strong>${(Math.PI * D * rpmStdRaw / 1000).toFixed(2)} m/min</strong>.${requestedRpm > maxRpm ? " Spindle limit applied; feed recalculated." : ""} Blank depth uses 2 × diameter.</p></div>`;
     let minTap = { r: 0, f: 0 };
     let stdTap = { r: 0, f: 0 };
     let maxTap = { r: 0, f: 0 };
@@ -1558,9 +1618,9 @@ function calculate(){
     // 1. Workpiece Table Collision Warning (for both drill and tap)
     if (depth > 0 && depth >= blockSize) {
         peckWarning += `
-        <div class="info-box warning" style="margin-top: 15px; border-left-color: var(--danger); background: rgba(239, 68, 68, 0.05); color: #fee2e2;">
-            <div class="info-box-title" style="color: var(--danger);">&#9888;ï¸ Table Collision Crash Risk</div>
-            <p style="font-size: 0.82rem; margin-top: 2px;">Hole Z-depth (${depth}mm) is greater than or equal to workpiece thickness (${blockSize}mm). The tool will drill completely through the workpiece. Ensure clearance spacers or parallels are in place under the stock to prevent severe damage to the machine table or vice.</p>
+        <div class="info-box danger" style="margin-top: 15px;">
+            <div class="info-box-title">⚠️ Table Collision Crash Risk</div>
+            <p style="font-size: 0.82rem; margin-top: 2px;">Hole depth (${depth}mm) &ge; stock thickness (${blockSize}mm). The tool will drill completely through the workpiece. Ensure clearance parallels or spacers are under the stock to protect the machine table.</p>
         </div>`;
     }
 
@@ -1579,8 +1639,8 @@ function calculate(){
         if (depth >= (D * 3)) {
             peckWarning += `
             <div class="info-box warning" style="margin-top: 15px;">
-                <div class="info-box-title">&#9888;ï¸ Peck Drilling Advised</div>
-                <p style="font-size: 0.82rem; margin-top: 2px;">Hole Z-depth is &ge; 3x tool diameter. Standard G83 deep peck or G73 chip breaker cycles are strongly advised to safely evacuate metal shavings.</p>
+                <div class="info-box-title">⚠️ Peck Drilling Advised</div>
+                <p style="font-size: 0.82rem; margin-top: 2px;">Hole depth &ge; 3× tool diameter. Standard G83 deep hole peck or G73 chip breaker cycles are strongly advised to evacuate metal chips safely.</p>
             </div>`;
         }
     } else {
@@ -1603,8 +1663,8 @@ function calculate(){
 
         peckWarning += `
         <div class="info-box" style="margin-top: 15px;">
-            <div class="info-box-title">&#9888;¡ Smart Sync Active</div>
-            <p style="font-size: 0.82rem; margin-top: 2px;">Values are perfectly synchronized for Rigid Tapping cycles (G84). Decimal feed is retained so that <strong>Feed = RPM &times; Pitch</strong> at the programmed spindle speed.</p>
+            <div class="info-box-title">⚡ Smart Sync Active</div>
+            <p style="font-size: 0.82rem; margin-top: 2px;">Spindle speed and feed rate are synchronized for Rigid Tapping (G84). Feed rate is locked to <strong>Feed = RPM &times; Pitch</strong> at the programmed spindle speed.</p>
         </div>`;
     }
 
@@ -1806,15 +1866,18 @@ function calculate(){
         </div>`;
     }
 
+    const metrics = calculateDrillMetrics(op, D, depth, stdRpmVal, stdFeedVal, pitchVal, simDrillCycle);
+    const tapDrill = (op === 'tap') ? getTapDrill(D, pitchVal) : null;
+
     // Build Telemetry HTML for Right Side Panel
     let telemetryHtml = `
-        <h3 class="results-header">${op === "drill" ? "Drilling Results" : `Tapping Results (M${D} x ${pitchVal})`}</h3>
+        <h3 class="results-header">${op === "drill" ? `Drilling Results (Ø${D.toFixed(2)} mm)` : `Tapping Results (M${D} × ${pitchVal} mm)`}</h3>
         
         <div class="hud-grid">
             <!-- Min Card -->
             <div class="hud-card min">
                 <div class="hud-left">
-                    <h4>Minimum</h4>
+                    <h4>Conservative</h4>
                     <p>${op === "drill" ? Math.round(rpmMinRaw) : minTap.r} <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">RPM</span></p>
                 </div>
                 <div class="hud-right">
@@ -1826,7 +1889,7 @@ function calculate(){
             <!-- Standard Card -->
             <div class="hud-card std">
                 <div class="hud-left">
-                    <h4>Starting point</h4>
+                    <h4>Recommended</h4>
                     <p>${stdRpmVal} <span style="font-size: 0.8rem; color: var(--primary); font-weight: 600;">RPM</span></p>
                 </div>
                 <div class="hud-right">
@@ -1838,7 +1901,7 @@ function calculate(){
             <!-- Higher estimate Card -->
             <div class="hud-card max">
                 <div class="hud-left">
-                    <h4>Higher estimate</h4>
+                    <h4>Aggressive</h4>
                     <p>${op === "drill" ? Math.round(rpmMaxRaw) : maxTap.r} <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">RPM</span></p>
                 </div>
                 <div class="hud-right">
@@ -1848,9 +1911,42 @@ function calculate(){
             </div>
         </div>
 
-        <div class="detail-row" style="margin-top:15px; margin-bottom: 15px; background: rgba(255,255,255,0.01); border:1px solid var(--border); border-radius:10px; padding:12px 16px; display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-size:0.8rem; font-weight:700; color:var(--text-label); text-transform:uppercase;">Calculated Feed/Rev</span>
-            <span style="font-family:var(--font-mono); font-weight:700; color:var(--primary);">${pitchVal} mm/rev</span>
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <span class="metric-label">Cutting Speed (Vc)</span>
+                <span class="metric-value">${metrics.vc} <span class="metric-unit">m/min</span></span>
+                <span class="metric-sub">${requestedRpm > maxRpm ? 'Clamped by max RPM' : 'Target surface speed'}</span>
+            </div>
+            <div class="metric-card">
+                <span class="metric-label">${op === 'drill' ? 'Feed / Rev (fn)' : 'Thread Pitch'}</span>
+                <span class="metric-value">${pitchVal} <span class="metric-unit">${op === 'drill' ? 'mm/rev' : 'mm'}</span></span>
+                <span class="metric-sub">${op === 'drill' ? 'Chip load per rev' : 'Thread lead'}</span>
+            </div>
+            ${op === 'tap' && tapDrill ? `
+            <div class="metric-card highlight">
+                <span class="metric-label">Tap Drill (Pre-hole)</span>
+                <span class="metric-value">Ø ${tapDrill.toFixed(2)} <span class="metric-unit">mm</span></span>
+                <span class="metric-sub">Formula: Ø − Pitch</span>
+            </div>
+            ` : `
+            <div class="metric-card">
+                <span class="metric-label">Material Removal</span>
+                <span class="metric-value">${metrics.mrr} <span class="metric-unit">cm³/min</span></span>
+                <span class="metric-sub">Chip removal volume</span>
+            </div>
+            `}
+            <div class="metric-card">
+                <span class="metric-label">Est. Cycle Time</span>
+                <span class="metric-value">${metrics.cycleTimeSec} <span class="metric-unit">sec</span></span>
+                <span class="metric-sub">${depth > 0 ? depth + ' mm hole depth' : '2×D standard depth'}</span>
+            </div>
+            ${op === 'drill' ? `
+            <div class="metric-card">
+                <span class="metric-label">118° Point Length</span>
+                <span class="metric-value">${metrics.tipLength} <span class="metric-unit">mm</span></span>
+                <span class="metric-sub">0.3 × Tool Diameter</span>
+            </div>
+            ` : ''}
         </div>
         
         ${peckWarning}
@@ -1861,7 +1957,10 @@ function calculate(){
         <div class="gcode-panel" style="height: auto;">
             <div class="gcode-header-bar">
                 <div class="gcode-filename">shader7_cycle.nc</div>
-                <button class="gcode-copy-btn" onclick="copyGCode()">Copy Block</button>
+                <div class="gcode-actions">
+                    <button class="gcode-copy-btn" onclick="copyGCode()">Copy Block</button>
+                    <button class="gcode-dl-btn" onclick="downloadGCode()">Download .NC</button>
+                </div>
             </div>
             <div class="gcode-container" style="padding: 20px; height: auto; overflow: visible;">
                 <pre id="gcodeBox" style="margin: 0; white-space: pre-wrap; font-family: inherit; font-size: 0.92rem; line-height: 1.6;">${highlightedCode}</pre>
@@ -1877,6 +1976,11 @@ function calculate(){
                 <div class="sim-btn-group">
                     <button id="simPlayBtn" class="gcode-copy-btn" onclick="toggleSimPlay()" style="background: var(--primary); color: #022c22; border-color: var(--primary); height: 32px; display: inline-flex; align-items: center;">▶ Run</button>
                     <button class="gcode-copy-btn" onclick="resetSim()" style="height: 32px; display: inline-flex; align-items: center;">🔄 Reset</button>
+                    <div class="sim-speed-pills" role="group" aria-label="Playback speed">
+                        <button type="button" class="speed-pill active" onclick="setSimSpeed(1, this)">1×</button>
+                        <button type="button" class="speed-pill" onclick="setSimSpeed(2, this)">2×</button>
+                        <button type="button" class="speed-pill" onclick="setSimSpeed(4, this)">4×</button>
+                    </div>
                 </div>
                 
                 <!-- High-Tech G-Code Active Block Monitor -->
@@ -1929,6 +2033,14 @@ function switchTab(tabId) {
     if (activeBtn) activeBtn.classList.add("active");
 }
 
+let simSpeedMultiplier = 1;
+function setSimSpeed(speed, btn) {
+    simSpeedMultiplier = speed;
+    const pills = document.querySelectorAll('.speed-pill');
+    pills.forEach(p => p.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+}
+
 function copyGCode() {
     const gcodeBox = document.getElementById("gcodeBox");
     const text = Array.from(gcodeBox.querySelectorAll('.gcode-line'), line => line.textContent).join('\n');
@@ -1945,6 +2057,22 @@ function copyGCode() {
     }).catch(err => {
         alert("Clipboard copy failed. Please select text manually and copy.");
     });
+}
+
+function downloadGCode() {
+    const gcodeBox = document.getElementById("gcodeBox");
+    if (!gcodeBox) return;
+    const text = Array.from(gcodeBox.querySelectorAll('.gcode-line'), line => line.textContent).join('\n');
+    if (!text.trim()) return;
+    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'shader7_cycle.nc';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
 }
 
 // Regex G-code Highlighter
@@ -2332,7 +2460,7 @@ function toggleSimPlay() {
         
         if (simState === 'idle' || simState === 'done') {
             simState = 'spindle_start';
-            simDwellTime = 3.0; // 3 seconds spindle start hold
+            simDwellTime = 0.6; // Spindle start acceleration hold
             simZ = -30.0; // Starts at safe retract height Z30
             simMaxDepth = 0.0; // Reset hole depth for new run!
             simDirection = 'CW';
@@ -2363,10 +2491,10 @@ function loopSim() {
     if (!simPlaying) return;
     
     const now = performance.now();
-    let dt = (now - lastFrameTime) / 1000;
+    let dt = ((now - lastFrameTime) / 1000) * simSpeedMultiplier;
     if (dt > 0.3) {
         // Tab backgrounded or severe frame drop; reset step to prevent massive jumps
-        dt = 0.016;
+        dt = 0.016 * simSpeedMultiplier;
     }
     lastFrameTime = now;
     
@@ -2383,8 +2511,8 @@ function updateSim(dt) {
     // 7.2 degrees per second per 1 RPM (matches rigid geared tapping speed exactly)
     let visualRpmSpeed = simRpm * 7.2;
     if (simState === 'spindle_start') {
-        // Accelerate visual spin speed over the 3-second start phase
-        visualRpmSpeed = simRpm * 7.2 * Math.min(1.0, (3.0 - simDwellTime) / 2.0);
+        // Accelerate visual spin speed over the 0.6-second start phase
+        visualRpmSpeed = simRpm * 7.2 * Math.min(1.0, (0.6 - simDwellTime) / 0.4);
     } else if (simState === 'boring_dwell') {
         // Decelerate visual spin speed to zero over the 0.6-second G86 spindle stop phase
         visualRpmSpeed = simRpm * 7.2 * Math.max(0, simDwellTime / 0.6);
@@ -2415,7 +2543,7 @@ function updateSim(dt) {
     
     switch (simState) {
         case 'spindle_start':
-            document.getElementById("simModeText").textContent = "Spindle Accel (3s)";
+            document.getElementById("simModeText").textContent = "Spindle Accel";
             document.getElementById("simModeText").style.color = "var(--warning)";
             
             simDwellTime -= dt;
@@ -2433,12 +2561,12 @@ function updateSim(dt) {
             if (simZ >= -2.0) {
                 simZ = -2.0;
                 simState = 'r_dwell';
-                simDwellTime = 2.0; // 2 seconds hold at R plane clearance
+                simDwellTime = 0.3; // 0.3 seconds hold at R plane clearance
             }
             break;
             
         case 'r_dwell':
-            document.getElementById("simModeText").textContent = "R Plane Hold (2s)";
+            document.getElementById("simModeText").textContent = "R Plane (G00)";
             document.getElementById("simModeText").style.color = "var(--warning)";
             
             simDwellTime -= dt;
@@ -3226,8 +3354,8 @@ function drawSimFrame() {
             hudFeed = 0;
             break;
         case 'spindle_start':
-            // Visual spin acceleration over 3 seconds
-            hudRpm = Math.round(simRpm * Math.min(1.0, (3.0 - simDwellTime) / 2.0));
+            // Visual spin acceleration over 0.6 seconds
+            hudRpm = Math.round(simRpm * Math.min(1.0, (0.6 - simDwellTime) / 0.4));
             hudFeed = 0;
             break;
         case 'approach':
