@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <!-- Social Bar Ad Script -->
-<script src="https://emotionallytonightintelligent.com/24/99/11/249911a0bb6cd7ff11a49086b8f131e7.js"></script>
+
   <script src="../../js/theme.js"></script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-FCJR8H4DME"></script>
     <script>
@@ -13,10 +13,10 @@
     </script>
 
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <title>CNC Drill & Tap Speeds and Feeds Calculator | Free App - SHADER7</title>
-    <meta name="description" content="Calculate optimal Spindle Speed (RPM) and Feed Rate for CNC drilling and rigid tapping. Smart Sync forces perfect whole numbers for Fanuc & Haas G84 cycles.">
+    <meta name="description" content="Calculate optimal Spindle Speed (RPM) and Feed Rate for CNC drilling and rigid tapping. Includes spindle limits and pitch-linked tapping feeds.">
     <meta name="keywords" content="cnc speeds and feeds calculator, drill rpm calculator, tapping feed rate, rigid tapping g84, cnc machinist tools, shader7">
     <meta name="author" content="Nishikant Xalxo">
     <meta name="robots" content="index, follow">
@@ -52,7 +52,7 @@
         "price": "0.00",
         "priceCurrency": "USD"
       },
-      "description": "A free CNC machining utility to calculate accurate spindle speeds (RPM) and feed rates for drilling and rigid tapping operations. Includes Smart Sync for perfect G84 cycles.",
+      "description": "A free CNC machining utility to calculate accurate spindle speeds (RPM) and feed rates for drilling and rigid tapping operations. Includes pitch-linked tapping feeds and machine RPM limits.",
       "creator": {
         "@type": "Person",
         "name": "Nishikant Xalxo",
@@ -1101,6 +1101,7 @@
         }
     </style>
 <link rel="stylesheet" href="/css/app-banners.css?v=20260904-banners"/>
+<link rel="stylesheet" href="workspace.css?v=20260905">
 </head>
 <body>
 
@@ -1113,6 +1114,7 @@
                 Back to CNC Hub
             </a>
         </div>
+        <button type="button" class="theme-control" onclick="toggleShader7Theme()">Light / dark mode</button>
         <div class="header-branding">
             <h1>SHADER<span>7</span></h1>
             <p>Advanced CNC Tools & Resources</p>
@@ -1120,14 +1122,14 @@
     </header>
 <figure class="app-banner" aria-hidden="true"><img alt="" decoding="async" height="360" loading="eager" src="/assets/banners/drill-640.webp" srcset="/assets/banners/drill-640.webp 640w, /assets/banners/drill-1280.webp 1280w" sizes="(max-width: 480px) calc(100vw - 32px), 400px" width="640"/></figure>
 
-    <h2>Feed & Speed Calculator (CNC Machinist)</h2>
+    <h2>Drill feed & RPM calculator</h2>
 
     <div class="app-container">
         <!-- Control Panel (Left Sidebar) -->
         <div class="panel">
             <div class="panel-title">
                 <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"></path></svg>
-                CNC Milling Setup
+                Drilling & tapping setup
             </div>
 
             <div class="form-group">
@@ -1142,14 +1144,14 @@
                 <label for="coordPlane">Coordinate Plane</label>
                 <select id="coordPlane">
                     <option value="G17" selected>G17 - X-Y Plane (Z Axis)</option>
-                    <option value="G18">G18 - Z-X Plane (Y Axis)</option>
-                    <option value="G19">G19 - Y-Z Plane (X Axis)</option>
+                    <option disabled value="G18">G18 - Z-X Plane (Y Axis)</option>
+                    <option disabled value="G19">G19 - Y-Z Plane (X Axis)</option>
                 </select>
             </div>
 
             <div class="form-group" id="cycleGroup">
                 <label for="drillCycle">Drill Canned Cycle</label>
-                <select id="drillCycle" onchange="calculate()">
+                <select id="drillCycle">
                     <option value="G83">G83 - Deep Hole Peck Cycle</option>
                     <option value="G73">G73 - High-Speed Peck (Chip Breaker)</option>
                     <option value="G81">G81 - Direct Drilling Cycle</option>
@@ -1161,7 +1163,7 @@
             <div class="form-group">
                 <label for="diameter">Tool Diameter</label>
                 <div class="input-wrapper">
-                    <input type="number" id="diameter" step="0.1" placeholder="e.g. 6">
+                    <input type="number" id="diameter" min="0.001" step="any" placeholder="e.g. 6">
                     <div class="input-suffix">mm</div>
                 </div>
             </div>
@@ -1169,7 +1171,7 @@
             <div class="form-group hidden" id="pitchGroup">
                 <label for="pitch">Thread Pitch <span style="font-weight:normal; font-size:0.75rem; text-transform:none;">(Overrides Coarse)</span></label>
                 <div class="input-wrapper">
-                    <input type="number" id="pitch" step="0.05" placeholder="e.g. 1.0">
+                    <input type="number" id="pitch" min="0.000001" step="any" placeholder="e.g. 1.0">
                     <div class="input-suffix">mm</div>
                 </div>
             </div>
@@ -1197,7 +1199,7 @@
                 <div class="form-group">
                     <label for="depth">Hole Target Depth <span style="font-weight:normal; font-size:0.75rem; text-transform:none;">(Optional)</span></label>
                     <div class="input-wrapper">
-                        <input type="number" id="depth" placeholder="e.g. 20">
+                        <input type="number" id="depth" min="0.001" step="any" placeholder="e.g. 20">
                         <div class="input-suffix">mm</div>
                     </div>
                 </div>
@@ -1205,33 +1207,23 @@
                 <div class="form-group">
                     <label for="blockSize">Block Thickness</label>
                     <div class="input-wrapper">
-                        <input type="number" id="blockSize" value="50" placeholder="50" oninput="resetResults()">
+                        <input type="number" id="blockSize" min="0.001" step="any" value="50" placeholder="50" oninput="resetResults()">
                         <div class="input-suffix">mm</div>
                     </div>
                 </div>
             </div>
 
-            <button class="calc-btn" onclick="calculate()">
+            <details class="cutting-options"><summary>Cutting data & machine limit</summary>
+<label for="maxRpm">Maximum spindle speed (RPM)</label><input id="maxRpm" type="number" min="1" step="1" value="6000">
+<label for="customVc">Cutting speed (m/min, optional)</label><input id="customVc" type="number" min="0.001" step="any" placeholder="Use material estimate">
+<label for="customFn">Drill feed per revolution (mm/rev, optional)</label><input id="customFn" type="number" min="0.000001" step="any" placeholder="Use diameter estimate">
+<p>Use your tool maker’s cutting data when available. Material presets are starting estimates. Tapping feed always follows thread pitch.</p></details>
+<p id="calcError" role="alert" hidden></p>
+<button class="calc-btn" onclick="calculate()">
                 <svg style="width:18px; height:18px; fill:currentColor;" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"></path></svg>
                 Calculate Parameters
             </button>
 
-            <!-- Sponsored Skyscraper Ad -->
-            <div style="margin-top: 25px; text-align: center; border-top: 1px solid var(--border); padding-top: 20px;">
-                <span style="display: block; color: var(--text-muted); font-size: 10px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 12px;">Partner Resource</span>
-                <div style="display: inline-block; min-width: 160px; min-height: 300px; background: rgba(0, 0, 0, 0.25); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; vertical-align: middle; box-shadow: var(--shadow);">
-                    <script>
-                      atOptions = {
-                        'key' : '6417cc76f70fd7e327bb15717a841088',
-                        'format' : 'iframe',
-                        'height' : 300,
-                        'width' : 160,
-                        'params' : {}
-                      };
-                    </script>
-                    <script src="https://emotionallytonightintelligent.com/6417cc76f70fd7e327bb15717a841088/invoke.js"></script>
-                </div>
-            </div>
         </div>
 
         <!-- Dashboard Outputs Panel (Right Side) -->
@@ -1295,7 +1287,7 @@
                         
                         <p>The standard industrial mathematical formulas used inside this calculator are:</p>
                         <ul>
-                            <li><strong>Spindle Speed (RPM):</strong> <code>N = (V * 1000) / (pi * D)</code>, where <code>N</code> is Spindle Speed (RPM), <code>V</code> is Cutting Speed (Surface Meters per Minute - SFM/SMM), and <code>D</code> is Tool Diameter (mm).</li>
+                            <li><strong>Spindle Speed (RPM):</strong> <code>N = (V * 1000) / (pi * D)</code>, where <code>N</code> is Spindle Speed (RPM), <code>V</code> is Cutting Speed (m/min), and <code>D</code> is Tool Diameter (mm).</li>
                             <li><strong>Feed Rate (F):</strong> <code>F = N * f_rev</code>, where <code>F</code> is Feed Rate (mm/min), <code>N</code> is Spindle Speed (RPM), and <code>f_rev</code> is Feed per Revolution (mm/rev).</li>
                         </ul>
                     </div>
@@ -1336,7 +1328,7 @@
                 <div class="accordion-content">
                     <div class="accordion-inner">
                         <p>Modern CNC machines (such as Haas, Fanuc, or Mazak controls) utilize <strong>Rigid Tapping</strong> cycles, represented by G-code <code>G84</code>. During rigid tapping, the spindle's rotation and the Z-axis linear feed are mechanically synchronized. The feed rate must satisfy the rigid ratio: <code>Feed = Spindle Speed (RPM) * Thread Pitch</code>.</p>
-                        <p>Our calculator features a built-in <strong>Smart Sync</strong> algorithm. Standard math yields fractional values for Feed Rate, which cause micro-pitch mismatch on older controls that do not support float-decimal feeds. Smart Sync slightly adjusts the spindle speed (+/- 5 RPM) to guarantee that both Spindle Speed and Z-Axis Feed are perfect whole-number integers in your G-code program blocks.</p>
+                        <p>Tapping uses feed per minute = programmed RPM × thread pitch. Decimal feeds are retained to preserve this relationship. The sample uses metric G94 feed mode and a Fanuc-style M29 rigid-tapping command; verify controller support.</p>
                     </div>
                 </div>
             </div>
@@ -1406,9 +1398,7 @@ const pitchTable = [
 ];
 
 function getPitch(d){
-    return pitchTable.reduce((a,b)=>
-        Math.abs(b.d-d)<Math.abs(a.d-d)?b:a
-    ).p;
+    return pitchTable.find(item => Math.abs(item.d - d) < 0.0001)?.p || '';
 }
 
 function resetResults() {
@@ -1422,6 +1412,8 @@ function resetResults() {
         simContainer.innerHTML = '<div class="empty-state" style="padding: 40px 20px;"><p>Calculator parameters must be generated first. Click Calculate Parameters above to boot the VMC visualizer spindle.</p></div>';
     }
     resetSim();
+    const error = document.getElementById('calcError');
+    if (error) error.hidden = true;
 }
 
 // Clear results when user changes inputs to prevent stale data
@@ -1470,19 +1462,8 @@ function drillFeedPerRev(d){
 
 // SMART TAPPING SYNC: Adjusts RPM slightly to force a perfect whole-number Feed
 function getSyncedTap(baseRpm, pitch) {
-    // Search up to +/- 10 RPM to find a number that multiplies perfectly into an integer
-    for (let i = 0; i <= 20; i++) {
-        let offset = i % 2 === 0 ? i / 2 : -(i + 1) / 2;
-        let testRpm = Math.round(baseRpm) + offset;
-        let testFeed = testRpm * pitch;
-        
-        // If the resulting feed is a whole number (accounting for tiny JS float math errors)
-        if (Math.abs(testFeed - Math.round(testFeed)) < 0.001) {
-            return { r: testRpm, f: Math.round(testFeed) };
-        }
-    }
-    // Fallback if no integer is found: Just round the RPM and Feed normally
-    return { r: Math.round(baseRpm), f: Math.round(baseRpm * pitch) };
+    const r = Math.max(1, Math.round(baseRpm));
+    return {r, f: Number((r * pitch).toFixed(6))};
 }
 
 // Global simulation state variables
@@ -1520,27 +1501,26 @@ function calculate(){
     const tool = document.getElementById("toolMaterial").value;
     const mat = document.getElementById("workMaterial").value;
     
-    const depthInput = document.getElementById("depth");
-    let depth = parseFloat(depthInput.value) || 0;
-    if (depth < 0) {
-        depth = Math.abs(depth);
-        depthInput.value = depth;
-    }
-    
-    const blockInput = document.getElementById("blockSize");
-    let blockSize = parseFloat(blockInput.value) || 50;
-    if (blockSize <= 0) {
-        alert("Please enter a valid positive block thickness.");
-        blockInput.focus();
-        return;
-    }
-
-    // Reject Zero, Negative, or Empty numbers
-    if(!D || D <= 0){ 
-        alert("Please enter a valid positive tool diameter."); 
-        diaEl.focus();
-        return; 
-    }
+    resetResults();
+    const error = document.getElementById('calcError');
+    error.hidden = true;
+    const readPositive = (id, optional = false) => {
+        const el = document.getElementById(id);
+        if (optional && !el.value.trim()) return null;
+        const n = Number(el.value);
+        if (!Number.isFinite(n) || n <= 0 || !el.checkValidity()) throw new Error(el.labels?.[0]?.textContent + ': enter a positive valid number.');
+        return n;
+    };
+    let depth, blockSize, maxRpm, customVc, customFn;
+    try {
+        readPositive('diameter');
+        depth = readPositive('depth', true) || D * 2;
+        blockSize = readPositive('blockSize');
+        maxRpm = readPositive('maxRpm');
+        customVc = readPositive('customVc', true);
+        customFn = readPositive('customFn', true);
+        if (op === 'tap') readPositive('pitch');
+    } catch (e) { error.textContent = e.message; error.hidden = false; return; }
 
     // Cutting speeds (m/min)
     const drillV = {
@@ -1557,17 +1537,18 @@ function calculate(){
         aluminum:{hss:10,hssco:12,carbide:30}
     };
 
-    const V = (op==="drill") ? drillV[mat][tool] : tapV[mat][tool];
+    const V = customVc || (op==="drill") ? drillV[mat][tool] : tapV[mat][tool];
 
     // Initial mathematically standard RPMs
-    const rpmStdRaw = (1000 * V) / (Math.PI * D);
-    const rpmMinRaw = rpmStdRaw * 0.6;
-    const rpmMaxRaw = rpmStdRaw * 1.2;
+    const requestedRpm = (1000 * V) / (Math.PI * D);
+    const rpmStdRaw = Math.max(1, Math.min(maxRpm, Math.round(requestedRpm)));
+    const rpmMinRaw = Math.max(1, Math.min(maxRpm, Math.round(requestedRpm * 0.6)));
+    const rpmMaxRaw = Math.max(1, Math.min(maxRpm, Math.round(requestedRpm * 1.2)));
 
     let stdRpmVal = 0;
     let stdFeedVal = 0;
     let pitchVal = 0;
-    let peckWarning = "";
+    let peckWarning = `<div class="info-box">RPM limit: ${maxRpm}. Actual cutting speed: ${(Math.PI * D * rpmStdRaw / 1000).toFixed(2)} m/min.${requestedRpm > maxRpm ? " Spindle limit applied; feed recalculated." : ""} Blank depth uses 2 × diameter. These are starting estimates; confirm cutting data and the sample program on your control.</div>`;
     let minTap = { r: 0, f: 0 };
     let stdTap = { r: 0, f: 0 };
     let maxTap = { r: 0, f: 0 };
@@ -1582,7 +1563,7 @@ function calculate(){
     }
 
     if(op === "drill"){
-        const f_rev = drillFeedPerRev(D);
+        const f_rev = customFn || drillFeedPerRev(D);
         
         // Ensure Drill values are rounded integers
         const rpmMin = Math.round(rpmMinRaw);
@@ -1590,7 +1571,7 @@ function calculate(){
         const rpmMax = Math.round(rpmMaxRaw);
         
         stdRpmVal = rpmStd;
-        stdFeedVal = Math.round(rpmStd * f_rev);
+        stdFeedVal = Number((rpmStd * f_rev).toFixed(6));
         pitchVal = f_rev;
 
         if (depth >= (D * 3)) {
@@ -1621,7 +1602,7 @@ function calculate(){
         peckWarning += `
         <div class="info-box" style="margin-top: 15px;">
             <div class="info-box-title">&#9888;¡ Smart Sync Active</div>
-            <p style="font-size: 0.82rem; margin-top: 2px;">Values are perfectly synchronized for Rigid Tapping cycles (G84). Feed Rate is a perfect whole integer where <strong>Feed = RPM &times; Pitch</strong> to prevent thread stripping.</p>
+            <p style="font-size: 0.82rem; margin-top: 2px;">Values are perfectly synchronized for Rigid Tapping cycles (G84). Decimal feed is retained so that <strong>Feed = RPM &times; Pitch</strong> at the programmed spindle speed.</p>
         </div>`;
     }
 
@@ -1836,14 +1817,14 @@ function calculate(){
                 </div>
                 <div class="hud-right">
                     <span>Feed Rate</span>
-                    <span>${op === "drill" ? Math.round(rpmMinRaw * pitchVal) : minTap.f} <span style="font-size:0.75rem; font-weight:500;">mm/min</span></span>
+                    <span>${op === "drill" ? Number((rpmMinRaw * pitchVal).toFixed(6)) : minTap.f} <span style="font-size:0.75rem; font-weight:500;">mm/min</span></span>
                 </div>
             </div>
 
             <!-- Standard Card -->
             <div class="hud-card std">
                 <div class="hud-left">
-                    <h4>Standard (Recommended)</h4>
+                    <h4>Starting point</h4>
                     <p>${stdRpmVal} <span style="font-size: 0.8rem; color: var(--primary); font-weight: 600;">RPM</span></p>
                 </div>
                 <div class="hud-right">
@@ -1852,15 +1833,15 @@ function calculate(){
                 </div>
             </div>
 
-            <!-- Max Safe Card -->
+            <!-- Higher estimate Card -->
             <div class="hud-card max">
                 <div class="hud-left">
-                    <h4>Max Safe</h4>
+                    <h4>Higher estimate</h4>
                     <p>${op === "drill" ? Math.round(rpmMaxRaw) : maxTap.r} <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">RPM</span></p>
                 </div>
                 <div class="hud-right">
                     <span>Feed Rate</span>
-                    <span>${op === "drill" ? Math.round(rpmMaxRaw * pitchVal) : maxTap.f} <span style="font-size:0.75rem; font-weight:500;">mm/min</span></span>
+                    <span>${op === "drill" ? Number((rpmMaxRaw * pitchVal).toFixed(6)) : maxTap.f} <span style="font-size:0.75rem; font-weight:500;">mm/min</span></span>
                 </div>
             </div>
         </div>
@@ -1948,7 +1929,7 @@ function switchTab(tabId) {
 
 function copyGCode() {
     const gcodeBox = document.getElementById("gcodeBox");
-    const text = gcodeBox.textContent;
+    const text = Array.from(gcodeBox.querySelectorAll('.gcode-line'), line => line.textContent).join('\n');
     navigator.clipboard.writeText(text).then(() => {
         const btn = document.querySelector(".gcode-copy-btn");
         btn.textContent = "Copied!";
@@ -2049,30 +2030,29 @@ function generateGCode(op, dia, depth, rpm, feed, pitch, cycle) {
     
     let block = `(SHADER7 SPEEDS & FEEDS G-CODE)\n`;
     block += `(OP: ${op.toUpperCase()}, TOOL DIA: ${dia.toFixed(2)} mm)\n`;
-    block += `G21 G90 ${plane} G54 (METRIC WORK PLANE)\n`;
+    block += `G21 G90 G94 G98 G40 G80 ${plane} G54 (METRIC WORK PLANE)\n`;
     block += `T01 M06 (SELECT TOOL)\n`;
     block += `S${rpm} M03 (SPINDLE ON CW)\n`;
     block += `G00 G43 H01 ${initialZ} M08 (TOOL OFFSET, COOLANT ON)\n`;
     block += `G00 ${posCoords} (RAPID TO POSITION)\n`;
     
-    if (depth <= 0) {
-        block += `G81 ${axisChar}-${(dia * 2).toFixed(3)} ${rText} F${Math.round(feed)} (DEFAULT 2X DIAMETER CUT)\n`;
-    } else {
+    depth = depth > 0 ? depth : dia * 2;
+    {
         const depthText = `${axisChar}-${depth.toFixed(3)}`;
         if (op === 'tap') {
             block += `M29 S${rpm} (RIGID SYNC ENABLER)\n`;
-            block += `G84 ${depthText} ${rText} F${Math.round(feed)} (RIGID TAPPING CYCLE)\n`;
+            block += `G84 ${depthText} ${rText} F${Number(feed.toFixed(6))} (RIGID TAPPING CYCLE)\n`;
         } else {
             if (cycle === 'G83') {
-                block += `G83 ${depthText} ${rText} Q${(dia * 0.75).toFixed(2)} F${Math.round(feed)} (DEEP HOLE PECK CYCLE)\n`;
+                block += `G83 ${depthText} ${rText} Q${(dia * 0.75).toFixed(2)} F${Number(feed.toFixed(6))} (DEEP HOLE PECK CYCLE)\n`;
             } else if (cycle === 'G73') {
-                block += `G73 ${depthText} ${rText} Q${(dia * 0.75).toFixed(2)} F${Math.round(feed)} (HIGH-SPEED PECK CYCLE)\n`;
+                block += `G73 ${depthText} ${rText} Q${(dia * 0.75).toFixed(2)} F${Number(feed.toFixed(6))} (HIGH-SPEED PECK CYCLE)\n`;
             } else if (cycle === 'G82') {
-                block += `G82 ${depthText} ${rText} P1000 F${Math.round(feed)} (1S DWELL AT BOTTOM)\n`;
+                block += `G82 ${depthText} ${rText} P1000 F${Number(feed.toFixed(6))} (1S DWELL AT BOTTOM)\n`;
             } else if (cycle === 'G86') {
-                block += `G86 ${depthText} ${rText} F${Math.round(feed)} (SPINDLE STOP RETRACT BORING)\n`;
+                block += `G86 ${depthText} ${rText} F${Number(feed.toFixed(6))} (SPINDLE STOP RETRACT BORING)\n`;
             } else {
-                block += `G81 ${depthText} ${rText} F${Math.round(feed)} (DIRECT DRILLING CYCLE)\n`;
+                block += `G81 ${depthText} ${rText} F${Number(feed.toFixed(6))} (DIRECT DRILLING CYCLE)\n`;
             }
         }
     }
@@ -2198,37 +2178,37 @@ function updateGCodeMonitor() {
             
         case 'r_dwell':
             if (simOp === 'tap') {
-                gcode = `G84 ${axisChar}-${simDepth.toFixed(2)} R2.0 F${Math.round(simFeed)} (RIGID TAPPING CYCLE)`;
+                gcode = `G84 ${axisChar}-${simDepth.toFixed(2)} R2.0 F${Number(simFeed.toFixed(6))} (RIGID TAPPING CYCLE)`;
             } else if (simDrillCycle === 'G83') {
-                gcode = `G83 ${axisChar}-${simDepth.toFixed(2)} R2.0 Q${(simDia * 0.75).toFixed(2)} F${Math.round(simFeed)} (DEEP HOLE PECK CYCLE)`;
+                gcode = `G83 ${axisChar}-${simDepth.toFixed(2)} R2.0 Q${(simDia * 0.75).toFixed(2)} F${Number(simFeed.toFixed(6))} (DEEP HOLE PECK CYCLE)`;
             } else if (simDrillCycle === 'G73') {
-                gcode = `G73 ${axisChar}-${simDepth.toFixed(2)} R2.0 Q${(simDia * 0.75).toFixed(2)} F${Math.round(simFeed)} (HIGH-SPEED PECK CYCLE)`;
+                gcode = `G73 ${axisChar}-${simDepth.toFixed(2)} R2.0 Q${(simDia * 0.75).toFixed(2)} F${Number(simFeed.toFixed(6))} (HIGH-SPEED PECK CYCLE)`;
             } else if (simDrillCycle === 'G82') {
-                gcode = `G82 ${axisChar}-${simDepth.toFixed(2)} R2.0 P1000 F${Math.round(simFeed)} (1S DWELL AT BOTTOM)`;
+                gcode = `G82 ${axisChar}-${simDepth.toFixed(2)} R2.0 P1000 F${Number(simFeed.toFixed(6))} (1S DWELL AT BOTTOM)`;
             } else if (simDrillCycle === 'G86') {
-                gcode = `G86 ${axisChar}-${simDepth.toFixed(2)} R2.0 F${Math.round(simFeed)} (SPINDLE STOP RETRACT BORING)`;
+                gcode = `G86 ${axisChar}-${simDepth.toFixed(2)} R2.0 F${Number(simFeed.toFixed(6))} (SPINDLE STOP RETRACT BORING)`;
             } else {
-                gcode = `G81 ${axisChar}-${simDepth.toFixed(2)} R2.0 F${Math.round(simFeed)} (DIRECT DRILLING CYCLE)`;
+                gcode = `G81 ${axisChar}-${simDepth.toFixed(2)} R2.0 F${Number(simFeed.toFixed(6))} (DIRECT DRILLING CYCLE)`;
             }
             break;
             
         case 'feed':
             if (simZ <= -1.9) {
                 if (simOp === 'tap') {
-                    gcode = `G84 ${axisChar}-${simDepth.toFixed(2)} R2.0 F${Math.round(simFeed)} (RIGID TAPPING CYCLE)`;
+                    gcode = `G84 ${axisChar}-${simDepth.toFixed(2)} R2.0 F${Number(simFeed.toFixed(6))} (RIGID TAPPING CYCLE)`;
                 } else if (simDrillCycle === 'G83') {
-                    gcode = `G83 ${axisChar}-${simDepth.toFixed(2)} R2.0 Q${(simDia * 0.75).toFixed(2)} F${Math.round(simFeed)} (DEEP HOLE PECK CYCLE)`;
+                    gcode = `G83 ${axisChar}-${simDepth.toFixed(2)} R2.0 Q${(simDia * 0.75).toFixed(2)} F${Number(simFeed.toFixed(6))} (DEEP HOLE PECK CYCLE)`;
                 } else if (simDrillCycle === 'G73') {
-                    gcode = `G73 ${axisChar}-${simDepth.toFixed(2)} R2.0 Q${(simDia * 0.75).toFixed(2)} F${Math.round(simFeed)} (HIGH-SPEED PECK CYCLE)`;
+                    gcode = `G73 ${axisChar}-${simDepth.toFixed(2)} R2.0 Q${(simDia * 0.75).toFixed(2)} F${Number(simFeed.toFixed(6))} (HIGH-SPEED PECK CYCLE)`;
                 } else if (simDrillCycle === 'G82') {
-                    gcode = `G82 ${axisChar}-${simDepth.toFixed(2)} R2.0 P1000 F${Math.round(simFeed)} (1S DWELL AT BOTTOM)`;
+                    gcode = `G82 ${axisChar}-${simDepth.toFixed(2)} R2.0 P1000 F${Number(simFeed.toFixed(6))} (1S DWELL AT BOTTOM)`;
                 } else if (simDrillCycle === 'G86') {
-                    gcode = `G86 ${axisChar}-${simDepth.toFixed(2)} R2.0 F${Math.round(simFeed)} (SPINDLE STOP RETRACT BORING)`;
+                    gcode = `G86 ${axisChar}-${simDepth.toFixed(2)} R2.0 F${Number(simFeed.toFixed(6))} (SPINDLE STOP RETRACT BORING)`;
                 } else {
-                    gcode = `G81 ${axisChar}-${simDepth.toFixed(2)} R2.0 F${Math.round(simFeed)} (DIRECT DRILLING CYCLE)`;
+                    gcode = `G81 ${axisChar}-${simDepth.toFixed(2)} R2.0 F${Number(simFeed.toFixed(6))} (DIRECT DRILLING CYCLE)`;
                 }
             } else {
-                gcode = `G01 ${axisChar}-${simZ.toFixed(2)} F${Math.round(simFeed)} (FEED CUTTING)`;
+                gcode = `G01 ${axisChar}-${simZ.toFixed(2)} F${Number(simFeed.toFixed(6))} (FEED CUTTING)`;
             }
             break;
             
@@ -2258,7 +2238,7 @@ function updateGCodeMonitor() {
             
         case 'retract':
             if (simOp === 'tap') {
-                gcode = `G84 ${axisChar}30.0 F${Math.round(simFeed * 1.5)} M04 (SPINDLE CCW RETRACT)`;
+                gcode = `G84 ${axisChar}30.0 F${Math.round(simFeed)} M04 (SPINDLE CCW RETRACT)`;
             } else if (simDrillCycle === 'G86') {
                 gcode = `G00 ${axisChar}30.0 (SAFE RETRACT SPINDLE STOPPED)`;
             } else {
@@ -2588,7 +2568,7 @@ function updateSim(dt) {
             // Back to initial plane
             if (simOp === 'tap') {
                 // RIGID SYNCHRONIZED RETRACTING: Z retract is locked to 1.5x real feed rate (CCW)
-                const realRetractPerSec = (simFeed * 1.5 / 60) * 1.2;
+                const realRetractPerSec = (simFeed / 60) * 1.2;
                 simZ -= realRetractPerSec * dt;
                 
                 // Spindle Gearing: Angle is perfectly locked to visual depth and thread pitch (automatically CCW!)
@@ -3275,7 +3255,7 @@ function drawSimFrame() {
         case 'retract':
             if (simOp === 'tap') {
                 hudRpm = simRpm;
-                hudFeed = Math.round(simFeed * 1.5);
+                hudFeed = Math.round(simFeed);
             } else if (simDrillCycle === 'G86') {
                 hudRpm = 0;
                 hudFeed = 0;
