@@ -2332,16 +2332,26 @@
 
     async function downloadPDF() {
       if (!validateRequiredFields()) return;
+      if (!window.html2canvas || !window.jspdf || !window.jspdf.jsPDF) {
+        showToast("PDF tools loading. Please wait 2 seconds...", "error");
+        return;
+      }
 
       showToast("Generating exact A4 PDF...", "info");
 
       const element = document.getElementById("resumePreview");
       const holder = document.getElementById("a4PreviewHolder");
+      const previewPanel = document.getElementById("previewPanel") || document.querySelector(".preview-panel");
 
       const originalTransform = element.style.transform;
       const originalShadow = element.style.boxShadow;
       const originalHolderWidth = holder.style.width;
       const originalHolderHeight = holder.style.height;
+      const origPanelDisplay = previewPanel ? previewPanel.style.display : "";
+
+      if (previewPanel && window.getComputedStyle(previewPanel).display === "none") {
+        previewPanel.style.display = "block";
+      }
 
       element.style.transform = "none";
       element.style.boxShadow = "none";
@@ -2349,19 +2359,36 @@
       holder.style.height = "297mm";
 
       try {
-        await document.fonts.ready;
+        if (document.fonts && document.fonts.ready) {
+          await document.fonts.ready;
+        }
 
         const canvas = await html2canvas(element, {
           scale: 3,
           useCORS: true,
           allowTaint: true,
           backgroundColor: "#ffffff",
-          width: element.offsetWidth,
-          height: element.offsetHeight,
-          windowWidth: element.offsetWidth,
-          windowHeight: element.offsetHeight,
-          scrollX: 0,
-          scrollY: 0
+          windowWidth: 1600,
+          onclone: (clonedDoc) => {
+            const clonedPanel = clonedDoc.getElementById("previewPanel") || clonedDoc.querySelector(".preview-panel");
+            if (clonedPanel) {
+              clonedPanel.style.display = "block";
+              clonedPanel.style.visibility = "visible";
+            }
+            const clonedHolder = clonedDoc.getElementById("a4PreviewHolder");
+            if (clonedHolder) {
+              clonedHolder.style.transform = "none";
+              clonedHolder.style.width = "210mm";
+              clonedHolder.style.height = "297mm";
+            }
+            const clonedElement = clonedDoc.getElementById("resumePreview");
+            if (clonedElement) {
+              clonedElement.style.transform = "none";
+              clonedElement.style.boxShadow = "none";
+              clonedElement.style.visibility = "visible";
+              clonedElement.style.display = "block";
+            }
+          }
         });
 
         const imgData = canvas.toDataURL("image/jpeg", 0.98);
@@ -2391,6 +2418,9 @@
         element.style.boxShadow = originalShadow;
         holder.style.width = originalHolderWidth;
         holder.style.height = originalHolderHeight;
+        if (previewPanel) {
+          previewPanel.style.display = origPanelDisplay;
+        }
         updatePreviewScale();
       }
     }
