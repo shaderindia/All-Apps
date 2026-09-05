@@ -1,5 +1,5 @@
 $port = 8080
-$root = "C:\Users\SHADER7\.gemini\antigravity\scratch\All-Apps"
+$root = if ($PSScriptRoot) { $PSScriptRoot } else { "C:\Users\SHADER7\Desktop\All-Apps" }
 
 $listener = New-Object System.Net.HttpListener
 $listener.Prefixes.Add("http://localhost:$port/")
@@ -56,6 +56,9 @@ try {
 
             $bytes = [System.IO.File]::ReadAllBytes($localPath)
             $response.ContentLength64 = $bytes.Length
+            $response.AddHeader("Cache-Control", "no-cache, no-store, must-revalidate")
+            $response.AddHeader("Pragma", "no-cache")
+            $response.AddHeader("Expires", "0")
             
             if ($request.HttpMethod -ne "HEAD") {
                 $response.OutputStream.Write($bytes, 0, $bytes.Length)
