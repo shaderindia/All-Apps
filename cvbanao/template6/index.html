@@ -77,7 +77,7 @@
       --page-bg: #ffffff;
       --ink: #1e293b;
       --ink-muted: #64748b;
-      --resume-font-size: 9.6pt;
+      --resume-font-size: 12pt;
       --font-scale: 1.0;
     }
 
@@ -532,9 +532,9 @@
 
           <div class="font-control">
             <span>Small</span>
-            <input type="range" id="fontSizeSlider" min="8.2" max="13.5" value="9.6" step="0.1" oninput="adjustFontSize(this.value, true)" />
+            <input type="range" id="fontSizeSlider" min="8.5" max="14" value="12" step="0.1" oninput="adjustFontSize(this.value, true)" />
             <span>Large</span>
-            <strong id="fontSizeDisplay">9.6pt</strong>
+            <strong id="fontSizeDisplay">12pt</strong>
           </div>
 
           <div id="overflowWarning" class="overflow-warning">
@@ -633,7 +633,7 @@
 
     let photoData = "";
     let originalPhotoData = "";
-    let currentFontSize = 9.6;
+    let currentFontSize = 12;
     let currentThemeColor = "#0e47cb";
     let autoSaveTimer = null;
 
@@ -805,7 +805,7 @@
       document.getElementById("languageContainer").innerHTML = "";
       (data.languages || []).forEach(lang => addLanguageField(lang, false));
 
-      currentFontSize = 9.6;
+      currentFontSize = 12;
       currentThemeColor = "#0e47cb";
       updateThemeColor(currentThemeColor, false);
       adjustFontSize(currentFontSize, false);
@@ -1420,13 +1420,13 @@
 
     function adjustFontSize(size, shouldSave = false) {
       const parsed = parseFloat(size);
-      currentFontSize = Number.isFinite(parsed) ? parsed : 9.6;
-      if (currentFontSize > 13.5) currentFontSize = 13.5;
-      if (currentFontSize < 8.2) currentFontSize = 8.2;
+      currentFontSize = Number.isFinite(parsed) ? parsed : 12;
+      if (currentFontSize > 14) currentFontSize = 14;
+      if (currentFontSize < 8.5) currentFontSize = 8.5;
       const preview = document.getElementById("resumePreview");
       if (preview) {
         preview.style.setProperty("--resume-font-size", currentFontSize + "pt");
-        preview.style.setProperty("--font-scale", String(currentFontSize / 9.6));
+        preview.style.setProperty("--font-scale", String(currentFontSize / 12));
       }
       const display = document.getElementById("fontSizeDisplay");
       const slider = document.getElementById("fontSizeSlider");
@@ -1452,7 +1452,7 @@
     }
 
     function autoAdjustFont() {
-      const sizes = [9.6, 9.3, 9.0, 8.7, 8.4, 8.2];
+      const sizes = [12, 11.5, 11, 10.5, 10, 9.5, 9, 8.5];
       let selected = sizes[sizes.length - 1];
       for (const size of sizes) {
         adjustFontSize(size, false);
@@ -1511,7 +1511,7 @@
         photoData = data.photo || "";
         originalPhotoData = data.originalPhoto || data.photo || "";
         setPhotoUI(photoData);
-        currentFontSize = data.fontSize ? parseFloat(data.fontSize) : 9.6;
+        currentFontSize = data.fontSize ? parseFloat(data.fontSize) : 12;
         currentThemeColor = data.themeColor || "#0e47cb";
         updateThemeColor(currentThemeColor, false);
         updatePreview();
