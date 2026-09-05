@@ -47,19 +47,48 @@
     for (let i = 1; i <= TOTAL_FRAMES; i++) {
       const img = new Image();
       const idx = i - 1;
-      img.src = `${FRAME_DIR}${FRAME_PREFIX}${padFrame(i)}${FRAME_EXT}`;
+      images[idx] = img;
+      img.decoding = 'async';
       img.onload = () => {
-        images[idx] = img;
         loadedCount++;
-        if (loadedCount === 1) {
-          renderFrame(0);
+        const baseIdx = Math.floor(currentFrameFloat);
+        if (loadedCount === 1 || idx === baseIdx || idx === Math.min(TOTAL_FRAMES - 1, baseIdx + 1)) {
+          renderFrame(currentFrameFloat);
         }
       };
       img.onerror = () => {
-        // ponytail: tolerate missing frame gracefully
-        loadedCount++;
+        console.warn(`Unable to preload CNC animation frame ${i}.`);
       };
+      img.src = `${FRAME_DIR}${FRAME_PREFIX}${padFrame(i)}${FRAME_EXT}`;
     }
+  }
+
+  function isDrawable(img) {
+    return Boolean(img && img.complete && img.naturalWidth > 0 && img.naturalHeight > 0);
+  }
+
+  function nearestLoadedImage(frameIdx) {
+    if (isDrawable(images[frameIdx])) return images[frameIdx];
+
+    for (let offset = 1; offset < TOTAL_FRAMES; offset++) {
+      const before = frameIdx - offset;
+      const after = frameIdx + offset;
+      if (before >= 0 && isDrawable(images[before])) return images[before];
+      if (after < TOTAL_FRAMES && isDrawable(images[after])) return images[after];
+    }
+
+    return null;
+  }
+
+  function drawCover(img, viewportWidth, viewportHeight, alpha) {
+    const scale = Math.max(viewportWidth / img.naturalWidth, viewportHeight / img.naturalHeight);
+    const renderWidth = img.naturalWidth * scale;
+    const renderHeight = img.naturalHeight * scale;
+    const renderX = (viewportWidth - renderWidth) / 2;
+    const renderY = (viewportHeight - renderHeight) / 2;
+
+    ctx.globalAlpha = alpha;
+    ctx.drawImage(img, renderX, renderY, renderWidth, renderHeight);
   }
 
   // Draw frame with cover scaling, HiDPI support, and sub-frame alpha crossfading
@@ -68,50 +97,35 @@
     const w = window.innerWidth;
     const h = window.innerHeight;
 
-    if (canvas.width !== w * dpr || canvas.height !== h * dpr) {
-      canvas.width = w * dpr;
-      canvas.height = h * dpr;
+    const pixelWidth = Math.round(w * dpr);
+    const pixelHeight = Math.round(h * dpr);
+
+    if (canvas.width !== pixelWidth || canvas.height !== pixelHeight) {
+      canvas.width = pixelWidth;
+      canvas.height = pixelHeight;
     }
 
     const baseIdx = Math.max(0, Math.min(TOTAL_FRAMES - 1, Math.floor(frameFloat)));
     const nextIdx = Math.min(TOTAL_FRAMES - 1, baseIdx + 1);
     const blendAlpha = frameFloat - baseIdx;
 
-    const imgA = images[baseIdx];
-    if (!imgA || !imgA.complete || imgA.naturalWidth === 0) return;
+    const requestedBaseImage = images[baseIdx];
+    const imgA = nearestLoadedImage(baseIdx);
+    if (!imgA) return;
 
     ctx.save();
-    ctx.scale(dpr, dpr);
-
-    // Cover math: scale image so it completely covers the viewport
-    const imgRatio = imgA.naturalWidth / imgA.naturalHeight;
-    const canvasRatio = w / h;
-    let renderW, renderH, renderX, renderY;
-
-    if (canvasRatio > imgRatio) {
-      renderW = w;
-      renderH = renderW / imgRatio;
-      renderX = 0;
-      renderY = (h - renderH) / 2;
-    } else {
-      renderH = h;
-      renderW = renderH * imgRatio;
-      renderX = (w - renderW) / 2;
-      renderY = 0;
-    }
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
     // Draw primary base frame
-    ctx.globalAlpha = 1.0;
     ctx.fillStyle = '#070b14';
     ctx.fillRect(0, 0, w, h);
-    ctx.drawImage(imgA, renderX, renderY, renderW, renderH);
+    drawCover(imgA, w, h, 1);
 
     // ponytail: Sub-frame cross-fading eliminates step-banding between adjacent frames
     if (blendAlpha > 0.01 && nextIdx !== baseIdx) {
       const imgB = images[nextIdx];
-      if (imgB && imgB.complete && imgB.naturalWidth > 0) {
-        ctx.globalAlpha = blendAlpha;
-        ctx.drawImage(imgB, renderX, renderY, renderW, renderH);
+      if (imgA === requestedBaseImage && isDrawable(imgB)) {
+        drawCover(imgB, w, h, blendAlpha);
       }
     }
 
@@ -134,10 +148,10 @@
 
   // Continuous LERP animation loop that smoothly glides currentFrameFloat towards targetFrameFloat
   function animationLoop() {
-    const diff = targetFrameFloat - currentFrameFloat;
+    const delta = targetFrameFloat - currentFrameFloat;
 
-    if (Math.abs(diff) > 0.001) {
-      currentFrameFloat += diff * LERP_FACTOR;
+    if (Math.abs(delta) > 0.001) {
+      currentFrameFloat += (targetFrameFloat - currentFrameFloat) * LERP_FACTOR;
       renderFrame(currentFrameFloat);
       animRequestId = window.requestAnimationFrame(animationLoop);
     } else {
@@ -156,22 +170,29 @@
   }
 
   // Calculate target frame from page scroll position
-  function onScroll() {
+  function calculateTargetFrame() {
     const docHeight = document.documentElement.scrollHeight;
     const winHeight = window.innerHeight;
     const maxScroll = docHeight - winHeight;
 
-    if (maxScroll > 0) {
-      const progress = Math.max(0, Math.min(1, window.scrollY / maxScroll));
-      targetFrameFloat = progress * (TOTAL_FRAMES - 1);
-      startLoop();
-    }
+    if (maxScroll <= 0) return 0;
+    const progress = Math.max(0, Math.min(1, window.scrollY / maxScroll));
+    return progress * (TOTAL_FRAMES - 1);
+  }
+
+  function onScroll() {
+    targetFrameFloat = calculateTargetFrame();
+    startLoop();
   }
 
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', () => {
+    targetFrameFloat = calculateTargetFrame();
     renderFrame(currentFrameFloat);
+    startLoop();
   }, { passive: true });
 
+  targetFrameFloat = calculateTargetFrame();
+  currentFrameFloat = targetFrameFloat;
   preloadFrames();
 })();
