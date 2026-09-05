@@ -1,14 +1,14 @@
 /**
  * CNC Machinist Toolkit - Ultra-Smooth Background Frame Scroll Engine
- * Pure Vanilla JS // Zero Dependencies // 60-120fps Sub-frame LERP Canvas
+ * Pure Vanilla JS // Zero Dependencies // 240 Frames // Sub-frame LERP Canvas
  * (c) SHADER7 / Nishikant Xalxo
  */
 
 (() => {
   'use strict';
 
-  // ponytail: Pre-buffering 60 WebP frames (~880KB) into memory ensures instantaneous rendering without network lag.
-  const TOTAL_FRAMES = 60;
+  // ponytail: Pre-buffering all 240 WebP frames (~3.3MB total) guarantees 60-120fps continuous scrubbing without stutter.
+  const TOTAL_FRAMES = 240;
   const FRAME_DIR = 'animation/';
   const FRAME_PREFIX = 'frame_';
   const FRAME_EXT = '.webp';
@@ -17,9 +17,9 @@
   const LERP_FACTOR = 0.085;
 
   const PHASES = [
-    { maxFrame: 15, stage: 'Stage 1: Datum Setup', tool: 'T01 Rougher • 18,000 RPM' },
-    { maxFrame: 44, stage: 'Stage 2: Pocket Milling', tool: 'T04 Endmill • 3,850 mm/min' },
-    { maxFrame: 60, stage: 'Stage 3: Finish Profile', tool: 'T09 Ball Nose • 22,000 RPM' }
+    { maxFrame: 60, stage: 'Stage 1: Datum Setup', tool: 'T01 Rougher • 18,000 RPM' },
+    { maxFrame: 175, stage: 'Stage 2: Pocket Milling', tool: 'T04 Endmill • 3,850 mm/min' },
+    { maxFrame: 240, stage: 'Stage 3: Finish Profile', tool: 'T09 Ball Nose • 22,000 RPM' }
   ];
 
   const canvas = document.getElementById('cnc-bg-canvas');
@@ -42,7 +42,7 @@
     return String(num).padStart(4, '0');
   }
 
-  // Preload all 60 frames into memory
+  // Preload all 240 frames into memory
   function preloadFrames() {
     for (let i = 1; i <= TOTAL_FRAMES; i++) {
       const img = new Image();
@@ -125,7 +125,7 @@
     const phase = PHASES.find(p => frameNum <= p.maxFrame) || PHASES[PHASES.length - 1];
 
     if (hudLabel) {
-      hudLabel.textContent = `Frame ${String(frameNum).padStart(2, '0')}/${TOTAL_FRAMES} · ${phase.stage}`;
+      hudLabel.textContent = `Frame ${String(frameNum).padStart(3, '0')}/${TOTAL_FRAMES} · ${phase.stage}`;
     }
     if (hudTool) {
       hudTool.textContent = phase.tool;
