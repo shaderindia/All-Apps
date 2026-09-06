@@ -96,10 +96,10 @@
   }
 
   function validateProject(project) {
-    if (!project || ![1, 2].includes(project.v)) throw new Error('Unsupported project version.');
+    if (!project || ![1, 2, 3].includes(project.v)) throw new Error('Unsupported project version.');
     const clean = {
       ...project,
-      v: 2,
+      v: 3,
       L: positive(project.L, 'Stock length'),
       W: positive(project.W, 'Stock width'),
       H: positive(project.H, 'Stock height'),
@@ -110,6 +110,7 @@
       masks: Array.isArray(project.masks) ? project.masks : [],
       off: project.off && typeof project.off === 'object' ? {...project.off} : {x: 0, y: 0, z: 0}
     };
+    clean.stockEnabled = project.v < 3 ? true : project.stockEnabled === true;
     if (clean.L > 100000 || clean.W > 100000 || clean.H > 100000) throw new Error('Stock dimensions exceed the supported range.');
     if (clean.objects.length > 250 || clean.masks.length > 250) throw new Error('Project contains too many objects or keep-out zones.');
     ['x', 'y', 'z'].forEach(axis => { clean.off[axis] = finite(clean.off[axis], `Work offset ${axis.toUpperCase()}`); });

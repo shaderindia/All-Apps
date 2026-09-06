@@ -64,10 +64,37 @@ body {
 
 #app { display: flex; height: 100vh; position: relative; }
 aside { background: var(--panel); overflow-y: auto; transition: background-color 0.25s ease; }
-#panel { width: 300px; border-right: 1px solid var(--line); padding: 12px; display: flex; flex-direction: column; gap: 10px; }
-#gpanel { width: 330px; border-left: 1px solid var(--line); padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+#panel { width: 300px; flex: 0 0 300px; border-right: 1px solid var(--line); padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+#gpanel { width: 330px; flex: 0 0 330px; border-left: 1px solid var(--line); padding: 12px; display: flex; flex-direction: column; gap: 8px; }
 #viewport { flex: 1; position: relative; background: var(--bg); }
 #viewport canvas { display: block; touch-action: none; width: 100%; height: 100%; }
+
+#panel, #gpanel {
+  min-width: 0;
+  transition: width 0.24s ease, flex-basis 0.24s ease, padding 0.24s ease, opacity 0.18s ease, background-color 0.25s ease;
+}
+#app.setup-panel-hidden #panel,
+#app.program-panel-hidden #gpanel {
+  width: 0;
+  flex-basis: 0;
+  padding-inline: 0;
+  border-inline-width: 0;
+  opacity: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.panel-header {
+  position: sticky;
+  top: -12px;
+  z-index: 4;
+  margin: -12px -12px 4px;
+  padding: 12px;
+  background: color-mix(in srgb, var(--panel) 94%, transparent);
+  border-bottom: 1px solid var(--line);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
 
 h1 { font-size: 15px; font-weight: 800; color: var(--acc); display: flex; align-items: center; gap: 6px; }
 
@@ -89,7 +116,15 @@ legend {
   letter-spacing: 0.6px;
   cursor: pointer;
   user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  outline: none;
 }
+legend::after { content: '−'; color: var(--acc); font-size: 14px; line-height: 1; }
+fieldset.fold legend::after { content: '+'; }
+legend:focus-visible { color: var(--acc); text-decoration: underline; text-underline-offset: 3px; }
 fieldset.fold > *:not(legend) { display: none; }
 
 label {
@@ -148,6 +183,10 @@ button:hover {
   transform: translateY(-1px);
 }
 button:active { transform: translateY(0); }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
+  outline: 2px solid var(--acc);
+  outline-offset: 2px;
+}
 
 button.primary {
   background: linear-gradient(135deg, var(--acc), var(--acc-hover));
@@ -200,6 +239,12 @@ button.on {
 #faceInfo.ok, #sideInfo.ok { color: var(--grn); font-weight: 600; }
 
 .field-note { color: var(--mut); font-size: 10.5px; line-height: 1.45; margin: 5px 0 2px; }
+.stock-toggle { margin: 0 0 8px; padding: 8px 9px; border: 1px solid var(--line); border-radius: 7px; background: var(--bg); }
+.stock-toggle span { color: var(--txt); font-weight: 750; }
+.move-controls { margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--line); }
+.move-controls label { margin-top: 7px; }
+.move-controls input { width: 82px; }
+#moveObj.active { color: #fff; background: var(--acc); border-color: var(--acc); box-shadow: 0 2px 10px var(--acc-glow); }
 .inline-error { color: #991b1b; background: #fef2f2; border: 1px solid #fecaca; border-radius: 7px; padding: 8px 9px; margin-top: 8px; font-size: 11px; font-weight: 650; line-height: 1.45; }
 [data-theme="dark"] .inline-error { color: #fecaca; background: #3b1717; border-color: #7f1d1d; }
 .machine-note { color: #7c4a03; background: #fff8e7; border: 1px solid #e8c56d; border-radius: 8px; padding: 9px 10px; font-size: 10.5px; line-height: 1.5; }
@@ -277,6 +322,83 @@ button:disabled, select:disabled { opacity: .55; cursor: not-allowed; transform:
   border-radius: 8px;
 }
 
+.model-status {
+  position: absolute;
+  bottom: 48px;
+  left: 12px;
+  z-index: 5;
+  display: grid;
+  gap: 1px;
+  min-width: 188px;
+  padding: 8px 11px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--panel-glass);
+  color: var(--txt);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  pointer-events: none;
+}
+.model-status strong { color: var(--acc); font-size: 10px; letter-spacing: .55px; text-transform: uppercase; }
+.model-status span { font: 600 11px/1.35 'JetBrains Mono', monospace; }
+
+.panel-edge-toggle {
+  position: absolute;
+  top: 50%;
+  z-index: 7;
+  width: 30px;
+  height: 58px;
+  margin: -29px 0 0;
+  padding: 0;
+  border-color: var(--line);
+  background: var(--panel-glass);
+  color: var(--mut);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.panel-edge-toggle:hover { color: var(--acc); transform: none; }
+.panel-edge-toggle.left { left: 8px; border-radius: 0 9px 9px 0; }
+.panel-edge-toggle.right { right: 8px; border-radius: 9px 0 0 9px; }
+.panel-edge-toggle[aria-expanded='false'] { color: #fff; background: var(--acc); border-color: var(--acc); }
+
+.mobile-panel-scrim {
+  display: none;
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: rgba(15, 23, 42, .48);
+  backdrop-filter: blur(2px);
+}
+
+.empty-model-state {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 3;
+  width: min(360px, calc(100% - 48px));
+  padding: 18px 20px;
+  transform: translate(-50%, -50%);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--panel-glass);
+  color: var(--mut);
+  text-align: center;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  pointer-events: none;
+}
+.empty-model-state i { display: block; margin-bottom: 9px; color: var(--acc); font-size: 24px; }
+.empty-model-state strong { display: block; margin-bottom: 5px; color: var(--txt); font-size: 14px; }
+
 @media (max-width: 920px) {
   #panel, #gpanel {
     position: absolute;
@@ -290,8 +412,20 @@ button:disabled, select:disabled { opacity: .55; cursor: not-allowed; transform:
   #panel { left: 0; transform: translateX(-105%); }
   #gpanel { right: 0; transform: translateX(105%); }
   #panel.open, #gpanel.open { transform: translateX(0); }
+  #app.setup-panel-hidden #panel,
+  #app.program-panel-hidden #gpanel {
+    width: min(88vw, 340px);
+    flex-basis: auto;
+    padding: 12px;
+    border-inline-width: 1px;
+    opacity: 1;
+    pointer-events: auto;
+    overflow-y: auto;
+  }
   #mobBtns { display: flex; }
   .view-hud { top: 60px; right: 10px; flex-wrap: wrap; max-width: 220px; }
+  .model-status, .panel-edge-toggle { display: none; }
+  #app.mobile-panel-open .mobile-panel-scrim { display: block; }
 }
 </style>
 </head>
@@ -300,7 +434,7 @@ button:disabled, select:disabled { opacity: .55; cursor: not-allowed; transform:
 <div id="app">
   <!-- LEFT MODELING PANEL -->
   <aside id="panel">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+    <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
       <h1><i class="fa-solid fa-shapes"></i> 3D CAD Studio</h1>
       <div style="display: flex; gap: 8px; align-items: center;">
         <button class="theme-toggle-btn" onclick="window.toggleShader7Theme()" title="Toggle Theme" aria-label="Toggle Theme" style="width: auto; padding: 4px 8px; margin: 0;">
@@ -344,6 +478,8 @@ button:disabled, select:disabled { opacity: .55; cursor: not-allowed; transform:
     <!-- Stock Material & Base Setup -->
     <fieldset>
       <legend>Stock / Base Bounding</legend>
+      <label class="stock-toggle"><span>Use machining stock</span><input id="stockEnabled" type="checkbox"></label>
+      <p class="field-note">Leave stock off for an empty CAD workspace. Enable it before generating CAM toolpaths.</p>
       <label>
         <span>L × W × H</span>
         <span class="row">
@@ -378,6 +514,12 @@ button:disabled, select:disabled { opacity: .55; cursor: not-allowed; transform:
       <div class="row">
         <button id="delObj" style="color: var(--red);"><i class="fa-solid fa-trash-can"></i> Delete</button>
         <button id="clrObj"><i class="fa-solid fa-eraser"></i> Clear All</button>
+      </div>
+
+      <div class="move-controls">
+        <button id="moveObj" type="button" disabled><i class="fa-solid fa-up-down-left-right"></i> Move selected object</button>
+        <label><span>Move increment</span><input id="moveSnap" type="number" value="0.1" min="0.001" step="0.001"></label>
+        <p class="field-note">Drag the X, Y or Z gizmo. Arrow keys nudge X/Y; Page Up and Page Down nudge Z.</p>
       </div>
 
       <div id="objEd" class="hide" style="margin-top: 8px; border-top: 1px dashed var(--line); padding-top: 8px;">
@@ -599,8 +741,8 @@ button:disabled, select:disabled { opacity: .55; cursor: not-allowed; transform:
   <!-- 3D VIEWPORT -->
   <main id="viewport">
     <div id="mobBtns">
-      <button id="togPanel"><i class="fa-solid fa-sliders"></i> Setup</button>
-      <button id="togG"><i class="fa-solid fa-code"></i> G-Code</button>
+      <button id="togPanel" type="button" aria-controls="panel" aria-expanded="false"><i class="fa-solid fa-sliders"></i> Setup</button>
+      <button id="togG" type="button" aria-controls="gpanel" aria-expanded="false"><i class="fa-solid fa-code"></i> G-Code</button>
     </div>
 
     <!-- Floating CAD Viewport Orientation Toolbar -->
@@ -617,6 +759,24 @@ button:disabled, select:disabled { opacity: .55; cursor: not-allowed; transform:
       </button>
     </div>
 
+    <div class="model-status" aria-live="polite">
+      <strong>Active setup</strong>
+      <span id="modelStatus">100 × 80 × 20 mm · G54 · Facing</span>
+    </div>
+
+    <button id="deskPanel" class="panel-edge-toggle left" type="button" aria-controls="panel" aria-label="Hide modeling setup panel" aria-expanded="true" title="Show or hide modeling setup">
+      <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+    </button>
+    <button id="deskProgram" class="panel-edge-toggle right" type="button" aria-controls="gpanel" aria-label="Hide CNC program panel" aria-expanded="true" title="Show or hide CNC program">
+      <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+    </button>
+
+    <div id="emptyModelState" class="empty-model-state">
+      <i class="fa-solid fa-cubes-stacked" aria-hidden="true"></i>
+      <strong>Empty modeling workspace</strong>
+      Add a box or cylinder from Setup, or enable machining stock when preparing CAM.
+    </div>
+
     <!-- Real-time 3D Cursor Coordinate Readout -->
     <div class="cursor-dro" id="cursorDro">
       <div class="dro-coord">X: <span id="droX">--</span></div>
@@ -625,9 +785,11 @@ button:disabled, select:disabled { opacity: .55; cursor: not-allowed; transform:
     </div>
   </main>
 
+  <button id="panelScrim" class="mobile-panel-scrim" type="button" aria-label="Close open panel"></button>
+
   <!-- RIGHT G-CODE PANEL -->
   <aside id="gpanel">
-    <div style="display:flex; justify-content:space-between; align-items:center;">
+    <div class="panel-header" style="display:flex; justify-content:space-between; align-items:center;">
       <strong style="font-size: 13px; color: var(--txt);"><i class="fa-solid fa-file-code"></i> CNC Program</strong>
       <span id="stats" style="font-size:11px;">No program generated yet.</span>
     </div>
@@ -640,7 +802,7 @@ button:disabled, select:disabled { opacity: .55; cursor: not-allowed; transform:
   </aside>
 </div>
 
-<script src="cad-core.js?v=20260905-1"></script>
+<script src="cad-core.js?v=20260906-empty-move"></script>
 <script type="importmap">
 {
   "imports": {
@@ -653,6 +815,7 @@ button:disabled, select:disabled { opacity: .55; cursor: not-allowed; transform:
 <script type="module">
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { TransformControls } from 'three/addons/controls/TransformControls.js';
 
 const $ = id => document.getElementById(id);
 const num = id => parseFloat($(id).value) || 0;
@@ -663,13 +826,14 @@ const fmt = n => {
   return (Object.is(v, -0) ? 0 : v).toFixed(DEC);
 };
 const RAPID = 5000;
-let L = 100, W = 80, H = 20, off = { x: 50, y: 40, z: 20 }, pickMode = false;
+let L = 100, W = 80, H = 20, stockEnabled = false, off = { x: 50, y: 40, z: 20 }, pickMode = false;
 let stockOpt = { cs: 0, nx: 0, px: 0, ny: 0, py: 0, fl: 0, fr: 0, bl: 0, br: 0, rad: 0 };
 let objects = [], nextId = 1, selObj = null, masks = [], nextMid = 1, selMask = null, dragging = null;
 let simPath = [], genParams = null, sim = null, undoStack = [], redoStack = [];
 let faceSel = null, faceMode = false, faceMesh = null;
 let selSides = { nx: false, px: false, ny: false, py: false }, sideMode = false;
 let wireframeActive = false;
+let moveActive = false, moveProxy = null, moveUndoCaptured = false;
 
 const vp = $('viewport');
 const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
@@ -692,6 +856,13 @@ controls.minDistance = 15;
 controls.maxDistance = 1500;
 controls.touches = { ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.DOLLY_PAN };
 renderer.domElement.style.touchAction = 'none';
+
+const transformControls = new TransformControls(camera, renderer.domElement);
+transformControls.setMode('translate');
+transformControls.setSpace('world');
+transformControls.setTranslationSnap(0.1);
+transformControls.visible = false;
+scene.add(transformControls);
 
 scene.add(new THREE.AmbientLight(0xffffff, 0.65));
 const sun = new THREE.DirectionalLight(0xffffff, 0.9);
@@ -738,6 +909,7 @@ syncThemeColors();
 
 // Heightmap geometry math
 function stockTopAt(x, y) {
+  if (!stockEnabled) return 0;
   const s = stockOpt, rd = s.rad || 0;
   if (rd > 0) {
     if (x < rd && y < rd && Math.hypot(x - rd, y - rd) > rd) return 0;
@@ -902,10 +1074,24 @@ function rebuild() {
     disposeObj(surfMesh);
   }
   surfMesh = buildField(h, nx, ny, cell, 0x6f8fb5);
+  surfMesh.visible = mz > 0.000001;
   world.add(surfMesh);
   buildMasks();
   updateMassDiagnostics();
+  syncMoveTool();
+  $('emptyModelState').classList.toggle('hide', mz > 0.000001);
+  updateModelStatus();
   persist();
+}
+
+function updateModelStatus() {
+  const operation = $('op');
+  const operationLabel = operation ? operation.options[operation.selectedIndex].text.replace(/\s*\([^)]*\)\s*/g, '').trim() : 'Facing';
+  const wcs = $('wcs') ? $('wcs').value : 'G54';
+  const status = $('modelStatus');
+  const compact = value => Number(value.toFixed(3)).toString();
+  const stockLabel = stockEnabled ? `${compact(L)} × ${compact(W)} × ${compact(H)} mm` : 'No stock';
+  if (status) status.textContent = `${stockLabel} · ${wcs} · ${operationLabel}`;
 }
 
 const cellIdx = (x, y) => {
@@ -937,20 +1123,24 @@ function updateMassDiagnostics() {
 window.updateMassDiagnostics = updateMassDiagnostics;
 
 // Snapshot & Persistence
-const snapshot = () => JSON.stringify({ v: 2, unit: $('u_sel').value, wcs: $('wcs').value, L, W, H, stockOpt, objects, masks, off, nextId, nextMid });
+const snapshot = () => JSON.stringify({ v: 3, unit: $('u_sel').value, wcs: $('wcs').value, L, W, H, stockEnabled, stockOpt, objects, masks, off, nextId, nextMid });
 function persist() {
   try { localStorage.setItem('webcam_prj', snapshot()); } catch (e) {}
 }
 
 function restore(s) {
   try {
-    const d = Core.validateProject(JSON.parse(s));
-    L = d.L; W = d.W; H = d.H; stockOpt = d.stockOpt; objects = d.objects || []; masks = d.masks || [];
+    const source = JSON.parse(s);
+    const d = Core.validateProject(source);
+    const legacyBlankProject = source.v < 3 && d.L === 100 && d.W === 80 && d.H === 20 && d.objects.length === 0 && d.masks.length === 0 &&
+      !d.stockOpt.cs && !d.stockOpt.rad && !['nx', 'px', 'ny', 'py', 'fl', 'fr', 'bl', 'br'].some(key => d.stockOpt[key]);
+    L = d.L; W = d.W; H = d.H; stockEnabled = legacyBlankProject ? false : d.stockEnabled; stockOpt = d.stockOpt; objects = d.objects || []; masks = d.masks || [];
     off = d.off; nextId = d.nextId || 1; nextMid = d.nextMid || 1; selObj = null; selMask = null;
     $('u_sel').value = d.unit;
     $('wcs').value = d.wcs;
     DEC = d.unit === 'in' ? 4 : 3;
     $('sx').value = L; $('sy').value = W; $('sz').value = H;
+    $('stockEnabled').checked = stockEnabled;
     $('st_cs').value = stockOpt.cs || 0; $('st_rad').value = stockOpt.rad || 0;
     for (const k of ['nx', 'px', 'ny', 'py', 'fl', 'fr', 'bl', 'br']) $('st_' + k).checked = !!stockOpt[k];
     rebuild(); setTriad(); syncPresetFromOffset(); refreshObjList(); refreshMaskList(); return true;
@@ -1007,7 +1197,7 @@ $('prjReset').onclick = () => {
   pushUndo();
   localStorage.removeItem('webcam_prj');
   restore(JSON.stringify({
-    v: 2, unit: 'mm', L: 100, W: 80, H: 20,
+    v: 3, unit: 'mm', L: 100, W: 80, H: 20, stockEnabled: false,
     stockOpt: { cs: 0, nx: 0, px: 0, ny: 0, py: 0, fl: 0, fr: 0, bl: 0, br: 0, rad: 0 },
     objects: [], masks: [], off: { x: 50, y: 40, z: 20 }, wcs: 'G54', nextId: 1, nextMid: 1
   }));
@@ -1022,7 +1212,7 @@ $('u_sel').onchange = () => {
 
 // ==================== BINARY & ASCII STL EXPORTER ====================
 function exportSolidSTL(binary = true, download = true) {
-  if (!surfMesh || !surfMesh.geometry) {
+  if (!surfMesh || !surfMesh.geometry || !surfMesh.visible || HM.maxZ <= 0.000001) {
     alert('No 3D solid geometry available to export.');
     return;
   }
@@ -1246,6 +1436,7 @@ const gouges = (x, y, z, r) => ring(x, y, r, (px, py) => hAt(px, py) > z + 0.005
 
 function saveStock(recordUndo = true) {
   if (recordUndo) pushUndo();
+  stockEnabled = $('stockEnabled').checked;
   stockOpt = {
     cs: Math.min(Math.max(0, num('st_cs')), L, W, H),
     rad: Math.min(Math.max(0, num('st_rad')), L / 2, W / 2),
@@ -1256,6 +1447,7 @@ function saveStock(recordUndo = true) {
 }
 
 ['st_cs', 'st_rad', 'st_nx', 'st_px', 'st_ny', 'st_py', 'st_fl', 'st_fr', 'st_bl', 'st_br'].forEach(id => $(id).addEventListener('change', saveStock));
+$('stockEnabled').addEventListener('change', saveStock);
 $('updStock').onclick = () => {
   pushUndo();
   L = Math.max(1, num('sx'));
@@ -1277,6 +1469,7 @@ function refreshObjList() {
     s.appendChild(op);
   });
   $('objEd').classList.toggle('hide', !selObj);
+  syncMoveTool();
   if (!selObj) return;
   const o = selObj, box = o.type === 'box';
   $('lab_x').textContent = box ? 'X (Corner)' : 'X (Center)';
@@ -1298,6 +1491,133 @@ function refreshObjList() {
   for (const k of ['nx', 'px', 'ny', 'py', 'fl', 'fr', 'bl', 'br']) $('c_' + k).checked = !!o['c' + k];
   $('c_top').checked = !!o.ctop;
 }
+
+function disposeMoveProxy() {
+  transformControls.detach();
+  transformControls.visible = false;
+  if (!moveProxy) return;
+  world.remove(moveProxy);
+  moveProxy.geometry?.dispose();
+  moveProxy.material?.dispose();
+  moveProxy = null;
+}
+
+function syncMoveProxyFromObject() {
+  if (!moveProxy || !selObj) return;
+  const halfX = selObj.type === 'box' ? selObj.L / 2 : 0;
+  const halfY = selObj.type === 'box' ? selObj.W / 2 : 0;
+  moveProxy.position.set(selObj.x + halfX, selObj.y + halfY, selObj.z + selObj.H / 2);
+}
+
+function syncMoveTool() {
+  const button = $('moveObj');
+  button.disabled = !selObj;
+  button.classList.toggle('active', Boolean(selObj && moveActive));
+  button.innerHTML = `<i class="fa-solid fa-up-down-left-right"></i> ${moveActive && selObj ? 'Moving object' : 'Move selected object'}`;
+  disposeMoveProxy();
+  if (!selObj || !moveActive) return;
+
+  const geometry = selObj.type === 'box'
+    ? new THREE.BoxGeometry(selObj.L, selObj.W, selObj.H)
+    : new THREE.CylinderGeometry(selObj.D / 2, selObj.D / 2, selObj.H, 48);
+  if (selObj.type === 'cyl') geometry.rotateX(Math.PI / 2);
+  const material = new THREE.MeshBasicMaterial({
+    color: selObj.mode === 'sub' ? 0xef4444 : 0x06b6d4,
+    transparent: true,
+    opacity: 0.3,
+    depthTest: false,
+    wireframe: true
+  });
+  moveProxy = new THREE.Mesh(geometry, material);
+  moveProxy.renderOrder = 20;
+  world.add(moveProxy);
+  syncMoveProxyFromObject();
+  transformControls.attach(moveProxy);
+  transformControls.visible = true;
+}
+
+function updateObjectFromMoveProxy() {
+  if (!moveProxy || !selObj) return;
+  if (selObj.type === 'box') {
+    selObj.x = moveProxy.position.x - selObj.L / 2;
+    selObj.y = moveProxy.position.y - selObj.W / 2;
+  } else {
+    selObj.x = moveProxy.position.x;
+    selObj.y = moveProxy.position.y;
+  }
+  selObj.z = moveProxy.position.z - selObj.H / 2;
+  selObj.x = +selObj.x.toFixed(3);
+  selObj.y = +selObj.y.toFixed(3);
+  selObj.z = +selObj.z.toFixed(3);
+  $('o_x').value = selObj.x;
+  $('o_y').value = selObj.y;
+  $('o_z').value = selObj.z;
+}
+
+function clampSelectedObject() {
+  if (!selObj) return;
+  if (selObj.type === 'box') {
+    selObj.x = Math.min(Math.max(0, selObj.x), Math.max(0, L - selObj.L));
+    selObj.y = Math.min(Math.max(0, selObj.y), Math.max(0, W - selObj.W));
+  } else {
+    const radius = selObj.D / 2;
+    selObj.x = Math.min(Math.max(radius, selObj.x), Math.max(radius, L - radius));
+    selObj.y = Math.min(Math.max(radius, selObj.y), Math.max(radius, W - radius));
+  }
+  selObj.z = Math.max(0, selObj.z);
+}
+
+transformControls.addEventListener('mouseDown', () => {
+  if (!moveUndoCaptured) {
+    pushUndo();
+    moveUndoCaptured = true;
+  }
+});
+transformControls.addEventListener('objectChange', updateObjectFromMoveProxy);
+transformControls.addEventListener('dragging-changed', event => {
+  controls.enabled = !event.value;
+  if (!event.value && moveUndoCaptured) {
+    updateObjectFromMoveProxy();
+    clampSelectedObject();
+    moveUndoCaptured = false;
+    refreshObjList();
+    rebuild();
+    clearPath();
+  }
+});
+
+$('moveObj').onclick = () => {
+  if (!selObj) return;
+  moveActive = !moveActive;
+  syncMoveTool();
+};
+$('moveSnap').addEventListener('change', () => {
+  const snap = Math.max(0.001, num('moveSnap'));
+  $('moveSnap').value = snap;
+  transformControls.setTranslationSnap(snap);
+});
+
+document.addEventListener('keydown', event => {
+  if (!moveActive || !selObj || /^(INPUT|SELECT|TEXTAREA)$/.test(event.target.tagName)) return;
+  const step = Math.max(0.001, num('moveSnap'));
+  const delta = { x: 0, y: 0, z: 0 };
+  if (event.key === 'ArrowLeft') delta.x = -step;
+  else if (event.key === 'ArrowRight') delta.x = step;
+  else if (event.key === 'ArrowDown') delta.y = -step;
+  else if (event.key === 'ArrowUp') delta.y = step;
+  else if (event.key === 'PageDown') delta.z = -step;
+  else if (event.key === 'PageUp') delta.z = step;
+  else return;
+  event.preventDefault();
+  pushUndo();
+  selObj.x += delta.x;
+  selObj.y += delta.y;
+  selObj.z += delta.z;
+  clampSelectedObject();
+  refreshObjList();
+  rebuild();
+  clearPath();
+});
 
 function saveObj() {
   const o = selObj;
@@ -1331,8 +1651,9 @@ $('objList').onchange = e => {
 
 $('addBox').onclick = () => {
   pushUndo();
-  selObj = { id: nextId++, type: 'box', mode: 'add', x: L * 0.25, y: W * 0.25, z: H, L: Math.max(.01, L * .3), W: Math.max(.01, W * .3), H: Math.max(.01, Math.min(10, H / 2)), cs: 0, rad: 0 };
+  selObj = { id: nextId++, type: 'box', mode: 'add', x: L * 0.35, y: W * 0.35, z: stockEnabled ? H : 0, L: Math.max(.01, L * .3), W: Math.max(.01, W * .3), H: Math.max(.01, Math.min(10, H / 2)), cs: 0, rad: 0 };
   objects.push(selObj);
+  moveActive = true;
   refreshObjList();
   rebuild();
 };
@@ -1340,8 +1661,9 @@ $('addBox').onclick = () => {
 $('addCyl').onclick = () => {
   pushUndo();
   const depth = Math.max(.01, Math.min(10, H / 2));
-  selObj = { id: nextId++, type: 'cyl', mode: 'sub', x: L/2, y: W/2, z: Math.max(0, H - depth), D: Math.max(.01, Math.min(10, L / 4, W / 4)), H: depth, cs: 0 };
+  selObj = { id: nextId++, type: 'cyl', mode: stockEnabled ? 'sub' : 'add', x: L/2, y: W/2, z: stockEnabled ? Math.max(0, H - depth) : 0, D: Math.max(.01, Math.min(10, L / 4, W / 4)), H: depth, cs: 0 };
   objects.push(selObj);
+  moveActive = true;
   refreshObjList();
   rebuild();
 };
@@ -1494,8 +1816,7 @@ function setRay(e) {
 // Interactive pointer raycasting & cursor coordinate DRO tracking
 renderer.domElement.addEventListener('pointerdown', e => {
   if (innerWidth <= 920) {
-    $('panel').classList.remove('open');
-    $('gpanel').classList.remove('open');
+    closeMobilePanels();
   }
   setRay(e);
   if (!surfMesh || !surfMesh.visible) return;
@@ -1604,7 +1925,9 @@ $('op').onchange = () => {
   $('op_cdrill').classList.toggle('hide', v !== 'cdrill');
   $('op_idod').classList.toggle('hide', v !== 'idmill' && v !== 'odmill');
   clearPath();
+  updateModelStatus();
 };
+$('wcs').addEventListener('change', updateModelStatus);
 
 function syncDialectControls() {
   const fanuc = $('p_dialect').value === 'fanuc';
@@ -1628,6 +1951,10 @@ $('gen').onclick = () => {
   stopSim();
   clearPath();
   setCamError();
+  if (!stockEnabled) {
+    setCamError('Enable machining stock before generating CNC toolpaths.');
+    return;
+  }
   const op = $('op').value, dialect = $('p_dialect').value, unit = $('u_sel').value,
     unitIn = unit === 'in', macro = $('p_style').value === 'mac', cool = $('p_cool').checked,
     wcs = $('wcs').value;
@@ -2238,7 +2565,7 @@ function simTick(dt) {
 
 // ==================== VIEWPORT CONTROLS & CAMERAS ====================
 window.setViewMode = function(mode) {
-  controls.target.set(0, 0, H / 2);
+  controls.target.set(0, 0, (HM.maxZ || 0) / 2);
   const d = Math.max(L, W) * 1.6 + 60;
   if (mode === 'top') {
     camera.position.set(0, 0, d * 1.6);
@@ -2270,18 +2597,83 @@ window.homeView = function() {
   window.setViewMode('iso');
 };
 
-$('togPanel').onclick = () => {
-  $('panel').classList.toggle('open');
+function syncMobilePanelState() {
+  const setupOpen = $('panel').classList.contains('open');
+  const programOpen = $('gpanel').classList.contains('open');
+  $('app').classList.toggle('mobile-panel-open', setupOpen || programOpen);
+  $('togPanel').setAttribute('aria-expanded', String(setupOpen));
+  $('togG').setAttribute('aria-expanded', String(programOpen));
+  syncPanelAccessibility();
+}
+
+function syncPanelAccessibility() {
+  const mobile = matchMedia('(max-width: 920px)').matches;
+  const setupHidden = mobile ? !$('panel').classList.contains('open') : $('app').classList.contains('setup-panel-hidden');
+  const programHidden = mobile ? !$('gpanel').classList.contains('open') : $('app').classList.contains('program-panel-hidden');
+
+  [['panel', setupHidden], ['gpanel', programHidden]].forEach(([id, hidden]) => {
+    const panel = $(id);
+    panel.inert = hidden;
+    panel.setAttribute('aria-hidden', String(hidden));
+  });
+}
+
+function closeMobilePanels() {
+  $('panel').classList.remove('open');
   $('gpanel').classList.remove('open');
+  syncMobilePanelState();
+}
+
+$('togPanel').onclick = () => {
+  const shouldOpen = !$('panel').classList.contains('open');
+  closeMobilePanels();
+  $('panel').classList.toggle('open', shouldOpen);
+  syncMobilePanelState();
 };
 $('togG').onclick = () => {
-  $('gpanel').classList.toggle('open');
-  $('panel').classList.remove('open');
+  const shouldOpen = !$('gpanel').classList.contains('open');
+  closeMobilePanels();
+  $('gpanel').classList.toggle('open', shouldOpen);
+  syncMobilePanelState();
 };
+$('panelScrim').onclick = closeMobilePanels;
+
+function setDesktopPanel(panelName, visible) {
+  const className = panelName === 'setup' ? 'setup-panel-hidden' : 'program-panel-hidden';
+  const button = panelName === 'setup' ? $('deskPanel') : $('deskProgram');
+  $('app').classList.toggle(className, !visible);
+  button.setAttribute('aria-expanded', String(visible));
+  button.setAttribute('aria-label', `${visible ? 'Hide' : 'Show'} ${panelName === 'setup' ? 'modeling setup' : 'CNC program'} panel`);
+  button.querySelector('i').className = `fa-solid fa-chevron-${panelName === 'setup' ? (visible ? 'left' : 'right') : (visible ? 'right' : 'left')}`;
+  localStorage.setItem(`cad-${panelName}-panel`, visible ? 'open' : 'closed');
+  syncPanelAccessibility();
+}
+
+$('deskPanel').onclick = () => setDesktopPanel('setup', $('app').classList.contains('setup-panel-hidden'));
+$('deskProgram').onclick = () => setDesktopPanel('program', $('app').classList.contains('program-panel-hidden'));
+setDesktopPanel('setup', localStorage.getItem('cad-setup-panel') !== 'closed');
+setDesktopPanel('program', localStorage.getItem('cad-program-panel') !== 'closed');
+
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape') closeMobilePanels();
+});
 
 ['gesturestart', 'gesturechange', 'gestureend'].forEach(ev => document.addEventListener(ev, e => e.preventDefault()));
 document.querySelectorAll('legend').forEach(lg => {
-  lg.onclick = () => lg.parentElement.classList.toggle('fold');
+  lg.tabIndex = 0;
+  lg.setAttribute('role', 'button');
+  lg.setAttribute('aria-expanded', 'true');
+  const toggle = () => {
+    const folded = lg.parentElement.classList.toggle('fold');
+    lg.setAttribute('aria-expanded', String(!folded));
+  };
+  lg.onclick = toggle;
+  lg.onkeydown = event => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      toggle();
+    }
+  };
 });
 
 const clock = new THREE.Clock();
@@ -2291,8 +2683,13 @@ function resize() {
   camera.aspect = w / h;
   camera.updateProjectionMatrix();
 }
-addEventListener('resize', resize);
+addEventListener('resize', () => {
+  resize();
+  syncPanelAccessibility();
+});
 addEventListener('orientationchange', () => setTimeout(resize, 300));
+$('panel').addEventListener('transitionend', resize);
+$('gpanel').addEventListener('transitionend', resize);
 
 // Initial setup
 const saved = localStorage.getItem('webcam_prj');
@@ -2307,6 +2704,7 @@ syncDialectControls();
 syncHistoryButtons();
 resize();
 homeView();
+updateModelStatus();
 
 (function loop() {
   requestAnimationFrame(loop);
