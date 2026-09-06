@@ -95,6 +95,23 @@
     return volume;
   }
 
+  function pointInMask(mask, x, y) {
+    if (!mask || !['rect', 'circle'].includes(mask.type)) return false;
+    if (mask.type === 'circle') return Math.hypot(x - mask.x, y - mask.y) <= mask.w / 2;
+    return Math.abs(x - mask.x) <= mask.w / 2 && Math.abs(y - mask.y) <= mask.h / 2;
+  }
+
+  function toolIntersectsMasks(x, y, toolRadius, masks) {
+    const radius = nonNegative(toolRadius, 'Tool radius');
+    return (Array.isArray(masks) ? masks : []).some(mask => {
+      if (!mask || !['rect', 'circle'].includes(mask.type)) return false;
+      if (mask.type === 'circle') return Math.hypot(x - mask.x, y - mask.y) <= radius + mask.w / 2;
+      const closestX = Math.max(mask.x - mask.w / 2, Math.min(x, mask.x + mask.w / 2));
+      const closestY = Math.max(mask.y - mask.h / 2, Math.min(y, mask.y + mask.h / 2));
+      return Math.hypot(x - closestX, y - closestY) <= radius;
+    });
+  }
+
   function validateProject(project) {
     if (!project || ![1, 2, 3].includes(project.v)) throw new Error('Unsupported project version.');
     const clean = {
@@ -144,7 +161,7 @@
     return clean;
   }
 
-  const api = {finite, positive, nonNegative, integer, unitScale, outputNumber, unitCode, validateCam, validateRetractPlane, heightFieldVolume, validateProject};
+  const api = {finite, positive, nonNegative, integer, unitScale, outputNumber, unitCode, validateCam, validateRetractPlane, heightFieldVolume, pointInMask, toolIntersectsMasks, validateProject};
   if (typeof module === 'object' && module.exports) module.exports = api;
   else root.CadCore = api;
 })(typeof window === 'undefined' ? globalThis : window);

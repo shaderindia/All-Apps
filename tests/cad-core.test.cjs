@@ -40,6 +40,17 @@ test('migrates version 1 projects and rejects unreasonable imports', () => {
   assert.throws(() => core.validateProject({...migrated,objects:[{id:1,type:'sphere',mode:'add'}]}), /unsupported/);
 });
 
+test('detects exact tool collisions with rectangular and circular keep-out zones', () => {
+  const zones = [
+    {type: 'rect', x: 20, y: 20, w: 10, h: 8},
+    {type: 'circle', x: 50, y: 50, w: 12}
+  ];
+  assert.equal(core.pointInMask(zones[0], 15, 16), true);
+  assert.equal(core.toolIntersectsMasks(12, 20, 3, zones), true);
+  assert.equal(core.toolIntersectsMasks(58, 50, 2, zones), true);
+  assert.equal(core.toolIntersectsMasks(0, 0, 2, zones), false);
+});
+
 test('new project format supports an intentionally empty modeling workspace', () => {
   const empty = core.validateProject({v:3,L:100,W:80,H:20,stockEnabled:false,stockOpt:{},objects:[],masks:[],off:{x:50,y:40,z:20}});
   assert.equal(empty.stockEnabled, false);
