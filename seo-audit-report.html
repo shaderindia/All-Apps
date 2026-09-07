@@ -69,110 +69,94 @@
   <header>
     <h1>shader7.com</h1>
     <p class="dateline">September 7, 2026</p>
-    <p class="subtitle">Shader7 is a lightweight suite of eight browser tools and twenty-five technical guides with valid structured data. The primary barrier to organic indexing is an internal domain redirect mismatch where page canonical tags point to a bare domain that permanently redirects back to the live site. This audit outlines the single change to unlock indexing, seven supporting technical fixes, and four initial keywords to target.</p>
+    <p class="subtitle">Shader7 now operates on a fully unified canonical domain structure with clean 200 HTTP responses across all sitemap routes, deferred third-party scripts, and complete structured data. The primary next requirement is triggering search engine re-indexing and establishing external authority links to build domain trust. This audit outlines the single action to take in search consoles this week, five supporting enhancements, and key search terms to target.</p>
   </header>
 
   <section>
     <h2>Where the site stands</h2>
-    <p class="lede">The website is responsive, loads rapidly via Cloudflare Pages, and offers practical browser utilities across engineering, photo editing, and finance. High-effort guides for CNC machining and passport preparation provide rich educational value, and the site carries verified ownership records for both Google and Bing.</p>
-    <p class="lede">However, organic search discovery is currently blocked by a circular signal. The live website serves traffic on www.shader7.com, but canonical tags and sitemaps point to the bare domain shader7.com, which returns a permanent redirect back to www. Aligning these signals to point directly to the live address is the essential first step.</p>
+    <p class="lede">Technical foundations are now clean. Live checks confirm that canonical tags (the code specifying a page primary address) and the sitemap point directly to https://www.shader7.com, with zero circular redirect loops. Pages return HTTP 200 OK directly, third-party scripts carry defer attributes, and structured data (code that classifies entities for search engines) is active on every route.</p>
+    <p class="lede">Because the previous redirect loops were recently resolved, search engine bots have not yet refreshed their cached crawl evaluations. Taking proactive re-indexing steps in Google Search Console and Bing Webmaster Tools will expedite organic indexing of all twenty-five guides and eight browser utilities.</p>
   </section>
 
   <hr class="heavy">
 
   <section>
     <h2>If you only do one thing</h2>
-    <p class="lede">Standardize all canonical tags, Open Graph tags, and sitemap entries to point directly to the live https://www.shader7.com address.</p>
-    <p>A canonical tag tells a search crawler (an automated search engine bot like Googlebot) which URL is the authoritative version of a page. Currently, every page on www.shader7.com specifies shader7.com as its canonical version. When Googlebot requests that URL, your server returns an HTTP 301 redirect (a permanent forward) right back to www.shader7.com. This circular loop causes search engines to pause or drop indexing across your pages.</p>
+    <p class="lede">Submit the updated sitemap and request re-indexing for the home page in Google Search Console and Bing Webmaster Tools.</p>
+    <p>Search crawlers (automated bots like Googlebot that scan and index web content) only visit smaller sites periodically unless prompted. Requesting re-indexing prompts Googlebot to clear its historical redirect cache and index your clean pages immediately.</p>
     <ol>
-      <li>Update your repository to replace <code>https://shader7.com/</code> with <code>https://www.shader7.com/</code> in all <code>rel="canonical"</code> tags and Open Graph <code>og:url</code> tags.</li>
-      <li>Update <code>sitemap.xml</code> so every page location starts with <code>https://www.shader7.com/</code>, and update <code>robots.txt</code> to reference <code>Sitemap: https://www.shader7.com/sitemap.xml</code>.</li>
-      <li>Check the fix using a curl command or browser developer tools to verify that requesting a canonical URL yields an immediate HTTP 200 OK without any intermediate 301 redirect.</li>
+      <li>Open Google Search Console, navigate to the Sitemaps tab, and submit <code>https://www.shader7.com/sitemap.xml</code>.</li>
+      <li>Use the URL Inspection bar at the top, enter <code>https://www.shader7.com/</code>, and click <i>Request Indexing</i>.</li>
+      <li>Open the Page Indexing report, select the previous "Page with redirect" and "Submitted URL marked noindex" notices, and click <i>Validate Fix</i>.</li>
     </ol>
   </section>
 
   <section>
     <h2>Small fixes, in order</h2>
     <div class="cols">
-      <div><p class="row-title">Remove noindex pages from sitemap <span class="mono tag">high</span></p></div>
+      <div><p class="row-title">Expand short title tags <span class="mono tag">medium</span></p></div>
       <div>
-        <p>The file <code>sitemap.xml</code> submits six resume template URLs (such as <code>cvbanao/template1/</code>), but each template file contains <code>&lt;meta name="robots" content="noindex, nofollow"&gt;</code>. This generates a direct "Submitted URL marked noindex" error in Google Search Console.</p>
-        <p class="fix"><b>Fix:</b> Delete the six <code>cvbanao/template*/</code> entries from <code>sitemap.xml</code> so search crawlers only spend time reviewing pages you want displayed in search results.</p>
+        <p>Several primary landing pages have title tags shorter than 30 characters, such as <code>&lt;title&gt;Resume Builder | Shader7&lt;/title&gt;</code> (24 characters) and <code>&lt;title&gt;Bill Splitter | Shader7&lt;/title&gt;</code> (23 characters), missing relevant search queries.</p>
+        <p class="fix"><b>Fix:</b> Expand titles to 45-60 characters with specific search terms, such as <code>Free ATS Resume Builder Online | Shader7</code> and <code>Free Bill Splitter &amp; Expense Calculator | Shader7</code>.</p>
       </div>
     </div>
 
     <div class="cols">
-      <div><p class="row-title">Defer third-party advertising script <span class="mono tag">medium</span></p></div>
+      <div><p class="row-title">Shorten overlength app titles <span class="mono tag">medium</span></p></div>
       <div>
-        <p>More than twenty pages load <code>https://emotionallytonightintelligent.com/...</code> directly inside the <code>&lt;head&gt;</code> element without <code>defer</code> or <code>async</code> attributes. This stops browser rendering while waiting for the remote ad network to respond.</p>
-        <p class="fix"><b>Fix:</b> Add <code>defer</code> to the script tag or relocate it to the bottom of the page before the closing <code>&lt;/body&gt;</code> tag so content loads without delay.</p>
+        <p>Specific sub-pages carry title tags exceeding 75 characters, such as <code>hourlysalarycalculator/app.html</code> (84 characters), which get truncated with ellipses in mobile search engine result listings.</p>
+        <p class="fix"><b>Fix:</b> Trim title lengths to stay under 65 characters so the primary tool function and brand name remain fully visible in search previews.</p>
       </div>
     </div>
 
     <div class="cols">
-      <div><p class="row-title">Add nofollow to external file locker link <span class="mono tag">medium</span></p></div>
+      <div><p class="row-title">Seed initial external directory profiles <span class="mono tag">medium</span></p></div>
       <div>
-        <p>The passport photo page links directly to a MediaFire URL for an Android APK file: <code>&lt;a class="text-link" href="https://www.mediafire.com/.../PassportPhotoPro.apk/file" ...&gt;</code> without search bot guidance.</p>
-        <p class="fix"><b>Fix:</b> Host the installer file on your own domain or a GitHub release page. If keeping the external link, add <code>rel="nofollow noopener noreferrer"</code> so search engines do not associate your domain authority with an unvetted file host.</p>
+        <p>Web search queries show zero external referring domains or backlinks recorded for the site. Search engine ranking algorithms rely on external citations to evaluate domain authenticity and trust.</p>
+        <p class="fix"><b>Fix:</b> Submit Shader7 to free software directories and tool indexes such as AlternativeTo, Product Hunt, GitHub topic showcases, and relevant developer resource lists.</p>
       </div>
     </div>
 
     <div class="cols">
-      <div><p class="row-title">Add missing description and canonical on milling tool <span class="mono tag">low</span></p></div>
+      <div><p class="row-title">Strengthen guide call-to-action buttons <span class="mono tag">low</span></p></div>
       <div>
-        <p>The page <code>cnc-machinist/millingcalculation/index.html</code> is missing both a meta description (the short summary text displayed below page titles in search results) and a canonical tag.</p>
-        <p class="fix"><b>Fix:</b> Add a meta description summarizing cutting speeds, feeds, and motor power calculations, and insert a canonical link pointing to <code>https://www.shader7.com/cnc-machinist/millingcalculation/</code>.</p>
+        <p>The site has comprehensive written guides exceeding 3,000 to 6,000 words, but some readers scroll past text without reaching the corresponding web calculator.</p>
+        <p class="fix"><b>Fix:</b> Place a styled banner button near the top and bottom of each guide directly inviting readers to open the relevant interactive tool.</p>
       </div>
     </div>
 
     <div class="cols">
-      <div><p class="row-title">Add primary heading to triangle calculator <span class="mono tag">low</span></p></div>
+      <div><p class="row-title">Include image metadata in sitemap <span class="mono tag">low</span></p></div>
       <div>
-        <p>The page <code>cnc-machinist/Triangle/index.html</code> contains zero <code>&lt;h1&gt;</code> tags (the main headline that tells search engines the primary subject of a document).</p>
-        <p class="fix"><b>Fix:</b> Add an <code>&lt;h1&gt;</code> element to the page header, such as <code>&lt;h1&gt;Triangle Solver &amp; Trigonometry Calculator&lt;/h1&gt;</code>, to provide clear document hierarchy.</p>
-      </div>
-    </div>
-
-    <div class="cols">
-      <div><p class="row-title">Add descriptive alt text to tool banners <span class="mono tag">low</span></p></div>
-      <div>
-        <p>On the home page directory, all tool preview images use empty alt attributes, such as <code>&lt;img alt="" src="/assets/banners/passport-640.webp"&gt;</code>.</p>
-        <p class="fix"><b>Fix:</b> Replace empty quotes with concise descriptions, such as <code>alt="Passport Photo Maker interface preview"</code>, to assist image indexing and screen reader accessibility.</p>
-      </div>
-    </div>
-
-    <div class="cols">
-      <div><p class="row-title">Update robots.txt sitemap reference <span class="mono tag">low</span></p></div>
-      <div>
-        <p>The directive in <code>robots.txt</code> points to <code>Sitemap: https://shader7.com/sitemap.xml</code>, which triggers an unnecessary 301 redirect before reaching the actual file.</p>
-        <p class="fix"><b>Fix:</b> Update the reference in <code>robots.txt</code> to read <code>Sitemap: https://www.shader7.com/sitemap.xml</code>.</p>
+        <p>The file <code>sitemap.xml</code> contains text page routes but omits XML image tags for diagrams, charts, and application previews.</p>
+        <p class="fix"><b>Fix:</b> Add <code>&lt;image:image&gt;</code> elements to guide URLs in the sitemap to capture image search traffic for technical formulas and CNC diagrams.</p>
       </div>
     </div>
   </section>
 
   <section>
     <h2>Where to focus first</h2>
-    <p>Shader7 has the strongest topical authority and competitive differentiation in precision CNC engineering. Machining math tools attract targeted, recurring traffic from technicians and programmers seeking fast, clean shop calculators without account walls.</p>
+    <p>Precision CNC machining math and G-code tooling remain your greatest organic opportunity. The technical depth of your calculators and articles provides a natural competitive edge over generic utility websites.</p>
     <div class="cols">
       <div><p class="row-title">pcd calculator cnc <span class="mono tag">500 to 1,000 searches/mo</span></p></div>
       <div>
-        <p>Searched by machinists needing bolt circle and pitch circle diameter hole coordinates. Existing web competitors are mostly dated forum calculators with legacy user interfaces.</p>
-        <p class="fix"><b>Make:</b> Expand your existing PCD calculator page with a visual coordinate table and copyable G-code circular hole pattern output.</p>
+        <p>Machinists calculate bolt circle coordinates and hole positions during active part programming. Existing competitor calculators are largely dated web forms with legacy layouts.</p>
+        <p class="fix"><b>Make:</b> Add an interactive coordinate output table and a copy-ready G-code circular pattern snippet directly to your PCD calculator.</p>
       </div>
     </div>
 
     <div class="cols">
       <div><p class="row-title">fanuc macro b examples <span class="mono tag">700 to 1,200 searches/mo</span></p></div>
       <div>
-        <p>Programmers search this term to find working custom macros for variable part dimensions and subprogram loops. It carries high professional intent and low organic competition.</p>
-        <p class="fix"><b>Make:</b> Add a library of downloadable macro code templates directly into your existing Fanuc macro programming guide.</p>
+        <p>CNC programmers search for real-world variable programming templates for family parts, bolt circles, and automated probing.</p>
+        <p class="fix"><b>Make:</b> Add a library of commented, downloadable Fanuc macro subprograms to your existing macro programming guide.</p>
       </div>
     </div>
 
     <div class="cols">
       <div><p class="row-title">bolt circle calculator online <span class="mono tag">2,000 to 3,000 searches/mo</span></p></div>
       <div>
-        <p>A steady, high-volume term used across machine shops, fabrication facilities, and CAD drafting desks.</p>
+        <p>A steady, high-volume term used by machinists, fabricators, and mechanical drafters needing quick circle geometry.</p>
         <p class="fix"><b>Make:</b> Create a dedicated standalone page focusing on bolt circle diameter calculations with an instant visual coordinate diagram.</p>
       </div>
     </div>
@@ -180,8 +164,8 @@
     <div class="cols">
       <div><p class="row-title">print 2x2 passport photos online <span class="mono tag">1,000 to 1,500 searches/mo</span></p></div>
       <div>
-        <p>People looking to crop photos to official government specifications and print them on home photo printers or standard pharmacy sheets.</p>
-        <p class="fix"><b>Make:</b> Publish a step-by-step tutorial showing how to tile multiple 2x2 photos onto a standard 4x6 print grid using your tool.</p>
+        <p>Consumers seeking to crop compliant biometric photos and print multiple copies onto standard 4x6 photo paper.</p>
+        <p class="fix"><b>Make:</b> Publish a targeted visual guide showing how to arrange multiple 2x2 cutouts on standard 4x6 print grids using your tool.</p>
       </div>
     </div>
   </section>
@@ -189,16 +173,17 @@
   <section>
     <h2>Already working</h2>
     <ul class="plain">
-      <li>Fast static delivery on Cloudflare Pages. <span class="why">Average response time remains under 100 milliseconds with global edge caching.</span></li>
-      <li>Valid structured data across tools and articles. <span class="why">JSON-LD schema code accurately identifies WebApplication and Article entities.</span></li>
-      <li>Extensive technical writing. <span class="why">Multiple guide articles exceed 3,000 words with equations, diagrams, and code references.</span></li>
-      <li>Responsive layout with dark mode support. <span class="why">Tools work comfortably on mobile devices and include skip navigation links.</span></li>
-      <li>Search console verification records. <span class="why">Active DNS TXT records for Google and meta validation tags for Bing are already deployed.</span></li>
+      <li>Zero canonical-redirect loops across the live site. <span class="why">Direct HTTP 200 OK responses confirm consistent www address canonicalization.</span></li>
+      <li>Fast static delivery on Cloudflare Pages. <span class="why">Global edge caching keeps page response latency under 100 milliseconds.</span></li>
+      <li>Clean sitemap structure. <span class="why">All submitted routes return active 200 responses with no blocked template routes.</span></li>
+      <li>Deferred third-party advertising scripts. <span class="why">Remote scripts load asynchronously without pausing initial page rendering.</span></li>
+      <li>Comprehensive structured data. <span class="why">Valid JSON-LD schema accurately defines WebApplication and Article entities.</span></li>
+      <li>Verified search engine ownership. <span class="why">Active DNS verification TXT records for Google and meta tags for Bing are deployed.</span></li>
     </ul>
   </section>
 
   <footer>
-    <p>Reviewed September 7, 2026. Data sources: direct HTTP response headers, SSL certificates, DNS records, and full codebase review of All-Apps; live web requests verified across HTTP, HTTPS, apex, and www variants.</p>
+    <p>Reviewed September 7, 2026. Data sources: live HTTP headers, SSL certificates, DNS records, and full codebase review; verified across live endpoints on www.shader7.com and shader7.com.</p>
   </footer>
 </div>
 </body>
