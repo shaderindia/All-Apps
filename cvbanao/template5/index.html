@@ -1,8 +1,8 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <!-- Social Bar Ad Script -->
-<script src="https://emotionallytonightintelligent.com/24/99/11/249911a0bb6cd7ff11a49086b8f131e7.js"></script>
+<script defer src="https://emotionallytonightintelligent.com/24/99/11/249911a0bb6cd7ff11a49086b8f131e7.js"></script>
   <script src="../../js/theme.js"></script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-FCJR8H4DME"></script>
   <script>
@@ -21,20 +21,20 @@
   <meta name="author" content="Nishikant Xalxo" />
   <meta name="robots" content="noindex, nofollow" />
   <meta name="theme-color" content="#984c58" />
-  <link rel="canonical" href="https://shader7.com/cvbanao/template5" />
+  <link rel="canonical" href="https://www.shader7.com/cvbanao/template5" />
 
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Shader7" />
-  <meta property="og:url" content="https://shader7.com/cvbanao/template5" />
+  <meta property="og:url" content="https://www.shader7.com/cvbanao/template5" />
   <meta property="og:title" content="Free Resume Builder Template 5 | Classic Maroon CV Maker PDF Download" />
   <meta property="og:description" content="Build a professional classic two-column resume online with live preview, photo crop, local auto-save, color themes and A4 PDF download." />
-  <meta property="og:image" content="https://shader7.com/og-image.jpg" />
+  <meta property="og:image" content="https://www.shader7.com/og-image.jpg" />
 
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:creator" content="@nishix_vamp" />
   <meta name="twitter:title" content="Free Resume Builder Template 5 | Classic Maroon CV Maker PDF Download" />
   <meta name="twitter:description" content="Create a professional two-column CV online for free with live preview and exact A4 PDF download." />
-  <meta name="twitter:image" content="https://shader7.com/og-image.jpg" />
+  <meta name="twitter:image" content="https://www.shader7.com/og-image.jpg" />
 
   <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -60,13 +60,13 @@
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
     "name": "Shader7 Resume Builder Template 5",
-    "url": "https://shader7.com/cvbanao/template5",
+    "url": "https://www.shader7.com/cvbanao/template5",
     "applicationCategory": "BusinessApplication",
     "operatingSystem": "All",
     "description": "A free online classic two-column resume and CV builder with photo crop, live preview, local auto-save, theme colors and exact A4 PDF download.",
     "offers": { "@type": "Offer", "price": "0.00", "priceCurrency": "USD" },
     "creator": { "@type": "Person", "name": "Nishikant Xalxo", "url": "https://www.instagram.com/nishix_vamp/" },
-    "publisher": { "@type": "Organization", "name": "Shader7", "url": "https://shader7.com/" }
+    "publisher": { "@type": "Organization", "name": "Shader7", "url": "https://www.shader7.com/" }
   }
   </script>
 
@@ -1355,14 +1355,25 @@
 
     async function downloadPDF() {
       if (!validateRequiredFields()) return;
-      if (!window.html2canvas || !window.jspdf || !window.jspdf.jsPDF) { showToast("PDF libraries are still loading. Try again in a few seconds.", "error"); return; }
+      if (!window.html2canvas || !window.jspdf || !window.jspdf.jsPDF) {
+        showToast("PDF tools loading. Please wait 2 seconds...", "error");
+        return;
+      }
       showToast("Generating exact A4 PDF...", "info");
       const element = document.getElementById("resumePreview");
       const holder = document.getElementById("a4PreviewHolder");
+      const previewPanel = document.getElementById("previewPanel") || document.querySelector(".preview-panel");
+
       const originalTransform = element.style.transform;
       const originalShadow = element.style.boxShadow;
       const originalHolderWidth = holder.style.width;
       const originalHolderHeight = holder.style.height;
+      const origPanelDisplay = previewPanel ? previewPanel.style.display : "";
+
+      if (previewPanel && window.getComputedStyle(previewPanel).display === "none") {
+        previewPanel.style.display = "block";
+      }
+
       element.style.transform = "none";
       element.style.boxShadow = "none";
       holder.style.width = "210mm";
@@ -1374,12 +1385,27 @@
           useCORS: true,
           allowTaint: true,
           backgroundColor: "#ffffff",
-          width: element.offsetWidth,
-          height: element.offsetHeight,
-          windowWidth: element.offsetWidth,
-          windowHeight: element.offsetHeight,
-          scrollX: 0,
-          scrollY: 0
+          windowWidth: 1600,
+          onclone: (clonedDoc) => {
+            const clonedPanel = clonedDoc.getElementById("previewPanel") || clonedDoc.querySelector(".preview-panel");
+            if (clonedPanel) {
+              clonedPanel.style.display = "block";
+              clonedPanel.style.visibility = "visible";
+            }
+            const clonedHolder = clonedDoc.getElementById("a4PreviewHolder");
+            if (clonedHolder) {
+              clonedHolder.style.transform = "none";
+              clonedHolder.style.width = "210mm";
+              clonedHolder.style.height = "297mm";
+            }
+            const clonedElement = clonedDoc.getElementById("resumePreview");
+            if (clonedElement) {
+              clonedElement.style.transform = "none";
+              clonedElement.style.boxShadow = "none";
+              clonedElement.style.visibility = "visible";
+              clonedElement.style.display = "block";
+            }
+          }
         });
         const imgData = canvas.toDataURL("image/jpeg", 0.98);
         const { jsPDF } = window.jspdf;
@@ -1397,6 +1423,9 @@
         element.style.boxShadow = originalShadow;
         holder.style.width = originalHolderWidth;
         holder.style.height = originalHolderHeight;
+        if (previewPanel) {
+          previewPanel.style.display = origPanelDisplay;
+        }
         updatePreviewScale();
       }
     }
