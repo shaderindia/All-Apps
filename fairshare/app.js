@@ -30,6 +30,7 @@
     balanceBody: byId('balanceBody'),
     copyBtn: byId('copySummaryBtn'),
     previewBtn: byId('previewBtn'),
+    downloadImageBtn: byId('downloadImageBtn'),
     downloadBtn: byId('downloadPdfBtn'),
     previewPanel: byId('previewPanel'),
     previewCanvas: byId('previewCanvas'),
@@ -51,7 +52,7 @@
   }
 
   function defaultState() {
-    return { version: 2, title: 'Group expenses', currency: 'RON', participants: [] };
+    return { version: 3, title: 'Group expenses', currency: 'RON', participants: [] };
   }
 
   function loadState() {
@@ -59,9 +60,9 @@
       const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
       if (saved && Array.isArray(saved.participants)) {
         return {
-          version: 2,
+          version: 3,
           title: String(saved.title || 'Group expenses').slice(0, 80),
-          currency: Core.normalizeCurrency(saved.currency),
+          currency: Number(saved.version) >= 3 ? Core.normalizeCurrency(saved.currency) : 'RON',
           participants: saved.participants.slice(0, MAX_PEOPLE).map((person, index) => ({
             id: String(person.id || createId()),
             name: Core.cleanName(person.name) || `Person ${index + 1}`,
@@ -485,6 +486,37 @@
     }
   }
 
+  function reportFileName(extension) {
+    const safeName = state.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'fairshare';
+    return `${safeName}-settlement.${extension}`;
+  }
+
+  async function downloadImage() {
+    if (!settlement) return;
+    setLoading(true, 'Preparing your image…');
+    try {
+      const canvas = await createReportCanvas();
+      const blob = await new Promise((resolve, reject) => {
+        canvas.toBlob(result => {
+          if (result) resolve(result);
+          else reject(new Error('The report image could not be created. Please try again.'));
+        }, 'image/png');
+      });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = reportFileName('png');
+      document.body.append(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (error) {
+      showMessage(error.message, 'Image unavailable');
+    } finally {
+      setLoading(false);
+    }
+  }
+
   async function downloadPdf() {
     if (!settlement) return;
     setLoading(true, 'Building your PDF…');
@@ -506,8 +538,7 @@
         pdf.addImage(image, 'JPEG', 0, position, pageWidth, imageHeight, undefined, 'FAST');
         heightLeft -= pageHeight;
       }
-      const safeName = state.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'fairshare';
-      pdf.save(`${safeName}-settlement.pdf`);
+      pdf.save(reportFileName('pdf'));
     } catch (error) {
       showMessage(error.message, 'PDF unavailable');
     } finally {
@@ -542,6 +573,7 @@
   elements.calculateBtn.addEventListener('click', calculate);
   elements.copyBtn.addEventListener('click', copySummary);
   elements.previewBtn.addEventListener('click', previewReport);
+  elements.downloadImageBtn.addEventListener('click', downloadImage);
   elements.downloadBtn.addEventListener('click', downloadPdf);
   elements.closePreviewBtn.addEventListener('click', () => {
     elements.previewPanel.hidden = true;

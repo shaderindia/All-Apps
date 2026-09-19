@@ -59,3 +59,20 @@ test('Romanian leu is the default and invalid currency values fall back to RON',
   assert.equal(core.normalizeCurrency('EUR'), 'EUR');
   assert.ok(core.CURRENCIES.has('RON'));
 });
+
+test('version 2 saved bills receive the new RON default during migration', () => {
+  const controller = fs.readFileSync(path.join(__dirname, '..', 'fairshare', 'app.js'), 'utf8');
+  assert.match(controller, /version: 3/);
+  assert.match(controller, /Number\(saved\.version\) >= 3 \? Core\.normalizeCurrency\(saved\.currency\) : 'RON'/);
+});
+
+test('the report can be downloaded as both a PNG image and a PDF', () => {
+  const root = path.join(__dirname, '..');
+  const html = fs.readFileSync(path.join(root, 'fairshare', 'app.html'), 'utf8');
+  const controller = fs.readFileSync(path.join(root, 'fairshare', 'app.js'), 'utf8');
+  assert.match(html, /id="downloadImageBtn"/);
+  assert.match(html, /id="downloadPdfBtn"/);
+  assert.match(controller, /canvas\.toBlob/);
+  assert.match(controller, /reportFileName\('png'\)/);
+  assert.match(controller, /reportFileName\('pdf'\)/);
+});
