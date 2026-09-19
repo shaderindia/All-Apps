@@ -1,1178 +1,241 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="en" data-theme="light">
 <head>
-<!-- Social Bar Ad Script -->
-<script defer src="https://emotionallytonightintelligent.com/24/99/11/249911a0bb6cd7ff11a49086b8f131e7.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FairShare Bill Splitter | Equal or Weighted Splits</title>
+  <meta name="description" content="Split shared expenses equally or by custom weights, see exactly who should pay whom, and save a clear settlement report. Free and private in your browser.">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#f6f7fb">
+  <link rel="canonical" href="https://www.shader7.com/fairshare/app.html">
+  <link rel="icon" href="/favicon.ico">
+  <link rel="stylesheet" href="/css/fonts.css">
+  <link rel="stylesheet" href="/css/font-awesome.min.css">
+  <link rel="stylesheet" href="fairshare.css?v=20260918">
   <script src="../js/theme.js"></script>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FCJR8H4DME"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-FCJR8H4DME');
-    </script>
-
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Free Bill Splitter & Roommate Expense Calculator | SHADER7</title>
-    <meta name="description" content="Split bills and shared expenses easily with roommates, friends, or travel partners. Free online calculator with instant PDF settlement reports. No login required.">
-    <meta name="keywords" content="bill splitter, expense splitter, roommate expense calculator, split money, shared expenses, fairshare, shader7">
-    <meta name="author" content="Nishikant Xalxo">
-    <meta name="robots" content="index, follow">
-
-    <link rel="canonical" href="https://www.shader7.com/fairshare/">
-
-    
-    <noscript></noscript>
-
-    <script defer src="../js/html2canvas.min.js"></script>
-    <script defer src="../js/jspdf.umd.min.js"></script>
-
-    <style>
-        /* Premium Info Section for AdSense and SEO */
-        .app-info-section {
-            margin-top: 40px;
-            background: #1e293b !important;
-            border: 1px solid #334155 !important;
-            border-radius: 12px;
-            padding: 30px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
-            text-align: left !important;
-            color: #e2e8f0 !important;
-        }
-        .app-info-section h3 {
-            color: #3b82f6 !important;
-            font-size: 1.35rem !important;
-            margin-top: 25px !important;
-            margin-bottom: 12px !important;
-            border-bottom: 1px solid #334155 !important;
-            padding-bottom: 6px !important;
-            font-weight: 700 !important;
-            text-transform: none !important;
-            text-align: left !important;
-        }
-        .app-info-section h3:first-of-type {
-            margin-top: 0 !important;
-        }
-        .app-info-section p {
-            color: #cbd5e1 !important;
-            font-size: 0.95rem !important;
-            line-height: 1.7 !important;
-            margin-bottom: 15px !important;
-            text-align: left !important;
-        }
-        .app-info-section ul, .app-info-section ol {
-            margin-left: 24px !important;
-            margin-bottom: 15px !important;
-            color: #cbd5e1 !important;
-            text-align: left !important;
-        }
-        .app-info-section li {
-            margin-bottom: 6px !important;
-            font-size: 0.95rem !important;
-            line-height: 1.6 !important;
-        }
-        .app-info-section code {
-            background: #020617 !important;
-            padding: 2px 6px !important;
-            border-radius: 4px !important;
-            font-family: monospace !important;
-            color: #3b82f6 !important;
-            font-size: 0.9rem !important;
-        }
-        .app-info-section .guide-promo-box {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(168, 85, 247, 0.08)) !important;
-            border: 1px dashed rgba(139, 92, 246, 0.3) !important;
-            border-radius: 8px;
-            padding: 20px;
-            margin-top: 30px;
-            text-align: center !important;
-        }
-        .app-info-section .guide-promo-box p {
-            text-align: center !important;
-            margin-bottom: 12px !important;
-            font-weight: 600 !important;
-            color: #ffffff !important;
-        }
-        .app-info-section .promo-btn {
-            display: inline-block !important;
-            background: #6366f1 !important;
-            color: #ffffff !important;
-            padding: 10px 20px !important;
-            border-radius: 6px !important;
-            text-decoration: none !important;
-            font-weight: 700 !important;
-            transition: background 0.2s !important;
-            font-size: 0.9rem !important;
-            border: none !important;
-            cursor: pointer !important;
-        }
-        .app-info-section .promo-btn:hover {
-            background: #4f46e5 !important;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f0f4f8;
-            color: #334155;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 2rem;
-            flex-grow: 1;
-        }
-        .card {
-            background-color: #ffffff;
-            border-radius: 1.5rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            padding: 2rem;
-            margin-bottom: 2rem;
-        }
-        .btn-primary {
-            background-image: linear-gradient(to right, #6366f1, #8b5cf6);
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.75rem;
-            font-weight: 600;
-            transition: all 0.2s ease-in-out;
-            border: none;
-            cursor: pointer;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 10px -1px rgba(0, 0, 0, 0.15), 0 3px 6px -1px rgba(0, 0, 0, 0.08);
-        }
-        .btn-primary:disabled {
-            background-image: none;
-            background-color: #cbd5e1;
-            color: #64748b;
-            cursor: not-allowed;
-            box-shadow: none;
-            transform: none;
-        }
-        .btn-secondary {
-            background-color: #e2e8f0;
-            color: #475569;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.75rem;
-            font-weight: 500;
-            transition: all 0.2s ease-in-out;
-            border: none;
-            cursor: pointer;
-        }
-        .btn-secondary:hover {
-            background-color: #cbd5e1;
-        }
-        input[type="text"], input[type="number"] {
-            border: 1px solid #cbd5e1;
-            border-radius: 0.5rem;
-            padding: 0.75rem 1rem;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        .message-box {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: #fff;
-            padding: 1.5rem;
-            border-radius: 0.75rem;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-            z-index: 1000;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            gap: 1rem;
-            border: 2px solid #6366f1;
-            text-align: center;
-        }
-        .message-box button {
-            background-color: #6366f1;
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            border: none;
-            cursor: pointer;
-        }
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            z-index: 999;
-            display: none;
-        }
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(255, 255, 255, 0.8);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1001;
-            font-size: 1.5rem;
-            color: #6366f1;
-            flex-direction: column;
-            gap: 1rem;
-        }
-        .loading-overlay.is-visible {
-            display: flex;
-        }
-        .spinner {
-            border: 4px solid rgba(0, 0, 0, 0.1);
-            border-left-color: #6366f1;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .roommate-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        .roommate-item:last-child {
-            border-bottom: none;
-        }
-        .settlement-table th, .settlement-table td {
-            padding: 0.75rem;
-            text-align: left;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        .settlement-table th {
-            background-color: #f8fafc;
-            font-weight: 600;
-            color: #475569;
-            text-transform: uppercase;
-            font-size: 0.875rem;
-        }
-        .payment-list li {
-            background-color: #e0e7ff;
-            margin-bottom: 0.5rem;
-            padding: 0.75rem 1rem;
-            border-radius: 0.5rem;
-            font-weight: 500;
-            color: #312e81;
-        }
-        #reportContent {
-            position: absolute;
-            top: 0;
-            left: -99999px;
-            width: 210mm;
-            background: white;
-            z-index: -1;
-        }
-        #a4PreviewCanvas {
-            border: 1px solid #cbd5e1;
-            background-color: #f8fafc;
-            border-radius: 0.75rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            display: block;
-            margin: 2rem auto;
-            max-width: 100%;
-            height: auto;
-            aspect-ratio: 210 / 297;
-        }
-        .back-nav {
-            position: absolute;
-            top: 1rem;
-            left: 1rem;
-            color: rgba(255,255,255,0.8);
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: color 0.2s;
-        }
-        .back-nav:hover {
-            color: white;
-        }
-
-        .ad-container {
-            max-width: 900px;
-            margin: 1.5rem auto 0;
-            padding: 0 2rem;
-            text-align: center;
-            overflow: hidden;
-            box-sizing: border-box;
-            width: 100%;
-        }
-
-        .ad-container-inner {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 1.5rem;
-            padding: 12px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
-            min-height: 96px;
-        }
-
-        .ad-fluid {
-            margin-top: 2rem;
-            margin-bottom: 0;
-            max-width: 900px;
-            padding: 0 2rem;
-        }
-
-        .ad-fluid .ad-container-inner {
-            min-height: 120px;
-        }
-
-        .ad-label {
-            display: block;
-            color: #64748b;
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            margin-bottom: 6px;
-        }
-    </style>
+  <script defer src="../js/html2canvas.min.js"></script>
+  <script defer src="../js/jspdf.umd.min.js"></script>
+  <script defer src="fairshare-core.js?v=20260918"></script>
+  <script defer src="app.js?v=20260918"></script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "SoftwareApplication",
-        "name": "Shader7 FairShare Expense Splitter",
-        "url": "https://www.shader7.com/fairshare/",
-        "applicationCategory": "FinanceApplication",
-        "operatingSystem": "All",
-        "offers": {
-          "@type": "Offer",
-          "price": "0",
-          "priceCurrency": "USD"
-        },
-        "description": "Free roommate bill splitter and shared expense calculator. Split travel costs, rent, and household spending. Settle debts with PDF report exports."
-      },
-      {
-        "@type": "FAQPage",
-        "mainEntity": [
-          {
-            "@type": "Question",
-            "name": "How does the FairShare splitter calculate group balances?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "The splitter sums all group spending and divides it by the total number of roommates to determine the exact average share per person. Each roommate's balance is calculated as: Individual Spending - Average Share. A positive balance indicates the person is owed money, while a negative balance indicates they owe the group."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "How does the payment instruction settling algorithm work?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Our advanced settling engine runs a debt-minimization algorithm that pairs the largest debtor with the largest creditor, resolving as much offset as possible in a single transaction. This recursively loops through all balances, reducing the total number of peer-to-peer transfers required."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Can I split expenses with roommates unequally?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Currently, FairShare uses a standard equal-weight split which is the most common standard for shared roommate household rent, utilities, and grocery tabs. Unequal weights can be calculated by scaling spending inputs proportionally prior to entry."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Does this tool store roommate name or billing data?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "No. In alignment with our strict privacy-first principles, all calculations are executed locally in your browser memory. Roommate listings and billing logs are saved securely to your local device's localStorage so they persist across refreshes, but are never uploaded to any database."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Can I export a PDF report of our group settlements?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Yes. Once you calculate the bill, click the 'Generate Report Preview' button. You can then download a complete, printable A4-formatted PDF receipt detailing individual balances and payment instructions."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Can I settle payments using mobile peer-to-peer apps like UPI?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Yes. The settlement instructions detail exactly who owes whom and the precise amounts. You can easily copy these values and paste them into any peer payment application (such as UPI, Venmo, or mobile banking apps) to transfer funds."
-            }
-          }
-        ]
-      }
-    ]
+    "@type": "WebApplication",
+    "name": "FairShare Bill Splitter",
+    "url": "https://www.shader7.com/fairshare/",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "Any",
+    "description": "Split shared expenses equally or with custom weights and create a balanced payment plan.",
+    "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
+    "publisher": {"@type": "Organization", "name": "SHADER7", "url": "https://www.shader7.com/"}
   }
   </script>
-  <link rel="stylesheet" href="/css/tailwind.min.css" />
-<link rel="stylesheet" href="/css/app-banners.css?v=20260904-banners"/>
 </head>
-<body class="flex flex-col min-h-screen">
-    <div id="loadingOverlay" class="loading-overlay">
-        <div class="spinner"></div>
-        <p>Working on it...</p>
-    </div>
+<body>
+  <a class="skip-link" href="#calculator">Skip to calculator</a>
 
-    <div id="messageBox" class="message-box">
-        <div id="messageContent">
-            <p id="messageText"></p>
+  <header class="app-header">
+    <nav class="topbar" aria-label="FairShare navigation">
+      <a class="brand" href="/" aria-label="SHADER7 home">
+        <span class="brand-mark" aria-hidden="true"><i class="fa-solid fa-shapes"></i></span>
+        <span>SHADER7</span>
+      </a>
+      <div class="topbar-actions">
+        <a class="nav-link" href="./"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> FairShare home</a>
+        <button class="icon-button theme-toggle-btn" type="button" onclick="window.toggleShader7Theme()" aria-label="Switch to dark mode" title="Switch to dark mode">
+          <i class="fa-solid fa-moon" aria-hidden="true"></i>
+        </button>
+      </div>
+    </nav>
+
+    <div class="hero-shell">
+      <div class="hero-copy">
+        <p class="eyebrow"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> Private, free and no sign-up</p>
+        <h1>Split the bill.<br><span>Settle it fairly.</span></h1>
+        <p class="hero-lead">Add what each person paid, choose equal or weighted shares, and get the simplest payment plan in seconds.</p>
+        <div class="trust-row" aria-label="FairShare benefits">
+          <span><i class="fa-solid fa-scale-balanced" aria-hidden="true"></i> Exact to the cent</span>
+          <span><i class="fa-solid fa-laptop" aria-hidden="true"></i> Runs on your device</span>
+          <span><i class="fa-solid fa-file-pdf" aria-hidden="true"></i> PDF report</span>
         </div>
-        <button id="messageBoxOk" type="button">OK</button>
-    </div>
-    <div id="overlay" class="overlay"></div>
-
-    <header class="bg-gradient-to-r from-violet-600 to-indigo-600 text-white py-8 text-center rounded-b-xl shadow-lg relative">
-        <a href="/" class="back-nav">&larr; Back to Shader7</a>
-        <h1 class="text-4xl font-bold mb-2 mt-4">FairShare Expenses</h1>
-        <p class="text-lg">Easily calculate and settle monthly expenses with your roommates.</p>
-    </header>
-<figure class="app-banner" aria-hidden="true"><img alt="" decoding="async" height="360" loading="eager" src="/assets/banners/splitter-640.webp" srcset="/assets/banners/splitter-640.webp 640w, /assets/banners/splitter-1280.webp 1280w" sizes="(max-width: 480px) calc(100vw - 32px), 400px" width="640"/></figure>
-
-    <div style="max-width: 1080px; margin: 10px auto 34px; padding: 0 18px; text-align: center; overflow: hidden;">
-  <a href="https://emotionallytonightintelligent.com/x8fvr0fu?key=a0df723f661db51d2b97818a0f27ea09" target="_blank" rel="noopener sponsored" style="text-decoration: none; display: block;">
-    <div style="background: var(--glass-bg, rgba(255, 255, 255, 0.73)); border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.16)); border-radius: 16px; display: flex; align-items: center; justify-content: center; gap: 15px; min-height: 90px; transition: transform 0.2s; cursor: pointer; position: relative; flex-wrap: wrap; padding: 16px 20px; box-shadow: var(--shadow, 0 8px 32px 0 rgba(31, 38, 135, 0.08)); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);" onmouseover="this.style.transform='scale(1.01)'" onmouseout="this.style.transform='scale(1)'">
-      <span style="position: absolute; top: 6px; right: 12px; margin: 0; font-size: 9px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted, #6b7280);">Sponsored</span>
-      <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #6366f1, #a855f7); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0;">
-        <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"></path>
-        </svg>
       </div>
-      <div style="text-align: left; flex-grow: 1; min-width: 200px;">
-        <div style="font-weight: 700; color: var(--text-main, #1f2937); font-size: 0.95rem; margin-bottom: 2px;">Premium Offers &amp; Tools</div>
-        <div style="color: var(--text-muted, #6b7280); font-size: 0.8rem;">Explore high-quality resources and special partner deals to boost your productivity.</div>
-      </div>
-      <div style="flex-shrink: 0;">
-        <span style="display: inline-block; background: var(--primary, #6366f1); color: white; padding: 6px 14px; border-radius: 999px; font-size: 0.8rem; font-weight: 700; box-shadow: 0 4px 10px rgba(99, 102, 241, 0.25);">Learn More</span>
+      <div class="hero-visual" aria-hidden="true">
+        <img src="/assets/banners/splitter-640.webp" alt="" width="640" height="360" fetchpriority="high">
+        <div class="hero-float hero-float-total"><small>Group total</small><strong>180,00 RON</strong></div>
+        <div class="hero-float hero-float-status"><i class="fa-solid fa-circle-check"></i> Balanced</div>
       </div>
     </div>
-  </a>
-</div>
+  </header>
 
-    <main class="container py-8">
-        <div class="card">
-            <h2 class="text-2xl font-bold mb-4 text-center">Add Roommates</h2>
-            <div class="flex flex-col md:flex-row gap-4 mb-4">
-                <input type="text" id="roommateNameInput" placeholder="Enter roommate name" class="flex-grow" autocomplete="off">
-                <button id="addRoommateBtn" class="btn-primary" type="button">Add Roommate</button>
-            </div>
-            <div id="roommatesList" class="space-y-2"></div>
+  <main id="calculator" class="page-shell">
+    <ol class="workflow" aria-label="Calculator steps">
+      <li><span>1</span><strong>Add people</strong></li>
+      <li><span>2</span><strong>Enter payments</strong></li>
+      <li><span>3</span><strong>Settle up</strong></li>
+    </ol>
+
+    <section class="workspace" aria-labelledby="calculator-title">
+      <div class="participants-card card">
+        <div class="section-heading">
+          <div>
+            <p class="kicker">Step 1 &amp; 2</p>
+            <h2 id="calculator-title">Who paid what?</h2>
+            <p>Add each person once. Use share weight <strong>1</strong> for an equal split.</p>
+          </div>
+          <span class="count-badge" id="peopleCount">0 people</span>
         </div>
 
-        <div class="card">
-            <h2 class="text-2xl font-bold mb-4 text-center">Enter Monthly Spending</h2>
-            <div id="spendingInputs" class="space-y-4"></div>
-            <div class="flex justify-end mt-6">
-                <button id="calculateBillBtn" class="btn-primary" type="button" disabled>Calculate Bill</button>
-            </div>
+        <form id="addPersonForm" class="add-person-form" autocomplete="off">
+          <div class="field grow">
+            <label for="personName">Person's name</label>
+            <input id="personName" name="personName" type="text" maxlength="60" placeholder="e.g. Alex" required>
+          </div>
+          <button class="button button-primary" id="addPersonBtn" type="submit"><i class="fa-solid fa-plus" aria-hidden="true"></i> Add person</button>
+        </form>
+
+        <div class="list-labels" aria-hidden="true">
+          <span>Person</span><span>Amount paid</span><span>Share weight</span><span></span>
         </div>
-
-        <div id="billSettlementSection" class="card hidden">
-            <h2 class="text-2xl font-bold mb-4 text-center">Bill Settlement Overview</h2>
-            <p class="text-lg font-semibold mb-2">Total Group Spending: <span id="totalSpent" class="text-indigo-700">INR 0.00</span></p>
-            <p class="text-lg font-semibold mb-4">Average Amount Per Person: <span id="averageAmount" class="text-violet-700">INR 0.00</span></p>
-
-            <h3 class="text-xl font-bold mb-3">Individual Balances:</h3>
-            <div id="individualBalancesResults" class="overflow-x-auto mb-6">
-                <table class="min-w-full bg-white rounded-lg overflow-hidden settlement-table">
-                    <thead>
-                        <tr>
-                            <th class="py-3 px-4">Roommate</th>
-                            <th class="py-3 px-4 text-right">Amount Spent</th>
-                            <th class="py-3 px-4 text-right">Balance</th>
-                            <th class="py-3 px-4">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="individualBalancesTableBody"></tbody>
-                </table>
-            </div>
-
-            <h3 class="text-xl font-bold mb-3">Payment Instructions:</h3>
-            <ul id="paymentInstructionsList" class="payment-list"></ul>
-            <p id="noPaymentsNeeded" class="text-gray-500 text-center hidden">Everyone is settled, no payments needed!</p>
+        <div id="participantList" class="participant-list" aria-live="polite"></div>
+        <div id="participantEmpty" class="empty-state">
+          <div class="empty-icon"><i class="fa-solid fa-user-group" aria-hidden="true"></i></div>
+          <h3>Add your group to begin</h3>
+          <p>You need at least two people. Try a ready-made example to see how it works.</p>
+          <button class="button button-secondary" id="sampleBtn" type="button"><i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i> Load example</button>
         </div>
-
-        <div class="card">
-            <h2 class="text-2xl font-bold mb-4 text-center">Generate Printable Report</h2>
-            <div class="flex flex-col sm:flex-row justify-center gap-4 mt-6">
-                <button id="generateReportPreviewBtn" class="btn-primary" type="button">Generate Report Preview</button>
-                <button id="downloadPdfBtn" class="btn-secondary hidden" type="button">Download PDF</button>
-            </div>
-            <div class="mt-8 text-center" id="a4PreviewArea" style="display: none;">
-                <h3 class="text-xl font-bold mb-4">Report Preview</h3>
-                <canvas id="a4PreviewCanvas" class="border border-gray-300"></canvas>
-            </div>
-            <div id="reportContent" aria-hidden="true"></div>
-        </div>
-
-        <div class="flex justify-center mt-6">
-            <button id="resetAllBtn" class="btn-secondary text-red-600 bg-red-100 hover:bg-red-200" type="button">Reset All Data</button>
-        </div>
-
-        <!-- Rich Educational Guide & FAQ sections -->
-        <section class="card mt-8">
-            <h2 class="text-3xl font-bold mb-3 text-indigo-700 text-center"><i class="fa fa-calculator" aria-hidden="true"></i> The Math of Shared Expense Splitting</h2>
-            <p class="text-center text-gray-500 mb-6 text-sm">Understand standard balance calculations, transaction-minimization algorithms, and peer payment architectures.</p>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-                <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-5">
-                    <h3 class="text-lg font-bold text-indigo-900 mb-2">1. Group Balance Formula</h3>
-                    <p class="text-xs text-indigo-950 leading-relaxed">
-                        To calculate who owes what, we first aggregate the total spending of the entire group ($S_{total}$). We then calculate the average share per person ($A_{share}$) by dividing the total spent by the number of participants ($n$):
-                    </p>
-                    <div class="bg-white border border-indigo-200 rounded p-2 text-xs font-mono my-2 text-indigo-900">
-                        A_{share} = \frac{S_{total}}{n}
-                    </div>
-                    <p class="text-xs text-indigo-950 leading-relaxed">
-                        Each individual's net balance ($B_{net}$) is their total spending ($S_{indiv}$) minus the average share. A negative net balance means they owe money, while a positive net balance means they are owed.
-                    </p>
-                </div>
-
-                <div class="bg-violet-50 border border-violet-100 rounded-xl p-5">
-                    <h3 class="text-lg font-bold text-violet-900 mb-2">2. Debt Minimization Engine</h3>
-                    <p class="text-xs text-violet-950 leading-relaxed">
-                        To settle debts without dozens of tiny peer transfers, our engine utilizes a greedy transaction minimization algorithm:
-                    </p>
-                    <ul class="list-disc pl-4 text-xs text-violet-950 space-y-1 my-2">
-                        <li>The roommate with the largest negative balance (greatest debtor) is paired with the roommate with the largest positive balance (greatest creditor).</li>
-                        <li>We execute a transfer that settles the smaller of the two balances.</li>
-                        <li>We update the balances and repeat the process recursively until all debts are resolved.</li>
-                    </ul>
-                </div>
-
-                <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-5">
-                    <h3 class="text-lg font-bold text-indigo-900 mb-2">3. Peer Transfer Protocol</h3>
-                    <p class="text-xs text-indigo-950 leading-relaxed">
-                        Once settlements are calculated, actually moving the funds is smooth and instant using modern peer-to-peer (P2P) systems:
-                    </p>
-                    <ul class="list-disc pl-4 text-xs text-indigo-950 space-y-1 my-2">
-                        <li><strong>UPI (India):</strong> Instantly transfer precise sums directly from bank to bank using simple phone numbers or VPA identifiers.</li>
-                        <li><strong>Mobile Wallets:</strong> Apps like Venmo, Cash App, or local bank transfers allow you to copy the exact FairShare calculations to settle instantly.</li>
-                        <li><strong>No Server Logs:</strong> Your group financial figures remain private.</li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="mt-8">
-                <h3 class="text-xl font-bold mb-4 text-indigo-900">Frequently Asked Questions</h3>
-                <div class="space-y-3">
-                    <details class="bg-gray-50 border border-gray-200 rounded-xl p-4">
-                        <summary class="cursor-pointer font-bold text-sm text-gray-800">How does the FairShare splitter calculate group balances?</summary>
-                        <p class="text-xs text-gray-600 mt-2 leading-relaxed">The splitter sums all group spending and divides it by the total number of roommates to determine the exact average share per person. Each roommate's balance is calculated as: Individual Spending - Average Share. A positive balance indicates the person is owed money, while a negative balance indicates they owe the group.</p>
-                    </details>
-                    
-                    <details class="bg-gray-50 border border-gray-200 rounded-xl p-4">
-                        <summary class="cursor-pointer font-bold text-sm text-gray-800">How does the payment instruction settling algorithm work?</summary>
-                        <p class="text-xs text-gray-600 mt-2 leading-relaxed">Our advanced settling engine runs a debt-minimization algorithm that pairs the largest debtor with the largest creditor, resolving as much offset as possible in a single transaction. This recursively loops through all balances, reducing the total number of peer-to-peer transfers required.</p>
-                    </details>
-
-                    <details class="bg-gray-50 border border-gray-200 rounded-xl p-4">
-                        <summary class="cursor-pointer font-bold text-sm text-gray-800">Can I split expenses with roommates unequally?</summary>
-                        <p class="text-xs text-gray-600 mt-2 leading-relaxed">Currently, FairShare uses a standard equal-weight split which is the most common standard for shared roommate household rent, utilities, and grocery tabs. Unequal weights can be calculated by scaling spending inputs proportionally prior to entry.</p>
-                    </details>
-
-                    <details class="bg-gray-50 border border-gray-200 rounded-xl p-4">
-                        <summary class="cursor-pointer font-bold text-sm text-gray-800">Does this tool store roommate name or billing data?</summary>
-                        <p class="text-xs text-gray-600 mt-2 leading-relaxed">No. In alignment with our strict privacy-first principles, all calculations are executed locally in your browser memory. Roommate listings and billing logs are saved securely to your local device's localStorage so they persist across refreshes, but are never uploaded to any database.</p>
-                    </details>
-
-                    <details class="bg-gray-50 border border-gray-200 rounded-xl p-4">
-                        <summary class="cursor-pointer font-bold text-sm text-gray-800">Can I export a PDF report of our group settlements?</summary>
-                        <p class="text-xs text-gray-600 mt-2 leading-relaxed">Yes. Once you calculate the bill, click the 'Generate Report Preview' button. You can then download a complete, printable A4-formatted PDF receipt detailing individual balances and payment instructions.</p>
-                    </details>
-
-                    <details class="bg-gray-50 border border-gray-200 rounded-xl p-4">
-                        <summary class="cursor-pointer font-bold text-sm text-gray-800">Can I settle payments using mobile peer-to-peer apps like UPI?</summary>
-                        <p class="text-xs text-gray-600 mt-2 leading-relaxed">Yes. The settlement instructions detail exactly who owes whom and the precise amounts. You can easily copy these values and paste them into any peer payment application (such as UPI, Venmo, or mobile banking apps) to transfer funds.</p>
-                    </details>
-                </div>
-            </div>
-
-            <div class="mt-8 border-t border-gray-200 pt-6">
-                <h3 class="text-lg font-bold text-indigo-900 mb-3">Related Expert Guides & Resources</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 transition-all duration-200 hover:shadow-md hover:border-indigo-300">
-                        <h4 class="text-sm font-bold text-gray-900 mb-1">Expense Splitting with Friends</h4>
-                        <p class="text-xs text-gray-500 mb-3">Master the etiquette and mathematical balance points of splitting vacation tabs and monthly household utility bills.</p>
-                        <a href="../split-expenses-with-friends.html" class="text-xs font-bold text-indigo-600 hover:underline">Read Expert Guide &rarr;</a>
-                    </div>
-                    <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 transition-all duration-200 hover:shadow-md hover:border-indigo-300">
-                        <h4 class="text-sm font-bold text-gray-900 mb-1">Simple Monthly Budgeting Guide</h4>
-                        <p class="text-xs text-gray-500 mb-3">Learn how the 50/30/20 financial rule helps you track and budget shared roommate utility costs seamlessly.</p>
-                        <a href="../simple-monthly-budgeting-guide.html" class="text-xs font-bold text-indigo-600 hover:underline">Read Expert Guide &rarr;</a>
-                    </div>
-                    <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 transition-all duration-200 hover:shadow-md hover:border-indigo-300">
-                        <h4 class="text-sm font-bold text-gray-900 mb-1">Online Tool Security & Privacy</h4>
-                        <p class="text-xs text-gray-500 mb-3">Learn how client-side javascript processes numbers local in your browser to secure your private financial information.</p>
-                        <a href="../online-web-tools-data-security.html" class="text-xs font-bold text-indigo-600 hover:underline">Read Expert Guide &rarr;</a>
-                    </div>
-                </div>
-            
-        <div class="app-info-section">
-            <h3>Roommate Settlement Algorithms & Debt Simplification</h3>
-            <p>Splitting rent, utility bills, travel costs, and shared grocery runs among roommate groups often leads to confusing networks of debt. If roommate A owes roommate B $20, and roommate B owes roommate C $20, standard math requires two transactions. Our FairShare Splitter uses coordinate-based debt minimization matrices to settle the entire group in the absolute minimum number of payments.</p>
-            
-            <p>The mathematical concepts running behind our settlement engine are:</p>
-            <ul>
-                <li><strong>Individual Balance:</strong> For each participant, their net balance is computed as: <code>Balance_i = Spent_i - Share_i</code>, where <code>Share_i</code> represents the individual share of total group spending.</li>
-                <li><strong>Greedy Debt Minimization Algorithm:</strong> The algorithm separates participants into two lists: debtors (negative balances) and creditors (positive balances). By matching the largest debtor with the largest creditor in an $O(N)$ sequence, it resolves all balances with at most <code>N - 1</code> transactions.</li>
-            </ul>
-
-            <h3>Step-by-Step roommate Expense Ledger Setup</h3>
-            <ol>
-                <li><strong>Input Group Members:</strong> Enter the names of all roommates or travel partners participating in the shared ledger.</li>
-                <li><strong>Enter Transactions:</strong> Log individual expenses, specifying who paid and how the expense should be divided (e.g. split equally among all, or split proportionally).</li>
-                <li><strong>Calculate Balances:</strong> The tool instantly processes the balances, calculating the group average share and identifying positive vs. negative standings.</li>
-                <li><strong>Generate Settlement PDF:</strong> Click **Export to PDF** to download a clean, structured settlement report containing the exact transactions needed to clear all debts.</li>
-            </ol>
-
-            <h3>Proportional Rent Splitting: Square Footage Math</h3>
-            <p>Splitting rent equally is rarely fair if room sizes or amenities differ. To divide costs proportionally based on space, use the square footage formula:</p>
-            <p><code>Individual Rent = (Private Area / Total Private Area) * Total Rent * Percentage + (Common Area Share)</code>. This ensures that the roommate in the master bedroom pays an equitable share of the total housing costs.</p>
-
-            <h3>FairShare Expense Splitter Frequently Asked Questions (FAQ)</h3>
-            <p><strong>Q: What is a Greedy Algorithm and why is it used for split settlements?</strong><br>
-            A: The Greedy Algorithm is a mathematical method that makes locally optimal choices at each step. In debt settlements, it matches the person who owes the most with the person who is owed the most. This guarantees that debts are resolved with the absolute minimum number of payments, preventing endless circle-transfers.</p>
-            
-            <p><strong>Q: How do we handle asymmetrical splits (e.g. someone didn't eat dinner)?</strong><br>
-            A: Standard splitters divide costs equally. For custom situations, you must exclude the participant from that specific transaction in the ledger, recalculating the average share among the remaining participants only.</p>
-
-            <p><strong>Q: Can we export standard ledgers to external applications?</strong><br>
-            A: Yes. The built-in PDF generator renders a high-definition A4 receipt layout locally in your browser. This document can be saved, shared in group chats, or printed for official household records.</p>
-
-            <div class="guide-promo-box">
-                <p>Want to master matrix-based debt reduction, proportional rent splits, and digital ledger auditing?</p>
-                <a href="/split-expenses-with-friends.html" class="promo-btn">Read the Ultimate Expense Splitting Guide (5,000+ Words) &rarr;</a>
-            </div>
-        </div>
-    </div>
-        </section>
-    </main>
-
-    <div style="max-width: 1080px; margin: 10px auto 34px; padding: 0 18px; text-align: center; overflow: hidden;">
-  <a href="https://emotionallytonightintelligent.com/x8fvr0fu?key=a0df723f661db51d2b97818a0f27ea09" target="_blank" rel="noopener sponsored" style="text-decoration: none; display: block;">
-    <div style="background: var(--glass-bg, rgba(255, 255, 255, 0.73)); border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.16)); border-radius: 16px; display: flex; align-items: center; justify-content: center; gap: 15px; min-height: 90px; transition: transform 0.2s; cursor: pointer; position: relative; flex-wrap: wrap; padding: 16px 20px; box-shadow: var(--shadow, 0 8px 32px 0 rgba(31, 38, 135, 0.08)); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);" onmouseover="this.style.transform='scale(1.01)'" onmouseout="this.style.transform='scale(1)'">
-      <span style="position: absolute; top: 6px; right: 12px; margin: 0; font-size: 9px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted, #6b7280);">Sponsored</span>
-      <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #6366f1, #a855f7); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0;">
-        <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"></path>
-        </svg>
       </div>
-      <div style="text-align: left; flex-grow: 1; min-width: 200px;">
-        <div style="font-weight: 700; color: var(--text-main, #1f2937); font-size: 0.95rem; margin-bottom: 2px;">Premium Offers &amp; Tools</div>
-        <div style="color: var(--text-muted, #6b7280); font-size: 0.8rem;">Explore high-quality resources and special partner deals to boost your productivity.</div>
-      </div>
-      <div style="flex-shrink: 0;">
-        <span style="display: inline-block; background: var(--primary, #6366f1); color: white; padding: 6px 14px; border-radius: 999px; font-size: 0.8rem; font-weight: 700; box-shadow: 0 4px 10px rgba(99, 102, 241, 0.25);">Learn More</span>
-      </div>
-    </div>
-  </a>
-</div>
 
-    <footer style="width: 100%; border-top: 1px solid #334155; background-color: #0f172a; padding: 30px 16px; text-align: center; color: #94a3b8; font-size: 0.85rem; font-family: 'Inter', system-ui, -apple-system, sans-serif; margin-top: 40px; border-radius: 12px; margin-bottom: 20px;">
-        <div style="max-width: 1120px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 15px;">
-            <p style="margin: 0;">&copy; <span id="footerYear"></span> SHADER7 &bull; Roommate Expense Splitter</p>
-            
-            <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 16px;">
-                <a href="/" style="color: #94a3b8; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">Main Site</a>
-                <a href="/about.html" style="color: #94a3b8; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">About Us</a>
-                <a href="/contact.html" style="color: #94a3b8; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">Contact Us</a>
-                <a href="/privacy-policy.html" style="color: #60a5fa; text-decoration: none; transition: color 0.2s; font-weight: bold;" onmouseover="this.style.color='#93c5fd'" onmouseout="this.style.color='#60a5fa'">Privacy Policy</a>
-                <a href="/terms.html" style="color: #94a3b8; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">Terms of Service</a>
-                <a href="/sitemap.html" style="color: #94a3b8; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">Sitemap</a>
-            </div>
-            
+      <aside class="summary-card card" aria-labelledby="summary-title">
+        <div class="section-heading compact">
+          <div>
+            <p class="kicker">Step 3</p>
+            <h2 id="summary-title">Split settings</h2>
+          </div>
         </div>
-    </footer>
-
-    <script>
-        // --- State Variables ---
-        let roommates = [];
-        let currentSettlementData = null;
-        const LOCAL_STORAGE_KEY = 'roommateSlipBillData';
-        const CURRENCY = 'INR';
-
-        // --- Safe String Handler ---
-        function escapeHTML(value) {
-            return String(value ?? '').replace(/[&<>'"]/g, char => ({
-                '&': '&amp;',
-                '<': '&lt;',
-                '>': '&gt;',
-                "'": '&#39;',
-                '"': '&quot;'
-            }[char]));
-        }
-
-        function formatMoney(amount) {
-            return `${CURRENCY} ${(Number(amount) || 0).toFixed(2)}`;
-        }
-
-        function createEmptyMessage(id, text) {
-            const p = document.createElement('p');
-            p.id = id;
-            p.className = 'text-gray-500 text-center';
-            p.textContent = text;
-            return p;
-        }
-
-        // --- UI Utilities ---
-        function showMessage(message) {
-            document.getElementById('messageText').textContent = message;
-            document.getElementById('messageBox').style.display = 'flex';
-            document.getElementById('overlay').style.display = 'block';
-        }
-
-        function hideMessage() {
-            document.getElementById('messageBox').style.display = 'none';
-            document.getElementById('overlay').style.display = 'none';
-        }
-
-        function showLoading(message = 'Calculating...') {
-            const overlay = document.getElementById('loadingOverlay');
-            overlay.querySelector('p').textContent = message;
-            overlay.classList.add('is-visible');
-        }
-
-        function hideLoading() {
-            document.getElementById('loadingOverlay').classList.remove('is-visible');
-        }
-
-        function setReportButtonsState(hasReport) {
-            document.getElementById('downloadPdfBtn').classList.toggle('hidden', !hasReport);
-            document.getElementById('a4PreviewArea').style.display = hasReport ? 'block' : 'none';
-        }
-
-        function clearSettlementAndReport() {
-            currentSettlementData = null;
-            document.getElementById('billSettlementSection').classList.add('hidden');
-            document.getElementById('reportContent').innerHTML = '';
-            setReportButtonsState(false);
-        }
-
-        // --- Data Functions ---
-        function saveRoommates() {
-            try {
-                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(roommates));
-            } catch (e) {
-                console.error('Local storage error:', e);
-            }
-        }
-
-        function loadRoommates() {
-            try {
-                const storedData = localStorage.getItem(LOCAL_STORAGE_KEY);
-                const parsed = storedData ? JSON.parse(storedData) : [];
-
-                roommates = Array.isArray(parsed)
-                    ? parsed
-                        .filter(r => r && Number.isFinite(Number(r.id)) && String(r.name ?? '').trim())
-                        .map(r => ({
-                            id: Number(r.id),
-                            name: String(r.name).trim(),
-                            spent: Math.max(0, Number(r.spent) || 0)
-                        }))
-                    : [];
-            } catch (e) {
-                console.error('Corrupt data found, resetting:', e);
-                roommates = [];
-                localStorage.removeItem(LOCAL_STORAGE_KEY);
-            }
-        }
-
-        // --- Core UI Rendering ---
-        function renderRoommatesAndSpendingInputs() {
-            const roommatesList = document.getElementById('roommatesList');
-            const spendingInputsDiv = document.getElementById('spendingInputs');
-            const calculateBillBtn = document.getElementById('calculateBillBtn');
-
-            roommatesList.replaceChildren();
-            spendingInputsDiv.replaceChildren();
-
-            if (roommates.length === 0) {
-                roommatesList.appendChild(createEmptyMessage('noRoommatesMessage', 'No roommates added yet.'));
-                spendingInputsDiv.appendChild(createEmptyMessage('noSpendingMessage', 'Add roommates first to enter spending.'));
-                calculateBillBtn.disabled = true;
-                clearSettlementAndReport();
-                return;
-            }
-
-            calculateBillBtn.disabled = false;
-
-            roommates.forEach(roommate => {
-                const roommateItem = document.createElement('div');
-                roommateItem.className = 'roommate-item';
-
-                const nameSpan = document.createElement('span');
-                nameSpan.textContent = roommate.name;
-
-                const deleteButton = document.createElement('button');
-                deleteButton.type = 'button';
-                deleteButton.dataset.id = String(roommate.id);
-                deleteButton.className = 'text-red-600 hover:text-red-800 text-sm delete-roommate-btn';
-                deleteButton.textContent = 'Delete';
-                deleteButton.addEventListener('click', () => deleteRoommate(roommate.id));
-
-                roommateItem.append(nameSpan, deleteButton);
-                roommatesList.appendChild(roommateItem);
-
-                const spendingInputGroup = document.createElement('div');
-                spendingInputGroup.className = 'flex flex-col md:flex-row items-start md:items-center gap-2';
-
-                const label = document.createElement('label');
-                label.htmlFor = `spent-${roommate.id}`;
-                label.className = 'w-32 font-medium truncate';
-                label.textContent = `${roommate.name}:`;
-
-                const input = document.createElement('input');
-                input.type = 'number';
-                input.id = `spent-${roommate.id}`;
-                input.placeholder = 'Amount spent';
-                input.min = '0';
-                input.step = '0.01';
-                input.inputMode = 'decimal';
-                input.value = roommate.spent > 0 ? String(roommate.spent) : '';
-                input.className = 'flex-grow spending-input rounded-md shadow-sm';
-                input.addEventListener('input', clearSettlementAndReport);
-
-                spendingInputGroup.append(label, input);
-                spendingInputsDiv.appendChild(spendingInputGroup);
-            });
-        }
-
-        function addRoommate() {
-            const input = document.getElementById('roommateNameInput');
-            const name = input.value.trim().replace(/\s+/g, ' ');
-
-            if (!name) {
-                showMessage('Please enter a roommate name.');
-                return;
-            }
-
-            if (roommates.some(r => r.name.toLowerCase() === name.toLowerCase())) {
-                showMessage(`Roommate "${name}" already exists.`);
-                return;
-            }
-
-            roommates.push({
-                id: Date.now() + Math.floor(Math.random() * 1000),
-                name,
-                spent: 0
-            });
-
-            saveRoommates();
-            renderRoommatesAndSpendingInputs();
-            input.value = '';
-            input.focus();
-        }
-
-        function deleteRoommate(id) {
-            roommates = roommates.filter(r => r.id !== Number(id));
-            saveRoommates();
-            renderRoommatesAndSpendingInputs();
-            clearSettlementAndReport();
-        }
-
-        function calculateBill() {
-            if (roommates.length === 0) {
-                showMessage('Add at least one roommate first.');
-                return;
-            }
-
-            showLoading('Crunching numbers...');
-
-            try {
-                const tableBody = document.getElementById('individualBalancesTableBody');
-                const instructionsList = document.getElementById('paymentInstructionsList');
-                const noPayments = document.getElementById('noPaymentsNeeded');
-
-                tableBody.replaceChildren();
-                instructionsList.replaceChildren();
-                noPayments.classList.add('hidden');
-
-                let totalSpent = 0;
-
-                roommates = roommates.map(roommate => {
-                    const inputElement = document.getElementById(`spent-${roommate.id}`);
-                    const spent = inputElement ? Math.max(0, Number.parseFloat(inputElement.value) || 0) : 0;
-                    const roundedSpent = Math.round(spent * 100) / 100;
-
-                    if (inputElement) inputElement.value = roundedSpent ? roundedSpent.toFixed(2) : '';
-                    totalSpent += roundedSpent;
-
-                    return { ...roommate, spent: roundedSpent };
-                });
-
-                totalSpent = Math.round(totalSpent * 100) / 100;
-                saveRoommates();
-
-                const averageAmount = Math.round((totalSpent / roommates.length) * 100) / 100;
-
-                document.getElementById('totalSpent').textContent = formatMoney(totalSpent);
-                document.getElementById('averageAmount').textContent = formatMoney(averageAmount);
-
-                const balances = roommates.map(r => {
-                    const balance = Math.round((r.spent - averageAmount) * 100) / 100;
-                    const status = balance < -0.009 ? 'Owes' : balance > 0.009 ? 'Is Owed' : 'Settled';
-                    const balanceClass = balance < -0.009 ? 'text-red-600' : balance > 0.009 ? 'text-green-600' : 'text-gray-500';
-
-                    return { ...r, balance, status, balanceClass };
-                });
-
-                balances.forEach(item => {
-                    const row = document.createElement('tr');
-
-                    const nameCell = document.createElement('td');
-                    nameCell.className = 'py-3 px-4';
-                    nameCell.textContent = item.name;
-
-                    const spentCell = document.createElement('td');
-                    spentCell.className = 'py-3 px-4 text-right';
-                    spentCell.textContent = formatMoney(item.spent);
-
-                    const balanceCell = document.createElement('td');
-                    balanceCell.className = `py-3 px-4 text-right ${item.balanceClass}`;
-                    balanceCell.textContent = formatMoney(item.balance);
-
-                    const statusCell = document.createElement('td');
-                    statusCell.className = `py-3 px-4 ${item.balanceClass}`;
-                    statusCell.textContent = item.status;
-
-                    row.append(nameCell, spentCell, balanceCell, statusCell);
-                    tableBody.appendChild(row);
-                });
-
-                const debtors = balances
-                    .filter(i => i.balance < -0.009)
-                    .map(i => ({ ...i, amount: Math.round(Math.abs(i.balance) * 100) / 100 }))
-                    .sort((a, b) => b.amount - a.amount);
-
-                const creditors = balances
-                    .filter(i => i.balance > 0.009)
-                    .map(i => ({ ...i, amount: Math.round(i.balance * 100) / 100 }))
-                    .sort((a, b) => b.amount - a.amount);
-
-                const payments = [];
-                let debtorIndex = 0;
-                let creditorIndex = 0;
-                let loopCounter = 0;
-                const maxLoops = roommates.length * roommates.length + 10;
-
-                while (debtorIndex < debtors.length && creditorIndex < creditors.length && loopCounter < maxLoops) {
-                    loopCounter++;
-
-                    const debtor = debtors[debtorIndex];
-                    const creditor = creditors[creditorIndex];
-                    const amount = Math.round(Math.min(debtor.amount, creditor.amount) * 100) / 100;
-
-                    if (amount >= 0.01) {
-                        payments.push({
-                            from: debtor.name,
-                            to: creditor.name,
-                            amount
-                        });
-                    }
-
-                    debtor.amount = Math.round((debtor.amount - amount) * 100) / 100;
-                    creditor.amount = Math.round((creditor.amount - amount) * 100) / 100;
-
-                    if (debtor.amount < 0.01) debtorIndex++;
-                    if (creditor.amount < 0.01) creditorIndex++;
-                }
-
-                if (payments.length === 0) {
-                    noPayments.classList.remove('hidden');
-                } else {
-                    payments.forEach(p => {
-                        const li = document.createElement('li');
-                        li.textContent = `${p.from} pays ${p.to}: ${formatMoney(p.amount)}`;
-                        instructionsList.appendChild(li);
-                    });
-                }
-
-                currentSettlementData = { totalSpent, averageAmount, balances, payments };
-                document.getElementById('billSettlementSection').classList.remove('hidden');
-                setReportButtonsState(false);
-            } catch (err) {
-                console.error('Calculation Error:', err);
-                showMessage('An error occurred during calculation. Please reset the data and try again.');
-            } finally {
-                hideLoading();
-            }
-        }
-
-        function buildReportContent() {
-            if (!currentSettlementData) return null;
-
-            const paymentItems = currentSettlementData.payments.length
-                ? currentSettlementData.payments
-                    .map(p => `<li>${escapeHTML(p.from)} pays ${escapeHTML(p.to)}: ${formatMoney(p.amount)}</li>`)
-                    .join('')
-                : '<li>Everyone is settled. No payments needed.</li>';
-
-            const balanceRows = currentSettlementData.balances.map(item => `
-                <tr>
-                    <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">${escapeHTML(item.name)}</td>
-                    <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: right;">${formatMoney(item.spent)}</td>
-                    <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: right;">${formatMoney(item.balance)}</td>
-                    <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">${escapeHTML(item.status)}</td>
-                </tr>
-            `).join('');
-
-            return `
-                <div class="report-page" style="box-sizing: border-box; padding: 20mm; background: white; color: #111827; font-family: Arial, sans-serif; width: 210mm; min-height: 297mm;">
-                    <h2 style="text-align:center; color: #4f46e5; margin: 0 0 6mm;">FairShare Expenses Report</h2>
-                    <p style="text-align:center; color: #6b7280; margin-bottom: 10mm;">Generated on ${escapeHTML(new Date().toLocaleDateString())}</p>
-
-                    <div style="margin-bottom: 8mm; font-size: 16px;">
-                        <p><strong>Total Group Spending:</strong> ${formatMoney(currentSettlementData.totalSpent)}</p>
-                        <p><strong>Average Amount Per Person:</strong> ${formatMoney(currentSettlementData.averageAmount)}</p>
-                    </div>
-
-                    <h2 style="font-size: 20px; margin: 0 0 4mm; color: #312e81;">Individual Balances</h2>
-                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 10mm; font-size: 13px;">
-                        <thead>
-                            <tr style="background: #f3f4f6;">
-                                <th style="padding: 8px; text-align: left; border-bottom: 1px solid #d1d5db;">Roommate</th>
-                                <th style="padding: 8px; text-align: right; border-bottom: 1px solid #d1d5db;">Spent</th>
-                                <th style="padding: 8px; text-align: right; border-bottom: 1px solid #d1d5db;">Balance</th>
-                                <th style="padding: 8px; text-align: left; border-bottom: 1px solid #d1d5db;">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>${balanceRows}</tbody>
-                    </table>
-
-                    <h2 style="font-size: 20px; margin: 0 0 4mm; color: #312e81;">Settlement Instructions</h2>
-                    <ul style="font-size: 15px; line-height: 1.7; padding-left: 20px;">${paymentItems}</ul>
-                </div>
-            `;
-        }
-
-        async function waitForPdfLibraries() {
-            const startedAt = Date.now();
-            while ((!window.html2canvas || !window.jspdf) && Date.now() - startedAt < 4000) {
-                await new Promise(resolve => setTimeout(resolve, 100));
-            }
-            if (!window.html2canvas) throw new Error('html2canvas failed to load.');
-            if (!window.jspdf) throw new Error('jsPDF failed to load.');
-        }
-
-        async function renderA4ReportPreview() {
-            if (!currentSettlementData) {
-                showMessage('Calculate bill first!');
-                return;
-            }
-
-            showLoading('Generating preview...');
-
-            try {
-                await waitForPdfLibraries();
-
-                const content = document.getElementById('reportContent');
-                content.innerHTML = buildReportContent();
-
-                const page = content.querySelector('.report-page');
-                const canvas = await html2canvas(page, {
-                    scale: 2,
-                    backgroundColor: '#ffffff',
-                    useCORS: true
-                });
-
-                const previewCanvas = document.getElementById('a4PreviewCanvas');
-                previewCanvas.width = canvas.width;
-                previewCanvas.height = canvas.height;
-                previewCanvas.getContext('2d').drawImage(canvas, 0, 0);
-
-                setReportButtonsState(true);
-            } catch (err) {
-                console.error('Preview Error:', err);
-                showMessage('Preview failed. Please check that html2canvas and jsPDF are loading correctly.');
-            } finally {
-                hideLoading();
-            }
-        }
-
-        async function downloadPdf() {
-            if (!currentSettlementData) {
-                showMessage('Calculate bill first!');
-                return;
-            }
-
-            showLoading('Preparing PDF...');
-
-            try {
-                await waitForPdfLibraries();
-
-                const { jsPDF } = window.jspdf;
-                const content = document.getElementById('reportContent');
-
-                if (!content.querySelector('.report-page')) {
-                    content.innerHTML = buildReportContent();
-                }
-
-                const page = content.querySelector('.report-page');
-                const canvas = await html2canvas(page, {
-                    scale: 2,
-                    backgroundColor: '#ffffff',
-                    useCORS: true
-                });
-
-                const imageData = canvas.toDataURL('image/png');
-                const doc = new jsPDF('p', 'mm', 'a4');
-                doc.addImage(imageData, 'PNG', 0, 0, 210, 297);
-                doc.save('FairShare_Report.pdf');
-            } catch (err) {
-                console.error('PDF Error:', err);
-                showMessage('Failed to generate PDF. Make sure browser extensions are not blocking the PDF libraries.');
-            } finally {
-                hideLoading();
-            }
-        }
-
-        function resetAllData() {
-            if (!confirm('Are you sure you want to completely erase all data?')) return;
-
-            roommates = [];
-            currentSettlementData = null;
-            localStorage.removeItem(LOCAL_STORAGE_KEY);
-            renderRoommatesAndSpendingInputs();
-            clearSettlementAndReport();
-        }
-
-        // --- Initialization ---
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('footerYear').textContent = String(new Date().getFullYear());
-
-            loadRoommates();
-            renderRoommatesAndSpendingInputs();
-
-            document.getElementById('addRoommateBtn').addEventListener('click', addRoommate);
-            document.getElementById('roommateNameInput').addEventListener('keydown', e => {
-                if (e.key === 'Enter') addRoommate();
-            });
-
-            document.getElementById('calculateBillBtn').addEventListener('click', calculateBill);
-            document.getElementById('messageBoxOk').addEventListener('click', hideMessage);
-            document.getElementById('overlay').addEventListener('click', hideMessage);
-            document.getElementById('generateReportPreviewBtn').addEventListener('click', renderA4ReportPreview);
-            document.getElementById('downloadPdfBtn').addEventListener('click', downloadPdf);
-            document.getElementById('resetAllBtn').addEventListener('click', resetAllData);
-        });
-    </script>
-  <!-- Tailwind CSS loaded with defer at the bottom of body to ensure non-blocking page load -->
+        <div class="field">
+          <label for="billTitle">Bill name</label>
+          <input id="billTitle" type="text" maxlength="80" value="Group expenses" placeholder="Weekend trip">
+        </div>
+        <div class="field">
+          <label for="currencySelect">Currency</label>
+          <select id="currencySelect">
+            <option value="RON">RON — Romanian leu</option>
+            <option value="INR">INR — Indian rupee</option>
+            <option value="USD">USD — US dollar</option>
+            <option value="EUR">EUR — Euro</option>
+            <option value="GBP">GBP — British pound</option>
+            <option value="AUD">AUD — Australian dollar</option>
+            <option value="CAD">CAD — Canadian dollar</option>
+            <option value="SGD">SGD — Singapore dollar</option>
+            <option value="AED">AED — UAE dirham</option>
+          </select>
+        </div>
+
+        <div class="live-summary" aria-live="polite">
+          <div><span>Group total</span><strong id="liveTotal">0,00 RON</strong></div>
+          <div><span>Split between</span><strong id="livePeople">0 people</strong></div>
+        </div>
+        <button class="button button-primary button-large" id="calculateBtn" type="button"><i class="fa-solid fa-scale-balanced" aria-hidden="true"></i> Calculate settlement</button>
+        <p class="privacy-note"><i class="fa-solid fa-lock" aria-hidden="true"></i> Your entries stay in this browser and are never uploaded.</p>
+      </aside>
+    </section>
+
+    <section id="resultsSection" class="results-section" aria-labelledby="resultsTitle" aria-live="polite" hidden>
+      <div class="results-heading">
+        <div>
+          <p class="kicker">Settlement ready</p>
+          <h2 id="resultsTitle" tabindex="-1">Here’s the fairest way to settle</h2>
+          <p id="resultsSubtitle">Every cent is accounted for.</p>
+        </div>
+        <span class="balanced-badge"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Balanced</span>
+      </div>
+
+      <div class="metric-grid">
+        <article><span>Total spent</span><strong id="resultTotal">—</strong></article>
+        <article><span>Average paid</span><strong id="resultAverage">—</strong></article>
+        <article><span>Payments needed</span><strong id="resultTransfers">—</strong></article>
+      </div>
+
+      <div class="result-grid">
+        <article class="result-card">
+          <div class="result-card-heading">
+            <div><p class="kicker">Payment plan</p><h3>Who pays whom</h3></div>
+            <button class="text-button" id="copySummaryBtn" type="button"><i class="fa-regular fa-copy" aria-hidden="true"></i> Copy</button>
+          </div>
+          <ol id="paymentList" class="payment-list"></ol>
+          <div id="noPayments" class="no-payments" hidden><i class="fa-solid fa-circle-check" aria-hidden="true"></i><strong>Everyone is already settled.</strong></div>
+        </article>
+
+        <article class="result-card">
+          <div class="result-card-heading"><div><p class="kicker">Breakdown</p><h3>Each person’s share</h3></div></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Person</th><th>Paid</th><th>Share</th><th>Balance</th></tr></thead>
+              <tbody id="balanceBody"></tbody>
+            </table>
+          </div>
+        </article>
+      </div>
+
+      <div class="result-actions">
+        <button class="button button-secondary" id="previewBtn" type="button"><i class="fa-regular fa-eye" aria-hidden="true"></i> Preview report</button>
+        <button class="button button-primary" id="downloadPdfBtn" type="button"><i class="fa-solid fa-file-arrow-down" aria-hidden="true"></i> Download PDF</button>
+      </div>
+    </section>
+
+    <section id="previewPanel" class="preview-panel card" aria-labelledby="previewTitle" hidden>
+      <div class="result-card-heading">
+        <div><p class="kicker">Report preview</p><h2 id="previewTitle">Ready to share</h2></div>
+        <button class="icon-button" id="closePreviewBtn" type="button" aria-label="Close report preview"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+      </div>
+      <div class="canvas-shell"><canvas id="previewCanvas" aria-label="Settlement report preview"></canvas></div>
+    </section>
+
+    <div class="reset-row"><button class="text-button danger" id="resetBtn" type="button"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> Start a new bill</button></div>
+
+    <section class="how-section" aria-labelledby="howTitle">
+      <div class="center-heading">
+        <p class="kicker">Simple by design</p>
+        <h2 id="howTitle">Fair results without a spreadsheet</h2>
+        <p>FairShare handles uneven spending and rounding while keeping the process easy to check.</p>
+      </div>
+      <div class="feature-grid">
+        <article><span class="feature-icon purple"><i class="fa-solid fa-users" aria-hidden="true"></i></span><h3>Equal or weighted shares</h3><p>Leave every weight at 1 for equal shares, or change weights for children, couples, or partial attendance.</p></article>
+        <article><span class="feature-icon green"><i class="fa-solid fa-coins" aria-hidden="true"></i></span><h3>Exact cent allocation</h3><p>Remainder cents are assigned once, so the individual shares always add up to the total.</p></article>
+        <article><span class="feature-icon blue"><i class="fa-solid fa-arrow-right-arrow-left" aria-hidden="true"></i></span><h3>Fewer transfers</h3><p>The payment plan matches people who owe with people who should be repaid.</p></article>
+      </div>
+    </section>
+
+    <section class="faq-section" aria-labelledby="faqTitle">
+      <div class="center-heading"><p class="kicker">Good to know</p><h2 id="faqTitle">Frequently asked questions</h2></div>
+      <div class="faq-list">
+        <details><summary>How do weighted shares work?<i class="fa-solid fa-chevron-down" aria-hidden="true"></i></summary><p>Weights describe each person’s portion of the total. If one person has weight 2 and two people have weight 1, their shares are 50%, 25%, and 25%.</p></details>
+        <details><summary>Does FairShare store my bill online?<i class="fa-solid fa-chevron-down" aria-hidden="true"></i></summary><p>No. The calculator runs in your browser and saves the current bill only in local browser storage so you can return to it later.</p></details>
+        <details><summary>How does FairShare handle rounding?<i class="fa-solid fa-chevron-down" aria-hidden="true"></i></summary><p>It calculates in cents and assigns any remainder cents deterministically. That keeps the settlement balanced even when the total cannot divide evenly.</p></details>
+        <details><summary>Can I use a different currency?<i class="fa-solid fa-chevron-down" aria-hidden="true"></i></summary><p>Yes. Romanian leu (RON) is the default, and you can also choose INR, USD, EUR, GBP, AUD, CAD, SGD, or AED. The selected currency is used throughout the results and report.</p></details>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <a class="brand footer-brand" href="/"><span class="brand-mark" aria-hidden="true"><i class="fa-solid fa-shapes"></i></span><span>SHADER7</span></a>
+    <p>Free browser tools made to solve everyday problems.</p>
+    <nav aria-label="Footer navigation"><a href="/privacy-policy.html">Privacy</a><a href="/blog.html">Guides</a><a href="/#tools">All tools</a></nav>
+  </footer>
+
+  <dialog id="messageDialog" class="message-dialog" aria-labelledby="messageTitle">
+    <form method="dialog">
+      <span class="dialog-icon" aria-hidden="true"><i class="fa-solid fa-circle-info"></i></span>
+      <h2 id="messageTitle">FairShare</h2>
+      <p id="messageText"></p>
+      <button class="button button-primary" id="messageOk" value="ok">Got it</button>
+    </form>
+  </dialog>
+
+  <div id="loadingOverlay" class="loading-overlay" role="status" aria-live="polite" hidden>
+    <div><span class="spinner" aria-hidden="true"></span><strong id="loadingText">Creating your report…</strong></div>
+  </div>
+
+  <div class="report-stage" aria-hidden="true"><div id="reportContent"></div></div>
 </body>
 </html>
-
-
