@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light" />
+  <title>Image to PDF Converter</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg:#f3f5f8; --card:#ffffff; --card2:#f8fafc; --text:#101828; --muted:#475467;
+      --line:#98a2b3; --primary:#175cd3; --primary2:#1849a9; --danger:#b42318;
+      --success:#067647; --warning:#b54708; --shadow:0 18px 55px rgba(16,24,40,.09);
+    }
+    *{box-sizing:border-box}
+    html{-webkit-text-size-adjust:100%}
+    body{margin:0;min-height:100vh;min-height:100dvh;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);padding:22px}
+    button,input,select{font:inherit}
+    button,label,select,input{-webkit-tap-highlight-color:transparent}
+    .app{width:min(1120px,100%);margin:auto;background:var(--card);border:1px solid #cfd4dc;border-radius:22px;padding:26px;box-shadow:var(--shadow)}
+    h1{margin:0 0 8px;text-align:center;font-size:clamp(25px,4vw,34px)}
+    .subtitle{margin:0 auto 22px;max-width:760px;text-align:center;color:var(--muted);font-size:14px;line-height:1.55}
+    .dropzone{border:2px dashed #667085;border-radius:18px;background:var(--card2);padding:24px;text-align:center;transition:.16s ease;position:relative}
+    .dropzone.dragover{border-color:var(--primary);background:#eff6ff;transform:translateY(-1px)}
+    .dropzone.busy{opacity:.6;pointer-events:none}
+    .drop-icon{width:60px;height:60px;border-radius:50%;display:grid;place-items:center;margin:0 auto 10px;background:#eaf2ff;color:#1849a9;font-size:28px;font-weight:800}
+    .dropzone strong{display:block;font-size:18px;margin-bottom:5px}
+    .dropzone p{margin:0;color:var(--muted);font-size:13px;line-height:1.5}
+    .hidden-input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+    .btn-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:15px}
+    button{border:0;border-radius:11px;padding:11px 14px;font-weight:750;cursor:pointer}
+    button:disabled{opacity:.62;cursor:not-allowed}
+    .primary{background:var(--primary);color:#fff}.primary:hover:not(:disabled){background:var(--primary2)}
+    .secondary{background:#fff;color:#1d2939;border:1px solid #98a2b3}.secondary:hover:not(:disabled){background:#f8fafc}
+    .danger{color:var(--danger)}
+    .toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:22px 0 12px;flex-wrap:wrap}
+    .count{font-weight:800}.count small{font-weight:500;color:var(--muted)}
+    .photo-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+    .empty{grid-column:1/-1;border:1px solid #b8c0cc;border-radius:14px;padding:24px;text-align:center;color:#475467;background:#fff}
+    .photo-card{border:1px solid #cfd4dc;border-radius:15px;background:var(--card2);overflow:hidden;min-width:0}
+    .thumb-wrap{aspect-ratio:4/3;background:#e9edf2;display:grid;place-items:center;overflow:hidden;position:relative}
+    .thumb{max-width:100%;max-height:100%;object-fit:contain;transition:transform .18s ease}
+    .badge{position:absolute;left:9px;top:9px;padding:5px 8px;border-radius:999px;background:rgba(17,24,39,.78);color:#fff;font-size:11px;font-weight:800}
+    .card-body{padding:10px}.name{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;font-weight:800}.meta{display:block;color:var(--muted);font-size:11px;margin-top:3px;min-height:16px}
+    .card-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:9px}.icon-btn{padding:8px 4px;background:#fff;border:1px solid var(--line);color:#1d2939;font-size:12px}.icon-btn:hover:not(:disabled){background:#f3f4f6}.icon-btn.remove{color:var(--danger)}
+    .settings{margin-top:22px;border-top:1px solid #cfd4dc;padding-top:20px}.settings h2{font-size:17px;margin:0 0 12px}
+    .settings-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+    .field{min-width:0}.field label{display:block;font-size:12px;font-weight:800;margin-bottom:6px;color:#1d2939}.field input,.field select{width:100%;min-height:44px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--text);padding:9px 11px}
+    .field-help{display:block;margin-top:5px;color:var(--muted);font-size:11px;line-height:1.35}
+    .field input:hover,.field select:hover{border-color:#667085}.field input:focus,.field select:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(23,92,211,.12);outline:none}
+    .range-wrap{display:flex;align-items:center;gap:9px}.range-wrap input{padding:0}.range-value{font-size:12px;min-width:42px;text-align:right;color:var(--muted)}
+    .dpi-custom{display:none;margin-top:7px}.dpi-custom.show{display:block}
+    .dpi-panel{margin-top:14px;border:1px solid var(--line);border-radius:12px;background:var(--card2);padding:12px 14px;font-size:12px;line-height:1.5;color:var(--muted)}
+    .dpi-panel strong{color:var(--text)}.dpi-panel.warning{border-color:#f5c26b;background:#fffaeb;color:var(--warning)}
+    .options{display:flex;gap:14px;flex-wrap:wrap;margin-top:14px}.check{display:flex;align-items:center;gap:7px;font-size:13px;color:#1d2939}.check input{width:17px;height:17px}
+    .convert-area{margin-top:20px;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:stretch}.convert-btn{min-height:50px;font-size:16px}.status{min-height:50px;border-radius:11px;padding:12px 14px;background:var(--card2);color:var(--muted);display:flex;align-items:center;justify-content:center;text-align:center;font-size:13px;line-height:1.45}.status.success{background:#ecfdf3;color:var(--success)}.status.error{background:#fef3f2;color:var(--danger)}.status.warning{background:#fffaeb;color:var(--warning)}
+    .privacy{margin:17px 0 0;text-align:center;color:#667085;font-size:12px}
+    :focus-visible{outline:3px solid rgba(23,92,211,.35);outline-offset:2px}
+    @media(max-width:900px){.photo-list{grid-template-columns:repeat(2,minmax(0,1fr))}.settings-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:620px){body{padding:10px}.app{padding:16px;border-radius:16px}.photo-list{grid-template-columns:1fr}.settings-grid{grid-template-columns:1fr}.convert-area{grid-template-columns:1fr}.card-actions{grid-template-columns:repeat(4,1fr)}.dropzone{padding:19px 12px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+  </style>
+</head>
+<body>
+<main class="app">
+  <h1>Image to PDF Converter</h1>
+  <p class="subtitle">Add multiple photos, arrange their order, rotate them, choose PDF settings, and download one PDF. Everything runs locally in your browser.</p>
+
+  <section class="dropzone" id="dropzone" aria-label="Add photos">
+    <input class="hidden-input" id="fileInput" type="file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" multiple />
+    <div class="drop-icon" aria-hidden="true">+</div>
+    <strong>Add photos</strong>
+    <p>Select multiple JPG, PNG or WEBP images, or drag and drop them here.<br>Maximum 50 photos · 30 MB per photo.</p>
+    <div class="btn-row">
+      <button class="primary" id="addBtn" type="button">Choose Photos</button>
+      <button class="secondary danger" id="clearBtn" type="button" disabled>Clear All</button>
+    </div>
+  </section>
+
+  <div class="toolbar">
+    <div class="count" id="countLabel">0 photos <small>· 0 pages</small></div>
+    <div><button class="secondary" id="reverseBtn" type="button" disabled>Reverse Order</button></div>
+  </div>
+
+  <section class="photo-list" id="photoList" aria-label="Selected photos">
+    <div class="empty" id="emptyState">No photos added yet.</div>
+  </section>
+
+  <section class="settings">
+    <h2>PDF Settings</h2>
+    <div class="settings-grid">
+      <div class="field">
+        <label for="pageSize">Page size</label>
+        <select id="pageSize">
+          <option value="a4">A4</option>
+          <option value="letter">Letter</option>
+          <option value="legal">Legal</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="orientation">Orientation</label>
+        <select id="orientation">
+          <option value="auto">Auto per photo</option>
+          <option value="portrait">Portrait</option>
+          <option value="landscape">Landscape</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="margin">Page margin</label>
+        <select id="margin">
+          <option value="0">None</option>
+          <option value="5">5 mm</option>
+          <option value="8" selected>8 mm</option>
+          <option value="12">12 mm</option>
+          <option value="20">20 mm</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="quality">JPEG quality</label>
+        <div class="range-wrap"><input id="quality" type="range" min="60" max="96" value="90" step="1"><span class="range-value" id="qualityValue">90%</span></div>
+      </div>
+      <div class="field">
+        <label for="dpiPreset">Output DPI</label>
+        <select id="dpiPreset">
+          <option value="72">72 DPI · screen</option>
+          <option value="96">96 DPI · screen</option>
+          <option value="150">150 DPI · compact</option>
+          <option value="200">200 DPI · good</option>
+          <option value="300" selected>300 DPI · print</option>
+          <option value="600">600 DPI · very large</option>
+          <option value="custom">Custom DPI</option>
+        </select>
+        <div class="dpi-custom" id="dpiCustomWrap">
+          <input id="customDpi" type="number" inputmode="numeric" min="50" max="600" step="1" value="300" aria-label="Custom DPI" />
+        </div>
+        <span class="field-help">50–600 DPI. Safety limits may reduce extreme settings.</span>
+      </div>
+      <div class="field">
+        <label for="fitMode">Image fitting</label>
+        <select id="fitMode">
+          <option value="contain">Fit whole image</option>
+          <option value="cover">Fill page (may crop)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="fileName">PDF filename</label>
+        <input id="fileName" type="text" value="images-to-pdf" maxlength="80" autocomplete="off" />
+      </div>
+      <div class="field">
+        <label for="background">Image background</label>
+        <select id="background">
+          <option value="white">White</option>
+          <option value="black">Black</option>
+        </select>
+      </div>
+    </div>
+    <div class="options">
+      <label class="check"><input type="checkbox" id="pageNumbers"> Add page numbers</label>
+      <label class="check"><input type="checkbox" id="allowUpscale"> Allow image upscaling to selected DPI</label>
+    </div>
+    <div class="dpi-panel" id="dpiPreview" aria-live="polite"></div>
+  </section>
+
+  <div class="convert-area">
+    <div class="status" id="status" role="status" aria-live="polite">Add at least one photo to continue.</div>
+    <button class="primary convert-btn" id="convertBtn" type="button" disabled>Create PDF</button>
+  </div>
+  <p class="privacy">Offline-ready · no uploads · no external libraries · photos stay on your device.</p>
+</main>
+
+<script>
+"use strict";
+(() => {
+  const MAX_FILES = 50;
+  const MAX_FILE_BYTES = 30 * 1024 * 1024;
+  const MAX_TOTAL_BYTES = 300 * 1024 * 1024;
+  const MAX_SOURCE_PIXELS = 100_000_000;
+  const MM_TO_PT = 72 / 25.4;
+  const PAGE_SIZES = {
+    a4: { width: 595.28, height: 841.89 },
+    letter: { width: 612, height: 792 },
+    legal: { width: 612, height: 1008 }
+  };
+  const MIN_DPI = 50;
+  const MAX_DPI = 600;
+  const MAX_RENDER_PIXELS = 20_000_000;
+  const MAX_RENDER_DIMENSION = 8192;
+  const WARNING_RENDER_PIXELS = 12_000_000;
+
+  const fileInput = document.getElementById("fileInput");
+  const addBtn = document.getElementById("addBtn");
+  const clearBtn = document.getElementById("clearBtn");
+  const reverseBtn = document.getElementById("reverseBtn");
+  const dropzone = document.getElementById("dropzone");
+  const photoList = document.getElementById("photoList");
+  const countLabel = document.getElementById("countLabel");
+  const statusEl = document.getElementById("status");
+  const convertBtn = document.getElementById("convertBtn");
+  const qualityInput = document.getElementById("quality");
+  const qualityValue = document.getElementById("qualityValue");
+  const dpiPreset = document.getElementById("dpiPreset");
+  const customDpi = document.getElementById("customDpi");
+  const dpiCustomWrap = document.getElementById("dpiCustomWrap");
+  const dpiPreview = document.getElementById("dpiPreview");
+  const settings = {
+    pageSize: document.getElementById("pageSize"),
+    orientation: document.getElementById("orientation"),
+    margin: document.getElementById("margin"),
+    quality: qualityInput,
+    dpiPreset,
+    customDpi,
+    fitMode: document.getElementById("fitMode"),
+    fileName: document.getElementById("fileName"),
+    background: document.getElementById("background"),
+    pageNumbers: document.getElementById("pageNumbers"),
+    allowUpscale: document.getElementById("allowUpscale"),
+  };
+
+  let items = [];
+  let busy = false;
+  let nextId = 1;
+
+  const encoder = new TextEncoder();
+  const asciiBytes = (text) => encoder.encode(text);
+
+  function setStatus(text, type = "") {
+    statusEl.textContent = text;
+    statusEl.className = "status" + (type ? ` ${type}` : "");
+  }
+
+  function formatBytes(bytes) {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  }
+
+  function safeDisplayName(name) {
+    return String(name || "image").replace(/[\u0000-\u001f\u007f]/g, "");
+  }
+
+  function safeOutputName(value) {
+    let cleaned = String(value || "images-to-pdf")
+      .replace(/[\\/:*?"<>|\u0000-\u001f]/g, "-")
+      .replace(/\s+/g, " ")
+      .trim()
+      .replace(/\.+$/g, "");
+    cleaned = cleaned.replace(/\.pdf$/i, "");
+    return (cleaned || "images-to-pdf").slice(0, 76) + ".pdf";
+  }
+
+  function totalBytes() {
+    return items.reduce((sum, item) => sum + item.file.size, 0);
+  }
+
+  function refreshUi({ preserveStatus = false } = {}) {
+    const count = items.length;
+    countLabel.innerHTML = `${count} photo${count === 1 ? "" : "s"} <small>· ${count} page${count === 1 ? "" : "s"} · ${formatBytes(totalBytes())}</small>`;
+    clearBtn.disabled = busy || count === 0;
+    reverseBtn.disabled = busy || count < 2;
+    addBtn.disabled = busy || count >= MAX_FILES;
+    fileInput.disabled = busy || count >= MAX_FILES;
+    convertBtn.disabled = busy || count === 0;
+    dropzone.classList.toggle("busy", busy);
+    Object.values(settings).forEach((el) => { el.disabled = busy; });
+    photoList.querySelectorAll("button").forEach((button) => { button.disabled = busy; });
+    if (!preserveStatus) {
+      if (count === 0) setStatus("Add at least one photo to continue.");
+      else setStatus(`${count} photo${count === 1 ? " is" : "s are"} ready. Arrange them in the order you want.`);
+    }
+  }
+
+  async function sniffImageType(file) {
+    const header = new Uint8Array(await file.slice(0, 16).arrayBuffer());
+    const ascii = (a,b) => String.fromCharCode(...header.slice(a,b));
+    if (header.length >= 3 && header[0] === 0xff && header[1] === 0xd8 && header[2] === 0xff) return "image/jpeg";
+    if (header.length >= 8 && header[0] === 0x89 && ascii(1,4) === "PNG" && header[4] === 0x0d && header[5] === 0x0a && header[6] === 0x1a && header[7] === 0x0a) return "image/png";
+    if (header.length >= 12 && ascii(0,4) === "RIFF" && ascii(8,12) === "WEBP") return "image/webp";
+    return null;
+  }
+
+  function decodeImageElement(file) {
+    return new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => resolve({ source: img, width: img.naturalWidth, height: img.naturalHeight, cleanup: () => URL.revokeObjectURL(url) });
+      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("This photo could not be decoded by your browser.")); };
+      img.src = url;
+    });
+  }
+
+  async function decodeImage(file) {
+    if ("createImageBitmap" in window) {
+      try {
+        const bitmap = await createImageBitmap(file, { imageOrientation: "from-image" });
+        return { source: bitmap, width: bitmap.width, height: bitmap.height, cleanup: () => bitmap.close() };
+      } catch (_) {}
+    }
+    return decodeImageElement(file);
+  }
+
+  async function validateFile(file) {
+    if (!(file instanceof File)) throw new Error("Invalid file.");
+    if (!file.size) throw new Error(`${safeDisplayName(file.name)} is empty.`);
+    if (file.size > MAX_FILE_BYTES) throw new Error(`${safeDisplayName(file.name)} is larger than 30 MB.`);
+    const detectedType = await sniffImageType(file);
+    if (!detectedType) throw new Error(`${safeDisplayName(file.name)} is not a supported JPG, PNG or WEBP image.`);
+    const decoded = await decodeImage(file);
+    try {
+      const pixels = decoded.width * decoded.height;
+      if (!decoded.width || !decoded.height) throw new Error(`${safeDisplayName(file.name)} has invalid dimensions.`);
+      if (!Number.isSafeInteger(pixels) || pixels > MAX_SOURCE_PIXELS) throw new Error(`${safeDisplayName(file.name)} is above the 100-megapixel safety limit.`);
+      return { width: decoded.width, height: decoded.height, type: detectedType };
+    } finally { decoded.cleanup(); }
+  }
+
+  function renderItems() {
+    photoList.replaceChildren();
+    if (!items.length) {
+      const empty = document.createElement("div"); empty.className = "empty"; empty.textContent = "No photos added yet."; photoList.appendChild(empty);
+      refreshUi(); return;
+    }
+    items.forEach((item, index) => {
+      const card = document.createElement("article"); card.className = "photo-card"; card.dataset.id = item.id;
+      const wrap = document.createElement("div"); wrap.className = "thumb-wrap";
+      const img = document.createElement("img"); img.className = "thumb"; img.src = item.previewUrl; img.alt = `Preview ${index + 1}`; img.style.transform = `rotate(${item.rotation}deg)`;
+      const badge = document.createElement("span"); badge.className = "badge"; badge.textContent = `Page ${index + 1}`;
+      wrap.append(img, badge);
+      const body = document.createElement("div"); body.className = "card-body";
+      const name = document.createElement("span"); name.className = "name"; name.textContent = safeDisplayName(item.file.name); name.title = safeDisplayName(item.file.name);
+      const meta = document.createElement("span"); meta.className = "meta"; meta.textContent = `${item.width} × ${item.height} px · ${formatBytes(item.file.size)}${item.rotation ? ` · ${item.rotation}°` : ""}`;
+      const actions = document.createElement("div"); actions.className = "card-actions";
+      actions.innerHTML = `
+        <button class="icon-btn" type="button" data-action="up" title="Move earlier" aria-label="Move page ${index + 1} earlier">↑</button>
+        <button class="icon-btn" type="button" data-action="down" title="Move later" aria-label="Move page ${index + 1} later">↓</button>
+        <button class="icon-btn" type="button" data-action="rotate" title="Rotate 90°" aria-label="Rotate page ${index + 1}">↻</button>
+        <button class="icon-btn remove" type="button" data-action="remove" title="Remove" aria-label="Remove page ${index + 1}">×</button>`;
+      actions.querySelector('[data-action="up"]').disabled = busy || index === 0;
+      actions.querySelector('[data-action="down"]').disabled = busy || index === items.length - 1;
+      body.append(name, meta, actions); card.append(wrap, body); photoList.appendChild(card);
+    });
+    refreshUi();
+  }
+
+  async function addFiles(fileList) {
+    if (busy) return;
+    const incoming = Array.from(fileList || []);
+    if (!incoming.length) return;
+    const capacity = MAX_FILES - items.length;
+    if (capacity <= 0) { setStatus(`Maximum ${MAX_FILES} photos reached.`, "warning"); return; }
+    const accepted = incoming.slice(0, capacity);
+    if (incoming.length > capacity) setStatus(`Only the first ${capacity} photo${capacity === 1 ? "" : "s"} were considered because the limit is ${MAX_FILES}.`, "warning");
+
+    busy = true; refreshUi({ preserveStatus: true });
+    let added = 0; let skipped = 0; const errors = [];
+    try {
+      for (let i = 0; i < accepted.length; i++) {
+        const file = accepted[i];
+        setStatus(`Checking photo ${i + 1} of ${accepted.length}…`);
+        await nextFrame();
+        if (totalBytes() + file.size > MAX_TOTAL_BYTES) { skipped++; errors.push("Total selected file size would exceed 300 MB."); continue; }
+        try {
+          const meta = await validateFile(file);
+          const previewUrl = URL.createObjectURL(file);
+          items.push({ id: nextId++, file, previewUrl, width: meta.width, height: meta.height, rotation: 0 });
+          added++;
+        } catch (err) { skipped++; errors.push(err instanceof Error ? err.message : "A photo was skipped."); }
+      }
+    } finally {
+      busy = false; fileInput.value = ""; renderItems();
+      if (errors.length) setStatus(`${added} added, ${skipped} skipped. ${errors[0]}${errors.length > 1 ? ` (+${errors.length - 1} more)` : ""}`, added ? "warning" : "error");
+      else setStatus(`${added} photo${added === 1 ? "" : "s"} added successfully.`, "success");
+    }
+  }
+
+  function removeItem(index) {
+    const [removed] = items.splice(index, 1); if (removed?.previewUrl) URL.revokeObjectURL(removed.previewUrl); renderItems();
+  }
+
+  function moveItem(index, direction) {
+    const target = index + direction; if (target < 0 || target >= items.length) return;
+    [items[index], items[target]] = [items[target], items[index]]; renderItems();
+  }
+
+  function rotatedDimensions(width, height, rotation) {
+    return rotation % 180 === 0 ? { width, height } : { width: height, height: width };
+  }
+
+  function pageDimensions(sizeKey, orientation) {
+    const base = PAGE_SIZES[sizeKey] || PAGE_SIZES.a4;
+    return orientation === "landscape" ? { width: base.height, height: base.width } : { width: base.width, height: base.height };
+  }
+
+  function chooseOrientation(item) {
+    if (settings.orientation.value !== "auto") return settings.orientation.value;
+    const d = rotatedDimensions(item.width, item.height, item.rotation);
+    return d.width > d.height ? "landscape" : "portrait";
+  }
+
+  function selectedDpi() {
+    const raw = dpiPreset.value === "custom" ? Number(customDpi.value) : Number(dpiPreset.value);
+    if (!Number.isFinite(raw)) return 300;
+    return Math.min(MAX_DPI, Math.max(MIN_DPI, Math.round(raw)));
+  }
+
+  function clampCustomDpi() {
+    if (dpiPreset.value !== "custom") return;
+    let value = Number(customDpi.value);
+    if (!Number.isFinite(value)) value = 300;
+    customDpi.value = String(Math.min(MAX_DPI, Math.max(MIN_DPI, Math.round(value))));
+  }
+
+  function targetPagePixels(pageWidthPt, pageHeightPt, dpi) {
+    return {
+      width: Math.max(1, Math.round((pageWidthPt / 72) * dpi)),
+      height: Math.max(1, Math.round((pageHeightPt / 72) * dpi))
+    };
+  }
+
+  function safeRasterBounds(width, height) {
+    let scale = 1;
+    if (width > MAX_RENDER_DIMENSION || height > MAX_RENDER_DIMENSION) {
+      scale = Math.min(scale, MAX_RENDER_DIMENSION / width, MAX_RENDER_DIMENSION / height);
+    }
+    const pixels = width * height;
+    if (pixels * scale * scale > MAX_RENDER_PIXELS) {
+      scale = Math.min(scale, Math.sqrt(MAX_RENDER_PIXELS / pixels));
+    }
+    return {
+      width: Math.max(1, Math.round(width * scale)),
+      height: Math.max(1, Math.round(height * scale)),
+      scale,
+      limited: scale < 0.9999
+    };
+  }
+
+  function renderTarget(sourceWidth, sourceHeight, pageWidth, pageHeight, marginPt) {
+    const dpi = selectedDpi();
+    const availWPt = Math.max(1, pageWidth - marginPt * 2);
+    const availHPt = Math.max(1, pageHeight - marginPt * 2);
+    const requestedW = Math.max(1, Math.round((availWPt / 72) * dpi));
+    const requestedH = Math.max(1, Math.round((availHPt / 72) * dpi));
+
+    let scale = Math.min(requestedW / sourceWidth, requestedH / sourceHeight);
+    if (!settings.allowUpscale.checked) scale = Math.min(1, scale);
+    let width = Math.max(1, Math.round(sourceWidth * scale));
+    let height = Math.max(1, Math.round(sourceHeight * scale));
+
+    const safe = safeRasterBounds(width, height);
+    width = safe.width;
+    height = safe.height;
+
+    const effectiveDpi = Math.min(
+      dpi,
+      width / (availWPt / 72),
+      height / (availHPt / 72)
+    );
+
+    return {
+      width,
+      height,
+      requestedDpi: dpi,
+      effectiveDpi: Math.max(1, Math.round(effectiveDpi)),
+      safetyLimited: safe.limited
+    };
+  }
+
+  function updateDpiPreview() {
+    dpiCustomWrap.classList.toggle("show", dpiPreset.value === "custom");
+    const dpi = selectedDpi();
+    const base = PAGE_SIZES[settings.pageSize.value] || PAGE_SIZES.a4;
+    const marginPt = Number(settings.margin.value) * MM_TO_PT;
+    const portrait = targetPagePixels(base.width, base.height, dpi);
+    const usable = targetPagePixels(Math.max(1, base.width - marginPt * 2), Math.max(1, base.height - marginPt * 2), dpi);
+    const requestedPixels = usable.width * usable.height;
+    const safe = safeRasterBounds(usable.width, usable.height);
+    const memoryMB = requestedPixels * 4 / (1024 * 1024);
+    const warnings = [];
+    if (requestedPixels > WARNING_RENDER_PIXELS) warnings.push(`about ${memoryMB.toFixed(0)} MB of raw canvas memory per full page`);
+    if (safe.limited) warnings.push(`safety-capped near ${safe.width} × ${safe.height} px`);
+    if (dpi >= 600) warnings.push("600 DPI usually creates very large PDFs and rarely improves normal phone photos");
+
+    dpiPreview.classList.toggle("warning", warnings.length > 0);
+    dpiPreview.innerHTML = `<strong>${dpi} DPI preview:</strong> ${settings.pageSize.value.toUpperCase()} portrait page ${portrait.width} × ${portrait.height} px · usable image area ${usable.width} × ${usable.height} px${warnings.length ? `<br><strong>Safety:</strong> ${warnings.join("; ")}.` : `<br>Within the recommended browser-safe range.`}${settings.allowUpscale.checked ? `<br>Upscaling is enabled; small photos may become larger without gaining real detail.` : `<br>Upscaling is off; smaller source photos keep their native detail.`}`;
+  }
+
+  function canvasToJpegBytes(canvas, quality) {
+    return new Promise((resolve, reject) => {
+      if (canvas.toBlob) {
+        canvas.toBlob(async blob => {
+          if (!blob) return reject(new Error("Your browser could not encode a photo."));
+          try { resolve(new Uint8Array(await blob.arrayBuffer())); } catch (e) { reject(e); }
+        }, "image/jpeg", quality);
+      } else {
+        try {
+          const base64 = canvas.toDataURL("image/jpeg", quality).split(",")[1] || "";
+          const bin = atob(base64), out = new Uint8Array(bin.length); for (let i=0;i<bin.length;i++) out[i]=bin.charCodeAt(i); resolve(out);
+        } catch (e) { reject(e); }
+      }
+    });
+  }
+
+  async function processItem(item) {
+    const decoded = await decodeImage(item.file);
+    try {
+      const dims = rotatedDimensions(decoded.width, decoded.height, item.rotation);
+      const orientation = chooseOrientation({ width: decoded.width, height: decoded.height, rotation: item.rotation });
+      const page = pageDimensions(settings.pageSize.value, orientation);
+      const marginPt = Number(settings.margin.value) * MM_TO_PT;
+      const target = renderTarget(dims.width, dims.height, page.width, page.height, marginPt);
+      const canvas = document.createElement("canvas"); canvas.width = target.width; canvas.height = target.height;
+      const ctx = canvas.getContext("2d", { alpha:false }); if (!ctx) throw new Error("Your browser could not create an image canvas.");
+      ctx.fillStyle = settings.background.value === "black" ? "#000000" : "#ffffff"; ctx.fillRect(0,0,canvas.width,canvas.height);
+      ctx.imageSmoothingEnabled = true; if ("imageSmoothingQuality" in ctx) ctx.imageSmoothingQuality = "high";
+      ctx.save(); ctx.translate(canvas.width/2,canvas.height/2); ctx.rotate(item.rotation * Math.PI / 180);
+      const drawW = item.rotation % 180 === 0 ? canvas.width : canvas.height;
+      const drawH = item.rotation % 180 === 0 ? canvas.height : canvas.width;
+      ctx.drawImage(decoded.source, -drawW/2, -drawH/2, drawW, drawH); ctx.restore();
+      const jpegBytes = await canvasToJpegBytes(canvas, Number(settings.quality.value)/100);
+      canvas.width = 1; canvas.height = 1;
+      return { jpegBytes, imageWidth: target.width, imageHeight: target.height, pageWidth: page.width, pageHeight: page.height, marginPt, fitMode: settings.fitMode.value, requestedDpi: target.requestedDpi, effectiveDpi: target.effectiveDpi, safetyLimited: target.safetyLimited };
+    } finally { decoded.cleanup(); }
+  }
+
+  function buildPdf(pages, addPageNumbers) {
+    if (!pages.length) throw new Error("There are no PDF pages to create.");
+    const pageExtra = addPageNumbers ? 0 : 0;
+    const objectCount = 2 + pages.length * 3;
+    const offsets = new Array(objectCount + 1).fill(0), parts = []; let byteLength = 0;
+    const push = part => { const bytes = typeof part === "string" ? asciiBytes(part) : part; parts.push(bytes); byteLength += bytes.byteLength; };
+    const begin = id => { offsets[id] = byteLength; push(`${id} 0 obj\n`); }; const end = () => push("endobj\n");
+    push(new Uint8Array([0x25,0x50,0x44,0x46,0x2d,0x31,0x2e,0x34,0x0a,0x25,0xe2,0xe3,0xcf,0xd3,0x0a]));
+    begin(1); push("<< /Type /Catalog /Pages 2 0 R >>\n"); end();
+    const pageIds = pages.map((_,i)=>3+i*3); begin(2); push(`<< /Type /Pages /Kids [${pageIds.map(id=>`${id} 0 R`).join(" ")}] /Count ${pages.length} >>\n`); end();
+
+    pages.forEach((page,index)=>{
+      const pageId=3+index*3, contentId=pageId+1, imageId=pageId+2;
+      const availW=Math.max(1,page.pageWidth-page.marginPt*2), availH=Math.max(1,page.pageHeight-page.marginPt*2);
+      const ir=page.imageWidth/page.imageHeight, ar=availW/availH; let drawW,drawH;
+      if (page.fitMode === "cover") {
+        if (ir > ar) { drawH=availH; drawW=drawH*ir; } else { drawW=availW; drawH=drawW/ir; }
+      } else {
+        if (ir > ar) { drawW=availW; drawH=drawW/ir; } else { drawH=availH; drawW=drawH*ir; }
+      }
+      const x=(page.pageWidth-drawW)/2, y=(page.pageHeight-drawH)/2;
+      begin(pageId);
+      push(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${page.pageWidth.toFixed(2)} ${page.pageHeight.toFixed(2)}] /Resources << /XObject << /Im0 ${imageId} 0 R >> /Font << /F1 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> >> /ProcSet [/PDF /ImageC /Text] >> /Contents ${contentId} 0 R >>\n`); end();
+      let content = "q\n";
+      if (page.fitMode === "cover") content += `${page.marginPt.toFixed(4)} ${page.marginPt.toFixed(4)} ${(page.pageWidth-page.marginPt*2).toFixed(4)} ${(page.pageHeight-page.marginPt*2).toFixed(4)} re W n\n`;
+      content += `${drawW.toFixed(4)} 0 0 ${drawH.toFixed(4)} ${x.toFixed(4)} ${y.toFixed(4)} cm\n/Im0 Do\nQ\n`;
+      if (addPageNumbers) content += `BT\n/F1 9 Tf\n${(page.pageWidth/2-8).toFixed(2)} 10 Td\n(${index+1} / ${pages.length}) Tj\nET\n`;
+      const contentBytes=asciiBytes(content); begin(contentId); push(`<< /Length ${contentBytes.byteLength} >>\nstream\n`); push(contentBytes); push("endstream\n"); end();
+      begin(imageId); push(`<< /Type /XObject /Subtype /Image /Width ${page.imageWidth} /Height ${page.imageHeight} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${page.jpegBytes.byteLength} >>\nstream\n`); push(page.jpegBytes); push("\nendstream\n"); end();
+    });
+    const xrefOffset=byteLength; push(`xref\n0 ${objectCount+1}\n`); push("0000000000 65535 f \n"); for(let id=1;id<=objectCount;id++) push(`${String(offsets[id]).padStart(10,"0")} 00000 n \n`);
+    push(`trailer\n<< /Size ${objectCount+1} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF\n`);
+    return new Blob(parts,{type:"application/pdf"});
+  }
+
+  function downloadBlob(blob,name) {
+    const url=URL.createObjectURL(blob), a=document.createElement("a"); a.href=url; a.download=name; a.rel="noopener"; a.style.display="none"; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),10000);
+  }
+  const nextFrame = () => new Promise(resolve => requestAnimationFrame(resolve));
+
+  addBtn.addEventListener("click",()=>{ if(!busy){ fileInput.value=""; fileInput.click(); } });
+  fileInput.addEventListener("change",()=>addFiles(fileInput.files));
+  clearBtn.addEventListener("click",()=>{ if(busy) return; items.forEach(i=>URL.revokeObjectURL(i.previewUrl)); items=[]; renderItems(); setStatus("All photos cleared."); });
+  reverseBtn.addEventListener("click",()=>{ if(!busy){ items.reverse(); renderItems(); } });
+  qualityInput.addEventListener("input",()=>{ qualityValue.textContent=`${qualityInput.value}%`; });
+  dpiPreset.addEventListener("change",()=>{ updateDpiPreview(); });
+  customDpi.addEventListener("input",()=>{ updateDpiPreview(); });
+  customDpi.addEventListener("change",()=>{ clampCustomDpi(); updateDpiPreview(); });
+  [settings.pageSize, settings.margin, settings.orientation, settings.allowUpscale].forEach(el=>el.addEventListener("change",updateDpiPreview));
+
+  photoList.addEventListener("click",event=>{
+    if(busy) return; const button=event.target.closest("button[data-action]"); if(!button) return;
+    const card=button.closest(".photo-card"), index=items.findIndex(item=>String(item.id)===card?.dataset.id); if(index<0) return;
+    const action=button.dataset.action;
+    if(action==="remove") removeItem(index);
+    else if(action==="up") moveItem(index,-1);
+    else if(action==="down") moveItem(index,1);
+    else if(action==="rotate"){ items[index].rotation=(items[index].rotation+90)%360; renderItems(); }
+  });
+
+  ["dragenter","dragover"].forEach(name=>dropzone.addEventListener(name,e=>{e.preventDefault(); if(!busy) dropzone.classList.add("dragover");}));
+  ["dragleave","drop"].forEach(name=>dropzone.addEventListener(name,e=>{e.preventDefault(); dropzone.classList.remove("dragover");}));
+  dropzone.addEventListener("drop",e=>{ if(!busy && e.dataTransfer?.files?.length) addFiles(e.dataTransfer.files); });
+  document.addEventListener("dragover",e=>e.preventDefault()); document.addEventListener("drop",e=>e.preventDefault());
+
+  convertBtn.addEventListener("click",async()=>{
+    if(busy || !items.length) return;
+    clampCustomDpi();
+    const dpi = selectedDpi();
+    busy=true; refreshUi({preserveStatus:true}); convertBtn.textContent="Creating PDF…"; const pages=[];
+    try {
+      for(let i=0;i<items.length;i++){
+        setStatus(`Processing page ${i+1} of ${items.length} at up to ${dpi} DPI…`); await nextFrame(); pages.push(await processItem(items[i]));
+      }
+      setStatus("Building PDF…"); await nextFrame();
+      const blob=buildPdf(pages,settings.pageNumbers.checked); const name=safeOutputName(settings.fileName.value);
+      downloadBlob(blob,name);
+      const limited = pages.filter(page=>page.safetyLimited).length;
+      const effective = pages.length ? Math.min(...pages.map(page=>page.effectiveDpi || dpi)) : dpi;
+      const note = limited ? ` · ${limited} page${limited===1?" was":"s were"} safety-capped` : (effective < dpi ? ` · source resolution limited some pages` : "");
+      setStatus(`PDF created successfully — ${items.length} page${items.length===1?"":"s"} · target ${dpi} DPI${note} · ${formatBytes(blob.size)}.`,limited ? "warning" : "success");
+    } catch(err){ console.error(err); setStatus(err instanceof Error && err.message ? err.message : "Could not create the PDF.","error"); }
+    finally { pages.length=0; busy=false; convertBtn.textContent="Create PDF"; refreshUi({preserveStatus:true}); updateDpiPreview(); }
+  });
+
+  window.addEventListener("beforeunload",()=>items.forEach(i=>{if(i.previewUrl)URL.revokeObjectURL(i.previewUrl);}));
+  renderItems();
+  updateDpiPreview();
+})();
+</script>
+</body>
+</html>
