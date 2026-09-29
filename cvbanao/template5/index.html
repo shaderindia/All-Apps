@@ -714,6 +714,8 @@
       updateThemeColor(currentThemeColor, false);
       updatePreview();
       window.addEventListener("resize", updatePreviewScale);
+      window.addEventListener("pagehide", flushAutoSave);
+      document.addEventListener("visibilitychange", function() { if (document.visibilityState === "hidden") flushAutoSave(); });
       document.addEventListener("keydown", function(event) {
         if (event.key === "Escape") closeCropper();
       });
@@ -721,7 +723,7 @@
 
     function setupInitialData() {
       const saved = window.CV_SAMPLE_MODE ? null : safeGetStorage(STORAGE_KEY);
-      if (saved) { loadResume(false); return; }
+      if (saved && loadResume(false)) return;
       fillDemoData(false);
     }
 
@@ -1297,25 +1299,37 @@
       return true;
     }
 
-    function safeSetStorage(key, value) { try { localStorage.setItem(key, value); return true; } catch (error) { console.warn(error); return false; } }
-    function safeGetStorage(key) { try { return localStorage.getItem(key); } catch (error) { console.warn(error); return null; } }
-    function safeRemoveStorage(key) { try { localStorage.removeItem(key); } catch (error) { console.warn(error); } }
+    function safeSetStorage(key, value) { if (window.CV_SAMPLE_MODE) return false; try { localStorage.setItem(key, value); return true; } catch (error) { return false; } }
+    function safeGetStorage(key) { if (window.CV_SAMPLE_MODE) return null; try { return localStorage.getItem(key); } catch (error) { return null; } }
+    function safeRemoveStorage(key) { if (window.CV_SAMPLE_MODE) return false; try { localStorage.removeItem(key); return true; } catch (error) { return false; } }
 
     function saveResume(showMessage = true) {
+      clearTimeout(autoSaveTimer);
+      autoSaveTimer = null;
       const ok = safeSetStorage(STORAGE_KEY, JSON.stringify(getFormData()));
-      if (showMessage) showToast(ok ? "Resume saved locally." : "Could not save locally. Photo may be too large.", ok ? "success" : "error");
+      if (showMessage) showToast(window.CV_SAMPLE_MODE ? "Preview changes are temporary." : ok ? "Resume saved locally." : "Could not save locally. Photo may be too large.", window.CV_SAMPLE_MODE ? "info" : ok ? "success" : "error");
     }
 
     function scheduleAutoSave() {
+      if (window.CV_SAMPLE_MODE) return;
       clearTimeout(autoSaveTimer);
-      autoSaveTimer = setTimeout(function() { safeSetStorage(STORAGE_KEY, JSON.stringify(getFormData())); }, 350);
+      autoSaveTimer = setTimeout(flushAutoSave, 350);
+    }
+
+    function flushAutoSave() {
+      if (autoSaveTimer === null) return;
+      clearTimeout(autoSaveTimer);
+      autoSaveTimer = null;
+      safeSetStorage(STORAGE_KEY, JSON.stringify(getFormData()));
     }
 
     function loadResume(showMessage = true) {
       const saved = safeGetStorage(STORAGE_KEY);
-      if (!saved) { if (showMessage) showToast("No saved resume found.", "error"); return; }
+      if (!saved) { if (showMessage) showToast("No saved resume found.", "error"); return false; }
       try {
         const data = JSON.parse(saved);
+        clearTimeout(autoSaveTimer);
+        autoSaveTimer = null;
         basicInputIds.forEach(function(id) { if (document.getElementById(id)) document.getElementById(id).value = data[id] || ""; });
         document.getElementById("experienceContainer").innerHTML = "";
         if (data.experiences && data.experiences.length) data.experiences.forEach(exp => addExperienceField(exp, false)); else addExperienceField({}, false);
@@ -1330,9 +1344,11 @@
         updatePreview();
         adjustFontSize(currentFontSize, false);
         if (showMessage) showToast("Resume loaded.", "success");
+        return true;
       } catch (error) {
         console.error(error);
-        showToast("Saved data is damaged. Clear saved data and try again.", "error");
+        if (showMessage) showToast("Saved data is damaged. Clear saved data and try again.", "error");
+        return false;
       }
     }
 
@@ -1350,9 +1366,12 @@
     }
 
     function clearSavedData() {
+      if (window.CV_SAMPLE_MODE) { showToast("Preview changes are temporary.", "info"); return; }
       if (!confirm("Clear saved resume data from this browser?")) return;
-      safeRemoveStorage(STORAGE_KEY);
-      showToast("Saved data cleared. Refresh or Reset Demo for fresh sample data.", "success");
+      clearTimeout(autoSaveTimer);
+      autoSaveTimer = null;
+      const removed = safeRemoveStorage(STORAGE_KEY);
+      showToast(removed ? "Saved data cleared. Refresh or Reset Demo for fresh sample data." : "Could not clear saved data.", removed ? "success" : "error");
     }
 
     async function downloadPDF() {

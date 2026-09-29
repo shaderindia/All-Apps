@@ -1455,6 +1455,7 @@
     let originalPhotoData = "";
     let currentFontSize = 10;
     let currentThemeColor = "#4f46e5";
+    let autoSaveTimer = null;
 
     let cropState = {
       scale: 1,
@@ -1493,15 +1494,14 @@
 
       updatePreview();
       window.addEventListener("resize", updatePreviewScale);
+      window.addEventListener("pagehide", flushAutoSave);
+      document.addEventListener("visibilitychange", function() { if (document.visibilityState === "hidden") flushAutoSave(); });
     });
 
     function setupInitialData() {
-      const saved = window.CV_SAMPLE_MODE ? null : localStorage.getItem(STORAGE_KEY);
+      const saved = window.CV_SAMPLE_MODE ? null : safeGetStorage(STORAGE_KEY);
 
-      if (saved) {
-        loadResume(false);
-        return;
-      }
+      if (saved && loadResume(false)) return;
 
       fillDemoData();
       addLanguageField("English", "Fluent");
@@ -2070,27 +2070,57 @@
       return true;
     }
 
-    function saveResume(showMessage = true) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(getFormData()));
+    function safeSetStorage(key, value) {
+      if (window.CV_SAMPLE_MODE) return false;
+      try { localStorage.setItem(key, value); return true; } catch (error) { return false; }
+    }
 
-      if (showMessage) {
-        showToast("Resume saved locally.", "success");
-      }
+    function safeGetStorage(key) {
+      if (window.CV_SAMPLE_MODE) return null;
+      try { return localStorage.getItem(key); } catch (error) { return null; }
+    }
+
+    function safeRemoveStorage(key) {
+      if (window.CV_SAMPLE_MODE) return false;
+      try { localStorage.removeItem(key); return true; } catch (error) { return false; }
+    }
+
+    function saveResume(showMessage = true) {
+      clearTimeout(autoSaveTimer);
+      autoSaveTimer = null;
+      const saved = safeSetStorage(STORAGE_KEY, JSON.stringify(getFormData()));
+      if (showMessage) showToast(window.CV_SAMPLE_MODE ? "Preview changes are temporary." : saved ? "Resume saved locally." : "Could not save locally. Check browser storage or reduce photo size.", window.CV_SAMPLE_MODE ? "info" : saved ? "success" : "error");
     }
 
     function autoSaveResume() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(getFormData()));
+      if (window.CV_SAMPLE_MODE) return;
+      clearTimeout(autoSaveTimer);
+      autoSaveTimer = setTimeout(flushAutoSave, 350);
+    }
+
+    function flushAutoSave() {
+      if (autoSaveTimer === null) return;
+      clearTimeout(autoSaveTimer);
+      autoSaveTimer = null;
+      safeSetStorage(STORAGE_KEY, JSON.stringify(getFormData()));
     }
 
     function loadResume(showMessage = true) {
-      const saved = localStorage.getItem(STORAGE_KEY);
+      const saved = safeGetStorage(STORAGE_KEY);
 
       if (!saved) {
         if (showMessage) showToast("No saved resume found.", "error");
-        return;
+        return false;
       }
 
-      const data = JSON.parse(saved);
+      let data;
+      try { data = JSON.parse(saved); } catch (error) { data = null; }
+      if (!data || typeof data !== "object" || Array.isArray(data)) {
+        if (showMessage) showToast("Saved data is damaged. Reset the form or clear saved data.", "error");
+        return false;
+      }
+      clearTimeout(autoSaveTimer);
+      autoSaveTimer = null;
 
       inputIds.forEach(function(id) {
         if (document.getElementById(id)) {
@@ -2127,6 +2157,7 @@
       if (showMessage) {
         showToast("Resume loaded.", "success");
       }
+      return true;
     }
 
     function resetForm() {
@@ -2153,10 +2184,13 @@
     }
 
     function clearSavedData() {
+      if (window.CV_SAMPLE_MODE) { showToast("Preview changes are temporary.", "info"); return; }
       if (!confirm("Clear saved resume data from this browser?")) return;
 
-      localStorage.removeItem(STORAGE_KEY);
-      showToast("Saved data cleared. Refresh to see sample data.", "success");
+      clearTimeout(autoSaveTimer);
+      autoSaveTimer = null;
+      const removed = safeRemoveStorage(STORAGE_KEY);
+      showToast(removed ? "Saved data cleared. Refresh to see sample data." : "Could not clear saved data.", removed ? "success" : "error");
     }
 
     async function downloadPDF() {
