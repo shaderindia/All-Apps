@@ -1375,6 +1375,7 @@
             </div>
           </div>
 
+          <p style="margin: 0 0 14px; color: #475569; font-size: 14px; line-height: 1.5;">This PDF is image-based; its text is not selectable. For applications requiring machine-readable text, use a text-based resume or DOCX.</p>
           <div class="font-control">
             <span>Small</span>
             <input type="range" id="fontSizeSlider" min="7" max="12" value="9.5" step="0.5" oninput="adjustFontSize(this.value, true)" />
@@ -1577,6 +1578,22 @@
       });
     }
 
+    let nextRepeatFieldId = 0;
+    function makeRepeatFieldsAccessible(item) {
+      item.querySelectorAll("label").forEach(label => {
+        const field = label.nextElementSibling;
+        if (!field || !field.matches("input, select, textarea")) return;
+        label.htmlFor = field.id = `repeat-field-${++nextRepeatFieldId}`;
+      });
+      const title = item.querySelector(".repeat-item-title");
+      const remove = item.querySelector(".repeat-item-head button");
+      if (title && remove) {
+        title.id = `repeat-title-${++nextRepeatFieldId}`;
+        remove.id = `repeat-remove-${++nextRepeatFieldId}`;
+        remove.setAttribute("aria-labelledby", `${remove.id} ${title.id}`);
+      }
+    }
+
     function addLanguageField(language = "", proficiency = "Fluent") {
       const container = document.getElementById("languagesContainer");
       const row = document.createElement("div");
@@ -1596,11 +1613,12 @@
             <option ${proficiency === "Basic" ? "selected" : ""}>Basic</option>
           </select>
         </div>
-        <button type="button" class="btn-danger btn-small" onclick="this.parentElement.remove(); updatePreview(); autoSaveResume();">
+        <button type="button" class="btn-danger btn-small" aria-label="Remove language" onclick="this.parentElement.remove(); updatePreview(); autoSaveResume();">
           <i class="fa-solid fa-trash"></i>
         </button>
       `;
 
+      makeRepeatFieldsAccessible(row);
       container.appendChild(row);
 
       row.querySelector(".language-name").addEventListener("input", function() {
@@ -1936,7 +1954,7 @@
         .split("\n")
         .map(function(line) { return line.trim(); })
         .filter(Boolean)
-        .map(function(line) { return `<li>${escapeHTML(line.replace(/^[-&bull;]\s*/, ""))}</li>`; })
+        .map(function(line) { return `<li>${escapeHTML(line.replace(/^(?:[-•]\s+|&bull;\s*)/i, ""))}</li>`; })
         .join("");
     }
 
@@ -1954,7 +1972,7 @@
             <div class="experience-item">
               <p class="experience-title">${escapeHTML(title)}</p>
               ${responsibilities.length ? `<ul>${responsibilities.map(function(item) {
-                return `<li>${escapeHTML(item.replace(/^[-&bull;]\s*/, ""))}</li>`;
+                return `<li>${escapeHTML(item.replace(/^(?:[-•]\s+|&bull;\s*)/i, ""))}</li>`;
               }).join("")}</ul>` : ""}
             </div>
           `;
@@ -2262,6 +2280,16 @@
       showToast(removed ? "Saved data cleared. Refresh to see sample data." : "Could not clear saved data.", removed ? "success" : "error");
     }
 
+    function isResumeOverflowing() {
+      const page = document.getElementById("resumePreview");
+      if (!page) return false;
+      const clipped = [page, ...page.querySelectorAll(".resume-sidebar, .resume-main")];
+      if (clipped.some(el => el.scrollHeight > el.clientHeight + 3 || el.scrollWidth > el.clientWidth + 3)) return true;
+      const content = page.querySelector(".resume-main .main-section:last-of-type");
+      const declaration = page.querySelector(".declaration");
+      return !!(content && declaration && content.getBoundingClientRect().bottom > declaration.getBoundingClientRect().top - 2);
+    }
+
     async function downloadPDF() {
       if (!validateRequiredFields()) return;
       if (!window.html2canvas || !window.jspdf || !window.jspdf.jsPDF) {
@@ -2293,6 +2321,11 @@
       try {
         if (document.fonts && document.fonts.ready) {
           await document.fonts.ready;
+        }
+
+        if (isResumeOverflowing()) {
+          showToast("Content exceeds one A4 page. Shorten text or reduce font size before downloading.", "error");
+          return;
         }
 
         const canvas = await html2canvas(element, {
@@ -2336,9 +2369,8 @@
         pdf.addImage(imgData, "JPEG", 0, 0, 210, 297);
 
         const data = getFormData();
-        const fileName = data.fullName
-          ? data.fullName.replace(/[^\w\s-]/g, "").replace(/\s+/g, "_") + ".pdf"
-          : "Resume.pdf";
+        const safeName = data.fullName.normalize("NFC").replace(/[^\p{L}\p{M}\p{N}\s_-]/gu, "").trim().replace(/\s+/g, "_");
+        const fileName = safeName ? safeName + ".pdf" : "Resume.pdf";
 
         pdf.save(fileName);
         showToast("A4 PDF downloaded.", "success");

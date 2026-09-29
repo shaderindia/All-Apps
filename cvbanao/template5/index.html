@@ -542,6 +542,7 @@
             </div>
           </div>
 
+          <p style="margin: 0 0 14px; color: #475569; font-size: 14px; line-height: 1.5;">This PDF is image-based; its text is not selectable. For applications requiring machine-readable text, use a text-based resume or DOCX.</p>
           <div class="font-control">
             <span>Small</span>
             <input type="range" id="fontSizeSlider" min="8.7" max="14" value="10.1" step="0.1" oninput="adjustFontSize(this.value, true)" />
@@ -812,6 +813,22 @@
       return rgbToHex(c.r * p, c.g * p, c.b * p);
     }
 
+    let nextRepeatFieldId = 0;
+    function makeRepeatFieldsAccessible(item) {
+      item.querySelectorAll("label").forEach(label => {
+        const field = label.nextElementSibling;
+        if (!field || !field.matches("input, select, textarea")) return;
+        label.htmlFor = field.id = `repeat-field-${++nextRepeatFieldId}`;
+      });
+      const title = item.querySelector(".repeat-item-title");
+      const remove = item.querySelector(".repeat-item-head button");
+      if (title && remove) {
+        title.id = `repeat-title-${++nextRepeatFieldId}`;
+        remove.id = `repeat-remove-${++nextRepeatFieldId}`;
+        remove.setAttribute("aria-labelledby", `${remove.id} ${title.id}`);
+      }
+    }
+
     function addExperienceField(data = {}, shouldUpdate = true) {
       const container = document.getElementById("experienceContainer");
       const index = container.children.length + 1;
@@ -843,6 +860,7 @@
           </div>
         </div>
       `;
+      makeRepeatFieldsAccessible(item);
       container.appendChild(item);
       bindItemEvents(item);
       renumberRepeatItems();
@@ -876,6 +894,7 @@
           </div>
         </div>
       `;
+      makeRepeatFieldsAccessible(item);
       container.appendChild(item);
       bindItemEvents(item);
       renumberRepeatItems();
@@ -1115,22 +1134,22 @@
     function escapeHTML(str) { return String(str || "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;"); }
     function escapeAttr(str) { return escapeHTML(str); }
     function formatText(text) { return escapeHTML(text).replaceAll("\n", "<br>"); }
-    function linesToList(text) { return String(text || "").split("\n").map(line => line.trim()).filter(Boolean).map(line => line.replace(/^[-&bull;]\s*/, "")); }
+    function linesToList(text) { return String(text || "").split("\n").map(line => line.trim()).filter(Boolean).map(line => line.replace(/^(?:[-•]\s+|&bull;\s*)/i, "")); }
 
     function formatSimpleList(text) {
-      const items = linesToList(text).slice(0, 6);
+      const items = linesToList(text);
       if (!items.length) return "";
       return `<ul class="cv-list">${items.map(item => `<li>${escapeHTML(item)}</li>`).join("")}</ul>`;
     }
 
     function formatLanguages(text) {
-      const items = linesToList(text).slice(0, 5);
+      const items = linesToList(text);
       if (!items.length) return "";
       return `<ul>${items.map(item => `<li>${escapeHTML(item)}</li>`).join("")}</ul>`;
     }
 
     function formatEducation(items) {
-      return items.slice(0, 3).map(function(item) {
+      return items.map(function(item) {
         return `
           <div class="cv-edu-item">
             <div class="cv-edu-dot"></div>
@@ -1145,8 +1164,8 @@
     }
 
     function formatExperience(items) {
-      return items.slice(0, 3).map(function(item) {
-        const responsibilities = linesToList(item.responsibilities).slice(0, 3);
+      return items.map(function(item) {
+        const responsibilities = linesToList(item.responsibilities);
         const titleParts = [];
         if (item.company) titleParts.push(`<span class="company">${escapeHTML(item.company)}</span>`);
         if (item.role) titleParts.push(`<span class="role">${escapeHTML(item.role)}</span>`);
@@ -1401,6 +1420,10 @@
       holder.style.height = "297mm";
       try {
         if (document.fonts && document.fonts.ready) await document.fonts.ready;
+        if (isResumeOverflowing()) {
+          showToast("Content exceeds one A4 page. Shorten text or reduce font size before downloading.", "error");
+          return;
+        }
         const canvas = await html2canvas(element, {
           scale: 3,
           useCORS: true,
@@ -1433,7 +1456,8 @@
         const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4", compress: true });
         pdf.addImage(imgData, "JPEG", 0, 0, 210, 297);
         const data = getFormData();
-        const fileName = data.fullName ? data.fullName.replace(/[^\w\s-]/g, "").replace(/\s+/g, "_") + "_CV.pdf" : "Template_5_CV.pdf";
+        const safeName = data.fullName.normalize("NFC").replace(/[^\p{L}\p{M}\p{N}\s_-]/gu, "").trim().replace(/\s+/g, "_");
+        const fileName = safeName ? safeName + "_CV.pdf" : "Template_5_CV.pdf";
         pdf.save(fileName);
         showToast("A4 PDF downloaded.", "success");
       } catch (error) {
