@@ -25,6 +25,7 @@
     image.src = `previews/template${id}.png`;
     image.alt = `Actual built-in sample resume for Template ${id}: ${names[id - 1]}`;
     useLink.href = `template${id}/index.html`;
+    useLink.setAttribute('aria-label', `Use Template ${id}: ${names[id - 1]}`);
     imageScroll.scrollTo(0, 0);
   }
 

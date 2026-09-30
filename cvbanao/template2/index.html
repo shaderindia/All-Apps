@@ -42,17 +42,17 @@
 
   <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
 
-  <link rel="preload" href="/fonts/Inter-Variable.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
-  <link rel="stylesheet" href="/css/fonts.css">
+  <link rel="preload" href="../../fonts/Inter-Variable.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+  <link rel="stylesheet" href="../../css/fonts.css">
     <link 
     rel="preload" 
-    href="/css/font-awesome.min.css" 
+    href="../../css/font-awesome.min.css"
     as="style" 
     onload="this.onload=null;this.rel='stylesheet'" 
     crossorigin="anonymous" 
   />
   <noscript>
-    <link rel="stylesheet" href="/css/font-awesome.min.css" crossorigin="anonymous" />
+    <link rel="stylesheet" href="../../css/font-awesome.min.css" crossorigin="anonymous" />
   </noscript>
 
   <script defer src="../../js/html2canvas.min.js"></script>
@@ -1026,6 +1026,8 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="../print-resume.css">
+  <script defer src="../print-resume.js"></script>
 </head>
 
 <body>
@@ -1033,14 +1035,14 @@
 
   <header>
     <div class="header-inner">
-      <a href="/" class="btn-shader7-home" style="display: inline-flex; align-items: center; gap: 0.45rem; background: rgba(29, 78, 216, 0.08); color: var(--primary, #1d4ed8); border: 1px solid rgba(29, 78, 216, 0.2); padding: 0.45rem 0.95rem; border-radius: 99px; font-weight: 800; font-size: 0.82rem; text-decoration: none; transition: all 0.2s;"><i class="fa-solid fa-house"></i> SHADER7 Home</a>
+      <a href="../../index.html" class="btn-shader7-home" style="display: inline-flex; align-items: center; gap: 0.45rem; background: rgba(29, 78, 216, 0.08); color: var(--primary, #1d4ed8); border: 1px solid rgba(29, 78, 216, 0.2); padding: 0.45rem 0.95rem; border-radius: 99px; font-weight: 800; font-size: 0.82rem; text-decoration: none; transition: all 0.2s;"><i class="fa-solid fa-house"></i> SHADER7 Home</a>
       <div class="brand" aria-label="Shader7 Resume Builder">
         <i class="fa-solid fa-file-lines" aria-hidden="true"></i>
         <span>Elite Resume Builder</span>
       </div>
 
       <div class="header-actions">
-        <a class="button-link btn-outline btn-small" href="/cvbanao/" aria-label="Back to Resume Maker Home">
+        <a class="button-link btn-outline btn-small" href="../index.html" aria-label="Back to Resume Maker Home">
           <i class="fa-solid fa-house" aria-hidden="true"></i> Back to Resume Maker
         </a>
         <button class="btn-outline btn-small" onclick="shareApp()" aria-label="Share this resume builder">
@@ -1066,7 +1068,7 @@
     </button>
 
     <div class="builder-layout">
-      <section class="form-panel" aria-label="Resume input form">
+      <section class="form-panel" id="editorPanel" aria-label="Resume input form">
         <form id="resumeForm">
           <div class="card">
             <h2><i class="fa-solid fa-user" aria-hidden="true"></i> Personal Information</h2>
@@ -1237,13 +1239,16 @@
               <button class="btn-primary btn-small" onclick="downloadPDF()">
                 <i class="fa-solid fa-download" aria-hidden="true"></i> Download A4 PDF
               </button>
+              <button type="button" class="btn-outline btn-small" onclick="printTextPDF()" title="Choose Save as PDF in the print dialog">
+                <i class="fa-solid fa-print" aria-hidden="true"></i> Print / Save text PDF
+              </button>
               <button class="btn-outline btn-small" onclick="autoAdjustFont()">
                 <i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i> Auto Adjust
               </button>
             </div>
           </div>
 
-          <p style="margin: 0 0 14px; color: #475569; font-size: 14px; line-height: 1.5;">This PDF is image-based; its text is not selectable. For applications requiring machine-readable text, use a text-based resume or DOCX.</p>
+          <p style="margin: 0 0 14px; color: #475569; font-size: 14px; line-height: 1.5;">Download A4 PDF creates an image PDF. For selectable text, choose Print / Save text PDF, then Save as PDF in your browser.</p>
           <div class="font-control">
             <span>Small</span>
             <input id="fontSlider" aria-label="Adjust resume font size" type="range" min="7" max="12" value="10" step="0.5" oninput="adjustFontSize(this.value, true)" />
@@ -1324,14 +1329,14 @@
         <div style="max-width: 1120px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 15px;">
             <p style="margin: 0;">&copy; <script>document.write(new Date().getFullYear())</script> SHADER7 &bull; Resume Builder Template 2</p>
             <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 16px;">
-                <a href="/" style="color: #64748b; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#0f172a'" onmouseout="this.style.color='#64748b'">Main Site</a>
-                <a href="/about.html" style="color: #64748b; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#0f172a'" onmouseout="this.style.color='#64748b'">About Us</a>
-                <a href="/contact.html" style="color: #64748b; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#0f172a'" onmouseout="this.style.color='#64748b'">Contact Us</a>
-                <a href="/privacy-policy.html" style="color: #2563eb; text-decoration: none; transition: color 0.2s; font-weight: bold;" onmouseover="this.style.color='#1d4ed8'" onmouseout="this.style.color='#2563eb'">Privacy Policy</a>
-                <a href="/terms.html" style="color: #64748b; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#0f172a'" onmouseout="this.style.color='#64748b'">Terms of Service</a>
-                <a href="/sitemap.html" style="color: #64748b; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#0f172a'" onmouseout="this.style.color='#64748b'">Sitemap</a>
+                <a href="../../index.html" style="color: #64748b; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#0f172a'" onmouseout="this.style.color='#64748b'">Main Site</a>
+                <a href="../../about.html" style="color: #64748b; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#0f172a'" onmouseout="this.style.color='#64748b'">About Us</a>
+                <a href="../../contact.html" style="color: #64748b; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#0f172a'" onmouseout="this.style.color='#64748b'">Contact Us</a>
+                <a href="../../privacy-policy.html" style="color: #2563eb; text-decoration: none; transition: color 0.2s; font-weight: bold;" onmouseover="this.style.color='#1d4ed8'" onmouseout="this.style.color='#2563eb'">Privacy Policy</a>
+                <a href="../../terms.html" style="color: #64748b; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#0f172a'" onmouseout="this.style.color='#64748b'">Terms of Service</a>
+                <a href="../../sitemap.html" style="color: #64748b; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#0f172a'" onmouseout="this.style.color='#64748b'">Sitemap</a>
             </div>
-            <p style="margin: 5px 0 0 0; font-size: 0.8rem;"><a href="/cvbanao/" style="color: #4f46e5; text-decoration: none; font-weight: 700;">Back to Resume Maker Home</a></p>
+            <p style="margin: 5px 0 0 0; font-size: 0.8rem;"><a href="../index.html" style="color: #4f46e5; text-decoration: none; font-weight: 700;">Back to Resume Maker Home</a></p>
         </div>
     </footer>
 
@@ -1510,14 +1515,47 @@
       const modal = document.getElementById("cropModal");
       const cropImage = document.getElementById("cropImage");
 
+      modal._previousFocus = document.activeElement;
       modal.classList.add("show");
+      modal.onkeydown = handleCropDialogKeydown;
+      document.getElementById("cropZoom").focus();
       cropImage.src = originalPhotoData || photoData;
 
       cropImage.onload = () => resetCrop();
     }
 
+    function handleCropDialogKeydown(event) {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        event.stopPropagation();
+        closeCropper();
+        return;
+      }
+      if (event.key !== "Tab") return;
+      const controls = Array.from(event.currentTarget.querySelectorAll("input, button"))
+        .filter(control => !control.disabled && control.offsetParent !== null);
+      if (!controls.length) return;
+      const first = controls[0];
+      const last = controls[controls.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+
     function closeCropper() {
-      document.getElementById("cropModal").classList.remove("show");
+      const modal = document.getElementById("cropModal");
+      if (!modal.classList.contains("show")) return;
+      modal.classList.remove("show");
+      const previousFocus = modal._previousFocus;
+      if (previousFocus && previousFocus !== document.body && previousFocus.isConnected) {
+        previousFocus.focus();
+      } else {
+        document.querySelector(".photo-upload-area, .photo-area")?.focus();
+      }
     }
 
     function resetCrop() {
@@ -2297,6 +2335,9 @@
     function switchMobileView(view) {
       const tabEditor = document.getElementById("tabEditor");
       const tabPreview = document.getElementById("tabPreview");
+      const showingPreview = view === 'preview';
+      tabEditor.setAttribute('aria-pressed', String(!showingPreview));
+      tabPreview.setAttribute('aria-pressed', String(showingPreview));
       
       if (view === 'preview') {
         document.body.classList.add("show-preview");
@@ -2321,10 +2362,10 @@
 
   <!-- Mobile View Toggle Bar -->
   <div class="mobile-view-tabs" id="mobileViewTabs">
-    <button class="mobile-tab active" id="tabEditor" onclick="switchMobileView('editor')">
+    <button type="button" class="mobile-tab active" id="tabEditor" aria-controls="editorPanel" aria-pressed="true" onclick="switchMobileView('editor')">
       <i class="fa-solid fa-pen-to-square"></i> Editor
     </button>
-    <button class="mobile-tab" id="tabPreview" onclick="switchMobileView('preview')">
+    <button type="button" class="mobile-tab" id="tabPreview" aria-controls="previewPanel" aria-pressed="false" onclick="switchMobileView('preview')">
       <i class="fa-solid fa-eye"></i> Preview
     </button>
   </div>
