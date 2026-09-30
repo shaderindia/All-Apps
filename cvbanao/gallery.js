@@ -55,7 +55,9 @@
   dialog.addEventListener('close', () => opener?.focus());
   const requested = new URLSearchParams(window.location.search).get('preview');
   if (/^[1-6]$/.test(requested || '')) {
+    opener = document.querySelector(`[data-preview="${requested}"]`);
     showTemplate(requested);
     dialog.showModal();
+    document.getElementById('closeSampleDialog').focus();
   }
 })();
