@@ -15,6 +15,153 @@
     const size = () => paper.value === 'landscape' ? { width: 297, height: 210 } : { width: 210, height: 297 };
     const pixels = () => { const { width, height } = size(); return { width: width * 96 / 25.4, height: height * 96 / 25.4 }; };
 
+    function createSalaryWorkbook() {
+      const monthKey = getMonthKey();
+      const [yearText, monthText] = monthKey.split('-');
+      const year = Number(yearText), month = Number(monthText);
+      const salary = Math.max(0, parseFloat(find('salary').value) || 0);
+      const baseHours = Math.max(0, parseFloat(find('fixedBaseHours').value) || 0);
+      const hourlyRate = baseHours > 0 ? salary / baseHours : 0;
+      const weekendRate = Math.max(0, parseFloat(find('weekendRate').value) || 1);
+      const nightRate = Math.max(0, parseFloat(find('nightRate').value) || 1);
+      const cShiftRate = Math.max(0, parseFloat(find('cShiftRate').value) || 1);
+      const exchangeRate = Math.max(0, parseFloat(find('exchange-rate-manual').value) || 0);
+      const dailyLeft = [], dailyRight = [];
+      let weekdayHours = 0, weekendHours = 0, nightHours = 0, cShiftHours = 0, daysWorked = 0, grossSalary = 0;
+      const daysInMonth = new Date(year, month, 0).getDate();
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const date = new Date(year, month - 1, day);
+        const hoursSelect = find(`hours-${day}`);
+        const shiftSelect = find(`shift-${day}`);
+        const hours = Math.max(0, parseFloat(hoursSelect?.value) || 0);
+        const weekend = hoursSelect?.dataset.isWeekend === 'true';
+        const shift = shiftSelect?.value || '';
+        const night = shift.toLowerCase() === 'night';
+        const cShift = shift.toLowerCase() === 'c';
+        const multiplier = (weekend ? weekendRate : 1) * (night ? nightRate : 1) * (cShift ? cShiftRate : 1);
+        const dailyPay = hours * hourlyRate * multiplier;
+        const dateText = `${date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })} (${date.toLocaleDateString('en-GB', { weekday: 'short' })}) - ${shiftSelect?.options[shiftSelect.selectedIndex]?.text || 'N/A'}`;
+
+        if (weekend) weekendHours += hours; else weekdayHours += hours;
+        if (night) nightHours += hours;
+        if (cShift) cShiftHours += hours;
+        if (hours > 0) daysWorked++;
+        grossSalary += dailyPay;
+        (day <= Math.ceil(daysInMonth / 2) ? dailyLeft : dailyRight).push({ dateText, hours, dailyPay, weekend });
+      }
+
+      const totalHours = weekdayHours + weekendHours;
+      const monthName = new Date(year, month - 1, 1).toLocaleString('default', { month: 'long' });
+      const generatedDate = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+      const formatHours = value => formatNumber(value, value % 1 ? 1 : 0);
+      const cell = (value, style = 0) => ({ value, style });
+      const blankRow = () => Array(6).fill(null);
+      const rows = [
+        [cell(find('company-name').value.trim(), 1)],
+        [cell('Salary Statement', 2)],
+        [cell(`For Period: ${monthName} ${year} • Generated on ${generatedDate}`, 3)],
+        blankRow(),
+        [cell('Employee:', 4), cell(find('employee-name-input').value.trim(), 5), null, cell('Total Hours Worked:', 4), cell(totalHours, 7), cell('hrs', 8)],
+        [cell('Base Salary:', 4), cell(salary, 6), cell('RON', 8), cell('Breakdown:', 4), cell(`Weekday: ${formatHours(weekdayHours)}h | Weekend: ${formatHours(weekendHours)}h | Night: ${formatHours(nightHours)}h | C shift: ${formatHours(cShiftHours)}h`, 5)],
+        [cell('Fixed Base Hours:', 4), cell(baseHours, 7), cell('hrs', 8), cell('Days Worked / Days Off:', 4), cell(`${daysWorked} / ${daysInMonth - daysWorked}`, 5)],
+        [cell('Standard Hourly Rate:', 4), cell(hourlyRate, 6), cell('RON/hr', 8), cell('Total Gross Salary:', 4), cell(grossSalary, 6), cell('RON', 8)],
+        [cell('Multipliers:', 4), cell(`Weekend: ${weekendRate}x | Night: ${nightRate}x | C Shift: ${cShiftRate}x`, 5), null, cell('Converted Value (INR):', 4), cell(grossSalary * exchangeRate, 6), cell('INR', 8)],
+        blankRow(),
+        [cell('Itemized Daily Work Log', 16)],
+        ['Date & Shift', 'Hours', 'Daily Pay', 'Date & Shift', 'Hours', 'Daily Pay'].map(value => cell(value, 12))
+      ];
+      const maxDailyRows = Math.max(dailyLeft.length, dailyRight.length);
+      for (let index = 0; index < maxDailyRows; index++) {
+        const left = dailyLeft[index], right = dailyRight[index];
+        const dailyCells = (item) => item ? [
+          cell(item.dateText, item.weekend ? 13 : 9),
+          cell(item.hours, item.weekend ? 14 : 10),
+          cell(item.dailyPay, item.weekend ? 15 : 11)
+        ] : [null, null, null];
+        rows.push([...dailyCells(left), ...dailyCells(right)]);
+      }
+      const signatureRow = rows.length + 1;
+      rows.push([cell('Employee Signature: _________________________', 17), null, null, cell('Authorized Signature: _________________________', 17)]);
+      rows.push([cell('Date: ____________________', 17), null, null, cell('Date: ____________________', 17)]);
+      rows.push([cell('Generated with SHADER7 • Monthly salary and work log', 18)]);
+      const merges = ['A1:F1', 'A2:F2', 'A3:F3', 'A11:F11', 'B5:C5', 'E6:F6', 'E7:F7', 'B9:C9', `A${signatureRow}:C${signatureRow}`, `D${signatureRow}:F${signatureRow}`, `A${signatureRow + 1}:C${signatureRow + 1}`, `D${signatureRow + 1}:F${signatureRow + 1}`, `A${signatureRow + 2}:F${signatureRow + 2}`];
+
+      const xmlEscape = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' }[char]));
+      const columnName = index => {
+        let name = '';
+        while (index > 0) { index--; name = String.fromCharCode(65 + index % 26) + name; index = Math.floor(index / 26); }
+        return name;
+      };
+      const worksheetXml = (rows, widths, mergeRefs) => {
+        const rowXml = rows.map((row, rowIndex) => {
+          const cells = row.map((item, columnIndex) => {
+            if (item === null || item === undefined) return '';
+            const value = item.value;
+            if (value === '' || value === null || value === undefined) return '';
+            const ref = `${columnName(columnIndex + 1)}${rowIndex + 1}`;
+            const style = item.style ? ` s="${item.style}"` : '';
+            if (typeof value === 'number' && Number.isFinite(value)) return `<c r="${ref}"${style}><v>${value}</v></c>`;
+            return `<c r="${ref}"${style} t="inlineStr"><is><t xml:space="preserve">${xmlEscape(value)}</t></is></c>`;
+          }).join('');
+          const excelRow = rowIndex + 1;
+          const height = excelRow === 1 ? 30 : excelRow === 2 ? 24 : excelRow === 3 ? 22 : excelRow >= 5 && excelRow <= 9 ? 30 : excelRow === 12 ? 26 : excelRow >= 13 && excelRow < signatureRow ? 24 : 21;
+          return `<row r="${excelRow}" ht="${height}" customHeight="1">${cells}</row>`;
+        }).join('');
+        const columnWidths = widths.map((width, index) => `<col min="${index + 1}" max="${index + 1}" width="${width}" customWidth="1"/>`).join('');
+        const mergedCells = mergeRefs.map(ref => `<mergeCell ref="${ref}"/>`).join('');
+        return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetPr><pageSetUpPr fitToPage="1"/></sheetPr><dimension ref="A1:F${rows.length}"/><sheetViews><sheetView showGridLines="0" workbookViewId="0"/></sheetViews><sheetFormatPr defaultRowHeight="15"/><cols>${columnWidths}</cols><sheetData>${rowXml}</sheetData><mergeCells count="${mergeRefs.length}">${mergedCells}</mergeCells><printOptions horizontalCentered="1"/><pageMargins left="0.39" right="0.39" top="0.39" bottom="0.39" header="0.15" footer="0.15"/><pageSetup paperSize="9" orientation="${paper.value}" fitToWidth="1" fitToHeight="1"/></worksheet>`;
+      };
+
+      const files = [
+        ['[Content_Types].xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>'],
+        ['_rels/.rels', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>'],
+        ['xl/workbook.xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><bookViews><workbookView/></bookViews><sheets><sheet name="Salary Report" sheetId="1" r:id="rId1"/></sheets></workbook>'],
+        ['xl/_rels/workbook.xml.rels', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>'],
+        ['xl/worksheets/sheet1.xml', worksheetXml(rows, [25, 10, 15, 25, 10, 15], merges)],
+        ['xl/styles.xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><numFmts count="4"><numFmt numFmtId="164" formatCode="#,##0.00"/><numFmt numFmtId="165" formatCode="#,##0.##"/><numFmt numFmtId="166" formatCode="#,##0.00&quot; RON&quot;"/><numFmt numFmtId="167" formatCode="#,##0.##&quot;h&quot;"/></numFmts><fonts count="6"><font><name val="Calibri"/><sz val="10"/><color rgb="FF182338"/></font><font><name val="Calibri"/><b/><sz val="16"/><color rgb="FF172C4B"/></font><font><name val="Calibri"/><b/><sz val="12"/><color rgb="FF355DD1"/></font><font><name val="Calibri"/><sz val="9"/><color rgb="FF526176"/></font><font><name val="Calibri"/><b/><sz val="9"/><color rgb="FF172C4B"/></font><font><name val="Calibri"/><sz val="8"/><color rgb="FF66748A"/></font></fonts><fills count="5"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFEAF0F8"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFF3F6FA"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFFFF7F7"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="3"><border><left/><right/><top/><bottom/><diagonal/></border><border><left style="thin"><color rgb="FFD4DCE7"/></left><right style="thin"><color rgb="FFD4DCE7"/></right><top style="thin"><color rgb="FFD4DCE7"/></top><bottom style="thin"><color rgb="FFD4DCE7"/></bottom><diagonal/></border><border><left/><right/><top/><bottom style="medium"><color rgb="FF355DD1"/></bottom><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="19"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="0" borderId="2" xfId="0" applyFont="1" applyBorder="1"><alignment horizontal="left" vertical="center"/></xf><xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1"><alignment horizontal="left" vertical="center"/></xf><xf numFmtId="0" fontId="3" fillId="0" borderId="0" xfId="0" applyFont="1"><alignment horizontal="left" vertical="center"/></xf><xf numFmtId="0" fontId="4" fillId="3" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf><xf numFmtId="0" fontId="0" fillId="3" borderId="1" xfId="0" applyFill="1" applyBorder="1" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf><xf numFmtId="164" fontId="0" fillId="3" borderId="1" xfId="0" applyNumberFormat="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf><xf numFmtId="165" fontId="0" fillId="3" borderId="1" xfId="0" applyNumberFormat="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf><xf numFmtId="0" fontId="3" fillId="3" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"/><xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf><xf numFmtId="165" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf><xf numFmtId="164" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf><xf numFmtId="0" fontId="4" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf><xf numFmtId="0" fontId="0" fillId="4" borderId="1" xfId="0" applyFill="1" applyBorder="1" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf><xf numFmtId="165" fontId="0" fillId="4" borderId="1" xfId="0" applyNumberFormat="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf><xf numFmtId="164" fontId="0" fillId="4" borderId="1" xfId="0" applyNumberFormat="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf><xf numFmtId="0" fontId="4" fillId="0" borderId="2" xfId="0" applyFont="1" applyBorder="1"/><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf><xf numFmtId="0" fontId="5" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>']
+      ];
+      files[5][1] = files[5][1]
+        .replace('<xf numFmtId="165" fontId="0" fillId="0" borderId="1"', '<xf numFmtId="167" fontId="0" fillId="0" borderId="1"')
+        .replace('<xf numFmtId="164" fontId="0" fillId="0" borderId="1"', '<xf numFmtId="166" fontId="0" fillId="0" borderId="1"')
+        .replace('<xf numFmtId="165" fontId="0" fillId="4" borderId="1"', '<xf numFmtId="167" fontId="0" fillId="4" borderId="1"')
+        .replace('<xf numFmtId="164" fontId="0" fillId="4" borderId="1"', '<xf numFmtId="166" fontId="0" fillId="4" borderId="1"');
+
+      const encoder = new TextEncoder();
+      const crcTable = Array.from({ length: 256 }, (_, number) => {
+        let value = number;
+        for (let bit = 0; bit < 8; bit++) value = (value & 1) ? (0xEDB88320 ^ (value >>> 1)) : (value >>> 1);
+        return value >>> 0;
+      });
+      const crc32 = bytes => {
+        let crc = 0xFFFFFFFF;
+        for (const byte of bytes) crc = crcTable[(crc ^ byte) & 0xFF] ^ (crc >>> 8);
+        return (crc ^ 0xFFFFFFFF) >>> 0;
+      };
+      const localParts = [], centralParts = [];
+      let offset = 0;
+      const now = new Date();
+      const zipTime = (now.getHours() << 11) | (now.getMinutes() << 5) | Math.floor(now.getSeconds() / 2);
+      const zipDate = ((Math.max(1980, now.getFullYear()) - 1980) << 9) | ((now.getMonth() + 1) << 5) | now.getDate();
+      const makeHeader = (length, fields) => {
+        const bytes = new Uint8Array(length), view = new DataView(bytes.buffer);
+        fields.forEach(([index, value, width]) => width === 2 ? view.setUint16(index, value, true) : view.setUint32(index, value, true));
+        return bytes;
+      };
+
+      for (const [path, content] of files) {
+        const name = encoder.encode(path), data = encoder.encode(content), checksum = crc32(data);
+        const localHeader = makeHeader(30, [[0, 0x04034B50, 4], [4, 20, 2], [6, 0, 2], [8, 0, 2], [10, zipTime, 2], [12, zipDate, 2], [14, checksum, 4], [18, data.length, 4], [22, data.length, 4], [26, name.length, 2], [28, 0, 2]]);
+        localParts.push(localHeader, name, data);
+        const centralHeader = makeHeader(46, [[0, 0x02014B50, 4], [4, 20, 2], [6, 20, 2], [8, 0, 2], [10, 0, 2], [12, zipTime, 2], [14, zipDate, 2], [16, checksum, 4], [20, data.length, 4], [24, data.length, 4], [28, name.length, 2], [30, 0, 2], [32, 0, 2], [34, 0, 2], [36, 0, 2], [38, 0, 4], [42, offset, 4]]);
+        centralParts.push(centralHeader, name);
+        offset += localHeader.length + name.length + data.length;
+      }
+      const centralSize = centralParts.reduce((total, part) => total + part.length, 0);
+      const endRecord = makeHeader(22, [[0, 0x06054B50, 4], [4, 0, 2], [6, 0, 2], [8, files.length, 2], [10, files.length, 2], [12, centralSize, 4], [16, offset, 4], [20, 0, 2]]);
+      return new Blob([...localParts, ...centralParts, endRecord], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    }
+
     function fittedZoom(view) {
       const bounds = pixels();
       const style = getComputedStyle(scroller);
@@ -99,7 +246,7 @@
 
     async function download(format) {
       if (busy) return;
-      if (!window.html2canvas || (format === 'pdf' && !window.jspdf?.jsPDF)) return showToast('Report tools are loading. Please try again in a moment.');
+      if (format !== 'xlsx' && (!window.html2canvas || (format === 'pdf' && !window.jspdf?.jsPDF))) return showToast('Report tools are loading. Please try again in a moment.');
       busy = true;
       modal.setAttribute('aria-busy', 'true');
       const controls = Array.from(modal.querySelectorAll('button, select'));
@@ -107,38 +254,50 @@
       controls.forEach(control => { control.disabled = true; });
       const button = find(`modal-download-${format}-btn`);
       const label = button.innerHTML;
-      button.textContent = `Creating ${format.toUpperCase()}…`;
+      button.textContent = format === 'xlsx' ? 'Creating Excel…' : `Creating ${format.toUpperCase()}…`;
       try {
-        await document.fonts.ready;
-        const bounds = pixels();
-        const canvas = await html2canvas(page, {
-          scale: 3, backgroundColor: '#ffffff', logging: false, useCORS: true,
-          width: bounds.width, height: bounds.height, windowWidth: Math.ceil(bounds.width), windowHeight: Math.ceil(bounds.height),
-          scrollX: 0, scrollY: 0,
-          onclone(doc) {
-            const copy = doc.getElementById('report-preview-content');
-            doc.body.appendChild(copy);
-            copy.style.cssText = 'position:absolute;left:0;top:0;transform:none;margin:0;box-shadow:none;';
-          }
-        });
         const safe = value => value.trim().replace(/[^a-z0-9_-]+/gi, '_').slice(0, 70) || 'Report';
-        const filename = `Salary_Report_${safe(find('employee-name-input').value)}_${getMonthKey()}_A4_${paper.value}`;
-        if (format === 'pdf') {
-          const pdf = new window.jspdf.jsPDF({ orientation: paper.value, unit: 'mm', format: 'a4', compress: true });
-          pdf.addImage(canvas, 'PNG', 0, 0, pdf.internal.pageSize.getWidth(), pdf.internal.pageSize.getHeight(), undefined, 'FAST');
-          pdf.save(`${filename}.pdf`);
-        } else {
+        const filename = `Salary_Report_${safe(find('employee-name-input').value)}_${getMonthKey()}`;
+        if (format === 'xlsx') {
+          const url = URL.createObjectURL(createSalaryWorkbook());
           const link = document.createElement('a');
-          link.download = `${filename}.jpg`;
-          link.href = canvas.toDataURL('image/jpeg', 0.95);
+          link.download = `${filename}.xlsx`;
+          link.href = url;
           document.body.appendChild(link);
           link.click();
           link.remove();
+          window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+          showToast('Excel workbook downloaded.');
+        } else {
+          await document.fonts.ready;
+          const bounds = pixels();
+          const canvas = await html2canvas(page, {
+            scale: 3, backgroundColor: '#ffffff', logging: false, useCORS: true,
+            width: bounds.width, height: bounds.height, windowWidth: Math.ceil(bounds.width), windowHeight: Math.ceil(bounds.height),
+            scrollX: 0, scrollY: 0,
+            onclone(doc) {
+              const copy = doc.getElementById('report-preview-content');
+              doc.body.appendChild(copy);
+              copy.style.cssText = 'position:absolute;left:0;top:0;transform:none;margin:0;box-shadow:none;';
+            }
+          });
+          if (format === 'pdf') {
+            const pdf = new window.jspdf.jsPDF({ orientation: paper.value, unit: 'mm', format: 'a4', compress: true });
+            pdf.addImage(canvas, 'PNG', 0, 0, pdf.internal.pageSize.getWidth(), pdf.internal.pageSize.getHeight(), undefined, 'FAST');
+            pdf.save(`${filename}_A4_${paper.value}.pdf`);
+          } else {
+            const link = document.createElement('a');
+            link.download = `${filename}_A4_${paper.value}.jpg`;
+            link.href = canvas.toDataURL('image/jpeg', 0.95);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+          }
+          showToast(`${format.toUpperCase()} report downloaded.`);
         }
-        showToast(`${format.toUpperCase()} report downloaded.`);
       } catch (error) {
         console.error('Salary report export failed:', error);
-        showToast('Could not download the report. Please try again.');
+        showToast(format === 'xlsx' ? 'Could not create the Excel file. Please try again.' : 'Could not download the report. Please try again.');
       } finally {
         busy = false;
         modal.removeAttribute('aria-busy');
@@ -158,6 +317,7 @@
     find('zoom-in-btn').addEventListener('click', () => setZoom(zoom + 0.1));
     find('modal-download-pdf-btn').addEventListener('click', () => download('pdf'));
     find('modal-download-jpg-btn').addEventListener('click', () => download('jpg'));
+    find('modal-download-xlsx-btn').addEventListener('click', () => download('xlsx'));
     find('modal-print-btn').addEventListener('click', () => window.print());
     new ResizeObserver(() => { if (isOpen() && (mode === 'page' || mode === 'width')) fit(mode); }).observe(scroller);
 
