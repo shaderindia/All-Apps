@@ -65,8 +65,7 @@
           <div class="meta-item"><span class="meta-label">Supervisor</span><span class="meta-value">${valueOrLine('supervisor')}</span></div>
         </section>
         <div class="months-grid">${months.map(makeMonthPanel).join('')}</div>
-        <section class="sheet-bottom"><p class="legend"><strong>Attendance notes:</strong> Record arrival and departure times, unpaid break, total worked hours, and employee initials each day. Shade weekends; leave unused dates blank.</p><div class="signatures"><div class="signature-line">Employee signature / date</div><div class="signature-line">Supervisor signature / date</div></div></section>
-        <div class="sheet-footer">Created with Shader7 · Blank attendance form · Keep completed records according to your local policy</div>
+        <section class="sheet-bottom"><p class="legend"><strong>Attendance notes:</strong> Record arrival and departure times, unpaid break, total worked hours, and employee initials each day. Shade weekends; leave unused dates blank.</p><div class="signatures"><div class="signature"><div class="signature-space" aria-hidden="true"></div><div class="signature-label">Employee signature / date</div></div><div class="signature"><div class="signature-space" aria-hidden="true"></div><div class="signature-label">Supervisor signature / date</div></div></div></section>
       </div>`;
       const size = paperMM();
       $('paper-details').textContent = `A4 ${layout} · ${size.width} × ${size.height} mm · ${count} month${count > 1 ? 's' : ''} · 1 page`;

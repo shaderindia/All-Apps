@@ -47,45 +47,42 @@ a { color:inherit; }
 .preview-viewport { margin-top:22px; overflow:auto; min-height:320px; padding:22px; border:1px solid #d5ddea; border-radius:14px; background:#dfe6f0; outline:0; }
 .preview-viewport:focus-visible { box-shadow:0 0 0 4px rgba(53,93,209,.15); }
 #preview-stage { position:relative; margin:0 auto; }
-#attendance-page { position:absolute; left:0; top:0; width:297mm; height:210mm; padding:9mm; transform-origin:top left; overflow:hidden; color:#17243a; background:#fff; box-shadow:0 8px 28px rgba(16,27,51,.2); font-family:Arial,sans-serif; }
+#attendance-page { position:absolute; left:0; top:0; width:297mm; height:210mm; padding:8mm; transform-origin:top left; overflow:hidden; color:#17243a; background:#fff; box-shadow:0 8px 28px rgba(16,27,51,.2); font-family:Arial,sans-serif; }
 #attendance-page[data-orientation="portrait"] { width:210mm; height:297mm; }
-.sheet-inner { display:flex; flex-direction:column; height:100%; }
-.sheet-top { display:grid; grid-template-columns:minmax(0,1.5fr) minmax(0,1fr); gap:5mm; align-items:end; padding-bottom:3mm; border-bottom:.6mm solid #355dd1; }
+.sheet-inner { display:grid; grid-template-rows:auto auto minmax(0,1fr) auto; gap:2mm; height:100%; min-height:0; }
+.sheet-top { display:grid; grid-template-columns:minmax(0,1.5fr) minmax(0,1fr); gap:5mm; align-items:end; min-width:0; padding-bottom:2mm; border-bottom:.6mm solid #355dd1; }
 .sheet-company { margin:0; font-size:15pt; font-weight:800; line-height:1.15; overflow-wrap:anywhere; }
 .sheet-title { margin:1mm 0 0; color:#355dd1; font-size:8pt; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
 .sheet-period { text-align:right; }
 .sheet-period strong { display:block; font-size:9pt; }
 .sheet-period span { color:#637189; font-size:6.5pt; }
-.sheet-meta { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:2mm 4mm; margin:3mm 0; padding:2.4mm 3mm; border:.3mm solid #d6deea; border-radius:1.5mm; background:#f6f8fb; }
+.sheet-meta { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:2mm 4mm; min-width:0; margin:0; padding:2mm 2.5mm; border:.3mm solid #d6deea; border-radius:1.5mm; background:#f6f8fb; }
 .meta-item { min-width:0; }
 .meta-label { display:block; color:#6a768a; font-size:5.8pt; font-weight:700; text-transform:uppercase; letter-spacing:.05em; }
 .meta-value { display:block; min-height:4mm; padding-top:.6mm; border-bottom:.25mm solid #aeb9c9; font-size:7.4pt; font-weight:700; overflow-wrap:anywhere; }
-.months-grid { display:grid; grid-template-columns:repeat(var(--month-columns),minmax(0,1fr)); gap:2.2mm; min-height:0; flex:1; }
-.month-panel { min-width:0; display:flex; flex-direction:column; }
-.month-heading { margin:0; padding:1.3mm; color:#fff; background:#355dd1; text-align:center; font-size:7.4pt; letter-spacing:.03em; }
-.attendance-table { width:100%; height:100%; table-layout:fixed; border-collapse:collapse; }
-.attendance-table th,.attendance-table td { border:.22mm solid #aeb9c9; padding:.45mm .5mm; text-align:center; line-height:1; }
-.attendance-table th { height:4.8mm; color:#33435d; background:#eaf0f8; font-size:5.4pt; font-weight:800; }
-.attendance-table td { height:4.45mm; font-size:5.6pt; }
+.months-grid { display:grid; grid-template-columns:repeat(var(--month-columns),minmax(0,1fr)); gap:2mm; min-height:0; }
+.month-panel { display:flex; flex-direction:column; min-width:0; min-height:0; }
+.month-heading { margin:0; padding:.8mm; color:#fff; background:#355dd1; text-align:center; font-size:7.4pt; line-height:1.1; letter-spacing:.03em; }
+.attendance-table { width:100%; flex:1 1 0; min-height:0; table-layout:fixed; border-collapse:collapse; }
+.attendance-table thead { height:5mm; }
+.attendance-table tbody tr { height:calc((100% - 5mm) / 31); }
+.attendance-table th,.attendance-table td { border:.22mm solid #aeb9c9; padding:.4mm .35mm; text-align:center; line-height:1; }
+.attendance-table th { color:#33435d; background:#eaf0f8; font-size:5.8pt; font-weight:800; white-space:nowrap; }
+.attendance-table td { font-size:6pt; }
 .attendance-table .date-cell { width:18%; text-align:left; padding-left:.8mm; font-weight:700; white-space:nowrap; }
 .attendance-table .weekend-row td { background:#fff1f1; }
 .attendance-table .weekend-row .date-cell { color:#a23838; }
 .attendance-table .unused-row td { background:#eef1f5; color:transparent; }
 .attendance-table .initial-cell { width:17%; }
-.sheet-bottom { display:grid; grid-template-columns:minmax(0,1.5fr) minmax(0,1fr); gap:4mm; align-items:end; margin-top:2.5mm; }
+.sheet-bottom { display:grid; grid-template-columns:minmax(0,1fr); gap:2mm; min-width:0; }
 .legend { margin:0; color:#5d6b80; font-size:5.7pt; line-height:1.45; }
-.signatures { display:grid; grid-template-columns:1fr 1fr; gap:4mm; }
-.signature-line { padding-top:3mm; border-top:.25mm solid #7d899b; text-align:center; font-size:5.7pt; font-weight:700; }
-.sheet-footer { margin-top:1.3mm; color:#8792a3; text-align:center; font-size:5pt; }
+.signatures { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8mm; }
+.signature { display:grid; grid-template-rows:15mm auto; min-width:0; }
+.signature-space { border-bottom:.25mm solid #7d899b; }
+.signature-label { padding-top:1mm; text-align:center; font-size:5.7pt; line-height:1.2; font-weight:700; }
 #attendance-page[data-months="1"] .attendance-table th { font-size:6.4pt; }
 #attendance-page[data-months="1"] .attendance-table td { font-size:6.5pt; }
 #attendance-page[data-months="1"] .month-heading { font-size:8.2pt; }
-#attendance-page[data-orientation="portrait"][data-months="3"] { padding:7mm; }
-#attendance-page[data-orientation="portrait"][data-months="3"] .months-grid { gap:1mm; }
-#attendance-page[data-orientation="portrait"][data-months="3"] .attendance-table th { font-size:4.6pt; }
-#attendance-page[data-orientation="portrait"][data-months="3"] .attendance-table td { padding:.35mm .2mm; font-size:4.8pt; }
-#attendance-page[data-orientation="portrait"][data-months="3"] .month-heading { font-size:6.4pt; }
-#attendance-page[data-orientation="portrait"][data-months="3"] .sheet-meta { gap:1.5mm 2mm; }
 .privacy-note { margin:13px 0 0; color:var(--muted); text-align:center; font-size:.78rem; }
 .help-card { display:grid; grid-template-columns:.8fr 1.2fr; gap:50px; }
 .help-card ol { margin:0; padding-left:22px; color:var(--muted); }
@@ -100,9 +97,11 @@ body.is-exporting .actions { pointer-events:none; }
 @media (max-width:560px) { .page-shell { width:min(100% - 20px,1180px); padding-top:10px; } .hero,.builder-card,.preview-card,.help-card { border-radius:17px; } .hero { padding:24px 20px; } .builder-grid { grid-template-columns:1fr; } .preview-card { padding:16px 10px; } .preview-toolbar { padding:4px 6px 0; } .actions { width:100%; display:grid; grid-template-columns:1fr 1fr; } .actions .button:first-child { grid-column:1/-1; } .preview-viewport { padding:10px; min-height:260px; } footer { align-items:flex-start; flex-direction:column; } }
 @media (prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto!important; transition:none!important; } }
 @media print {
+  @page { margin:0; }
   body { margin:0!important; padding:0!important; background:#fff!important; }
   body>*:not(.page-shell),.page-shell>*:not(.preview-card),.preview-toolbar,.privacy-note { display:none!important; }
   .page-shell,.preview-card,.preview-viewport { width:auto!important; max-width:none!important; min-height:0!important; margin:0!important; padding:0!important; border:0!important; border-radius:0!important; background:#fff!important; box-shadow:none!important; overflow:visible!important; }
   #preview-stage { width:auto!important; height:auto!important; margin:0!important; }
-  #attendance-page { position:relative!important; transform:none!important; margin:0!important; box-shadow:none!important; print-color-adjust:exact; -webkit-print-color-adjust:exact; }
+  #attendance-page { position:relative!important; transform:none!important; margin:0!important; box-shadow:none!important; break-after:avoid-page; page-break-after:avoid; print-color-adjust:exact; -webkit-print-color-adjust:exact; }
+  .sheet-inner,.sheet-meta,.months-grid,.month-panel,.attendance-table,.sheet-bottom { break-inside:avoid-page; page-break-inside:avoid; }
 }
