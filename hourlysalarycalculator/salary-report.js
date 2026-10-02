@@ -53,6 +53,7 @@
         if (hours > 0) daysWorked++;
         grossSalary += dailyPay;
         dailyData.push({
+          day,
           dateSerial: Math.floor((Date.UTC(year, month - 1, day) - Date.UTC(1899, 11, 30)) / 86400000),
           weekday, shift: shiftText, dayType: weekend ? 'Weekend' : 'Weekday', hours, dailyPay
         });
@@ -79,15 +80,15 @@
         ['Pay Multipliers', 'Weekend Rate', weekendRate, 'x', 7],
         ['Pay Multipliers', 'Night Rate', nightRate, 'x', 7],
         ['Pay Multipliers', 'C Shift Rate', cShiftRate, 'x', 7],
-        ['Compensation', 'Total Gross Salary', grossSalary, 'RON', 6, `SUM('Daily Log'!F2:F${dailyEndRow})`],
+        ['Compensation', 'Total Gross Salary', grossSalary, 'RON', 6, `SUM('Daily Log'!G2:G${dailyEndRow})`],
         ['Currency', 'RON to INR Rate', exchangeRate, 'INR per RON', 7],
         ['Currency', 'Converted Value', grossSalary * exchangeRate, 'INR', 6, 'C12*C13'],
-        ['Attendance', 'Total Hours Worked', totalHours, 'hours', 7, `SUM('Daily Log'!E2:E${dailyEndRow})`],
-        ['Attendance', 'Weekday Hours', weekdayHours, 'hours', 7, `SUMIF('Daily Log'!D2:D${dailyEndRow},"Weekday",'Daily Log'!E2:E${dailyEndRow})`],
-        ['Attendance', 'Weekend Hours', weekendHours, 'hours', 7, `SUMIF('Daily Log'!D2:D${dailyEndRow},"Weekend",'Daily Log'!E2:E${dailyEndRow})`],
-        ['Attendance', 'Night Shift Hours', nightHours, 'hours', 7, `SUMIF('Daily Log'!C2:C${dailyEndRow},"Night Shift",'Daily Log'!E2:E${dailyEndRow})`],
-        ['Attendance', 'C Shift Hours', cShiftHours, 'hours', 7, `SUMIF('Daily Log'!C2:C${dailyEndRow},"C",'Daily Log'!E2:E${dailyEndRow})`],
-        ['Attendance', 'Days Worked', daysWorked, 'days', 7, `COUNTIF('Daily Log'!E2:E${dailyEndRow},">0")`],
+        ['Attendance', 'Total Hours Worked', totalHours, 'hours', 7, `SUM('Daily Log'!F2:F${dailyEndRow})`],
+        ['Attendance', 'Weekday Hours', weekdayHours, 'hours', 7, `SUMIF('Daily Log'!E2:E${dailyEndRow},"Weekday",'Daily Log'!F2:F${dailyEndRow})`],
+        ['Attendance', 'Weekend Hours', weekendHours, 'hours', 7, `SUMIF('Daily Log'!E2:E${dailyEndRow},"Weekend",'Daily Log'!F2:F${dailyEndRow})`],
+        ['Attendance', 'Night Shift Hours', nightHours, 'hours', 7, `SUMIF('Daily Log'!D2:D${dailyEndRow},"Night Shift",'Daily Log'!F2:F${dailyEndRow})`],
+        ['Attendance', 'C Shift Hours', cShiftHours, 'hours', 7, `SUMIF('Daily Log'!D2:D${dailyEndRow},"C",'Daily Log'!F2:F${dailyEndRow})`],
+        ['Attendance', 'Days Worked', daysWorked, 'days', 7, `COUNTIF('Daily Log'!F2:F${dailyEndRow},">0")`],
         ['Attendance', 'Days Off', daysInMonth - daysWorked, 'days', 7, `${daysInMonth}-C20`]
       ];
       summaryEntries.forEach(([category, metric, value, unit, style, formula]) => {
@@ -95,22 +96,22 @@
       });
       const merges = ['A1:D1'];
       const dataRows = [[
-        'Date', 'Weekday', 'Shift', 'Day Type', 'Hours', 'Daily Pay (RON)'
+        'Day', 'Date', 'Weekday', 'Shift', 'Day Type', 'Hours Worked', 'Daily Pay (RON)'
       ].map(value => cell(value, 12))];
       dailyData.forEach((item, index) => {
         const excelRow = index + 2;
         dataRows.push([
-          cell(item.dateSerial, 19), cell(item.weekday, 9), cell(item.shift, 9), cell(item.dayType, 9),
+          cell(item.day, 7), cell(item.dateSerial, 19), cell(item.weekday, 9), cell(item.shift, 9), cell(item.dayType, 9),
           cell(item.hours, 10),
-          formulaCell(item.dailyPay, 11, `E${excelRow}*Summary!$C$8*IF(D${excelRow}="Weekend",Summary!$C$9,1)*IF(C${excelRow}="Night Shift",Summary!$C$10,1)*IF(C${excelRow}="C",Summary!$C$11,1)`)
+          formulaCell(item.dailyPay, 11, `F${excelRow}*Summary!$C$8*IF(E${excelRow}="Weekend",Summary!$C$9,1)*IF(D${excelRow}="Night Shift",Summary!$C$10,1)*IF(D${excelRow}="C",Summary!$C$11,1)`)
         ]);
       });
-      dataRows.push(Array(6).fill(null));
+      dataRows.push(Array(7).fill(null));
       const dataTotalRow = dataRows.length + 1;
       dataRows.push([
-        cell('Monthly Total', 16), null, null, null,
-        formulaCell(totalHours, 10, `SUM(E2:E${dailyData.length + 1})`),
-        formulaCell(grossSalary, 11, `SUM(F2:F${dailyData.length + 1})`)
+        cell('Monthly Total', 16), null, null, null, null,
+        formulaCell(totalHours, 10, `SUM(F2:F${dailyData.length + 1})`),
+        formulaCell(grossSalary, 11, `SUM(G2:G${dailyData.length + 1})`)
       ]);
 
       const xmlEscape = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' }[char]));
@@ -150,7 +151,7 @@
         ['xl/workbook.xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><bookViews><workbookView/></bookViews><sheets><sheet name="Summary" sheetId="1" r:id="rId1"/><sheet name="Daily Log" sheetId="2" r:id="rId2"/></sheets><calcPr calcMode="auto" fullCalcOnLoad="1"/></workbook>'],
         ['xl/_rels/workbook.xml.rels', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet2.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>'],
         ['xl/worksheets/sheet1.xml', worksheetXml(rows, [18, 28, 20, 28], merges, `A5:D${rows.length}`, 5, 5)],
-        ['xl/worksheets/sheet2.xml', worksheetXml(dataRows, [14, 14, 18, 14, 12, 22], [], `A1:F${dailyData.length + 1}`, 1, 1)],
+        ['xl/worksheets/sheet2.xml', worksheetXml(dataRows, [8, 14, 14, 18, 14, 14, 22], [], `A1:G${dailyData.length + 1}`, 1, 1)],
         ['xl/styles.xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><numFmts count="4"><numFmt numFmtId="164" formatCode="#,##0.00"/><numFmt numFmtId="165" formatCode="#,##0.##"/><numFmt numFmtId="166" formatCode="#,##0.00&quot; RON&quot;"/><numFmt numFmtId="167" formatCode="#,##0.##&quot;h&quot;"/></numFmts><fonts count="6"><font><name val="Calibri"/><sz val="10"/><color rgb="FF182338"/></font><font><name val="Calibri"/><b/><sz val="16"/><color rgb="FF172C4B"/></font><font><name val="Calibri"/><b/><sz val="12"/><color rgb="FF355DD1"/></font><font><name val="Calibri"/><sz val="9"/><color rgb="FF526176"/></font><font><name val="Calibri"/><b/><sz val="9"/><color rgb="FF172C4B"/></font><font><name val="Calibri"/><sz val="8"/><color rgb="FF66748A"/></font></fonts><fills count="5"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFEAF0F8"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFF3F6FA"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFFFF7F7"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="3"><border><left/><right/><top/><bottom/><diagonal/></border><border><left style="thin"><color rgb="FFD4DCE7"/></left><right style="thin"><color rgb="FFD4DCE7"/></right><top style="thin"><color rgb="FFD4DCE7"/></top><bottom style="thin"><color rgb="FFD4DCE7"/></bottom><diagonal/></border><border><left/><right/><top/><bottom style="medium"><color rgb="FF355DD1"/></bottom><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="19"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="0" borderId="2" xfId="0" applyFont="1" applyBorder="1"><alignment horizontal="left" vertical="center"/></xf><xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1"><alignment horizontal="left" vertical="center"/></xf><xf numFmtId="0" fontId="3" fillId="0" borderId="0" xfId="0" applyFont="1"><alignment horizontal="left" vertical="center"/></xf><xf numFmtId="0" fontId="4" fillId="3" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf><xf numFmtId="0" fontId="0" fillId="3" borderId="1" xfId="0" applyFill="1" applyBorder="1" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf><xf numFmtId="164" fontId="0" fillId="3" borderId="1" xfId="0" applyNumberFormat="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf><xf numFmtId="165" fontId="0" fillId="3" borderId="1" xfId="0" applyNumberFormat="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf><xf numFmtId="0" fontId="3" fillId="3" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"/><xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf><xf numFmtId="165" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf><xf numFmtId="164" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf><xf numFmtId="0" fontId="4" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf><xf numFmtId="0" fontId="0" fillId="4" borderId="1" xfId="0" applyFill="1" applyBorder="1" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf><xf numFmtId="165" fontId="0" fillId="4" borderId="1" xfId="0" applyNumberFormat="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf><xf numFmtId="164" fontId="0" fillId="4" borderId="1" xfId="0" applyNumberFormat="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf><xf numFmtId="0" fontId="4" fillId="0" borderId="2" xfId="0" applyFont="1" applyBorder="1"/><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf><xf numFmtId="0" fontId="5" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>']
       ];
       const stylesFile = files.find(([path]) => path === 'xl/styles.xml');
