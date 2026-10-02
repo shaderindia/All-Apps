@@ -26,7 +26,7 @@
       const nightRate = Math.max(0, parseFloat(find('nightRate').value) || 1);
       const cShiftRate = Math.max(0, parseFloat(find('cShiftRate').value) || 1);
       const exchangeRate = Math.max(0, parseFloat(find('exchange-rate-manual').value) || 0);
-      const dailyLeft = [], dailyRight = [];
+      const dailyLeft = [], dailyRight = [], dailyData = [];
       let weekdayHours = 0, weekendHours = 0, nightHours = 0, cShiftHours = 0, daysWorked = 0, grossSalary = 0;
       const daysInMonth = new Date(year, month, 0).getDate();
 
@@ -39,9 +39,14 @@
         const shift = shiftSelect?.value || '';
         const night = shift.toLowerCase() === 'night';
         const cShift = shift.toLowerCase() === 'c';
-        const multiplier = (weekend ? weekendRate : 1) * (night ? nightRate : 1) * (cShift ? cShiftRate : 1);
+        const weekendMultiplier = weekend ? weekendRate : 1;
+        const nightMultiplier = night ? nightRate : 1;
+        const cShiftMultiplier = cShift ? cShiftRate : 1;
+        const multiplier = weekendMultiplier * nightMultiplier * cShiftMultiplier;
         const dailyPay = hours * hourlyRate * multiplier;
-        const dateText = `${date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })} (${date.toLocaleDateString('en-GB', { weekday: 'short' })}) - ${shiftSelect?.options[shiftSelect.selectedIndex]?.text || 'N/A'}`;
+        const weekday = date.toLocaleDateString(undefined, { weekday: 'long' });
+        const shiftText = shiftSelect?.options[shiftSelect.selectedIndex]?.text || 'N/A';
+        const dateText = `${date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })} (${date.toLocaleDateString('en-GB', { weekday: 'short' })}) - ${shiftText}`;
 
         if (weekend) weekendHours += hours; else weekdayHours += hours;
         if (night) nightHours += hours;
@@ -49,6 +54,11 @@
         if (hours > 0) daysWorked++;
         grossSalary += dailyPay;
         (day <= Math.ceil(daysInMonth / 2) ? dailyLeft : dailyRight).push({ dateText, hours, dailyPay, weekend });
+        dailyData.push({
+          dateSerial: Math.floor((Date.UTC(year, month - 1, day) - Date.UTC(1899, 11, 30)) / 86400000),
+          weekday, shift: shiftText, dayType: weekend ? 'Weekend' : 'Weekday', hours, hourlyRate,
+          weekendMultiplier, nightMultiplier, cShiftMultiplier, effectiveRate: hourlyRate * multiplier, dailyPay
+        });
       }
 
       const totalHours = weekdayHours + weekendHours;
@@ -56,6 +66,7 @@
       const generatedDate = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
       const formatHours = value => formatNumber(value, value % 1 ? 1 : 0);
       const cell = (value, style = 0) => ({ value, style });
+      const formulaCell = (value, style, formula) => ({ value, style, formula });
       const blankRow = () => Array(6).fill(null);
       const rows = [
         [cell(find('company-name').value.trim(), 1)],
@@ -86,6 +97,26 @@
       rows.push([cell('Date: ____________________', 17), null, null, cell('Date: ____________________', 17)]);
       rows.push([cell('Generated with SHADER7 • Monthly salary and work log', 18)]);
       const merges = ['A1:F1', 'A2:F2', 'A3:F3', 'A11:F11', 'B5:C5', 'E6:F6', 'E7:F7', 'B9:C9', `A${signatureRow}:C${signatureRow}`, `D${signatureRow}:F${signatureRow}`, `A${signatureRow + 1}:C${signatureRow + 1}`, `D${signatureRow + 1}:F${signatureRow + 1}`, `A${signatureRow + 2}:F${signatureRow + 2}`];
+      const dataRows = [[
+        'Date', 'Weekday', 'Shift', 'Day Type', 'Hours', 'Base Hourly Rate (RON)',
+        'Weekend Multiplier', 'Night Multiplier', 'C Shift Multiplier', 'Effective Rate (RON/hr)', 'Daily Pay (RON)'
+      ].map(value => cell(value, 12))];
+      dailyData.forEach((item, index) => {
+        const excelRow = index + 2;
+        dataRows.push([
+          cell(item.dateSerial, 19), cell(item.weekday, 9), cell(item.shift, 9), cell(item.dayType, 9),
+          cell(item.hours, 10), cell(item.hourlyRate, 6), cell(item.weekendMultiplier, 7), cell(item.nightMultiplier, 7),
+          cell(item.cShiftMultiplier, 7), formulaCell(item.effectiveRate, 6, `F${excelRow}*G${excelRow}*H${excelRow}*I${excelRow}`),
+          formulaCell(item.dailyPay, 11, `E${excelRow}*J${excelRow}`)
+        ]);
+      });
+      dataRows.push(blankRow().concat(Array(5).fill(null)));
+      const dataTotalRow = dataRows.length + 1;
+      dataRows.push([
+        cell('Monthly Total', 16), null, null, null,
+        formulaCell(totalHours, 10, `SUM(E2:E${dailyData.length + 1})`), null, null, null, null, null,
+        formulaCell(grossSalary, 11, `SUM(K2:K${dailyData.length + 1})`)
+      ]);
 
       const xmlEscape = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' }[char]));
       const columnName = index => {
@@ -93,7 +124,7 @@
         while (index > 0) { index--; name = String.fromCharCode(65 + index % 26) + name; index = Math.floor(index / 26); }
         return name;
       };
-      const worksheetXml = (rows, widths, mergeRefs) => {
+      const worksheetXml = (rows, widths, mergeRefs = [], filterRef = '', layout = 'data') => {
         const rowXml = rows.map((row, rowIndex) => {
           const cells = row.map((item, columnIndex) => {
             if (item === null || item === undefined) return '';
@@ -101,31 +132,50 @@
             if (value === '' || value === null || value === undefined) return '';
             const ref = `${columnName(columnIndex + 1)}${rowIndex + 1}`;
             const style = item.style ? ` s="${item.style}"` : '';
+            if (item.formula) return `<c r="${ref}"${style}><f>${xmlEscape(item.formula)}</f><v>${value}</v></c>`;
             if (typeof value === 'number' && Number.isFinite(value)) return `<c r="${ref}"${style}><v>${value}</v></c>`;
             return `<c r="${ref}"${style} t="inlineStr"><is><t xml:space="preserve">${xmlEscape(value)}</t></is></c>`;
           }).join('');
           const excelRow = rowIndex + 1;
-          const height = excelRow === 1 ? 30 : excelRow === 2 ? 24 : excelRow === 3 ? 22 : excelRow >= 5 && excelRow <= 9 ? 30 : excelRow === 12 ? 26 : excelRow >= 13 && excelRow < signatureRow ? 24 : 21;
+          const height = layout === 'report'
+            ? excelRow === 1 ? 30 : excelRow === 2 ? 24 : excelRow === 3 ? 22 : excelRow >= 5 && excelRow <= 9 ? 30 : excelRow === 12 ? 26 : excelRow >= 13 && excelRow < signatureRow ? 24 : 21
+            : excelRow === 1 ? 30 : excelRow === dataTotalRow ? 24 : 20;
           return `<row r="${excelRow}" ht="${height}" customHeight="1">${cells}</row>`;
         }).join('');
         const columnWidths = widths.map((width, index) => `<col min="${index + 1}" max="${index + 1}" width="${width}" customWidth="1"/>`).join('');
         const mergedCells = mergeRefs.map(ref => `<mergeCell ref="${ref}"/>`).join('');
-        return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetPr><pageSetUpPr fitToPage="1"/></sheetPr><dimension ref="A1:F${rows.length}"/><sheetViews><sheetView showGridLines="0" workbookViewId="0"/></sheetViews><sheetFormatPr defaultRowHeight="15"/><cols>${columnWidths}</cols><sheetData>${rowXml}</sheetData><mergeCells count="${mergeRefs.length}">${mergedCells}</mergeCells><printOptions horizontalCentered="1"/><pageMargins left="0.39" right="0.39" top="0.39" bottom="0.39" header="0.15" footer="0.15"/><pageSetup paperSize="9" orientation="${paper.value}" fitToWidth="1" fitToHeight="1"/></worksheet>`;
+        const finalColumn = columnName(widths.length);
+        const sheetProperties = layout === 'report' ? '<sheetPr><pageSetUpPr fitToPage="1"/></sheetPr>' : '';
+        const sheetView = layout === 'report'
+          ? '<sheetViews><sheetView showGridLines="0" workbookViewId="0"/></sheetViews>'
+          : '<sheetViews><sheetView showGridLines="0" workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>';
+        const filter = filterRef ? `<autoFilter ref="${filterRef}"/>` : '';
+        const mergeXml = mergeRefs.length ? `<mergeCells count="${mergeRefs.length}">${mergedCells}</mergeCells>` : '';
+        const printSettings = layout === 'report'
+          ? `<printOptions horizontalCentered="1"/><pageMargins left="0.39" right="0.39" top="0.39" bottom="0.39" header="0.15" footer="0.15"/><pageSetup paperSize="9" orientation="${paper.value}" fitToWidth="1" fitToHeight="1"/>`
+          : '';
+        return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">${sheetProperties}<dimension ref="A1:${finalColumn}${rows.length}"/>${sheetView}<sheetFormatPr defaultRowHeight="15"/><cols>${columnWidths}</cols><sheetData>${rowXml}</sheetData>${filter}${mergeXml}${printSettings}</worksheet>`;
       };
 
       const files = [
-        ['[Content_Types].xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>'],
+        ['[Content_Types].xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/worksheets/sheet2.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>'],
         ['_rels/.rels', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>'],
-        ['xl/workbook.xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><bookViews><workbookView/></bookViews><sheets><sheet name="Salary Report" sheetId="1" r:id="rId1"/></sheets></workbook>'],
-        ['xl/_rels/workbook.xml.rels', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>'],
-        ['xl/worksheets/sheet1.xml', worksheetXml(rows, [25, 10, 15, 25, 10, 15], merges)],
+        ['xl/workbook.xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><bookViews><workbookView/></bookViews><sheets><sheet name="Salary Report" sheetId="1" r:id="rId1"/><sheet name="Daily Data" sheetId="2" r:id="rId2"/></sheets><calcPr calcMode="auto" fullCalcOnLoad="1"/></workbook>'],
+        ['xl/_rels/workbook.xml.rels', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet2.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>'],
+        ['xl/worksheets/sheet1.xml', worksheetXml(rows, [25, 10, 15, 25, 10, 15], merges, '', 'report')],
+        ['xl/worksheets/sheet2.xml', worksheetXml(dataRows, [14, 13, 16, 13, 10, 23, 15, 15, 15, 24, 18], [], `A1:K${dailyData.length + 1}`)],
         ['xl/styles.xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><numFmts count="4"><numFmt numFmtId="164" formatCode="#,##0.00"/><numFmt numFmtId="165" formatCode="#,##0.##"/><numFmt numFmtId="166" formatCode="#,##0.00&quot; RON&quot;"/><numFmt numFmtId="167" formatCode="#,##0.##&quot;h&quot;"/></numFmts><fonts count="6"><font><name val="Calibri"/><sz val="10"/><color rgb="FF182338"/></font><font><name val="Calibri"/><b/><sz val="16"/><color rgb="FF172C4B"/></font><font><name val="Calibri"/><b/><sz val="12"/><color rgb="FF355DD1"/></font><font><name val="Calibri"/><sz val="9"/><color rgb="FF526176"/></font><font><name val="Calibri"/><b/><sz val="9"/><color rgb="FF172C4B"/></font><font><name val="Calibri"/><sz val="8"/><color rgb="FF66748A"/></font></fonts><fills count="5"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFEAF0F8"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFF3F6FA"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFFFF7F7"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="3"><border><left/><right/><top/><bottom/><diagonal/></border><border><left style="thin"><color rgb="FFD4DCE7"/></left><right style="thin"><color rgb="FFD4DCE7"/></right><top style="thin"><color rgb="FFD4DCE7"/></top><bottom style="thin"><color rgb="FFD4DCE7"/></bottom><diagonal/></border><border><left/><right/><top/><bottom style="medium"><color rgb="FF355DD1"/></bottom><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="19"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="0" borderId="2" xfId="0" applyFont="1" applyBorder="1"><alignment horizontal="left" vertical="center"/></xf><xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1"><alignment horizontal="left" vertical="center"/></xf><xf numFmtId="0" fontId="3" fillId="0" borderId="0" xfId="0" applyFont="1"><alignment horizontal="left" vertical="center"/></xf><xf numFmtId="0" fontId="4" fillId="3" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf><xf numFmtId="0" fontId="0" fillId="3" borderId="1" xfId="0" applyFill="1" applyBorder="1" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf><xf numFmtId="164" fontId="0" fillId="3" borderId="1" xfId="0" applyNumberFormat="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf><xf numFmtId="165" fontId="0" fillId="3" borderId="1" xfId="0" applyNumberFormat="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf><xf numFmtId="0" fontId="3" fillId="3" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"/><xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf><xf numFmtId="165" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf><xf numFmtId="164" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf><xf numFmtId="0" fontId="4" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf><xf numFmtId="0" fontId="0" fillId="4" borderId="1" xfId="0" applyFill="1" applyBorder="1" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf><xf numFmtId="165" fontId="0" fillId="4" borderId="1" xfId="0" applyNumberFormat="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf><xf numFmtId="164" fontId="0" fillId="4" borderId="1" xfId="0" applyNumberFormat="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf><xf numFmtId="0" fontId="4" fillId="0" borderId="2" xfId="0" applyFont="1" applyBorder="1"/><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf><xf numFmtId="0" fontId="5" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>']
       ];
-      files[5][1] = files[5][1]
+      const stylesFile = files.find(([path]) => path === 'xl/styles.xml');
+      stylesFile[1] = stylesFile[1]
         .replace('<xf numFmtId="165" fontId="0" fillId="0" borderId="1"', '<xf numFmtId="167" fontId="0" fillId="0" borderId="1"')
         .replace('<xf numFmtId="164" fontId="0" fillId="0" borderId="1"', '<xf numFmtId="166" fontId="0" fillId="0" borderId="1"')
         .replace('<xf numFmtId="165" fontId="0" fillId="4" borderId="1"', '<xf numFmtId="167" fontId="0" fillId="4" borderId="1"')
-        .replace('<xf numFmtId="164" fontId="0" fillId="4" borderId="1"', '<xf numFmtId="166" fontId="0" fillId="4" borderId="1"');
+        .replace('<xf numFmtId="164" fontId="0" fillId="4" borderId="1"', '<xf numFmtId="166" fontId="0" fillId="4" borderId="1"')
+        .replace('<numFmts count="4">', '<numFmts count="5">')
+        .replace('</numFmts>', '<numFmt numFmtId="168" formatCode="dd mmm yyyy"/></numFmts>')
+        .replace('<cellXfs count="19">', '<cellXfs count="20">')
+        .replace('<xf numFmtId="0" fontId="5" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf></cellXfs>', '<xf numFmtId="0" fontId="5" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf><xf numFmtId="168" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf></cellXfs>');
 
       const encoder = new TextEncoder();
       const crcTable = Array.from({ length: 256 }, (_, number) => {
