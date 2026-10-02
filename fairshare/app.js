@@ -20,7 +20,6 @@
     currency: byId('currencySelect'),
     calculateBtn: byId('calculateBtn'),
     results: byId('resultsSection'),
-    resultsTitle: byId('resultsTitle'),
     resultsSubtitle: byId('resultsSubtitle'),
     resultTotal: byId('resultTotal'),
     resultAverage: byId('resultAverage'),
@@ -29,12 +28,13 @@
     noPayments: byId('noPayments'),
     balanceBody: byId('balanceBody'),
     copyBtn: byId('copySummaryBtn'),
-    previewBtn: byId('previewBtn'),
+    previewTitle: byId('previewTitle'),
     downloadImageBtn: byId('downloadImageBtn'),
     downloadBtn: byId('downloadPdfBtn'),
     previewPanel: byId('previewPanel'),
     previewCanvas: byId('previewCanvas'),
-    closePreviewBtn: byId('closePreviewBtn'),
+    previewStatus: byId('previewStatus'),
+    downloadOptions: byId('downloadOptions'),
     resetBtn: byId('resetBtn'),
     messageDialog: byId('messageDialog'),
     messageText: byId('messageText'),
@@ -45,6 +45,7 @@
 
   let state = loadState();
   let settlement = null;
+  let previewVersion = 0;
 
   function createId() {
     if (window.crypto && typeof window.crypto.randomUUID === 'function') return window.crypto.randomUUID();
@@ -125,9 +126,15 @@
   }
 
   function invalidateSettlement() {
+    previewVersion += 1;
     settlement = null;
     elements.results.hidden = true;
     elements.previewPanel.hidden = true;
+    elements.downloadOptions.hidden = true;
+    document.body.classList.remove('has-floating-downloads');
+    elements.previewCanvas.removeAttribute('aria-busy');
+    elements.previewCanvas.width = 0;
+    elements.previewCanvas.height = 0;
     elements.reportContent.replaceChildren();
   }
 
@@ -312,9 +319,16 @@
     saveState();
     renderResults();
     elements.results.hidden = false;
+    elements.previewPanel.hidden = false;
+    elements.previewStatus.hidden = false;
+    elements.previewStatus.textContent = 'Preparing your report preview…';
+    elements.downloadOptions.hidden = false;
+    document.body.classList.add('has-floating-downloads');
+    void previewReport();
     window.requestAnimationFrame(() => {
-      elements.results.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      elements.resultsTitle.focus({ preventScroll: true });
+      const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+      elements.previewPanel.scrollIntoView({ behavior, block: 'start' });
+      elements.previewTitle.focus({ preventScroll: true });
     });
   }
 
@@ -469,20 +483,25 @@
 
   async function previewReport() {
     if (!settlement) return;
-    setLoading(true, 'Rendering your preview…');
+    const version = ++previewVersion;
+    elements.previewCanvas.setAttribute('aria-busy', 'true');
     try {
       const canvas = await createReportCanvas();
+      if (version !== previewVersion) return;
       elements.previewCanvas.width = canvas.width;
       elements.previewCanvas.height = canvas.height;
       const context = elements.previewCanvas.getContext('2d');
       context.clearRect(0, 0, canvas.width, canvas.height);
       context.drawImage(canvas, 0, 0);
-      elements.previewPanel.hidden = false;
-      elements.previewPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      elements.previewStatus.hidden = true;
+      elements.downloadOptions.hidden = false;
     } catch (error) {
+      if (version !== previewVersion) return;
+      elements.previewStatus.textContent = 'Preview unavailable. You can still try the download options below.';
+      elements.downloadOptions.hidden = false;
       showMessage(error.message, 'Report unavailable');
     } finally {
-      setLoading(false);
+      if (version === previewVersion) elements.previewCanvas.removeAttribute('aria-busy');
     }
   }
 
@@ -572,13 +591,8 @@
   elements.sampleBtn.addEventListener('click', loadSample);
   elements.calculateBtn.addEventListener('click', calculate);
   elements.copyBtn.addEventListener('click', copySummary);
-  elements.previewBtn.addEventListener('click', previewReport);
   elements.downloadImageBtn.addEventListener('click', downloadImage);
   elements.downloadBtn.addEventListener('click', downloadPdf);
-  elements.closePreviewBtn.addEventListener('click', () => {
-    elements.previewPanel.hidden = true;
-    elements.previewBtn.focus();
-  });
   elements.resetBtn.addEventListener('click', resetBill);
   elements.billTitle.addEventListener('input', () => {
     state.title = elements.billTitle.value;

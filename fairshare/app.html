@@ -2,7 +2,7 @@
 <html lang="en" data-theme="light">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>FairShare Bill Splitter | Equal or Weighted Splits</title>
   <meta name="description" content="Split shared expenses equally or by custom weights, see exactly who should pay whom, and save a clear settlement report. Free and private in your browser.">
   <meta name="robots" content="index, follow">
@@ -11,12 +11,12 @@
   <link rel="icon" href="/favicon.ico">
   <link rel="stylesheet" href="/css/fonts.css">
   <link rel="stylesheet" href="/css/font-awesome.min.css">
-  <link rel="stylesheet" href="fairshare.css?v=20260919">
+  <link rel="stylesheet" href="fairshare.css?v=20261002c">
   <script src="../js/theme.js"></script>
   <script defer src="../js/html2canvas.min.js"></script>
   <script defer src="../js/jspdf.umd.min.js"></script>
   <script defer src="fairshare-core.js?v=20260919"></script>
-  <script defer src="app.js?v=20260919"></script>
+  <script defer src="app.js?v=20261002b"></script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -158,10 +158,7 @@
 
       <div class="result-grid">
         <article class="result-card">
-          <div class="result-card-heading">
-            <div><p class="kicker">Payment plan</p><h3>Who pays whom</h3></div>
-            <button class="text-button" id="copySummaryBtn" type="button"><i class="fa-regular fa-copy" aria-hidden="true"></i> Copy</button>
-          </div>
+          <div class="result-card-heading"><div><p class="kicker">Payment plan</p><h3>Who pays whom</h3></div></div>
           <ol id="paymentList" class="payment-list"></ol>
           <div id="noPayments" class="no-payments" hidden><i class="fa-solid fa-circle-check" aria-hidden="true"></i><strong>Everyone is already settled.</strong></div>
         </article>
@@ -177,19 +174,28 @@
         </article>
       </div>
 
-      <div class="result-actions">
-        <button class="button button-secondary" id="previewBtn" type="button"><i class="fa-regular fa-eye" aria-hidden="true"></i> Preview report</button>
-        <button class="button button-secondary" id="downloadImageBtn" type="button"><i class="fa-regular fa-image" aria-hidden="true"></i> Download image</button>
-        <button class="button button-primary" id="downloadPdfBtn" type="button"><i class="fa-solid fa-file-arrow-down" aria-hidden="true"></i> Download PDF</button>
-      </div>
     </section>
 
     <section id="previewPanel" class="preview-panel card" aria-labelledby="previewTitle" hidden>
       <div class="result-card-heading">
-        <div><p class="kicker">Report preview</p><h2 id="previewTitle">Ready to share</h2></div>
-        <button class="icon-button" id="closePreviewBtn" type="button" aria-label="Close report preview"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+        <div><p class="kicker">Live report preview</p><h2 id="previewTitle" tabindex="-1">Your settlement report</h2></div>
       </div>
-      <div class="canvas-shell"><canvas id="previewCanvas" aria-label="Settlement report preview"></canvas></div>
+      <div class="canvas-shell">
+        <p id="previewStatus" class="preview-status" role="status">Preparing your report preview…</p>
+        <canvas id="previewCanvas" aria-label="Full-size settlement report preview"></canvas>
+      </div>
+    </section>
+
+    <section id="downloadOptions" class="download-options card" aria-labelledby="downloadsTitle" hidden>
+      <div>
+        <p class="kicker">Save or share</p>
+        <h2 id="downloadsTitle">Download options</h2>
+      </div>
+      <div class="result-actions">
+        <button class="button button-secondary" id="copySummaryBtn" type="button"><i class="fa-regular fa-copy" aria-hidden="true"></i> Copy summary</button>
+        <button class="button button-secondary" id="downloadImageBtn" type="button"><i class="fa-regular fa-image" aria-hidden="true"></i> Download PNG</button>
+        <button class="button button-primary" id="downloadPdfBtn" type="button"><i class="fa-solid fa-file-arrow-down" aria-hidden="true"></i> Download PDF</button>
+      </div>
     </section>
 
     <div class="reset-row"><button class="text-button danger" id="resetBtn" type="button"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> Start a new bill</button></div>
