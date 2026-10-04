@@ -44,7 +44,7 @@
         const cShiftMultiplier = cShift ? cShiftRate : 1;
         const multiplier = weekendMultiplier * nightMultiplier * cShiftMultiplier;
         const dailyPay = hours * hourlyRate * multiplier;
-        const weekday = date.toLocaleDateString(undefined, { weekday: 'long' });
+        const weekday = date.toLocaleDateString('en-GB', { weekday: 'short' });
         const shiftText = shiftSelect?.options[shiftSelect.selectedIndex]?.text || 'N/A';
 
         if (weekend) weekendHours += hours; else weekdayHours += hours;
@@ -66,7 +66,7 @@
       const formulaCell = (value, style, formula) => ({ value, style, formula });
       const blankRow = (width = 4) => Array(width).fill(null);
       const rows = [
-        [cell('Salary Summary', 2)],
+        [cell('Salary Statement', 2)],
         [cell('Company', 4), cell(find('company-name').value.trim(), 5), cell('Employee', 4), cell(find('employee-name-input').value.trim(), 5)],
         [cell('Period', 4), cell(monthName, 5), cell('Generated', 4), cell(generatedDate, 5)],
         blankRow(),
@@ -80,21 +80,38 @@
         ['Pay Multipliers', 'Weekend Rate', weekendRate, 'x', 7],
         ['Pay Multipliers', 'Night Rate', nightRate, 'x', 7],
         ['Pay Multipliers', 'C Shift Rate', cShiftRate, 'x', 7],
-        ['Compensation', 'Total Gross Salary', grossSalary, 'RON', 6, `SUM('Daily Log'!G2:G${dailyEndRow})`],
-        ['Currency', 'RON to INR Rate', exchangeRate, 'INR per RON', 7],
-        ['Currency', 'Converted Value', grossSalary * exchangeRate, 'INR', 6, 'C12*C13'],
         ['Attendance', 'Total Hours Worked', totalHours, 'hours', 7, `SUM('Daily Log'!F2:F${dailyEndRow})`],
         ['Attendance', 'Weekday Hours', weekdayHours, 'hours', 7, `SUMIF('Daily Log'!E2:E${dailyEndRow},"Weekday",'Daily Log'!F2:F${dailyEndRow})`],
         ['Attendance', 'Weekend Hours', weekendHours, 'hours', 7, `SUMIF('Daily Log'!E2:E${dailyEndRow},"Weekend",'Daily Log'!F2:F${dailyEndRow})`],
         ['Attendance', 'Night Shift Hours', nightHours, 'hours', 7, `SUMIF('Daily Log'!D2:D${dailyEndRow},"Night Shift",'Daily Log'!F2:F${dailyEndRow})`],
         ['Attendance', 'C Shift Hours', cShiftHours, 'hours', 7, `SUMIF('Daily Log'!D2:D${dailyEndRow},"C",'Daily Log'!F2:F${dailyEndRow})`],
         ['Attendance', 'Days Worked', daysWorked, 'days', 7, `COUNTIF('Daily Log'!F2:F${dailyEndRow},">0")`],
-        ['Attendance', 'Days Off', daysInMonth - daysWorked, 'days', 7, `${daysInMonth}-C20`]
+        ['Attendance', 'Days Off', daysInMonth - daysWorked, 'days', 7, `${daysInMonth}-C17`],
+        ['Compensation', 'Total Gross Salary', grossSalary, 'RON', 6, `SUM('Daily Log'!G2:G${dailyEndRow})`],
+        ['Currency', 'RON to INR Rate', exchangeRate, 'INR per RON', 7],
+        ['Currency', 'Converted Value', grossSalary * exchangeRate, 'INR', 6, 'C19*C20']
       ];
       summaryEntries.forEach(([category, metric, value, unit, style, formula]) => {
         rows.push([cell(category, 4), cell(metric, 5), formula ? formulaCell(value, style, formula) : cell(value, style), cell(unit, 8)]);
       });
+      const summaryEndRow = rows.length;
       const merges = ['A1:D1'];
+      rows.push(blankRow());
+      const signoffHeaderRow = rows.length + 1;
+      rows.push([cell('Report Sign-off', 12)]);
+      merges.push(`A${signoffHeaderRow}:D${signoffHeaderRow}`);
+      rows.push([
+        cell('Employee Signature', 4), cell('________________________', 5),
+        cell('Date', 4), cell('____________________', 5)
+      ]);
+      rows.push([
+        cell('Authorized Signature', 4), cell('________________________', 5),
+        cell('Date', 4), cell('____________________', 5)
+      ]);
+      rows.push(blankRow());
+      const reportNoteRow = rows.length + 1;
+      rows.push([cell('Generated with SHADER7 • Monthly salary and work log', 3)]);
+      merges.push(`A${reportNoteRow}:D${reportNoteRow}`);
       const dataRows = [[
         'Day', 'Date', 'Weekday', 'Shift', 'Day Type', 'Hours Worked', 'Daily Pay (RON)'
       ].map(value => cell(value, 12))];
@@ -150,7 +167,7 @@
         ['_rels/.rels', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>'],
         ['xl/workbook.xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><bookViews><workbookView activeTab="0"/></bookViews><sheets><sheet name="Summary" sheetId="1" r:id="rId1"/><sheet name="Daily Log" sheetId="2" r:id="rId2"/></sheets><calcPr calcMode="auto" fullCalcOnLoad="1"/></workbook>'],
         ['xl/_rels/workbook.xml.rels', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet2.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>'],
-        ['xl/worksheets/sheet1.xml', worksheetXml(rows, [18, 28, 20, 28], merges, `A5:D${rows.length}`, 5, 5)],
+        ['xl/worksheets/sheet1.xml', worksheetXml(rows, [18, 28, 20, 28], merges, `A5:D${summaryEndRow}`, 5, 5)],
         ['xl/worksheets/sheet2.xml', worksheetXml(dataRows, [8, 14, 14, 18, 14, 14, 22], [], `A1:G${dailyData.length + 1}`, 1, 1)],
         ['xl/styles.xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><numFmts count="4"><numFmt numFmtId="164" formatCode="#,##0.00"/><numFmt numFmtId="165" formatCode="#,##0.##"/><numFmt numFmtId="166" formatCode="#,##0.00&quot; RON&quot;"/><numFmt numFmtId="167" formatCode="#,##0.##&quot;h&quot;"/></numFmts><fonts count="6"><font><name val="Calibri"/><sz val="10"/><color rgb="FF182338"/></font><font><name val="Calibri"/><b/><sz val="16"/><color rgb="FF172C4B"/></font><font><name val="Calibri"/><b/><sz val="12"/><color rgb="FF355DD1"/></font><font><name val="Calibri"/><sz val="9"/><color rgb="FF526176"/></font><font><name val="Calibri"/><b/><sz val="9"/><color rgb="FF172C4B"/></font><font><name val="Calibri"/><sz val="8"/><color rgb="FF66748A"/></font></fonts><fills count="5"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFEAF0F8"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFF3F6FA"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFFFF7F7"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="3"><border><left/><right/><top/><bottom/><diagonal/></border><border><left style="thin"><color rgb="FFD4DCE7"/></left><right style="thin"><color rgb="FFD4DCE7"/></right><top style="thin"><color rgb="FFD4DCE7"/></top><bottom style="thin"><color rgb="FFD4DCE7"/></bottom><diagonal/></border><border><left/><right/><top/><bottom style="medium"><color rgb="FF355DD1"/></bottom><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="19"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="0" borderId="2" xfId="0" applyFont="1" applyBorder="1"><alignment horizontal="left" vertical="center"/></xf><xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1"><alignment horizontal="left" vertical="center"/></xf><xf numFmtId="0" fontId="3" fillId="0" borderId="0" xfId="0" applyFont="1"><alignment horizontal="left" vertical="center"/></xf><xf numFmtId="0" fontId="4" fillId="3" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf><xf numFmtId="0" fontId="0" fillId="3" borderId="1" xfId="0" applyFill="1" applyBorder="1" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf><xf numFmtId="164" fontId="0" fillId="3" borderId="1" xfId="0" applyNumberFormat="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf><xf numFmtId="165" fontId="0" fillId="3" borderId="1" xfId="0" applyNumberFormat="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf><xf numFmtId="0" fontId="3" fillId="3" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"/><xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf><xf numFmtId="165" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf><xf numFmtId="164" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf><xf numFmtId="0" fontId="4" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf><xf numFmtId="0" fontId="0" fillId="4" borderId="1" xfId="0" applyFill="1" applyBorder="1" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf><xf numFmtId="165" fontId="0" fillId="4" borderId="1" xfId="0" applyNumberFormat="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf><xf numFmtId="164" fontId="0" fillId="4" borderId="1" xfId="0" applyNumberFormat="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf><xf numFmtId="0" fontId="4" fillId="0" borderId="2" xfId="0" applyFont="1" applyBorder="1"/><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf><xf numFmtId="0" fontId="5" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>']
       ];
