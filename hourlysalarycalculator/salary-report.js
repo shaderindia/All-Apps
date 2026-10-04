@@ -44,7 +44,7 @@
         const cShiftMultiplier = cShift ? cShiftRate : 1;
         const multiplier = weekendMultiplier * nightMultiplier * cShiftMultiplier;
         const dailyPay = hours * hourlyRate * multiplier;
-        const weekday = date.toLocaleDateString('en-GB', { weekday: 'short' });
+        const weekday = date.toLocaleDateString('en-GB', { weekday: 'long' });
         const shiftText = shiftSelect?.options[shiftSelect.selectedIndex]?.text || 'N/A';
 
         if (weekend) weekendHours += hours; else weekdayHours += hours;
