@@ -34,8 +34,8 @@
     }
     return {
       version: 1, month: monthKey, hours, shifts,
-      employeeName: typeof source.employeeName === 'string' ? source.employeeName.slice(0, 100) : '',
-      companyName: typeof source.companyName === 'string' ? source.companyName.slice(0, 100) : ''
+      employeeName: typeof source.employeeName === 'string' ? source.employeeName.trim().slice(0, 100) : '',
+      companyName: typeof source.companyName === 'string' ? source.companyName.trim().slice(0, 100) : ''
     };
   }
   function calculateHours(monthKey, input = {}) {

@@ -27,13 +27,111 @@
    {"@context": "https://schema.org", "@type": "WebApplication", "name": "Shader7 Hours Calculator", "url": "https://www.shader7.com/hourlysalarycalculator/hours.html", "applicationCategory": "ProductivityApplication", "operatingSystem": "All", "description": "Calculate monthly work hours from daily entries and shift presets. Save separate monthly logs and download hours-only PDF or JPG reports.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}
   </script>
  <link rel="stylesheet" href="/css/app-banners.css?v=20260904-banners"/>
-</head>
+<style>/* Unified Tool Switcher - Column Layout */
+    .tool-header-bar {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 22px;
+      position: relative;
+      z-index: 2;
+    }
+    .tool-header-bar .home-link, .tool-header-bar .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.92rem;
+      color: rgba(255, 255, 255, 0.95);
+      margin-bottom: 0;
+      padding: 9px 14px;
+      background: rgba(0, 0, 0, 0.18);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      transition: all 0.15s ease;
+    }
+    .tool-header-bar .home-link:hover, .tool-header-bar .back-link:hover {
+      background: rgba(0, 0, 0, 0.28);
+      color: #ffffff;
+      text-decoration: none;
+      transform: translateX(-2px);
+    }
+    .tool-switcher {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 14px;
+      padding: 6px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      min-width: 220px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+    .tool-tab {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 10px;
+      padding: 9px 15px;
+      border-radius: 9px;
+      font-size: 0.86rem;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.9);
+      text-decoration: none;
+      transition: all 0.18s ease;
+      min-height: 44px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .tool-tab i {
+      width: 18px;
+      text-align: center;
+      font-size: 0.95rem;
+    }
+    .tool-tab:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.16);
+      transform: translateX(2px);
+    }
+    .tool-tab.active {
+      background: #ffffff;
+      color: #1e3a8a;
+      font-weight: 700;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+    .tool-tab:focus-visible {
+      outline: 2px solid #ffffff;
+      outline-offset: 2px;
+    }
+    @media (max-width: 640px) {
+      .tool-header-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+      }
+      .tool-switcher {
+        width: 100%;
+        min-width: auto;
+      }
+    }</style></head>
  <body>
   <main class="page-shell">
    <header class="hero">
-    <a aria-label="Back to calculator options" class="home-link" href="index.html">
-     ← Calculator options
-    </a>
+      <div class="tool-header-bar">
+        <a class="home-link" href="index.html" aria-label="Back to calculator options">
+          <i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Calculator options
+        </a>
+        <nav class="tool-switcher" aria-label="Calculator tools switcher">
+          <a href="app.html" id="tool-tab-salary" class="tool-tab"><i class="fa-solid fa-calculator" aria-hidden="true"></i> Salary Calculator</a>
+          <a href="hours.html" id="tool-tab-hours" class="tool-tab active" aria-current="page"><i class="fa-solid fa-clock" aria-hidden="true"></i> Hours Only</a>
+          <a href="attendance.html" id="tool-tab-attendance" class="tool-tab"><i class="fa-solid fa-clipboard-check" aria-hidden="true"></i> Attendance Sheet</a>
+        </nav>
+      </div>
     <div class="hero-content">
      <h1>
       Monthly Hours Calculator
@@ -109,15 +207,15 @@
     <form autocomplete="on" class="form-grid" onsubmit="return false;">
      <div class="form-group">
       <label for="employee-name-input">
-       Employee Name
+       Employee Name <span class="sync-indicator-pill"><i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i> Synced</span>
       </label>
-      <input autocomplete="name" id="employee-name-input" maxlength="100" placeholder="Your name" type="text"/>
+      <input autocomplete="name" id="employee-name-input" maxlength="100" placeholder="e.g. Jane Doe" type="text"/>
      </div>
      <div class="form-group">
       <label for="company-name">
-       Company Name
+       Company Name <span class="sync-indicator-pill"><i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i> Synced</span>
       </label>
-      <input autocomplete="organization" id="company-name" maxlength="100" placeholder="Company name" type="text"/>
+      <input autocomplete="organization" id="company-name" maxlength="100" placeholder="Company or organisation" type="text"/>
      </div>
      <div class="form-group">
       <label for="month-year-picker">
@@ -127,12 +225,26 @@
      </div>
     </form>
     <div class="calendar-toolbar">
-     <h3>
-      Daily Work Log
-     </h3>
-     <p class="subtle">
-      A/B/C: 8 hrs · Day/Night: 12 hrs · Off: 0 hrs. Adjust hours as needed; OT keeps the hours you entered.
-     </p>
+     <div class="calendar-toolbar-info">
+      <h3>
+       Daily Work Log
+      </h3>
+      <p class="subtle">
+       A/B/C: 8 hrs · Day/Night: 12 hrs · Off: 0 hrs. Tap quick shift buttons or choose hours/shift to log work.
+      </p>
+     </div>
+     <div class="view-toggle" role="group" aria-label="Calendar view mode">
+       <button type="button" id="view-cards-btn" class="view-toggle-btn active" title="Touch Cards View (Mobile friendly)"><i class="fa-solid fa-mobile-screen-button" aria-hidden="true"></i> Cards</button>
+       <button type="button" id="view-table-btn" class="view-toggle-btn" title="Grid Table View"><i class="fa-solid fa-table-cells" aria-hidden="true"></i> Grid</button>
+     </div>
+    </div>
+    <div class="quick-fill-bar" role="toolbar" aria-label="Quick-fill work calendar">
+      <span class="quick-fill-label"><i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i> Quick-Fill:</span>
+      <button type="button" class="btn-quick-fill" data-action="weekdays-8"><i class="fa-solid fa-sun" aria-hidden="true"></i> Weekdays 8h</button>
+      <button type="button" class="btn-quick-fill" data-action="weekdays-12-day"><i class="fa-solid fa-clock" aria-hidden="true"></i> Weekdays 12h Day</button>
+      <button type="button" class="btn-quick-fill" data-action="weekdays-12-night"><i class="fa-solid fa-moon" aria-hidden="true"></i> Weekdays 12h Night</button>
+      <button type="button" class="btn-quick-fill" data-action="weekends-off"><i class="fa-solid fa-bed" aria-hidden="true"></i> Weekends Off</button>
+      <button type="button" class="btn-quick-fill btn-quick-clear" data-action="clear-all"><i class="fa-solid fa-eraser" aria-hidden="true"></i> Clear Month</button>
     </div>
     <div aria-label="Scrollable monthly work calendar" class="calendar-wrapper" id="calendar-container" role="region" tabindex="0">
      <p class="subtle" style="padding:16px;text-align:center;">
@@ -147,11 +259,14 @@
       </i>
       Remove All Hours
      </button>
-     <button class="btn" id="save-month-btn" type="button">
-      <i aria-hidden="true" class="fa-solid fa-floppy-disk">
-      </i>
-      Save This Month
-     </button>
+     <div class="save-btn-group">
+       <button class="btn" id="save-month-btn" type="button">
+        <i aria-hidden="true" class="fa-solid fa-floppy-disk">
+        </i>
+        Save This Month
+       </button>
+       <span id="save-status-badge" class="save-status-badge saved" aria-live="polite"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Saved in browser ✓</span>
+     </div>
      <button class="btn secondary" id="report-btn" type="button">
       <i aria-hidden="true" class="fa-solid fa-eye">
       </i>
@@ -335,5 +450,13 @@
     Enable JavaScript to enter hours and calculate your monthly total.
    </p>
   </noscript>
- </body>
+   <!-- Sticky Floating Summary Bar on Scroll -->
+  <aside id="sticky-summary-bar" class="sticky-summary-bar" aria-label="Floating Monthly Summary">
+    <div class="sticky-metrics">
+      <div class="sticky-metric-item"><span class="sticky-lbl">Hours</span><strong id="sticky-hours">0 hrs</strong></div>
+      <div class="sticky-metric-item"><span class="sticky-lbl">Days</span><strong id="sticky-days">0</strong></div>
+    </div>
+    <button type="button" id="sticky-report-btn" class="btn-sticky-report"><i class="fa-solid fa-file-invoice" aria-hidden="true"></i> Report</button>
+  </aside>
+</body>
 </html>

@@ -15,12 +15,112 @@
   <script defer src="attendance-core.js?v=1"></script>
   <script defer src="attendance.js?v=3"></script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Shader7 Printable Attendance Sheet Maker","url":"https://www.shader7.com/hourlysalarycalculator/attendance.html","applicationCategory":"BusinessApplication","operatingSystem":"All","isAccessibleForFree":true,"description":"Create a blank A4 employee attendance sheet for one, two, or three months and download it as PDF or JPG.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
-</head>
+<style>/* Unified Tool Switcher - Column Layout */
+    .tool-header-bar {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 22px;
+      position: relative;
+      z-index: 2;
+    }
+    .tool-header-bar .home-link, .tool-header-bar .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.92rem;
+      color: rgba(255, 255, 255, 0.95);
+      margin-bottom: 0;
+      padding: 9px 14px;
+      background: rgba(0, 0, 0, 0.18);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      transition: all 0.15s ease;
+    }
+    .tool-header-bar .home-link:hover, .tool-header-bar .back-link:hover {
+      background: rgba(0, 0, 0, 0.28);
+      color: #ffffff;
+      text-decoration: none;
+      transform: translateX(-2px);
+    }
+    .tool-switcher {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 14px;
+      padding: 6px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      min-width: 220px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+    .tool-tab {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 10px;
+      padding: 9px 15px;
+      border-radius: 9px;
+      font-size: 0.86rem;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.9);
+      text-decoration: none;
+      transition: all 0.18s ease;
+      min-height: 44px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .tool-tab i {
+      width: 18px;
+      text-align: center;
+      font-size: 0.95rem;
+    }
+    .tool-tab:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.16);
+      transform: translateX(2px);
+    }
+    .tool-tab.active {
+      background: #ffffff;
+      color: #1e3a8a;
+      font-weight: 700;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+    .tool-tab:focus-visible {
+      outline: 2px solid #ffffff;
+      outline-offset: 2px;
+    }
+    @media (max-width: 640px) {
+      .tool-header-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+      }
+      .tool-switcher {
+        width: 100%;
+        min-width: auto;
+      }
+    }</style></head>
 <body>
   <a class="skip-link" href="#builder">Skip to attendance form builder</a>
   <main class="page-shell" id="main-content">
     <header class="hero">
-      <a class="back-link" href="index.html">← Salary calculator</a>
+      <div class="tool-header-bar">
+        <a class="back-link" href="index.html" aria-label="Back to calculator options">
+          <i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Calculator options
+        </a>
+        <nav class="tool-switcher" aria-label="Calculator tools switcher">
+          <a href="app.html" id="tool-tab-salary" class="tool-tab"><i class="fa-solid fa-calculator" aria-hidden="true"></i> Salary Calculator</a>
+          <a href="hours.html" id="tool-tab-hours" class="tool-tab"><i class="fa-solid fa-clock" aria-hidden="true"></i> Hours Only</a>
+          <a href="attendance.html" id="tool-tab-attendance" class="tool-tab active" aria-current="page"><i class="fa-solid fa-clipboard-check" aria-hidden="true"></i> Attendance Sheet</a>
+        </nav>
+      </div>
       <div class="hero-copy">
         <p class="eyebrow">Free printable · A4</p>
         <h1>Attendance sheet maker</h1>
@@ -37,8 +137,8 @@
         <p>Only the details you enter are printed. Attendance rows stay blank for handwriting.</p>
       </div>
       <form class="builder-grid" id="attendance-builder" onsubmit="return false;">
-        <label>Company name<input id="company-name" maxlength="80" placeholder="Company or organisation" autocomplete="organization" /></label>
-        <label>Employee name<input id="employee-name" maxlength="80" placeholder="Employee name (optional)" autocomplete="name" /></label>
+        <label>Employee name <span class="sync-indicator-pill"><i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i> Synced</span><input id="employee-name" maxlength="80" placeholder="e.g. Jane Doe" autocomplete="name" /></label>
+        <label>Company name <span class="sync-indicator-pill"><i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i> Synced</span><input id="company-name" maxlength="80" placeholder="Company or organisation" autocomplete="organization" /></label>
         <label>Employee ID<input id="employee-id" maxlength="32" placeholder="ID / payroll number" /></label>
         <label>Department<input id="department" maxlength="60" placeholder="Team or department" /></label>
         <label>Supervisor<input id="supervisor" maxlength="60" placeholder="Supervisor name" /></label>

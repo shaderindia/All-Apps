@@ -3,7 +3,15 @@
   const math = window.ShaderHours;
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
-  const state = { currentZoom: 1, month: '', drafts: new Map(), dirty: new Set(), saved: new Set(), lastFocus: null };
+  const state = { 
+    currentZoom: 1, 
+    month: '', 
+    drafts: new Map(), 
+    dirty: new Set(), 
+    saved: new Set(), 
+    lastFocus: null,
+    calendarView: localStorage.getItem('hours_calendar_view') || (window.innerWidth <= 768 ? 'cards' : 'table')
+  };
   const escapeHTML = value => String(value ?? '').replace(/[&<>'"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char]));
   const formatNumber = (value, decimals = 1) => Number(value || 0).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: decimals });
   const dayLabel = count => `${count} ${count === 1 ? 'day' : 'days'}`;
@@ -19,6 +27,8 @@
   }
   function updateEmployeeInfo() {
     const employee = $('#employee-name-input').value.trim(), company = $('#company-name').value.trim();
+    if (employee) localStorage.setItem('shader7_active_employee', employee);
+    if (company) localStorage.setItem('shader7_active_company', company);
     $('#employee-display-name').textContent = employee || 'Guest';
     $('#employee-info-display').textContent = [employee, company].filter(Boolean).join(' / ') || 'Not entered';
   }
@@ -28,10 +38,130 @@
     $$('.shift-select').forEach(select => { shifts[select.dataset.day] = select.value; });
     return math.normalizeMonthData(state.month, { hours, shifts, employeeName: $('#employee-name-input').value.trim(), companyName: $('#company-name').value.trim() });
   }
+  let autoSaveTimer = null;
+  
+  function updateToolSwitcherUrls(monthKey) {
+    if (!monthKey) return;
+    const salaryTab = $('#tool-tab-salary');
+    const hoursTab = $('#tool-tab-hours');
+    const attendanceTab = $('#tool-tab-attendance');
+    if (salaryTab) salaryTab.href = `app.html?month=${monthKey}`;
+    if (hoursTab) hoursTab.href = `hours.html?month=${monthKey}`;
+    if (attendanceTab) attendanceTab.href = `attendance.html?month=${monthKey}`;
+  }
+
+  function syncSharedMonthData(monthKey, data) {
+    if (!monthKey || !data) return;
+    try {
+      // Sync to salary calculator schema preserving rates if exists
+      const existingCalStr = localStorage.getItem(`calendarData_${monthKey}`);
+      let calObj = {};
+      if (existingCalStr) {
+        try { calObj = JSON.parse(existingCalStr) || {}; } catch (e) {}
+      }
+      calObj.hours = { ...data.hours };
+      calObj.shifts = { ...data.shifts };
+      calObj.employeeName = data.employeeName || calObj.employeeName || '';
+      calObj.companyName = data.companyName || calObj.companyName || '';
+      calObj.savedDate = new Date().toISOString();
+      localStorage.setItem(`calendarData_${monthKey}`, JSON.stringify(calObj));
+      localStorage.setItem('shader7_active_month', monthKey);
+      if (data.employeeName) localStorage.setItem('shader7_active_employee', data.employeeName);
+      if (data.companyName) localStorage.setItem('shader7_active_company', data.companyName);
+    } catch (e) {
+      console.error('Shared sync error from hours:', e);
+    }
+  }
+
+  function setSaveBadge(status) {
+    const badge = $('#save-status-badge');
+    if (!badge) return;
+    if (status === 'saving') {
+      badge.className = 'save-status-badge saving';
+      badge.innerHTML = '<i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i> Saving draft...';
+    } else if (status === 'saved') {
+      badge.className = 'save-status-badge saved';
+      badge.innerHTML = '<i class="fa-solid fa-circle-check" aria-hidden="true"></i> Saved in browser ✓';
+    } else if (status === 'unsaved') {
+      badge.className = 'save-status-badge unsaved';
+      badge.innerHTML = '<i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i> Unsaved changes';
+    }
+  }
+
+  function scheduleAutoSave() {
+    if (!state.month || !math.isMonthKey(state.month)) return;
+    setSaveBadge('saving');
+    clearTimeout(autoSaveTimer);
+    autoSaveTimer = setTimeout(() => {
+      try {
+        const data = collectMonthData();
+        localStorage.setItem(math.storageKey(state.month), JSON.stringify(data));
+        syncSharedMonthData(state.month, data);
+        updateToolSwitcherUrls(state.month);
+        state.drafts.set(state.month, data);
+        state.saved.add(state.month);
+        state.dirty.delete(state.month);
+        setSaveBadge('saved');
+        updateSaveStatus();
+      } catch (e) {
+        console.error(e);
+        setSaveBadge('unsaved');
+      }
+    }, 500);
+  }
+
+  function applyQuickFill(action) {
+    if (!state.month || !math.isMonthKey(state.month)) return showToast('Please select a valid month first.');
+    const count = math.getMonthDays(state.month);
+
+    for (let day = 1; day <= count; day++) {
+      const weekday = math.dayOfWeek(state.month, day);
+      const isWeekend = weekday === 0 || weekday === 6;
+      const hoursSelect = $(`#hours-${day}`);
+      const shiftSelect = $(`#shift-${day}`);
+      if (!hoursSelect || !shiftSelect) continue;
+
+      if (action === 'weekdays-8') {
+        if (!isWeekend) {
+          hoursSelect.value = '8';
+          shiftSelect.value = '8';
+        }
+      } else if (action === 'weekdays-12-day') {
+        if (!isWeekend) {
+          hoursSelect.value = '12';
+          shiftSelect.value = 'Day';
+        }
+      } else if (action === 'weekdays-12-night') {
+        if (!isWeekend) {
+          hoursSelect.value = '12';
+          shiftSelect.value = 'Night';
+        }
+      } else if (action === 'weekends-off') {
+        if (isWeekend) {
+          hoursSelect.value = '0';
+          shiftSelect.value = '0';
+        }
+      } else if (action === 'clear-all') {
+        hoursSelect.value = '';
+        shiftSelect.value = '';
+      }
+      updateCardState(day);
+    }
+    markChanged();
+
+    if (action === 'weekdays-8') showToast('Set weekdays to 8h shifts.');
+    else if (action === 'weekdays-12-day') showToast('Set weekdays to 12h Day shifts.');
+    else if (action === 'weekdays-12-night') showToast('Set weekdays to 12h Night shifts.');
+    else if (action === 'weekends-off') showToast('Set weekends to Off.');
+    else if (action === 'clear-all') showToast('Cleared month entries.');
+  }
+
   function updateSaveStatus() {
-    $('#save-status').textContent = state.dirty.has(state.month)
-      ? 'Unsaved changes. Save this month to keep it after closing.'
+    const isDirty = state.dirty.has(state.month);
+    $('#save-status').textContent = isDirty
+      ? 'Unsaved changes. Changes are kept automatically in draft.'
       : state.saved.has(state.month) ? 'This month is saved in this browser.' : 'Save this month to keep your work log in this browser.';
+    setSaveBadge(isDirty ? 'unsaved' : 'saved');
   }
   function recalculateHours() {
     if (!state.month) return;
@@ -41,6 +171,14 @@
     for (const [id, value] of Object.entries({ 'weekday-hours': totals.weekdayHours, 'weekend-hours': totals.weekendHours, 'night-hours': totals.nightHours, 'c-shift-hours': totals.cShiftHours, 'ot-hours': totals.overtimeHours, 'average-hours': totals.averageHours })) {
       $(`#${id}`).textContent = `${formatNumber(value, 2)} hrs`;
     }
+
+    // Update sticky summary bar
+    const stickyHours = $('#sticky-hours');
+    const stickyDays = $('#sticky-days');
+    const stickyAvg = $('#sticky-avg');
+    if (stickyHours) stickyHours.textContent = `${formatNumber(totals.totalHours)} hrs`;
+    if (stickyDays) stickyDays.textContent = dayLabel(totals.daysWorked);
+    if (stickyAvg) stickyAvg.textContent = `${formatNumber(totals.averageHours, 2)} hrs`;
     $('#log-status').textContent = `${dayLabel(totals.daysLogged)} logged · ${dayLabel(totals.daysOff)} off · ${dayLabel(totals.daysUnlogged)} not entered`;
     $('#totals-announcement').textContent = `${formatNumber(totals.totalHours)} total hours across ${totals.daysWorked} working days.`;
   }
@@ -49,22 +187,154 @@
     state.drafts.set(state.month, collectMonthData());
     updateEmployeeInfo();
     recalculateHours();
+    updateAllCards();
     updateSaveStatus();
+    scheduleAutoSave();
   }
+  function setCalendarView(viewMode) {
+    if (state.calendarView === viewMode) return;
+    const currentData = collectMonthData();
+    state.calendarView = viewMode;
+    localStorage.setItem('hours_calendar_view', viewMode);
+    $('#view-cards-btn')?.classList.toggle('active', viewMode === 'cards');
+    $('#view-table-btn')?.classList.toggle('active', viewMode === 'table');
+    generateCalendar(state.month);
+    $$('.hours-select').forEach(select => { select.value = currentData.hours?.[select.dataset.day] ?? ''; });
+    $$('.shift-select').forEach(select => { select.value = currentData.shifts?.[select.dataset.day] ?? ''; });
+    updateAllCards();
+    recalculateHours();
+  }
+
+  function updateCardState(day) {
+    const hoursSelect = $(`#hours-${day}`);
+    const shiftSelect = $(`#shift-${day}`);
+    const hours = parseFloat(hoursSelect?.value) || 0;
+    const shift = shiftSelect?.value || '';
+    const isOff = (hoursSelect?.value === '0' || shift === '0');
+
+    // Cards view
+    const card = $(`#card-day-${day}`);
+    if (card) {
+      card.classList.toggle('has-hours', hours > 0);
+      card.classList.toggle('is-off-day', isOff);
+
+      card.querySelectorAll('.quick-pill').forEach(pill => {
+        const pHours = pill.dataset.hours;
+        const pShift = pill.dataset.shift;
+        const isMatch = (pHours === String(hours) && (pShift === shift || (!shift && hours === 0 && pShift === '0')));
+        pill.classList.toggle('active', isMatch);
+      });
+
+      const chip = $(`#hours-chip-${day}`);
+      if (chip) {
+        chip.textContent = hours > 0 ? `${hours} hrs` : (isOff ? 'Off (0h)' : '0 hrs');
+        chip.style.opacity = hours > 0 ? '1' : '0.6';
+      }
+    }
+
+    // Table view
+    const td = hoursSelect?.closest('td');
+    if (td) {
+      td.classList.toggle('has-hours', hours > 0);
+      td.classList.toggle('is-off-day', isOff);
+      let badge = td.querySelector('.shift-tag-pill');
+      if (shift || hours > 0 || isOff) {
+        if (!badge) {
+          badge = document.createElement('span');
+          badge.className = 'shift-tag-pill';
+          td.querySelector('.calendar-day')?.appendChild(badge);
+        }
+        const shiftKey = (shift || (hours > 0 ? String(hours) : 'off')).toLowerCase();
+        badge.className = `shift-tag-pill shift-${shiftKey}`;
+        badge.textContent = shift ? (shiftSelect?.options[shiftSelect.selectedIndex]?.text || shift) : (hours > 0 ? `${hours}h` : 'Off');
+      } else if (badge) {
+        badge.remove();
+      }
+    }
+  }
+
+  function updateAllCards() {
+    if (!state.month) return;
+    const count = math.getMonthDays(state.month);
+    for (let day = 1; day <= count; day++) updateCardState(day);
+  }
+
+  function handleQuickShift(button) {
+    const day = button.dataset.day;
+    const hours = button.dataset.hours;
+    const shift = button.dataset.shift;
+    const hoursSelect = $(`#hours-${day}`);
+    const shiftSelect = $(`#shift-${day}`);
+    if (hoursSelect && shiftSelect) {
+      hoursSelect.value = hours;
+      shiftSelect.value = shift;
+      updateCardState(day);
+      markChanged();
+    }
+  }
+
   function generateCalendar(month) {
     const count = math.getMonthDays(month), firstDay = math.dayOfWeek(month, 1);
+    const container = $('#calendar-container');
     let hoursOptions = '<option value="">Hrs</option>';
     for (let h = 0; h <= 24; h += 0.5) hoursOptions += `<option value="${h}">${h}</option>`;
     const shiftOptions = ['', '8', '12', '0', 'A', 'B', 'C', 'Day', 'Night', 'OT'].map(value => `<option value="${value}">${value ? math.SHIFTS[value] : 'Shift'}</option>`).join('');
-    let html = `<table class="calendar-table"><caption class="sr-only">Daily work log for ${monthLabel(month)}</caption><thead><tr>${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(day => `<th scope="col">${day}</th>`).join('')}</tr></thead><tbody><tr>`;
-    for (let i = 0; i < firstDay; i++) html += '<td class="empty-day" aria-hidden="true"></td>';
-    for (let day = 1; day <= count; day++) {
-      const weekday = math.dayOfWeek(month, day), weekend = weekday === 0 || weekday === 6;
-      html += `<td class="${weekend ? 'weekend' : ''}"><div class="calendar-day"><div class="day-number"><span>${day}</span>${weekend ? '<span class="weekend-label">Weekend</span>' : ''}</div><div class="day-inputs"><label class="sr-only" for="hours-${day}">Hours for day ${day}</label><select id="hours-${day}" class="hours-select" data-day="${day}">${hoursOptions}</select><label class="sr-only" for="shift-${day}">Shift for day ${day}</label><select id="shift-${day}" class="shift-select" data-day="${day}">${shiftOptions}</select></div></div></td>`;
-      if ((firstDay + day) % 7 === 0 && day < count) html += '</tr><tr>';
+
+    $('#view-cards-btn')?.classList.toggle('active', state.calendarView === 'cards');
+    $('#view-table-btn')?.classList.toggle('active', state.calendarView === 'table');
+
+    if (state.calendarView === 'cards') {
+      container.className = 'calendar-wrapper cards-mode';
+      const weekdayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      let cardsHtml = '<div class="calendar-cards-wrapper">';
+      for (let day = 1; day <= count; day++) {
+        const weekday = math.dayOfWeek(month, day), weekend = weekday === 0 || weekday === 6;
+        const weekdayName = weekdayNames[weekday];
+        cardsHtml += `
+          <div class="work-card ${weekend ? 'is-weekend' : ''}" id="card-day-${day}" data-day="${day}">
+            <div class="work-card-header">
+              <div class="work-card-date">
+                <span>${day} ${weekdayName}</span>
+                <span class="work-card-badge ${weekend ? 'badge-weekend' : 'badge-weekday'}">${weekend ? 'Weekend' : 'Weekday'}</span>
+              </div>
+              <span class="daily-hours-chip" id="hours-chip-${day}">0 hrs</span>
+            </div>
+            <div class="quick-shifts-row" role="group" aria-label="Quick shift presets for day ${day}">
+              <button type="button" class="quick-pill pill-off" data-day="${day}" data-hours="0" data-shift="0">Off (0h)</button>
+              <button type="button" class="quick-pill" data-day="${day}" data-hours="8" data-shift="8">8h Day</button>
+              <button type="button" class="quick-pill" data-day="${day}" data-hours="12" data-shift="Day">12h Day</button>
+              <button type="button" class="quick-pill" data-day="${day}" data-hours="12" data-shift="Night">12h Night</button>
+            </div>
+            <div class="card-inputs-row">
+              <div>
+                <label for="hours-${day}">Hours Worked</label>
+                <select id="hours-${day}" class="hours-select" data-day="${day}">
+                  ${hoursOptions}
+                </select>
+              </div>
+              <div>
+                <label for="shift-${day}">Shift Type</label>
+                <select id="shift-${day}" class="shift-select" data-day="${day}">
+                  ${shiftOptions}
+                </select>
+              </div>
+            </div>
+          </div>`;
+      }
+      cardsHtml += '</div>';
+      container.innerHTML = cardsHtml;
+    } else {
+      container.className = 'calendar-wrapper';
+      let html = `<table class="calendar-table"><caption class="sr-only">Daily work log for ${monthLabel(month)}</caption><thead><tr>${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(day => `<th scope="col">${day}</th>`).join('')}</tr></thead><tbody><tr>`;
+      for (let i = 0; i < firstDay; i++) html += '<td class="empty-day" aria-hidden="true"></td>';
+      for (let day = 1; day <= count; day++) {
+        const weekday = math.dayOfWeek(month, day), weekend = weekday === 0 || weekday === 6;
+        html += `<td class="${weekend ? 'weekend' : ''}"><div class="calendar-day"><div class="day-number"><span>${day}</span>${weekend ? '<span class="weekend-label">Weekend</span>' : ''}</div><div class="day-inputs"><label class="sr-only" for="hours-${day}">Hours for day ${day}</label><select id="hours-${day}" class="hours-select" data-day="${day}">${hoursOptions}</select><label class="sr-only" for="shift-${day}">Shift for day ${day}</label><select id="shift-${day}" class="shift-select" data-day="${day}">${shiftOptions}</select></div></div></td>`;
+        if ((firstDay + day) % 7 === 0 && day < count) html += '</tr><tr>';
+      }
+      for (let i = 0; i < (7 - (firstDay + count) % 7) % 7; i++) html += '<td class="empty-day" aria-hidden="true"></td>';
+      container.innerHTML = html + '</tr></tbody></table>';
     }
-    for (let i = 0; i < (7 - (firstDay + count) % 7) % 7; i++) html += '<td class="empty-day" aria-hidden="true"></td>';
-    $('#calendar-container').innerHTML = html + '</tr></tbody></table>';
   }
   function loadMonth(month) {
     if (!math.isMonthKey(month)) {
@@ -80,30 +350,64 @@
         const stored = localStorage.getItem(math.storageKey(month));
         if (stored !== null) {
           const parsed = JSON.parse(stored);
-          if (!parsed || typeof parsed !== 'object' || parsed.version !== 1 || parsed.month !== month) throw new Error('Invalid saved work log');
-          data = math.normalizeMonthData(month, parsed);
-          state.saved.add(month);
+          if (parsed && typeof parsed === 'object' && parsed.version === 1 && parsed.month === month) {
+            data = math.normalizeMonthData(month, parsed);
+            state.saved.add(month);
+          }
         }
       } catch {
         showToast('Saved hours could not be loaded. You can still calculate and export a report.');
       }
     }
-    data ||= math.normalizeMonthData(month, { employeeName: $('#employee-name-input').value.trim(), companyName: $('#company-name').value.trim() });
+
+    // If no data or empty hours, check calendarData_${month}
+    if (!data || !data.hours || Object.keys(data.hours).length === 0) {
+      try {
+        const calStored = localStorage.getItem(`calendarData_${month}`);
+        if (calStored) {
+          const calParsed = JSON.parse(calStored);
+          if (calParsed && calParsed.hours && Object.keys(calParsed.hours).length > 0) {
+            data = math.normalizeMonthData(month, {
+              hours: calParsed.hours,
+              shifts: calParsed.shifts || {},
+              employeeName: calParsed.employeeName || '',
+              companyName: calParsed.companyName || ''
+            });
+            state.saved.add(month);
+          }
+        }
+      } catch (e) {}
+    }
+
+    // Populate active employee / company fallback if empty
+    const activeEmp = localStorage.getItem('shader7_active_employee') || '';
+    const activeComp = localStorage.getItem('shader7_active_company') || '';
+    const fallbackEmp = activeEmp || $('#employee-name-input').value.trim();
+    const fallbackComp = activeComp || $('#company-name').value.trim();
+    updateToolSwitcherUrls(month);
+    data ||= math.normalizeMonthData(month, { employeeName: fallbackEmp, companyName: fallbackComp });
     generateCalendar(month);
     for (const [day, value] of Object.entries(data.hours)) $(`#hours-${day}`).value = value;
     for (const [day, value] of Object.entries(data.shifts)) $(`#shift-${day}`).value = value;
-    $('#employee-name-input').value = data.employeeName;
-    $('#company-name').value = data.companyName;
+    const effectiveEmp = data.employeeName || fallbackEmp;
+    const effectiveComp = data.companyName || fallbackComp;
+    data.employeeName = effectiveEmp;
+    data.companyName = effectiveComp;
+    $('#employee-name-input').value = effectiveEmp;
+    $('#company-name').value = effectiveComp;
     $('#current-period').textContent = monthLabel(month);
     state.drafts.set(month, data);
     updateEmployeeInfo();
     recalculateHours();
+    updateAllCards();
     updateSaveStatus();
   }
   function saveMonthData() {
     try {
       const data = collectMonthData();
       localStorage.setItem(math.storageKey(state.month), JSON.stringify(data));
+      syncSharedMonthData(state.month, data);
+      updateToolSwitcherUrls(state.month);
       state.drafts.set(state.month, data);
       state.saved.add(state.month);
       state.dirty.delete(state.month);
@@ -356,22 +660,80 @@
   }
   function bindEvents() {
     $('#month-year-picker').addEventListener('change', event => loadMonth(event.target.value));
-    $('#employee-name-input').addEventListener('input', markChanged);
-    $('#company-name').addEventListener('input', markChanged);
+    $('#employee-name-input').addEventListener('input', () => {
+      const val = $('#employee-name-input').value.trim();
+      if (val) localStorage.setItem('shader7_active_employee', val);
+      else localStorage.removeItem('shader7_active_employee');
+      markChanged();
+    });
+    $('#company-name').addEventListener('input', () => {
+      const comp = $('#company-name').value.trim();
+      if (comp) localStorage.setItem('shader7_active_company', comp);
+      else localStorage.removeItem('shader7_active_company');
+      markChanged();
+    });
     $('#calendar-container').addEventListener('change', event => {
       const select = event.target;
       if (select.matches('.shift-select')) {
         const preset = math.defaultHoursForShift(select.value);
         if (preset !== null) $(`#hours-${select.dataset.day}`).value = preset;
       }
-      if (select.matches('.hours-select,.shift-select')) markChanged();
+      if (select.matches('.hours-select,.shift-select')) {
+        updateCardState(select.dataset.day);
+        markChanged();
+      }
     });
-    $('#save-month-btn').addEventListener('click', saveMonthData);
+
+    $('#calendar-container').addEventListener('click', event => {
+      const pill = event.target.closest('.quick-pill');
+      if (pill) {
+        handleQuickShift(pill);
+      }
+    });
+
+    $('#view-cards-btn')?.addEventListener('click', () => setCalendarView('cards'));
+    $('#view-table-btn')?.addEventListener('click', () => setCalendarView('table'));
+    $('#save-month-btn').addEventListener('click', () => {
+      clearTimeout(autoSaveTimer);
+      saveMonthData();
+    });
     $('#clear-hours-btn').addEventListener('click', () => $('#clear-dialog').showModal());
     $('#confirm-clear-btn').addEventListener('click', clearAllHours);
+
+    // Dialog click outside dismiss
+    const clearDialog = $('#clear-dialog');
+    clearDialog?.addEventListener('click', event => {
+      const rect = clearDialog.getBoundingClientRect();
+      const inside = (rect.top <= event.clientY && event.clientY <= rect.top + rect.height && rect.left <= event.clientX && event.clientX <= rect.left + rect.width);
+      if (!inside) clearDialog.close();
+    });
+
+    // Quick-fill buttons
+    $$('.btn-quick-fill').forEach(btn => {
+      btn.addEventListener('click', () => applyQuickFill(btn.dataset.action));
+    });
+
+    // Sticky floating summary bar
+    const stickyBar = $('#sticky-summary-bar');
+    $('#sticky-report-btn')?.addEventListener('click', () => $('#report-btn')?.click());
+    const onScrollCheck = () => {
+      if (!stickyBar) return;
+      if (window.scrollY > 200 || (window.innerWidth <= 640 && window.scrollY > 80)) {
+        stickyBar.classList.add('visible');
+      } else {
+        stickyBar.classList.remove('visible');
+      }
+    };
+    window.addEventListener('scroll', onScrollCheck, { passive: true });
+    window.addEventListener('resize', onScrollCheck, { passive: true });
+    onScrollCheck();
+
     $('#report-btn').addEventListener('click', showReportPreview);
     $('#share-btn').addEventListener('click', shareApp);
     $('#modal-close-btn').addEventListener('click', hideReportPreview);
+    $('#report-scrollable-content')?.addEventListener('click', event => {
+      if (event.target === event.currentTarget) hideReportPreview();
+    });
     $('#zoom-out-btn').addEventListener('click', () => zoomReport(-0.1));
     $('#zoom-in-btn').addEventListener('click', () => zoomReport(0.1));
     $('#zoom-fit-btn').addEventListener('click', resetZoom);
@@ -393,7 +755,60 @@
   }
   const now = new Date();
   $('#copyright-year').textContent = now.getFullYear();
-  $('#month-year-picker').value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  const urlParams = new URLSearchParams(window.location.search);
+  const queryMonth = urlParams.get('month');
+  const sharedMonth = localStorage.getItem('shader7_active_month');
+  const activeEmp = localStorage.getItem('shader7_active_employee');
+  const activeComp = localStorage.getItem('shader7_active_company');
+  if (activeEmp && !$('#employee-name-input').value) $('#employee-name-input').value = activeEmp;
+  if (activeComp && !$('#company-name').value) $('#company-name').value = activeComp;
+
+  const picker = $('#month-year-picker');
+  const fallbackMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  picker.value = queryMonth || sharedMonth || fallbackMonth;
+
   bindEvents();
-  loadMonth($('#month-year-picker').value);
+  updateToolSwitcherUrls(picker.value);
+
+  window.addEventListener('storage', event => {
+    if (event.key === 'shader7_active_employee') {
+      const newName = event.newValue || '';
+      if ($('#employee-name-input') && $('#employee-name-input').value !== newName) {
+        $('#employee-name-input').value = newName;
+        if (state && state.month && state.drafts) {
+          const curDraft = state.drafts.get(state.month);
+          if (curDraft) curDraft.employeeName = newName;
+        }
+        updateEmployeeInfo();
+      }
+    } else if (event.key === 'shader7_active_company') {
+      const newComp = event.newValue || '';
+      if ($('#company-name') && $('#company-name').value !== newComp) {
+        $('#company-name').value = newComp;
+        if (state && state.month && state.drafts) {
+          const curDraft = state.drafts.get(state.month);
+          if (curDraft) curDraft.companyName = newComp;
+        }
+        updateEmployeeInfo();
+      }
+    } else if (event.key && (event.key.startsWith('shader7_hours_v1_') || event.key.startsWith('calendarData_'))) {
+      if (state.month && event.key.endsWith(state.month)) {
+        state.drafts.delete(state.month);
+        loadMonth(state.month);
+      }
+    }
+  });
+
+  $$('.tool-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      clearTimeout(autoSaveTimer);
+      if (state.month) {
+        const data = collectMonthData();
+        localStorage.setItem(math.storageKey(state.month), JSON.stringify(data));
+        syncSharedMonthData(state.month, data);
+      }
+    });
+  });
+
+  loadMonth(picker.value);
 })();

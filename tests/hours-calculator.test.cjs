@@ -55,3 +55,9 @@ test('saved months use a distinct namespace from the salary calculator', () => {
   assert.notEqual(hours.storageKey('2026-09'), 'calendarData_2026-09');
   assert.notEqual(hours.storageKey('2026-09'), hours.storageKey('2026-10'));
 });
+
+test('employeeName and companyName are sanitized and trimmed', () => {
+  const data = hours.normalizeMonthData('2026-09', { employeeName: '   Alice Smith   ', companyName: '  Acme Corp  ' });
+  assert.equal(data.employeeName, 'Alice Smith');
+  assert.equal(data.companyName, 'Acme Corp');
+});

@@ -18,6 +18,37 @@
     const orientation = () => selectedValue('orientation');
     const paperMM = () => orientation() === 'landscape' ? { width:297, height:210 } : { width:210, height:297 };
     const paperPX = () => { const size = paperMM(); return { width:size.width * 96 / 25.4, height:size.height * 96 / 25.4 }; };
+    
+    function updateToolSwitcherUrls(monthKey) {
+      if (!monthKey) return;
+      const salaryTab = $('tool-tab-salary');
+      const hoursTab = $('tool-tab-hours');
+      const attendanceTab = $('tool-tab-attendance');
+      if (salaryTab) salaryTab.href = `app.html?month=${monthKey}`;
+      if (hoursTab) hoursTab.href = `hours.html?month=${monthKey}`;
+      if (attendanceTab) attendanceTab.href = `attendance.html?month=${monthKey}`;
+    }
+
+    function getSharedHoursForMonth(monthKey) {
+      try {
+        let fallback = null;
+        const h = localStorage.getItem(`shader7_hours_v1_${monthKey}`);
+        if (h) {
+          const parsed = JSON.parse(h);
+          if (parsed && parsed.hours && Object.values(parsed.hours).some(v => v !== '' && v !== null && v !== undefined)) return parsed;
+          if (parsed) fallback = parsed;
+        }
+        const c = localStorage.getItem(`calendarData_${monthKey}`);
+        if (c) {
+          const parsed = JSON.parse(c);
+          if (parsed && parsed.hours && Object.values(parsed.hours).some(v => v !== '' && v !== null && v !== undefined)) return parsed;
+          if (parsed && !fallback) fallback = parsed;
+        }
+        return fallback;
+      } catch (e) {}
+      return null;
+    }
+
     function hasValidStartMonth() {
       try { core.assertMonthKey($('start-month').value); return true; }
       catch { return false; }
@@ -31,10 +62,45 @@
     }
 
     function makeMonthPanel(monthKey) {
+      const sharedData = getSharedHoursForMonth(monthKey);
       const rows = core.getMonthRows(monthKey).map(row => {
         const classes = [row.weekend ? 'weekend-row' : '', row.empty ? 'unused-row' : ''].filter(Boolean).join(' ');
         const date = row.empty ? '—' : `${row.day} ${escapeHTML(row.weekday)}`;
-        return `<tr class="${classes}"><td class="date-cell">${date}</td><td></td><td></td><td></td><td></td><td class="initial-cell"></td></tr>`;
+
+        let inTime = '';
+        let outTime = '';
+        let breakTime = '';
+        let hoursText = '';
+        let initial = '';
+
+        if (!row.empty && sharedData && sharedData.hours) {
+          const dayHours = sharedData.hours[row.day];
+          const dayShift = (sharedData.shifts && sharedData.shifts[row.day]) || '';
+
+          if (dayHours !== undefined && dayHours !== '') {
+            const num = parseFloat(dayHours);
+            if (dayHours === '0' || dayShift === '0') {
+              hoursText = '0';
+              inTime = 'OFF';
+              outTime = 'OFF';
+            } else if (num > 0) {
+              hoursText = `${dayHours}`;
+              const shiftLower = String(dayShift).toLowerCase();
+              if (shiftLower === 'night') {
+                inTime = '22:00';
+                outTime = '06:00';
+              } else if (num === 8 || ['8', 'a', 'b', 'c'].includes(shiftLower)) {
+                inTime = '09:00';
+                outTime = '17:00';
+              } else if (num === 12 || ['12', 'day'].includes(shiftLower)) {
+                inTime = '07:00';
+                outTime = '19:00';
+              }
+            }
+          }
+        }
+
+        return `<tr class="${classes}"><td class="date-cell">${date}</td><td>${inTime}</td><td>${outTime}</td><td>${breakTime}</td><td class="hours-val-cell">${hoursText}</td><td class="initial-cell">${initial}</td></tr>`;
       }).join('');
       return `<section class="month-panel" aria-label="${escapeHTML(core.formatMonth(monthKey))}">
         <h3 class="month-heading">${escapeHTML(core.formatMonth(monthKey))}</h3>
@@ -89,8 +155,10 @@
     }
 
     function filename() {
-      const safe = valueOrLine('company-name','Attendance').replace(/&[^;]+;/g,'').replace(/[^a-z0-9_-]+/gi,'_').slice(0,55) || 'Attendance';
-      return `Attendance_${safe}_${$('start-month').value}_${monthCount()}mo_A4_${orientation()}`;
+      const company = valueOrLine('company-name','').replace(/&[^;]+;/g,'').replace(/[^a-z0-9_-]+/gi,'_').slice(0,30);
+      const employee = valueOrLine('employee-name','').replace(/&[^;]+;/g,'').replace(/[^a-z0-9_-]+/gi,'_').slice(0,30);
+      const prefix = [employee, company].filter(Boolean).join('_') || 'Attendance';
+      return `Attendance_${prefix}_${$('start-month').value}_${monthCount()}mo_A4_${orientation()}`;
     }
 
     async function exportSheet(format) {
@@ -140,8 +208,58 @@
     }
 
     const now = new Date();
-    $('start-month').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
     $('copyright-year').textContent = now.getFullYear();
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const queryMonth = urlParams.get('month');
+    const sharedMonth = localStorage.getItem('shader7_active_month');
+    const activeEmp = localStorage.getItem('shader7_active_employee');
+    const activeComp = localStorage.getItem('shader7_active_company');
+
+    if (activeEmp && !$('employee-name').value) $('employee-name').value = activeEmp;
+    if (activeComp && !$('company-name').value) $('company-name').value = activeComp;
+
+    if (queryMonth && /^\d{4}-(0[1-9]|1[0-2])$/.test(queryMonth)) {
+      $('start-month').value = queryMonth;
+    } else if (sharedMonth && /^\d{4}-(0[1-9]|1[0-2])$/.test(sharedMonth)) {
+      $('start-month').value = sharedMonth;
+    } else {
+      $('start-month').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+    }
+    updateToolSwitcherUrls($('start-month').value);
+
+    $('employee-name').addEventListener('input', () => {
+      const val = $('employee-name').value.trim();
+      if (val) localStorage.setItem('shader7_active_employee', val);
+      else localStorage.removeItem('shader7_active_employee');
+    });
+    $('company-name').addEventListener('input', () => {
+      const comp = $('company-name').value.trim();
+      if (comp) localStorage.setItem('shader7_active_company', comp);
+      else localStorage.removeItem('shader7_active_company');
+    });
+    $('start-month').addEventListener('change', () => {
+      updateToolSwitcherUrls($('start-month').value);
+    });
+
+    window.addEventListener('storage', event => {
+      if (event.key === 'shader7_active_employee') {
+        const newName = event.newValue || '';
+        if ($('employee-name') && $('employee-name').value !== newName) {
+          $('employee-name').value = newName;
+          render();
+        }
+      } else if (event.key === 'shader7_active_company') {
+        const newComp = event.newValue || '';
+        if ($('company-name') && $('company-name').value !== newComp) {
+          $('company-name').value = newComp;
+          render();
+        }
+      } else if (event.key && (event.key.startsWith('shader7_hours_v1_') || event.key.startsWith('calendarData_') || event.key === 'shader7_active_month')) {
+        render();
+      }
+    });
+
     form.addEventListener('input', render);
     form.addEventListener('change', render);
     $('download-pdf').addEventListener('click', () => exportSheet('pdf'));

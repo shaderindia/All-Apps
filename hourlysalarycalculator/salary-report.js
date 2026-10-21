@@ -67,7 +67,7 @@
       const blankRow = (width = 4) => Array(width).fill(null);
       const rows = [
         [cell('Salary Statement', 2)],
-        [cell('Company', 4), cell(find('company-name').value.trim(), 5), cell('Employee', 4), cell(find('employee-name-input').value.trim(), 5)],
+        [cell('Company', 4), cell(find('company-name').value.trim() || 'N/A', 5), cell('Employee', 4), cell(find('employee-name-input').value.trim() || 'N/A', 5)],
         [cell('Period', 4), cell(monthName, 5), cell('Generated', 4), cell(generatedDate, 5)],
         blankRow(),
         ['Category', 'Metric', 'Value', 'Unit'].map(value => cell(value, 12))
@@ -311,7 +311,7 @@
       const label = button.innerHTML;
       button.textContent = format === 'xlsx' ? 'Creating Excel…' : `Creating ${format.toUpperCase()}…`;
       try {
-        const safe = value => value.trim().replace(/[^a-z0-9_-]+/gi, '_').slice(0, 70) || 'Report';
+        const safe = value => value.trim().replace(/[^a-z0-9_-]+/gi, '_').slice(0, 70) || 'Employee';
         const filename = `Salary_Report_${safe(find('employee-name-input').value)}_${getMonthKey()}`;
         if (format === 'xlsx') {
           const url = URL.createObjectURL(createSalaryWorkbook());
@@ -364,6 +364,9 @@
 
     find('report-btn').addEventListener('click', open);
     find('modal-close-btn').addEventListener('click', close);
+    scroller.addEventListener('click', event => {
+      if (event.target === scroller || event.target === stage) close();
+    });
     paper.addEventListener('change', arrangePaper);
     find('zoom-fit-btn').addEventListener('click', () => fit('page'));
     find('zoom-width-btn').addEventListener('click', () => fit('width'));

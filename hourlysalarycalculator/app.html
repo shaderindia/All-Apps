@@ -13,7 +13,342 @@
       src: url('/fonts/Inter-Variable.woff2') format('woff2');
       unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
     }
-  </style>
+  
+    /* Unified Tool Switcher - Column Layout */
+    .tool-header-bar {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 22px;
+      position: relative;
+      z-index: 2;
+    }
+    .tool-header-bar .home-link, .tool-header-bar .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.92rem;
+      color: rgba(255, 255, 255, 0.95);
+      margin-bottom: 0;
+      padding: 9px 14px;
+      background: rgba(0, 0, 0, 0.18);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      transition: all 0.15s ease;
+    }
+    .tool-header-bar .home-link:hover, .tool-header-bar .back-link:hover {
+      background: rgba(0, 0, 0, 0.28);
+      color: #ffffff;
+      text-decoration: none;
+      transform: translateX(-2px);
+    }
+    .tool-switcher {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 14px;
+      padding: 6px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      min-width: 220px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+    .tool-tab {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 10px;
+      padding: 9px 15px;
+      border-radius: 9px;
+      font-size: 0.86rem;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.9);
+      text-decoration: none;
+      transition: all 0.18s ease;
+      min-height: 44px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .tool-tab i {
+      width: 18px;
+      text-align: center;
+      font-size: 0.95rem;
+    }
+    .tool-tab:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.16);
+      transform: translateX(2px);
+    }
+    .tool-tab.active {
+      background: #ffffff;
+      color: #1e3a8a;
+      font-weight: 700;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+    .tool-tab:focus-visible {
+      outline: 2px solid #ffffff;
+      outline-offset: 2px;
+    }
+    @media (max-width: 640px) {
+      .tool-header-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+      }
+      .tool-switcher {
+        width: 100%;
+        min-width: auto;
+      }
+    }
+
+    /* Step 3: Quick-Fill Bar */
+    .quick-fill-bar {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      background: var(--soft, #f8fafc);
+      border: 1px solid var(--border, #e2e8f0);
+      border-radius: 14px;
+      padding: 10px 14px;
+      margin-top: 10px;
+      margin-bottom: 14px;
+    }
+    .quick-fill-label {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--muted, #64748b);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-right: 4px;
+    }
+    .btn-quick-fill {
+      background: #ffffff;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 9999px;
+      padding: 7px 13px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #334155;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-quick-fill:hover {
+      background: #eff6ff;
+      border-color: #3b82f6;
+      color: #1d4ed8;
+      transform: translateY(-1px);
+    }
+    .btn-quick-fill.btn-quick-clear {
+      color: #dc2626;
+      border-color: #fca5a5;
+      margin-left: auto;
+    }
+    .btn-quick-fill.btn-quick-clear:hover {
+      background: #fef2f2;
+      border-color: #ef4444;
+      color: #b91c1c;
+    }
+
+    /* Save Status Badge */
+    .save-btn-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .save-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      min-height: 36px;
+      transition: all 0.2s ease;
+    }
+    .save-status-badge.saved {
+      background: #ecfdf5;
+      color: #065f46;
+      border: 1px solid #a7f3d0;
+    }
+    .save-status-badge.saving {
+      background: #eff6ff;
+      color: #1e40af;
+      border: 1px solid #bfdbfe;
+    }
+    .save-status-badge.unsaved {
+      background: #fffbeb;
+      color: #92400e;
+      border: 1px solid #fde68a;
+    }
+
+    .sync-indicator-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #0284c7;
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      vertical-align: middle;
+      margin-left: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .sync-indicator-pill i {
+      font-size: 0.65rem;
+      color: #0284c7;
+    }
+
+    /* Day Row States: Table View & Cards View */
+    .calendar-table td.weekend {
+      background: #fff8f8;
+    }
+    .calendar-day .day-number .weekend-label {
+      background: #fee2e2;
+      color: #b91c1c;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 9999px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+    .shift-tag-pill {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 6px;
+      margin-top: 4px;
+      text-align: center;
+      letter-spacing: 0.2px;
+    }
+    .shift-tag-pill.shift-a, .shift-tag-pill.shift-8 { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+    .shift-tag-pill.shift-b { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+    .shift-tag-pill.shift-c { background: #ede9fe; color: #5b21b6; border: 1px solid #ddd6fe; }
+    .shift-tag-pill.shift-day, .shift-tag-pill.shift-12 { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+    .shift-tag-pill.shift-night { background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; }
+    .shift-tag-pill.shift-ot { background: #ffe4e6; color: #9f1239; border: 1px solid #fecdd3; }
+    .shift-tag-pill.shift-off, .shift-tag-pill.shift-0 { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; }
+
+    /* Dimmed Off Days */
+    .work-card.is-off-day, .calendar-table td.is-off-day {
+      opacity: 0.72;
+      background: #f8fafc;
+    }
+    .work-card.is-off-day:hover, .calendar-table td.is-off-day:hover {
+      opacity: 1;
+    }
+
+    /* Clear Confirmation Dialog */
+    .clear-dialog {
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      border-radius: 18px;
+      background: #ffffff;
+      color: #1e293b;
+      padding: 24px;
+      max-width: min(440px, calc(100% - 32px));
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      margin: auto;
+    }
+    .clear-dialog::backdrop {
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .clear-dialog h2 { margin: 0 0 10px; font-size: 1.25rem; font-weight: 700; color: #0f172a; }
+    .clear-dialog p { margin: 0 0 20px; font-size: 0.9rem; color: #64748b; line-height: 1.5; }
+    .clear-dialog form { display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
+    .clear-dialog .btn { min-height: 44px; min-width: 44px; padding: 10px 18px; border-radius: 10px; font-weight: 600; cursor: pointer; }
+    .clear-dialog .btn.danger { background: #ef4444; color: #ffffff; border: none; }
+    .clear-dialog .btn.danger:hover { background: #dc2626; }
+    .clear-dialog .btn.neutral { background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; }
+    .clear-dialog .btn.neutral:hover { background: #e2e8f0; }
+
+    /* Sticky Floating Summary Bar */
+    .sticky-summary-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 850;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      color: #ffffff;
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.28);
+      padding: 10px 20px;
+      padding-bottom: max(10px, env(safe-area-inset-bottom));
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      transform: translateY(110%);
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
+    }
+    .sticky-summary-bar.visible {
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+    .sticky-metrics { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+    .sticky-metric-item { display: flex; align-items: baseline; gap: 6px; }
+    .sticky-metric-item .sticky-lbl { font-size: 0.74rem; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
+    .sticky-metric-item strong { font-size: 0.96rem; font-weight: 700; color: #f8fafc; }
+    .sticky-metric-item.sticky-highlight strong { color: #38bdf8; font-size: 1.05rem; }
+    .btn-sticky-report {
+      background: #2563eb;
+      color: #ffffff;
+      border: none;
+      border-radius: 10px;
+      padding: 9px 18px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      white-space: nowrap;
+      min-height: 44px;
+      min-width: 44px;
+      box-shadow: 0 2px 10px rgba(37, 99, 235, 0.35);
+      transition: background 0.15s ease, transform 0.15s ease;
+    }
+    .btn-sticky-report:hover { background: #1d4ed8; transform: translateY(-1px); }
+
+    /* Touch Targets >= 44px */
+    .quick-pill { min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; justify-content: center; }
+    .view-toggle-btn { min-height: 44px; }
+    .hours-select, .shift-select { min-height: 44px; }
+
+    @media (max-width: 640px) {
+      .sticky-summary-bar { padding: 8px 12px; padding-bottom: max(8px, env(safe-area-inset-bottom)); }
+      .sticky-metrics { gap: 10px; }
+      .sticky-metric-item strong { font-size: 0.85rem; }
+      .sticky-metric-item.sticky-highlight strong { font-size: 0.92rem; }
+      .btn-sticky-report { padding: 8px 12px; font-size: 0.82rem; }
+      .quick-fill-bar { justify-content: flex-start; }
+      .btn-quick-fill.btn-quick-clear { margin-left: 0; width: 100%; justify-content: center; }
+    }
+</style>
   <link rel="stylesheet" href="salary-report.css?v=20260903b"/>
   <script defer src="salary-report.js?v=20261004b"></script>
   <style id="report-print-page" media="print">@page { size: A4 portrait; margin: 0; }</style>
@@ -136,87 +471,6 @@
   <script defer src="../js/html2canvas.min.js"></script>
 
   <style>
-    /* Premium Info Section for AdSense and SEO */
-    .app-info-section {
-        margin-top: 40px;
-        background: #1e293b !important;
-        border: 1px solid #334155 !important;
-        border-radius: 12px;
-        padding: 30px;
-        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
-        text-align: left !important;
-        color: #e2e8f0 !important;
-    }
-    .app-info-section h3 {
-        color: #3b82f6 !important;
-        font-size: 1.35rem !important;
-        margin-top: 25px !important;
-        margin-bottom: 12px !important;
-        border-bottom: 1px solid #334155 !important;
-        padding-bottom: 6px !important;
-        font-weight: 700 !important;
-        text-transform: none !important;
-        text-align: left !important;
-    }
-    .app-info-section h3:first-of-type {
-        margin-top: 0 !important;
-    }
-    .app-info-section p {
-        color: #cbd5e1 !important;
-        font-size: 0.95rem !important;
-        line-height: 1.7 !important;
-        margin-bottom: 15px !important;
-        text-align: left !important;
-    }
-    .app-info-section ul, .app-info-section ol {
-        margin-left: 24px !important;
-        margin-bottom: 15px !important;
-        color: #cbd5e1 !important;
-        text-align: left !important;
-    }
-    .app-info-section li {
-        margin-bottom: 6px !important;
-        font-size: 0.95rem !important;
-        line-height: 1.6 !important;
-    }
-    .app-info-section code {
-        background: #020617 !important;
-        padding: 2px 6px !important;
-        border-radius: 4px !important;
-        font-family: monospace !important;
-        color: #3b82f6 !important;
-        font-size: 0.9rem !important;
-    }
-    .app-info-section .guide-promo-box {
-        background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(168, 85, 247, 0.08)) !important;
-        border: 1px dashed rgba(139, 92, 246, 0.3) !important;
-        border-radius: 8px;
-        padding: 20px;
-        margin-top: 30px;
-        text-align: center !important;
-    }
-    .app-info-section .guide-promo-box p {
-        text-align: center !important;
-        margin-bottom: 12px !important;
-        font-weight: 600 !important;
-        color: #ffffff !important;
-    }
-    .app-info-section .promo-btn {
-        display: inline-block !important;
-        background: #6366f1 !important;
-        color: #ffffff !important;
-        padding: 10px 20px !important;
-        border-radius: 6px !important;
-        text-decoration: none !important;
-        font-weight: 700 !important;
-        transition: background 0.2s !important;
-        font-size: 0.9rem !important;
-        border: none !important;
-        cursor: pointer !important;
-    }
-    .app-info-section .promo-btn:hover {
-        background: #4f46e5 !important;
-    }
 
     :root {
       --primary: #4361ee;
@@ -352,8 +606,154 @@
     .salary-box { background: linear-gradient(135deg, #f8fbff, #eef4ff); border: 1.5px solid #dbeafe; border-radius: 16px; padding: 16px; text-align: center; }
     .salary-box span { display: block; color: var(--muted); font-size: .8rem; font-weight: 600; text-transform: uppercase; }
     .salary-box strong { display: block; margin-top: 4px; color: var(--primary); font-size: clamp(1.1rem, 2.5vw, 1.45rem); font-weight: 800; }
-    .calendar-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 24px 0 10px; flex-wrap: wrap; }
+    .calendar-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 24px 0 12px; flex-wrap: wrap; }
+    .calendar-toolbar-info { display: grid; gap: 2px; }
     .calendar-toolbar h3 { margin: 0; font-size: 1.15rem; font-weight: 800; }
+    .view-toggle {
+      display: inline-flex;
+      background: #e2e8f0;
+      padding: 3px;
+      border-radius: 999px;
+      gap: 3px;
+    }
+    .view-toggle-btn {
+      border: 0;
+      background: transparent;
+      color: #64748b;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all .18s ease;
+      min-height: 32px;
+    }
+    .view-toggle-btn.active {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(67, 97, 238, .3);
+    }
+    .view-toggle-btn:hover:not(.active) {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.6);
+    }
+    .calendar-cards-wrapper {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 12px;
+      padding: 4px;
+    }
+    .work-card {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: border-color .2s ease, box-shadow .2s ease, background-color .2s ease;
+    }
+    .work-card:hover {
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+    }
+    .work-card.has-hours {
+      border-color: #3b82f6;
+      background: #f8fbff;
+      box-shadow: 0 3px 10px rgba(59, 130, 246, 0.08);
+    }
+    .work-card.is-weekend {
+      border-left: 4px solid #ef4444;
+    }
+    .work-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: var(--text);
+    }
+    .work-card-date {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .work-card-badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .badge-weekend {
+      background: #ffebee;
+      color: var(--danger);
+    }
+    .badge-weekday {
+      background: #f1f5f9;
+      color: var(--muted);
+    }
+    .daily-pay-chip {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #059669;
+      background: #ecfdf5;
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+    .quick-shifts-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+    .quick-pill {
+      background: #f1f5f9;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 6px 9px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: #334155;
+      cursor: pointer;
+      transition: all .15s ease;
+      touch-action: manipulation;
+    }
+    .quick-pill:hover {
+      background: #e2e8f0;
+      border-color: #cbd5e1;
+    }
+    .quick-pill.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary-dark);
+      box-shadow: 0 2px 6px rgba(67, 97, 238, .3);
+    }
+    .quick-pill.pill-off.active {
+      background: #64748b;
+      border-color: #475569;
+      color: #fff;
+    }
+    .card-inputs-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      align-items: center;
+    }
+    .card-inputs-row label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 2px;
+      display: block;
+      font-weight: 600;
+    }
+    .calendar-wrapper.cards-mode {
+      overflow-x: visible;
+      border: 0;
+      background: transparent;
+    }
     .calendar-wrapper {
       overflow-x: auto;
       border: 1px solid var(--border);
@@ -449,6 +849,9 @@
       .salary-box { padding: 12px; }
       .salary-box strong { font-size: 1.25rem; }
       .calendar-toolbar { align-items: flex-start; margin: 18px 0 8px; }
+      .calendar-cards-wrapper { grid-template-columns: 1fr; gap: 10px; padding: 0; }
+      .work-card { padding: 12px; }
+      .quick-pill { flex: 1 1 auto; text-align: center; padding: 7px 6px; font-size: 0.76rem; }
       .calendar-table { min-width: 680px; }
       .calendar-table td { min-width: 96px; padding: 6px; }
       .converter-row { grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -526,7 +929,16 @@
 <body>
   <main class="page-shell">
     <header class="hero">
-      <a class="home-link" href="/" aria-label="Back to home"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Home</a>
+      <div class="tool-header-bar">
+        <a class="home-link" href="index.html" aria-label="Back to calculator options">
+          <i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Calculator options
+        </a>
+        <nav class="tool-switcher" aria-label="Calculator tools switcher">
+          <a href="app.html" id="tool-tab-salary" class="tool-tab active" aria-current="page"><i class="fa-solid fa-calculator" aria-hidden="true"></i> Salary Calculator</a>
+          <a href="hours.html" id="tool-tab-hours" class="tool-tab"><i class="fa-solid fa-clock" aria-hidden="true"></i> Hours Only</a>
+          <a href="attendance.html" id="tool-tab-attendance" class="tool-tab"><i class="fa-solid fa-clipboard-check" aria-hidden="true"></i> Attendance Sheet</a>
+        </nav>
+      </div>
       <div class="hero-content">
         <h1>Advanced Hourly Salary Calculator</h1>
         <p>Calculate monthly pay from daily hours, weekend, night shift, and C shift multipliers, RON to INR conversion, saved monthly logs, and downloadable salary reports.</p>
@@ -558,8 +970,8 @@
       </div>
 
       <form class="form-grid" onsubmit="return false;" autocomplete="on">
-        <div class="form-group"><label for="employee-name-input">Employee Name</label><input type="text" id="employee-name-input" placeholder="Your name" autocomplete="name" /></div>
-        <div class="form-group"><label for="company-name">Company Name</label><input type="text" id="company-name" placeholder="Company name" autocomplete="organization" /></div>
+        <div class="form-group"><label for="employee-name-input">Employee Name <span class="sync-indicator-pill"><i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i> Synced</span></label><input type="text" id="employee-name-input" placeholder="e.g. Jane Doe" autocomplete="name" /></div>
+        <div class="form-group"><label for="company-name">Company Name <span class="sync-indicator-pill"><i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i> Synced</span></label><input type="text" id="company-name" placeholder="Company or organisation" autocomplete="organization" /></div>
         <div class="form-group"><label for="month-year-picker">Select Month and Year</label><input type="month" id="month-year-picker" /></div>
         <div class="form-group"><label for="salary">Base Salary (RON)</label><input type="number" id="salary" min="0" step="0.01" inputmode="decimal" placeholder="Example: 4000" aria-describedby="salary-warning" /><small id="salary-warning" class="field-warning" aria-live="polite"><i class="fa-solid fa-triangle-exclamation"></i> Base salary is missing. Enter it to calculate salary correctly.</small></div>
         <div class="form-group"><label for="fixedBaseHours">Fixed Base Hours per Month</label><input type="number" id="fixedBaseHours" min="1" step="0.5" inputmode="decimal" value="160" placeholder="Example: 160" /></div>
@@ -568,12 +980,33 @@
         <div class="form-group"><label for="cShiftRate">C Shift Multiplier</label><select id="cShiftRate"><option value="1">1x - No extra</option><option value="1.1">1.10x</option><option value="1.15">1.15x</option><option value="1.25" selected>1.25x</option><option value="1.5">1.5x</option><option value="2">2x</option></select><small class="subtle">Applies when shift is set to C. Weekend + C Shift are multiplied together.</small></div>
       </form>
 
-      <div class="calendar-toolbar"><h3>Daily Work Log</h3><p class="subtle">Tip: choose a shift to auto-fill hours. Night Shift and C Shift use their own multipliers.</p></div>
+      <div class="calendar-toolbar">
+        <div class="calendar-toolbar-info">
+          <h3>Daily Work Log</h3>
+          <p class="subtle">Tip: Use Quick-Fill to batch-apply shifts or adjust days individually below.</p>
+        </div>
+        <div class="view-toggle" role="group" aria-label="Calendar view mode">
+          <button type="button" id="view-cards-btn" class="view-toggle-btn active" title="Touch Cards View (Mobile friendly)"><i class="fa-solid fa-mobile-screen-button" aria-hidden="true"></i> Cards</button>
+          <button type="button" id="view-table-btn" class="view-toggle-btn" title="Grid Table View"><i class="fa-solid fa-table-cells" aria-hidden="true"></i> Grid</button>
+        </div>
+      </div>
+
+      <div class="quick-fill-bar" role="toolbar" aria-label="Quick-fill work calendar">
+        <span class="quick-fill-label"><i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i> Quick-Fill:</span>
+        <button type="button" class="btn-quick-fill" data-action="weekdays-8"><i class="fa-solid fa-sun" aria-hidden="true"></i> Weekdays 8h</button>
+        <button type="button" class="btn-quick-fill" data-action="weekdays-12-day"><i class="fa-solid fa-clock" aria-hidden="true"></i> Weekdays 12h Day</button>
+        <button type="button" class="btn-quick-fill" data-action="weekdays-12-night"><i class="fa-solid fa-moon" aria-hidden="true"></i> Weekdays 12h Night</button>
+        <button type="button" class="btn-quick-fill" data-action="weekends-off"><i class="fa-solid fa-bed" aria-hidden="true"></i> Weekends Off</button>
+        <button type="button" class="btn-quick-fill btn-quick-clear" data-action="clear-all"><i class="fa-solid fa-eraser" aria-hidden="true"></i> Clear Month</button>
+      </div>
       <div id="calendar-container" class="calendar-wrapper" aria-live="polite"><p class="subtle" style="padding:16px;text-align:center;">Please select a month and year to generate the calendar.</p></div>
 
       <div class="actions" aria-label="Actions">
         <button class="btn warning" type="button" id="clear-hours-btn"><i class="fa-solid fa-trash" aria-hidden="true"></i> Remove All Hours</button>
-        <button class="btn" type="button" id="save-month-btn"><i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> Save This Month</button>
+        <div class="save-btn-group">
+          <button class="btn" type="button" id="save-month-btn"><i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> Save This Month</button>
+          <span id="save-status-badge" class="save-status-badge saved" aria-live="polite"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Saved in browser ✓</span>
+        </div>
         <button class="btn secondary" type="button" id="report-btn" aria-haspopup="dialog"><i class="fa-solid fa-eye" aria-hidden="true"></i> Preview A4 Report</button>
         <button class="btn neutral" type="button" id="share-btn"><i class="fa-solid fa-share-nodes" aria-hidden="true"></i> Share App</button>
       </div>
@@ -680,43 +1113,6 @@
       </div>
     </section>
 
-    <section class="app-info-section">
-        <h3>Wage Conversion Mathematics & Labor Standards</h3>
-        <p>Converting hourly compensation into annual salary requires factoring in standard working hours, paid vacation thresholds, shift differentials, and legal overtime multipliers under labor regulations like the Fair Labor Standards Act (FLSA). Our Hourly Salary Calculator helps professionals and employers perform exact gross salary conversions across various payroll intervals.</p>
-        
-        <p>The core mathematical equations used inside this calculator are:</p>
-        <ul>
-            <li><strong>Annual Gross Income (Standard):</strong> <code>A = Hourly Wage * H_weekly * 52</code>, where <code>H_weekly</code> represents weekly hours (typically 40).</li>
-            <li><strong>Overtime Pay Rate (FLSA):</strong> <code>R_ot = Wage_base * 1.5</code> for all hours worked exceeding 40 hours per workweek.</li>
-            <li><strong>Gross-to-Net Pay Deduction:</strong> <code>Net Pay = Gross Income - (T_federal + T_state + T_fica + D_pretax)</code>, which estimates the take-home pay after accounting for tax brackets and retirement allocations.</li>
-        </ul>
-
-        <h3>Understanding W2 Employee vs. 1099 Contractor Tax Models</h3>
-        <p>When comparing job offers, it is critical to distinguish between W2 employment and 1099 contracting, as their self-employment tax liabilities vary significantly:</p>
-        <ol>
-            <li><strong>W2 Employee:</strong> The employer is legally required to pay half of your FICA tax liabilities (7.65% representing Social Security and Medicare). You are also eligible for paid time off, health insurance, and retirement matching.</li>
-            <li><strong>1099 Independent Contractor:</strong> You are classified as self-employed. You must pay the full Self-Employment Tax rate of **15.3%** directly to the IRS (representing both employee and employer portions of FICA). Therefore, a 1099 hourly rate should be at least 30% higher than an equivalent W2 hourly wage to cover these additional overhead costs.</li>
-        </ol>
-
-        <h3>How Shift Differentials Compound</h3>
-        <p>Many specialized hourly roles (such as nursing, manufacturing, and security) pay a **shift differential** for working irregular shifts (night, weekend, or holiday). The differential can be a flat hourly rate increase (e.g. +$4.00/hour) or a compounding percentage multiplier (e.g., 1.1x base wage). Overtime multipliers must always apply to the final compounded base rate, not just the raw standard daytime wage, according to FLSA guidelines.</p>
-
-        <h3>Hourly Salary Calculator Frequently Asked Questions (FAQ)</h3>
-        <p><strong>Q: What is the difference between a bi-weekly and semi-monthly payout?</strong><br>
-        A: Bi-weekly pay occurs once every two weeks (resulting in 26 paychecks per year), meaning you receive three checks in two separate months. Semi-monthly pay occurs exactly twice per month (resulting in 24 paychecks per year, typical on the 1st and 15th).</p>
-        
-        <p><strong>Q: Are overtime payouts calculated on a daily or weekly basis?</strong><br>
-        A: Under federal FLSA standards, overtime is calculated on a 168-hour workweek basis (all hours exceeding 40). However, some jurisdictions (like California) enforce daily overtime rules, requiring 1.5x pay for any hours worked past 8 in a single day.</p>
-
-        <p><strong>Q: How does a pre-tax retirement contribution impact my take-home pay?</strong><br>
-        A: Pre-tax contributions (like standard 401k or HSA) are deducted from your gross income *before* federal and state tax percentages are applied. This lowers your taxable income, reducing your overall tax burden and keeping more of your hard-earned money working for you.</p>
-
-        <div class="guide-promo-box">
-            <p>Want to master pay bracket calculators, tax compound interest equations, and payroll deduction mechanics?</p>
-            <a href="/salary-calculator-hourly-to-yearly.html" class="promo-btn">Read the Ultimate Salary Conversion Guide (5,000+ Words) &rarr;</a>
-        </div>
-    </section>
-
         <footer style="width: 100%; border-top: 1px solid #334155; background-color: #0f172a; padding: 30px 16px; text-align: center; color: #94a3b8; font-size: 0.85rem; font-family: 'Inter', system-ui, -apple-system, sans-serif; margin-top: 40px; border-radius: 12px; margin-bottom: 20px;">
         <div style="max-width: 1120px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 15px;">
             <p style="margin: 0;">&copy; <span id="copyright-year"></span> SHADER7 &bull; Hourly Salary Calculator</p>
@@ -733,6 +1129,28 @@
         </div>
     </footer>
   </main>
+
+    <!-- Clear Confirmation Dialog -->
+  <dialog id="clear-dialog" class="clear-dialog" aria-labelledby="clear-dialog-title">
+    <h2 id="clear-dialog-title">Clear this month’s hours?</h2>
+    <p>This will clear all daily hours and shifts currently entered for this month. Save This Month afterward to replace its saved log.</p>
+    <form method="dialog">
+      <button type="button" class="btn neutral" id="cancel-clear-btn">Cancel</button>
+      <button type="button" class="btn danger" id="confirm-clear-btn">Clear hours</button>
+    </form>
+  </dialog>
+
+  <!-- Sticky Floating Summary Bar on Scroll -->
+  <aside id="sticky-summary-bar" class="sticky-summary-bar" aria-label="Floating Monthly Summary">
+    <div class="sticky-metrics">
+      <div class="sticky-metric-item"><span class="sticky-lbl">Hours</span><strong id="sticky-hours">0 hrs</strong></div>
+      <div class="sticky-metric-item"><span class="sticky-lbl">Days</span><strong id="sticky-days">0</strong></div>
+      <div class="sticky-metric-item sticky-highlight"><span class="sticky-lbl">Est. Pay</span><strong id="sticky-pay">0.00 RON</strong></div>
+    </div>
+    <button type="button" class="btn-sticky-report" id="sticky-report-btn" aria-label="Preview A4 Report">
+      <i class="fa-solid fa-file-invoice" aria-hidden="true"></i> <span>Report</span>
+    </button>
+  </aside>
 
   <div id="report-preview-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="report-preview-title" aria-describedby="report-page-details">
     <div class="report-controls">
@@ -773,7 +1191,13 @@
 
   <script>
     'use strict';
-    const state = { exchangeRates: {}, availableCurrencies: {}, autoUpdateRate: true, lastSalary: { hourlyRate: 0, totalWeekdayHours: 0, totalWeekendHours: 0, totalNightHours: 0, totalCShiftHours: 0, totalHours: 0, calculatedSalary: 0, salaryInINR: 0 } };
+    const state = { 
+      exchangeRates: {}, 
+      availableCurrencies: {}, 
+      autoUpdateRate: true, 
+      calendarView: localStorage.getItem('salary_calendar_view') || (window.innerWidth <= 768 ? 'cards' : 'table'),
+      lastSalary: { hourlyRate: 0, totalWeekdayHours: 0, totalWeekendHours: 0, totalNightHours: 0, totalCShiftHours: 0, totalHours: 0, calculatedSalary: 0, salaryInINR: 0 } 
+    };
     const $ = (selector, root = document) => root.querySelector(selector);
     const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
 
@@ -782,46 +1206,477 @@
     function showToast(message) { const toast = $('#toast'); toast.textContent = message; toast.classList.add('show'); clearTimeout(showToast.timer); showToast.timer = setTimeout(() => toast.classList.remove('show'), 2600); }
     function updateDate() { const now = new Date(); $('#current-date').textContent = now.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }); $('#copyright-year').textContent = now.getFullYear(); }
     function displayMotivationalMessage() { const messages = ["Believe you can and you're halfway there. - Theodore Roosevelt", "The future belongs to those who believe in the beauty of their dreams. - Eleanor Roosevelt", "The only way to do great work is to love what you do. - Steve Jobs", "Strive not to be a success, but rather to be of value. - Albert Einstein", "Keep pushing forward. Your consistency matters.", "Your dedication today shapes your success tomorrow."]; $('#motivational-message').textContent = messages[Math.floor(Math.random() * messages.length)]; }
-    function updateEmployeeInfo() { const employeeName = $('#employee-name-input').value.trim(); const companyName = $('#company-name').value.trim(); $('#employee-display-name').textContent = employeeName || 'Guest'; $('#employee-info-display').textContent = employeeName && companyName ? `${employeeName} / ${companyName}` : employeeName || (companyName ? `Company: ${companyName}` : 'N/A'); }
+    function updateEmployeeInfo() { const employeeName = $('#employee-name-input').value.trim(); const companyName = $('#company-name').value.trim(); if (employeeName) localStorage.setItem('shader7_active_employee', employeeName); if (companyName) localStorage.setItem('shader7_active_company', companyName); $('#employee-display-name').textContent = employeeName || 'Guest'; $('#employee-info-display').textContent = employeeName && companyName ? `${employeeName} / ${companyName}` : employeeName || (companyName ? `Company: ${companyName}` : 'N/A'); }
     function getDateSuffix(day) { if (day > 3 && day < 21) return 'th'; return ['th', 'st', 'nd', 'rd'][day % 10] || 'th'; }
     function getMonthKey() { return $('#month-year-picker').value || null; }
 
-    function generateCalendarAndLoadData() {
-      const monthYearValue = getMonthKey(); const container = $('#calendar-container');
-      if (!monthYearValue) { container.innerHTML = '<p class="subtle" style="padding:16px;text-align:center;">Please select a month and year to generate the calendar.</p>'; recalculateSalary(); return; }
-      const [yearStr, monthStr] = monthYearValue.split('-'); const year = Number(yearStr); const month = Number(monthStr); const daysInMonth = new Date(year, month, 0).getDate(); const firstDayOfMonth = new Date(year, month - 1, 1).getDay();
-      let hoursOptions = '<option value="">Hrs</option>'; for (let h = 0; h <= 16; h += 0.5) hoursOptions += `<option value="${h}">${h}</option>`;
-      const shiftOptions = '<option value="">Shift</option><option value="8">8 hrs</option><option value="12">12 hrs</option><option value="0">Off</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="Day">Day</option><option value="Night">Night Shift</option><option value="OT">OT</option>';
-      let html = '<table class="calendar-table"><thead><tr>'; ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(day => html += `<th scope="col">${day}</th>`); html += '</tr></thead><tbody><tr>';
-      for (let i = 0; i < firstDayOfMonth; i++) html += '<td class="empty-day" aria-hidden="true"></td>';
-      for (let day = 1; day <= daysInMonth; day++) {
-        const weekday = new Date(year, month - 1, day).getDay(); const isWeekend = weekday === 0 || weekday === 6;
-        html += `<td class="${isWeekend ? 'weekend' : ''}"><div class="calendar-day"><div class="day-number"><span>${day}${getDateSuffix(day)}</span>${isWeekend ? '<span class="weekend-label">Weekend</span>' : ''}</div><div class="day-inputs"><label class="sr-only" for="hours-${day}">Hours for day ${day}</label><select id="hours-${day}" class="hours-select" data-day="${day}" data-is-weekend="${isWeekend}">${hoursOptions}</select><label class="sr-only" for="shift-${day}">Shift for day ${day}</label><select id="shift-${day}" class="shift-select" data-day="${day}">${shiftOptions}</select></div></div></td>`;
-        if ((firstDayOfMonth + day) % 7 === 0 && day < daysInMonth) html += '</tr><tr>';
-      }
-      const remainingCells = (7 - ((firstDayOfMonth + daysInMonth) % 7)) % 7; for (let i = 0; i < remainingCells; i++) html += '<td class="empty-day" aria-hidden="true"></td>'; html += '</tr></tbody></table>';
-      container.innerHTML = html; bindCalendarEvents(); loadMonthData();
+    function setCalendarView(viewMode) {
+      if (state.calendarView === viewMode) return;
+      const currentData = collectMonthData();
+      state.calendarView = viewMode;
+      localStorage.setItem('salary_calendar_view', viewMode);
+      $('#view-cards-btn')?.classList.toggle('active', viewMode === 'cards');
+      $('#view-table-btn')?.classList.toggle('active', viewMode === 'table');
+      renderCalendarMarkup();
+      $$('.hours-select').forEach(select => { select.value = currentData.hours?.[select.dataset.day] ?? ''; });
+      $$('.shift-select').forEach(select => { select.value = currentData.shifts?.[select.dataset.day] ?? ''; });
+      updateAllCards();
+      recalculateSalary();
     }
 
-    function bindCalendarEvents() { $$('.hours-select').forEach(select => select.addEventListener('change', recalculateSalary)); $$('.shift-select').forEach(select => select.addEventListener('change', event => setHoursFromShift(event.currentTarget))); }
-    function setHoursFromShift(shiftSelectElement) { const selectedValue = shiftSelectElement.value; const hoursSelectElement = $(`#hours-${shiftSelectElement.dataset.day}`); const shiftHoursMap = { '8': '8', '12': '12', '0': '0', A: '8', B: '8', C: '8', Day: '12', Night: '12', OT: '' }; if (Object.prototype.hasOwnProperty.call(shiftHoursMap, selectedValue)) hoursSelectElement.value = shiftHoursMap[selectedValue]; recalculateSalary(); }
-    function collectMonthData() { const hours = {}; const shifts = {}; $$('.hours-select').forEach(select => { hours[select.dataset.day] = select.value; }); $$('.shift-select').forEach(select => { shifts[select.dataset.day] = select.value; }); return { hours, shifts, employeeName: $('#employee-name-input').value.trim(), companyName: $('#company-name').value.trim(), salary: $('#salary').value, fixedBaseHours: $('#fixedBaseHours').value, weekendRate: $('#weekendRate').value, nightRate: $('#nightRate').value, cShiftRate: $('#cShiftRate').value, savedDate: new Date().toISOString() }; }
+    function renderCalendarMarkup() {
+      const monthYearValue = getMonthKey(); 
+      const container = $('#calendar-container');
+      if (!monthYearValue) { 
+        container.className = 'calendar-wrapper';
+        container.innerHTML = '<p class="subtle" style="padding:16px;text-align:center;">Please select a month and year to generate the calendar.</p>'; 
+        return; 
+      }
+      const [yearStr, monthStr] = monthYearValue.split('-'); 
+      const year = Number(yearStr); 
+      const month = Number(monthStr); 
+      const daysInMonth = new Date(year, month, 0).getDate(); 
+      const firstDayOfMonth = new Date(year, month - 1, 1).getDay();
+      const monthObj = new Date(year, month - 1, 1);
+      const monthNameShort = monthObj.toLocaleString('default', { month: 'short' });
+
+      let hoursOptions = '<option value="">Hrs</option>'; 
+      for (let h = 0; h <= 16; h += 0.5) hoursOptions += `<option value="${h}">${h}</option>`;
+      const shiftOptions = '<option value="">Shift</option><option value="8">8 hrs</option><option value="12">12 hrs</option><option value="0">Off</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="Day">Day</option><option value="Night">Night Shift</option><option value="OT">OT</option>';
+
+      $('#view-cards-btn')?.classList.toggle('active', state.calendarView === 'cards');
+      $('#view-table-btn')?.classList.toggle('active', state.calendarView === 'table');
+
+      if (state.calendarView === 'cards') {
+        container.className = 'calendar-wrapper cards-mode';
+        let cardsHtml = '<div class="calendar-cards-wrapper">';
+        const weekdayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        for (let day = 1; day <= daysInMonth; day++) {
+          const weekday = new Date(year, month - 1, day).getDay(); 
+          const isWeekend = weekday === 0 || weekday === 6;
+          const weekdayName = weekdayNames[weekday];
+          cardsHtml += `
+            <div class="work-card ${isWeekend ? 'is-weekend' : ''}" id="card-day-${day}" data-day="${day}">
+              <div class="work-card-header">
+                <div class="work-card-date">
+                  <span>${day}${getDateSuffix(day)} ${monthNameShort}</span>
+                  <span class="work-card-badge ${isWeekend ? 'badge-weekend' : 'badge-weekday'}">${weekdayName}</span>
+                </div>
+                <span class="daily-pay-chip" id="pay-chip-${day}">0 RON</span>
+              </div>
+              <div class="quick-shifts-row" role="group" aria-label="Quick shift presets for day ${day}">
+                <button type="button" class="quick-pill pill-off" data-day="${day}" data-hours="0" data-shift="0">Off (0h)</button>
+                <button type="button" class="quick-pill" data-day="${day}" data-hours="8" data-shift="8">8h Day</button>
+                <button type="button" class="quick-pill" data-day="${day}" data-hours="12" data-shift="Day">12h Day</button>
+                <button type="button" class="quick-pill" data-day="${day}" data-hours="12" data-shift="Night">12h Night</button>
+              </div>
+              <div class="card-inputs-row">
+                <div>
+                  <label for="hours-${day}">Hours Worked</label>
+                  <select id="hours-${day}" class="hours-select" data-day="${day}" data-is-weekend="${isWeekend}">
+                    ${hoursOptions}
+                  </select>
+                </div>
+                <div>
+                  <label for="shift-${day}">Shift Type</label>
+                  <select id="shift-${day}" class="shift-select" data-day="${day}">
+                    ${shiftOptions}
+                  </select>
+                </div>
+              </div>
+            </div>`;
+        }
+        cardsHtml += '</div>';
+        container.innerHTML = cardsHtml;
+      } else {
+        container.className = 'calendar-wrapper';
+        let html = '<table class="calendar-table"><thead><tr>'; 
+        ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(day => html += `<th scope="col">${day}</th>`); 
+        html += '</tr></thead><tbody><tr>';
+        for (let i = 0; i < firstDayOfMonth; i++) html += '<td class="empty-day" aria-hidden="true"></td>';
+        for (let day = 1; day <= daysInMonth; day++) {
+          const weekday = new Date(year, month - 1, day).getDay(); 
+          const isWeekend = weekday === 0 || weekday === 6;
+          html += `<td class="${isWeekend ? 'weekend' : ''}"><div class="calendar-day"><div class="day-number"><span>${day}${getDateSuffix(day)}</span>${isWeekend ? '<span class="weekend-label">Weekend</span>' : ''}</div><div class="day-inputs"><label class="sr-only" for="hours-${day}">Hours for day ${day}</label><select id="hours-${day}" class="hours-select" data-day="${day}" data-is-weekend="${isWeekend}">${hoursOptions}</select><label class="sr-only" for="shift-${day}">Shift for day ${day}</label><select id="shift-${day}" class="shift-select" data-day="${day}">${shiftOptions}</select></div></div></td>`;
+          if ((firstDayOfMonth + day) % 7 === 0 && day < daysInMonth) html += '</tr><tr>';
+        }
+        const remainingCells = (7 - ((firstDayOfMonth + daysInMonth) % 7)) % 7; 
+        for (let i = 0; i < remainingCells; i++) html += '<td class="empty-day" aria-hidden="true"></td>'; 
+        html += '</tr></tbody></table>';
+        container.innerHTML = html;
+      }
+      bindCalendarEvents();
+    }
+
+    function generateCalendarAndLoadData() {
+      const monthYearValue = getMonthKey();
+      if (!monthYearValue) {
+        $('#calendar-container').innerHTML = '<p class="subtle" style="padding:16px;text-align:center;">Please select a month and year to generate the calendar.</p>';
+        recalculateSalary();
+        return;
+      }
+      renderCalendarMarkup();
+      loadMonthData();
+    }
+
+    let autoSaveTimer = null;
     
-    // BUG FIX: Removed strict block on Employee/Company name to allow local hours saving
-    function saveMonthData() { 
-        const monthKey = getMonthKey(); 
-        if (!monthKey) return showToast('Please select a month and year first.'); 
-        try { 
-            localStorage.setItem(`calendarData_${monthKey}`, JSON.stringify(collectMonthData())); 
-            showToast(`Data for ${monthKey} saved.`); 
-        } catch (error) { 
-            console.error(error); 
-            showToast('Could not save data. Browser storage may be full.'); 
-        } 
+    function updateToolSwitcherUrls(monthKey) {
+      if (!monthKey) return;
+      const salaryTab = $('#tool-tab-salary');
+      const hoursTab = $('#tool-tab-hours');
+      const attendanceTab = $('#tool-tab-attendance');
+      if (salaryTab) salaryTab.href = `app.html?month=${monthKey}`;
+      if (hoursTab) hoursTab.href = `hours.html?month=${monthKey}`;
+      if (attendanceTab) attendanceTab.href = `attendance.html?month=${monthKey}`;
+    }
+
+    function syncSharedMonthData(monthKey, data) {
+      if (!monthKey || !data) return;
+      try {
+        // Sync to hours calculator schema
+        const hoursSchema = {
+          version: 1,
+          month: monthKey,
+          hours: { ...data.hours },
+          shifts: { ...data.shifts },
+          employeeName: data.employeeName || '',
+          companyName: data.companyName || ''
+        };
+        localStorage.setItem(`shader7_hours_v1_${monthKey}`, JSON.stringify(hoursSchema));
+        localStorage.setItem('shader7_active_month', monthKey);
+        if (data.employeeName) localStorage.setItem('shader7_active_employee', data.employeeName);
+        if (data.companyName) localStorage.setItem('shader7_active_company', data.companyName);
+      } catch (e) {
+        console.error('Shared sync error:', e);
+      }
+    }
+
+    function setSaveBadge(status) {
+      const badge = $('#save-status-badge');
+      if (!badge) return;
+      if (status === 'saving') {
+        badge.className = 'save-status-badge saving';
+        badge.innerHTML = '<i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i> Saving draft...';
+      } else if (status === 'saved') {
+        badge.className = 'save-status-badge saved';
+        badge.innerHTML = '<i class="fa-solid fa-circle-check" aria-hidden="true"></i> Saved in browser ✓';
+      } else if (status === 'unsaved') {
+        badge.className = 'save-status-badge unsaved';
+        badge.innerHTML = '<i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i> Unsaved changes';
+      }
+    }
+
+    function scheduleAutoSave() {
+      const monthKey = getMonthKey();
+      if (!monthKey) return;
+      setSaveBadge('saving');
+      clearTimeout(autoSaveTimer);
+      autoSaveTimer = setTimeout(() => {
+        try {
+          const data = collectMonthData();
+          localStorage.setItem(`calendarData_${monthKey}`, JSON.stringify(data));
+          syncSharedMonthData(monthKey, data);
+          updateToolSwitcherUrls(monthKey);
+          setSaveBadge('saved');
+        } catch (e) {
+          console.error(e);
+          setSaveBadge('unsaved');
+        }
+      }, 500);
+    }
+
+    function applyQuickFill(action) {
+      const monthKey = getMonthKey();
+      if (!monthKey) return showToast('Please select a month and year first.');
+      const [yearStr, monthStr] = monthKey.split('-');
+      const year = Number(yearStr), month = Number(monthStr);
+      const daysInMonth = new Date(year, month, 0).getDate();
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const weekday = new Date(year, month - 1, day).getDay();
+        const isWeekend = weekday === 0 || weekday === 6;
+        const hoursSelect = $(`#hours-${day}`);
+        const shiftSelect = $(`#shift-${day}`);
+        if (!hoursSelect || !shiftSelect) continue;
+
+        if (action === 'weekdays-8') {
+          if (!isWeekend) {
+            hoursSelect.value = '8';
+            shiftSelect.value = '8';
+          }
+        } else if (action === 'weekdays-12-day') {
+          if (!isWeekend) {
+            hoursSelect.value = '12';
+            shiftSelect.value = 'Day';
+          }
+        } else if (action === 'weekdays-12-night') {
+          if (!isWeekend) {
+            hoursSelect.value = '12';
+            shiftSelect.value = 'Night';
+          }
+        } else if (action === 'weekends-off') {
+          if (isWeekend) {
+            hoursSelect.value = '0';
+            shiftSelect.value = '0';
+          }
+        } else if (action === 'clear-all') {
+          hoursSelect.value = '';
+          shiftSelect.value = '';
+        }
+        updateCardState(day);
+      }
+      recalculateSalary();
+      scheduleAutoSave();
+
+      if (action === 'weekdays-8') showToast('Set weekdays to 8h shifts.');
+      else if (action === 'weekdays-12-day') showToast('Set weekdays to 12h Day shifts.');
+      else if (action === 'weekdays-12-night') showToast('Set weekdays to 12h Night shifts.');
+      else if (action === 'weekends-off') showToast('Set weekends to Off.');
+      else if (action === 'clear-all') showToast('Cleared month entries.');
+    }
+
+    function updateCardState(day) {
+      const hoursSelect = $(`#hours-${day}`);
+      const shiftSelect = $(`#shift-${day}`);
+      const hours = parseFloat(hoursSelect?.value) || 0;
+      const shift = shiftSelect?.value || '';
+      const isOff = (hoursSelect?.value === '0' || shift === '0');
+
+      // Card Mode Styling
+      const card = $(`#card-day-${day}`);
+      if (card) {
+        card.classList.toggle('has-hours', hours > 0);
+        card.classList.toggle('is-off-day', isOff);
+
+        card.querySelectorAll('.quick-pill').forEach(pill => {
+          const pHours = pill.dataset.hours;
+          const pShift = pill.dataset.shift;
+          const isMatch = (pHours === String(hours) && (pShift === shift || (!shift && hours === 0 && pShift === '0')));
+          pill.classList.toggle('active', isMatch);
+        });
+
+        const salary = Math.max(0, parseFloat($('#salary').value) || 0);
+        const fixedBaseHours = Math.max(0, parseFloat($('#fixedBaseHours').value) || 0);
+        const hourlyRate = fixedBaseHours > 0 ? salary / fixedBaseHours : 0;
+        const weekendRate = Math.max(0, parseFloat($('#weekendRate').value) || 1);
+        const nightRate = Math.max(0, parseFloat($('#nightRate').value) || 1);
+        const cShiftRate = Math.max(0, parseFloat($('#cShiftRate').value) || 1);
+        const isWeekend = hoursSelect?.dataset.isWeekend === 'true';
+        const isNight = isNightShift(day);
+        const isC = isCShift(day);
+        const multiplier = (isWeekend ? weekendRate : 1) * (isNight ? nightRate : 1) * (isC ? cShiftRate : 1);
+        const dailyPay = hours * hourlyRate * multiplier;
+        const chip = $(`#pay-chip-${day}`);
+        if (chip) {
+          chip.textContent = dailyPay > 0 ? `+${formatNumber(dailyPay)} RON` : (isOff ? 'Off (0h)' : '0 RON');
+          chip.style.opacity = dailyPay > 0 ? '1' : '0.6';
+        }
+      }
+
+      // Table Mode Styling
+      const td = hoursSelect?.closest('td');
+      if (td) {
+        td.classList.toggle('has-hours', hours > 0);
+        td.classList.toggle('is-off-day', isOff);
+        let badge = td.querySelector('.shift-tag-pill');
+        if (shift || hours > 0 || isOff) {
+          if (!badge) {
+            badge = document.createElement('span');
+            badge.className = 'shift-tag-pill';
+            td.querySelector('.calendar-day')?.appendChild(badge);
+          }
+          const shiftKey = (shift || (hours > 0 ? String(hours) : 'off')).toLowerCase();
+          badge.className = `shift-tag-pill shift-${shiftKey}`;
+          badge.textContent = shift ? (shiftSelect?.options[shiftSelect.selectedIndex]?.text || shift) : (hours > 0 ? `${hours}h` : 'Off');
+        } else if (badge) {
+          badge.remove();
+        }
+      }
+    }
+
+    function updateAllCards() {
+      const monthKey = getMonthKey();
+      if (!monthKey) return;
+      const [yearStr, monthStr] = monthKey.split('-');
+      const daysInMonth = new Date(Number(yearStr), Number(monthStr), 0).getDate();
+      for (let day = 1; day <= daysInMonth; day++) updateCardState(day);
+    }
+
+    function handleQuickShift(button) {
+      const day = button.dataset.day;
+      const hours = button.dataset.hours;
+      const shift = button.dataset.shift;
+      const hoursSelect = $(`#hours-${day}`);
+      const shiftSelect = $(`#shift-${day}`);
+      if (hoursSelect && shiftSelect) {
+        hoursSelect.value = hours;
+        shiftSelect.value = shift;
+        updateCardState(day);
+        recalculateSalary();
+        scheduleAutoSave();
+      }
+    }
+
+    function bindCalendarEvents() { 
+      $$('.hours-select').forEach(select => select.addEventListener('change', () => {
+        updateCardState(select.dataset.day);
+        recalculateSalary();
+        scheduleAutoSave();
+      })); 
+      $$('.shift-select').forEach(select => select.addEventListener('change', event => {
+        setHoursFromShift(event.currentTarget);
+        updateCardState(event.currentTarget.dataset.day);
+        scheduleAutoSave();
+      })); 
+      $$('.quick-pill').forEach(btn => btn.addEventListener('click', () => handleQuickShift(btn)));
+    }
+
+    function setHoursFromShift(shiftSelectElement) {
+      const selectedValue = shiftSelectElement.value;
+      const hoursSelectElement = $(`#hours-${shiftSelectElement.dataset.day}`);
+      const shiftHoursMap = { '8': '8', '12': '12', '0': '0', A: '8', B: '8', C: '8', Day: '12', Night: '12', OT: '' };
+      if (Object.prototype.hasOwnProperty.call(shiftHoursMap, selectedValue)) {
+        hoursSelectElement.value = shiftHoursMap[selectedValue];
+      }
+      recalculateSalary();
+    }
+
+    function collectMonthData() {
+      const hours = {};
+      const shifts = {};
+      $$('.hours-select').forEach(select => { hours[select.dataset.day] = select.value; });
+      $$('.shift-select').forEach(select => { shifts[select.dataset.day] = select.value; });
+      return {
+        hours, shifts,
+        employeeName: $('#employee-name-input').value.trim(),
+        companyName: $('#company-name').value.trim(),
+        salary: $('#salary').value,
+        fixedBaseHours: $('#fixedBaseHours').value,
+        weekendRate: $('#weekendRate').value,
+        nightRate: $('#nightRate').value,
+        cShiftRate: $('#cShiftRate').value,
+        savedDate: new Date().toISOString()
+      };
     }
     
-    function loadMonthData() { const monthKey = getMonthKey(); if (!monthKey) return; const storedData = localStorage.getItem(`calendarData_${monthKey}`); if (!storedData) { $$('.hours-select, .shift-select').forEach(select => { select.value = ''; }); recalculateSalary(); return; } try { const monthData = JSON.parse(storedData); const idMap = { employeeName: 'employee-name-input', companyName: 'company-name', salary: 'salary', fixedBaseHours: 'fixedBaseHours', weekendRate: 'weekendRate', nightRate: 'nightRate', cShiftRate: 'cShiftRate' }; Object.keys(idMap).forEach(key => { if (monthData[key] !== undefined) $(`#${idMap[key]}`).value = monthData[key]; }); $$('.hours-select').forEach(select => { select.value = monthData.hours?.[select.dataset.day] ?? ''; }); $$('.shift-select').forEach(select => { select.value = monthData.shifts?.[select.dataset.day] ?? ''; }); updateEmployeeInfo(); recalculateSalary(); } catch (error) { console.error(error); showToast('Saved data looks corrupted and could not be loaded.'); } }
-    function clearAllHours() { if (!confirm('Clear all hours and shifts for this selected month?')) return; $$('.hours-select, .shift-select').forEach(select => { select.value = ''; }); const monthKey = getMonthKey(); if (monthKey) localStorage.removeItem(`calendarData_${monthKey}`); recalculateSalary(); showToast('Hours cleared.'); }
+    function saveMonthData() { 
+      const monthKey = getMonthKey(); 
+      if (!monthKey) return showToast('Please select a month and year first.'); 
+      try { 
+        clearTimeout(autoSaveTimer);
+        const data = collectMonthData();
+        localStorage.setItem(`calendarData_${monthKey}`, JSON.stringify(data)); 
+        syncSharedMonthData(monthKey, data);
+        updateToolSwitcherUrls(monthKey);
+        setSaveBadge('saved');
+        showToast(`Data for ${monthKey} saved.`); 
+      } catch (error) { 
+        console.error(error); 
+        setSaveBadge('unsaved');
+        showToast('Could not save data. Browser storage may be full.'); 
+      } 
+    }
+    
+    function loadMonthData() {
+      const monthKey = getMonthKey();
+      if (!monthKey) return;
+      updateToolSwitcherUrls(monthKey);
+      let storedData = localStorage.getItem(`calendarData_${monthKey}`);
+      let monthData = null;
+      if (storedData) {
+        try { monthData = JSON.parse(storedData); } catch (e) {}
+      }
+      // If no calendarData or hours is empty, check shared hours-only data
+      if (!monthData || !monthData.hours || Object.keys(monthData.hours).length === 0) {
+        const hoursStored = localStorage.getItem(`shader7_hours_v1_${monthKey}`);
+        if (hoursStored) {
+          try {
+            const parsed = JSON.parse(hoursStored);
+            if (parsed && parsed.hours) {
+              monthData = monthData || {};
+              monthData.hours = parsed.hours;
+              monthData.shifts = parsed.shifts || {};
+              if (!monthData.employeeName && parsed.employeeName) monthData.employeeName = parsed.employeeName;
+              if (!monthData.companyName && parsed.companyName) monthData.companyName = parsed.companyName;
+            }
+          } catch (e) {}
+        }
+      }
+
+      // Check active employee/company fallback if saved record is empty
+      const activeEmp = localStorage.getItem('shader7_active_employee') || '';
+      const activeComp = localStorage.getItem('shader7_active_company') || '';
+      const fallbackEmp = activeEmp || $('#employee-name-input').value.trim();
+      const fallbackComp = activeComp || $('#company-name').value.trim();
+
+      if (monthData) {
+        if (!monthData.employeeName && fallbackEmp) monthData.employeeName = fallbackEmp;
+        if (!monthData.companyName && fallbackComp) monthData.companyName = fallbackComp;
+      }
+
+      if (!monthData) {
+        if (fallbackEmp && !$('#employee-name-input').value) $('#employee-name-input').value = fallbackEmp;
+        if (fallbackComp && !$('#company-name').value) $('#company-name').value = fallbackComp;
+        $$('.hours-select, .shift-select').forEach(select => { select.value = ''; });
+        updateEmployeeInfo();
+        updateAllCards();
+        recalculateSalary();
+        setSaveBadge('saved');
+        return;
+      }
+      try {
+        const idMap = {
+          employeeName: 'employee-name-input',
+          companyName: 'company-name',
+          salary: 'salary',
+          fixedBaseHours: 'fixedBaseHours',
+          weekendRate: 'weekendRate',
+          nightRate: 'nightRate',
+          cShiftRate: 'cShiftRate'
+        };
+        Object.keys(idMap).forEach(key => {
+          if (monthData[key] !== undefined && monthData[key] !== '') {
+            $(`#${idMap[key]}`).value = monthData[key];
+          } else if (key === 'employeeName' && fallbackEmp) {
+            $('#employee-name-input').value = fallbackEmp;
+          } else if (key === 'companyName' && fallbackComp) {
+            $('#company-name').value = fallbackComp;
+          }
+        });
+        $$('.hours-select').forEach(select => { select.value = monthData.hours?.[select.dataset.day] ?? ''; });
+        $$('.shift-select').forEach(select => { select.value = monthData.shifts?.[select.dataset.day] ?? ''; });
+        updateEmployeeInfo();
+        updateAllCards();
+        recalculateSalary();
+        setSaveBadge('saved');
+      } catch (error) {
+        console.error(error);
+        setSaveBadge('unsaved');
+        showToast('Saved data looks corrupted and could not be loaded.');
+      }
+    }
+
+    function clearAllHours() {
+      const dialog = $('#clear-dialog');
+      if (dialog && typeof dialog.showModal === 'function') {
+        dialog.showModal();
+      } else {
+        if (confirm('Clear all hours and shifts for this selected month?')) executeClearHours();
+      }
+    }
+
+    function executeClearHours() {
+      $$('.hours-select, .shift-select').forEach(select => { select.value = ''; });
+      const monthKey = getMonthKey();
+      if (monthKey) {
+        try { localStorage.removeItem(`calendarData_${monthKey}`); } catch (e) {}
+      }
+      updateAllCards();
+      recalculateSalary();
+      setSaveBadge('saved');
+      showToast('Hours cleared.');
+    }
 
     function isNightShift(day) {
       const shiftSelect = $(`#shift-${day}`);
@@ -871,6 +1726,7 @@
       });
 
       const totalHours = totalWeekdayHours + totalWeekendHours;
+      const daysWorked = $$('.hours-select').filter(select => (parseFloat(select.value) || 0) > 0).length;
       const salaryInINR = convertSalaryToINR(calculatedSalary);
       state.lastSalary = { hourlyRate, totalWeekdayHours, totalWeekendHours, totalNightHours, totalCShiftHours, totalHours, calculatedSalary, salaryInINR };
       $('#hourly-rate').textContent = `${formatNumber(hourlyRate)} RON/hr`;
@@ -879,6 +1735,15 @@
       $('#summary-salary').textContent = `${formatNumber(calculatedSalary)} RON`;
       $('#total-salary-in-rupees').textContent = `${formatNumber(salaryInINR)} INR`;
       $('#hourly-rate').title = `Weekday: ${formatNumber(totalWeekdayHours, totalWeekdayHours % 1 ? 1 : 0)} hrs &bull; Weekend: ${formatNumber(totalWeekendHours, totalWeekendHours % 1 ? 1 : 0)} hrs &bull; Night: ${formatNumber(totalNightHours, totalNightHours % 1 ? 1 : 0)} hrs &bull; C Shift: ${formatNumber(totalCShiftHours, totalCShiftHours % 1 ? 1 : 0)} hrs`;
+
+      // Update sticky summary bar
+      const stickyHours = $('#sticky-hours');
+      const stickyDays = $('#sticky-days');
+      const stickyPay = $('#sticky-pay');
+      if (stickyHours) stickyHours.textContent = `${formatNumber(totalHours, totalHours % 1 ? 1 : 0)} hrs`;
+      if (stickyDays) stickyDays.textContent = `${daysWorked} ${daysWorked === 1 ? 'day' : 'days'}`;
+      if (stickyPay) stickyPay.textContent = `${formatNumber(calculatedSalary)} RON`;
+
       updateSalaryValidation(totalHours);
     }
 
@@ -1112,15 +1977,29 @@
     }
 
     function bindStaticEvents() {
-      $('#employee-name-input').addEventListener('input', updateEmployeeInfo);
-      $('#company-name').addEventListener('input', updateEmployeeInfo);
+      $('#employee-name-input').addEventListener('input', () => {
+        const val = $('#employee-name-input').value.trim();
+        if (val) localStorage.setItem('shader7_active_employee', val);
+        else localStorage.removeItem('shader7_active_employee');
+        updateEmployeeInfo();
+        scheduleAutoSave();
+      });
+      $('#company-name').addEventListener('input', () => {
+        const comp = $('#company-name').value.trim();
+        if (comp) localStorage.setItem('shader7_active_company', comp);
+        else localStorage.removeItem('shader7_active_company');
+        updateEmployeeInfo();
+        scheduleAutoSave();
+      });
       $('#month-year-picker').addEventListener('change', generateCalendarAndLoadData);
-      $('#salary').addEventListener('input', recalculateSalary);
+      $('#salary').addEventListener('input', () => { recalculateSalary(); scheduleAutoSave(); });
       $('#salary').addEventListener('blur', () => updateSalaryValidation($$('.hours-select').some(select => (parseFloat(select.value) || 0) > 0) ? 1 : 0));
-      $('#fixedBaseHours').addEventListener('input', recalculateSalary);
-      $('#weekendRate').addEventListener('change', recalculateSalary);
-      $('#nightRate').addEventListener('change', recalculateSalary);
-      $('#cShiftRate').addEventListener('change', recalculateSalary);
+      $('#fixedBaseHours').addEventListener('input', () => { recalculateSalary(); scheduleAutoSave(); });
+      $('#weekendRate').addEventListener('change', () => { recalculateSalary(); scheduleAutoSave(); });
+      $('#nightRate').addEventListener('change', () => { recalculateSalary(); scheduleAutoSave(); });
+      $('#cShiftRate').addEventListener('change', () => { recalculateSalary(); scheduleAutoSave(); });
+      $('#view-cards-btn')?.addEventListener('click', () => setCalendarView('cards'));
+      $('#view-table-btn')?.addEventListener('click', () => setCalendarView('table'));
       $('#clear-hours-btn').addEventListener('click', clearAllHours);
       $('#save-month-btn').addEventListener('click', saveMonthData);
       $('#share-btn').addEventListener('click', shareApp);
@@ -1130,9 +2009,98 @@
       $('#to-currency-select').addEventListener('change', convertCurrency);
       $('#exchange-rate-manual').addEventListener('input', () => { state.autoUpdateRate = false; $('#auto-update-rate').checked = false; recalculateSalary(); });
       $('#auto-update-rate').addEventListener('change', event => { state.autoUpdateRate = event.currentTarget.checked; if (state.autoUpdateRate) updateRONtoINRforSalary(); else recalculateSalary(); });
+
+      // Quick-fill buttons
+      $$('.btn-quick-fill').forEach(btn => {
+        btn.addEventListener('click', () => applyQuickFill(btn.dataset.action));
+      });
+
+      // Clear dialog
+      const clearDialog = $('#clear-dialog');
+      $('#cancel-clear-btn')?.addEventListener('click', () => clearDialog?.close());
+      $('#confirm-clear-btn')?.addEventListener('click', () => {
+        clearDialog?.close();
+        executeClearHours();
+      });
+      clearDialog?.addEventListener('click', event => {
+        const rect = clearDialog.getBoundingClientRect();
+        const inside = (rect.top <= event.clientY && event.clientY <= rect.top + rect.height && rect.left <= event.clientX && event.clientX <= rect.left + rect.width);
+        if (!inside) clearDialog.close();
+      });
+
+      // Sticky summary bar
+      const stickyBar = $('#sticky-summary-bar');
+      $('#sticky-report-btn')?.addEventListener('click', () => $('#report-btn')?.click());
+      const onScrollCheck = () => {
+        if (!stickyBar) return;
+        if (window.scrollY > 200 || (window.innerWidth <= 640 && window.scrollY > 80)) {
+          stickyBar.classList.add('visible');
+        } else {
+          stickyBar.classList.remove('visible');
+        }
+      };
+      window.addEventListener('scroll', onScrollCheck, { passive: true });
+      window.addEventListener('resize', onScrollCheck, { passive: true });
+      onScrollCheck();
     }
 
-    document.addEventListener('DOMContentLoaded', () => { bindStaticEvents(); updateDate(); displayMotivationalMessage(); updateEmployeeInfo(); const now = new Date(); $('#month-year-picker').value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`; generateCalendarAndLoadData(); fetchExchangeRates(); recalculateSalary(); });
+    document.addEventListener('DOMContentLoaded', () => {
+      bindStaticEvents();
+      updateDate();
+      displayMotivationalMessage();
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const queryMonth = urlParams.get('month');
+      const sharedMonth = localStorage.getItem('shader7_active_month');
+      const activeEmp = localStorage.getItem('shader7_active_employee');
+      const activeComp = localStorage.getItem('shader7_active_company');
+      if (activeEmp && !$('#employee-name-input').value) $('#employee-name-input').value = activeEmp;
+      if (activeComp && !$('#company-name').value) $('#company-name').value = activeComp;
+      updateEmployeeInfo();
+
+      const picker = $('#month-year-picker');
+      const now = new Date();
+      const fallbackMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+      picker.value = queryMonth || sharedMonth || fallbackMonth;
+
+      updateToolSwitcherUrls(picker.value);
+      generateCalendarAndLoadData();
+      fetchExchangeRates();
+      recalculateSalary();
+
+      window.addEventListener('storage', event => {
+        if (event.key === 'shader7_active_employee') {
+          const newName = event.newValue || '';
+          if ($('#employee-name-input') && $('#employee-name-input').value !== newName) {
+            $('#employee-name-input').value = newName;
+            updateEmployeeInfo();
+          }
+        } else if (event.key === 'shader7_active_company') {
+          const newComp = event.newValue || '';
+          if ($('#company-name') && $('#company-name').value !== newComp) {
+            $('#company-name').value = newComp;
+            updateEmployeeInfo();
+          }
+        } else if (event.key && (event.key.startsWith('shader7_hours_v1_') || event.key.startsWith('calendarData_'))) {
+          const curMonth = getMonthKey();
+          if (curMonth && (event.key.endsWith(curMonth))) {
+            loadMonthData();
+          }
+        }
+      });
+
+      $$('.tool-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          clearTimeout(autoSaveTimer);
+          const monthKey = getMonthKey();
+          if (monthKey) {
+            const data = collectMonthData();
+            localStorage.setItem(`calendarData_${monthKey}`, JSON.stringify(data));
+            syncSharedMonthData(monthKey, data);
+          }
+        });
+      });
+    });
   </script>
 </body>
 </html>
