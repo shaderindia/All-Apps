@@ -687,6 +687,14 @@
       text-align: center;
     }
 
+    #resumePreview a,
+    .resume-page a {
+      color: inherit !important;
+      text-decoration: none !important;
+      pointer-events: none !important;
+      cursor: default !important;
+    }
+
     .crop-modal {
       position: fixed;
       inset: 0;
@@ -1180,6 +1188,16 @@
         box-shadow: none;
         transform: none !important;
         margin: 0;
+      }
+
+      a,
+      a:visited {
+        color: inherit !important;
+        text-decoration: none !important;
+      }
+
+      a[href]:after {
+        content: none !important;
       }
     }
   </style>
@@ -2085,13 +2103,6 @@
             </div>
           ` : ""}
 
-          ${data.skillsAdditional ? `
-            <div class="side-section">
-              <h3>Additional Skills</h3>
-              <ul>${formatSkillsList(data.skillsAdditional)}</ul>
-            </div>
-          ` : ""}
-
           ${languagesHTML ? `
             <div class="side-section">
               <h3>Languages</h3>
@@ -2130,6 +2141,13 @@
             <section class="main-section">
               <h3>Technical Skills</h3>
               <ul>${formatSkillsList(data.skillsTechnical)}</ul>
+            </section>
+          ` : ""}
+
+          ${data.skillsAdditional ? `
+            <section class="main-section">
+              <h3>Additional Skills</h3>
+              <ul>${formatSkillsList(data.skillsAdditional)}</ul>
             </section>
           ` : ""}
 
@@ -2420,6 +2438,11 @@
           backgroundColor: "#ffffff",
           windowWidth: 1600,
           onclone: (clonedDoc) => {
+            const nonPreviewElements = clonedDoc.querySelectorAll("header, footer, .form-panel, .preview-toolbar, .resume-guide-section, .crop-modal, .toast");
+            nonPreviewElements.forEach(function(el) {
+              el.style.display = "none";
+            });
+
             const clonedPanel = clonedDoc.getElementById("previewPanel") || clonedDoc.querySelector(".preview-panel");
             if (clonedPanel) {
               clonedPanel.style.display = "block";
@@ -2437,6 +2460,15 @@
               clonedElement.style.boxShadow = "none";
               clonedElement.style.visibility = "visible";
               clonedElement.style.display = "block";
+
+              // Remove any links / anchors inside the resume so the downloaded PDF is completely free of hyperlinks
+              clonedElement.querySelectorAll("a").forEach(function(a) {
+                const span = clonedDoc.createElement("span");
+                span.innerHTML = a.innerHTML;
+                span.style.color = "inherit";
+                span.style.textDecoration = "none";
+                a.parentNode.replaceChild(span, a);
+              });
             }
           }
         });
