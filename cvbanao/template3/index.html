@@ -434,6 +434,24 @@
       flex: 1;
     }
 
+    .overflow-warning {
+      display: none;
+      margin-top: 12px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #991b1b;
+      font-size: 0.86rem;
+      font-weight: 600;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .overflow-warning.show {
+      display: flex;
+    }
+
     .preview-wrapper {
       width: 100%;
       min-height: 420px;
@@ -1401,6 +1419,11 @@
               <button type="button" class="theme-color-btn" style="background:#10b981;" onclick="updateThemeColor('#10b981', true)" aria-label="Emerald theme"></button>
             </div>
           </div>
+
+          <div class="overflow-warning" id="overflowWarning" role="alert" aria-live="polite">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <span>Resume content exceeds 1 A4 page. Tap "Auto Adjust" or shorten text.</span>
+          </div>
         </div>
 
         <div class="preview-wrapper" id="previewWrapper">
@@ -2060,13 +2083,6 @@
             </div>
           ` : ""}
 
-          ${data.skillsTechnical ? `
-            <div class="side-section">
-              <h3>Technical Skills</h3>
-              <ul>${formatSkillsList(data.skillsTechnical)}</ul>
-            </div>
-          ` : ""}
-
           ${data.skillsAdditional ? `
             <div class="side-section">
               <h3>Additional Skills</h3>
@@ -2108,6 +2124,13 @@
             </section>
           ` : ""}
 
+          ${data.skillsTechnical ? `
+            <section class="main-section">
+              <h3>Technical Skills</h3>
+              <ul>${formatSkillsList(data.skillsTechnical)}</ul>
+            </section>
+          ` : ""}
+
           ${data.declaration ? `
             <div class="declaration">
               ${formatText(data.declaration)}
@@ -2119,6 +2142,7 @@
       document.querySelector(".resume-container").innerHTML = resumeHTML;
       adjustFontSize(currentFontSize, false);
       setTimeout(updatePreviewScale, 50);
+      setTimeout(checkOverflowWarning, 60);
     }
 
     function updatePreviewScale() {
@@ -2160,12 +2184,33 @@
       if (shouldSave) {
         autoSaveResume();
         setTimeout(updatePreviewScale, 50);
+        setTimeout(checkOverflowWarning, 60);
       }
     }
 
+    function checkOverflowWarning() {
+      const warning = document.getElementById("overflowWarning");
+      if (!warning) return;
+      warning.classList.toggle("show", isResumeOverflowing());
+    }
+
     function autoAdjustFont() {
-      adjustFontSize(9, true);
-      showToast("Font size adjusted.", "success");
+      const sizes = [10.5, 10, 9.8, 9.5, 9.2, 9, 8.8, 8.5, 8.0];
+      let selected = sizes[sizes.length - 1];
+      for (const size of sizes) {
+        adjustFontSize(size, false);
+        if (!isResumeOverflowing()) {
+          selected = size;
+          break;
+        }
+      }
+      adjustFontSize(selected, true);
+      checkOverflowWarning();
+      if (isResumeOverflowing()) {
+        showToast("Auto-fit reduced font size, but text is still long. Please shorten entries.", "error");
+      } else {
+        showToast(`Auto-fitted to 1 page at ${selected}pt.`, "success");
+      }
     }
 
     function validateRequiredFields() {
@@ -2519,6 +2564,7 @@
         tabEditor.classList.remove("active");
         tabPreview.classList.add("active");
         setTimeout(updatePreviewScale, 100);
+        setTimeout(checkOverflowWarning, 120);
       } else {
         document.body.classList.remove("show-preview");
         tabEditor.classList.add("active");
