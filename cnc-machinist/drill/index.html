@@ -1233,6 +1233,24 @@
 <label for="customVc">Cutting speed (m/min, optional)</label><input id="customVc" type="number" min="0.001" step="any" placeholder="Use material estimate">
 <label for="customFn">Drill feed per revolution (mm/rev, optional)</label><input id="customFn" type="number" min="0.000001" step="any" placeholder="Use diameter estimate">
 <p>Use your tool maker’s cutting data when available. Material presets are starting estimates. Tapping feed always follows thread pitch.</p></details>
+<details class="cutting-options"><summary>G-code program options</summary>
+<label for="controller">Controller style</label><select id="controller">
+<option value="fanuc">Fanuc / compatible (M29 rigid tap)</option>
+<option value="haas">Haas (rigid tap without M29)</option>
+</select>
+<label for="toolNo">Tool number (T / H offset)</label><input id="toolNo" type="number" min="1" max="999" step="1" value="1">
+<label for="workOffset">Work offset</label><select id="workOffset">
+<option>G54</option><option>G55</option><option>G56</option><option>G57</option><option>G58</option><option>G59</option>
+</select>
+<label for="rPlane">R plane – feed start height (mm)</label><input id="rPlane" type="number" step="any" value="2">
+<label for="initPlane">Initial / clearance height (mm)</label><input id="initPlane" type="number" step="any" value="30">
+<label for="returnMode">Return between holes</label><select id="returnMode">
+<option value="G98">G98 – to initial height (clears clamps)</option>
+<option value="G99">G99 – to R plane (faster)</option>
+</select>
+<label for="holeList">Hole positions <span id="holeAxesHint">(X Y)</span>, one hole per line</label>
+<textarea id="holeList" rows="4" spellcheck="false" placeholder="0 0&#10;25 0&#10;25 15">0 0</textarea>
+<p>Each line becomes one hole in the canned cycle. Use spaces or commas, e.g. <code>25, 15</code> or <code>X25 Y15</code>.</p></details>
 <p id="calcError" role="alert" hidden></p>
 <button type="button" class="calc-btn" onclick="clearTimeout(recalcTimer); calculate()">
                 <svg style="width:18px; height:18px; fill:currentColor;" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"></path></svg>
@@ -1252,7 +1270,7 @@
 
             <div id="result" style="flex: 1; display: flex; flex-direction: column; min-height: 0;">
                 <div class="empty-state">
-                    <p>Enter tool parameters, choose material, and click calculate to view optimal shop feeds, speeds, and depth warnings.</p>
+                    <p>Enter a tool diameter (or tap a preset) to see spindle speed, feed rate, and depth warnings.</p>
                 </div>
             </div>
         </div>
@@ -1279,7 +1297,7 @@
         </div>
         <div id="simContainer">
             <div class="empty-state" style="padding: 40px 20px;">
-                <p>Calculator parameters must be generated first. Click Calculate Parameters above to boot the VMC visualizer spindle.</p>
+                <p>Enter a tool diameter above (or tap a preset) to load the cycle preview.</p>
             </div>
         </div>
     </div>
@@ -1300,7 +1318,7 @@
                 </button>
                 <div class="accordion-content" style="max-height: 2000px;">
                     <div class="accordion-inner">
-                        <p>To achieve high-quality surface finishes and maximize cutting tool life, CNC machinists must calculate the exact spindle speed (RPM) and cutting feed rate (mm/min or inches/min). These parameters depend directly on the cutter diameter, cutting tool material (High-Speed Steel, Cobalt, or Solid Carbide), workpiece material density, and chip load guidelines.</p>
+                        <p>To achieve high-quality surface finishes and maximize cutting tool life, CNC machinists must calculate the exact spindle speed (RPM) and cutting feed rate (this calculator works in metric: mm and mm/min). These parameters depend directly on the cutter diameter, cutting tool material (High-Speed Steel, Cobalt, or Solid Carbide), workpiece material density, and chip load guidelines.</p>
                         
                         <p>The standard industrial mathematical formulas used inside this calculator are:</p>
                         <ul>
@@ -1434,14 +1452,14 @@ function applyPreset(d) {
 }
 
 function resetResults() {
-    resultEl.innerHTML = '<div class="empty-state"><p>Enter tool parameters, choose material, and click calculate to view optimal shop feeds, speeds, and depth warnings.</p></div>';
+    resultEl.innerHTML = '<div class="empty-state"><p>Enter a tool diameter (or tap a preset) to see spindle speed, feed rate, and depth warnings.</p></div>';
     const gcodeContainer = document.getElementById("gcodeContainer");
     if (gcodeContainer) {
         gcodeContainer.innerHTML = '<div class="empty-state"><p>G-code program block will be generated here once parameters are calculated.</p></div>';
     }
     const simContainer = document.getElementById("simContainer");
     if (simContainer) {
-        simContainer.innerHTML = '<div class="empty-state" style="padding: 40px 20px;"><p>Calculator parameters must be generated first. Click Calculate Parameters above to boot the VMC visualizer spindle.</p></div>';
+        simContainer.innerHTML = '<div class="empty-state" style="padding: 40px 20px;"><p>Enter a tool diameter above (or tap a preset) to load the cycle preview.</p></div>';
     }
     resetSim();
     const error = document.getElementById('calcError');
@@ -1457,7 +1475,7 @@ function scheduleRecalc(delay = 350) {
         else resetResults();
     }, delay);
 }
-document.querySelectorAll('.panel input, .panel select').forEach(el => {
+document.querySelectorAll('.panel input, .panel select, .panel textarea').forEach(el => {
     el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', () => scheduleRecalc());
     if (el.tagName === 'INPUT') {
         el.addEventListener('keydown', e => {
@@ -1467,7 +1485,7 @@ document.querySelectorAll('.panel input, .panel select').forEach(el => {
 });
 
 // Saved setup: persisted locally and encoded in the URL so a setup can be shared
-const SETUP_FIELDS = ['operation','coordPlane','drillCycle','diameter','pitch','toolMaterial','workMaterial','depth','blockSize','maxRpm','customVc','customFn'];
+const SETUP_FIELDS = ['operation','coordPlane','drillCycle','diameter','pitch','toolMaterial','workMaterial','depth','blockSize','maxRpm','customVc','customFn','controller','toolNo','workOffset','rPlane','initPlane','returnMode','holeList'];
 const SETUP_KEY = 'shader7.drill.setup';
 function readSetup() {
     const data = {};
@@ -1529,6 +1547,14 @@ function handleOperationChange() {
 }
 
 opEl.addEventListener('change', handleOperationChange);
+
+// Keep the hole-list axis hint in step with the working plane
+function updateHoleAxesHint() {
+    const hint = document.getElementById('holeAxesHint');
+    const plane = document.getElementById('coordPlane');
+    if (hint && plane) hint.textContent = '(' + planeAxes(plane.value).join(' ') + ')';
+}
+document.getElementById('coordPlane').addEventListener('change', updateHoleAxesHint);
 
 // Auto-suggest pitch when diameter is typed (only if tapping)
 diaEl.addEventListener('input', () => {
@@ -1606,6 +1632,51 @@ function calculateDrillMetrics(op, dia, depth, rpm, feed, pitch, cycle, q) {
     return { tipLength, effectiveDepth, totalTravel, cycleTimeSec, mrr, vc };
 }
 
+// ---- G-code program options ----
+// Coordinate text: up to 3 decimals, always at least one (2 -> "2.0", 2.25 -> "2.25")
+function fmtCoord(n){
+    const s = String(Number(Number(n).toFixed(3)) || 0);
+    return s.includes('.') ? s : s + '.0';
+}
+// Hole-position axis letters for each working plane
+function planeAxes(plane){
+    if (plane === 'G18') return ['Z', 'X'];
+    if (plane === 'G19') return ['Y', 'Z'];
+    return ['X', 'Y'];
+}
+// Parse "X Y" lines ("25 15", "25,15", "X25 Y15"); throws on a malformed line
+function parseHoleList(text){
+    const lines = String(text || '').split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+    if (!lines.length) return [[0, 0]];
+    if (lines.length > 500) throw new Error('Hole positions: 500 holes maximum.');
+    return lines.map((line, i) => {
+        const nums = line.match(/[-+]?(?:\d+\.?\d*|\.\d+)/g) || [];
+        if (nums.length !== 2) throw new Error('Hole positions: line ' + (i + 1) + ' ("' + line + '") needs exactly two coordinates.');
+        return nums.map(Number);
+    });
+}
+const DEFAULT_PROGRAM = { controller:'fanuc', tool:1, offset:'G54', r:2, init:30, ret:'G98', holes:[[0, 0]] };
+function programOptions(opts){ return Object.assign({}, DEFAULT_PROGRAM, opts || {}); }
+function readProgramOptions(){
+    const val = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+    const tool = val('toolNo') === '' ? 1 : Number(val('toolNo'));
+    if (!Number.isInteger(tool) || tool < 1 || tool > 999) throw new Error('Tool number: enter a whole number from 1 to 999.');
+    const r = val('rPlane') === '' ? 2 : Number(val('rPlane'));
+    const init = val('initPlane') === '' ? 30 : Number(val('initPlane'));
+    if (!Number.isFinite(r) || !Number.isFinite(init)) throw new Error('R plane and clearance height must be numbers.');
+    if (init <= r) throw new Error('Clearance height must be above the R plane.');
+    return programOptions({
+        controller: val('controller') || 'fanuc',
+        tool, offset: val('workOffset') || 'G54', r, init,
+        ret: val('returnMode') === 'G99' ? 'G99' : 'G98',
+        holes: parseHoleList(document.getElementById('holeList') ? document.getElementById('holeList').value : '')
+    });
+}
+let progRText = '2.0';
+let progInitText = '30.0';
+let progToolText = '01';
+let progFirstPos = 'X0.0 Y0.0';
+
 // Global simulation state variables
 let simOp = 'drill';
 let simDia = 6;
@@ -1652,7 +1723,7 @@ function calculate(){
         if (!Number.isFinite(n) || n <= 0 || !el.checkValidity()) throw new Error(el.labels?.[0]?.textContent + ': enter a positive valid number.');
         return n;
     };
-    let depth, blockSize, maxRpm, customVc, customFn, depthBlank = false;
+    let depth, blockSize, maxRpm, customVc, customFn, prog, depthBlank = false;
     try {
         readPositive('diameter');
         depth = readPositive('depth', true);
@@ -1667,7 +1738,17 @@ function calculate(){
             const p = readPositive('pitch');
             if (p >= D) throw new Error('Thread pitch must be smaller than the tap diameter.');
         }
+        prog = readProgramOptions();
     } catch (e) { error.textContent = e.message; error.hidden = false; return; }
+
+    progRText = fmtCoord(prog.r);
+    progInitText = fmtCoord(prog.init);
+    progToolText = String(prog.tool).padStart(2, '0');
+    const holeCount = prog.holes.length;
+    {
+        const [a1, a2] = planeAxes(document.getElementById("coordPlane").value);
+        progFirstPos = `${a1}${fmtCoord(prog.holes[0][0])} ${a2}${fmtCoord(prog.holes[0][1])}`;
+    }
 
     // Cutting speeds (m/min)
     const drillV = {
@@ -1709,7 +1790,7 @@ function calculate(){
         peckWarning += `
         <div class="info-box danger" style="margin-top: 15px;">
             <div class="info-box-title">⚠️ Table Collision Crash Risk</div>
-            <p style="font-size: 0.82rem; margin-top: 2px;">Hole depth (${depth}mm) &ge; stock thickness (${blockSize}mm). The tool will drill completely through the workpiece. Ensure clearance parallels or spacers are under the stock to protect the machine table.</p>
+            <p style="font-size: 0.82rem; margin-top: 2px;">Hole depth (${depth}mm) &ge; stock thickness (${blockSize}mm). The tool will drill completely through the workpiece. Ensure clearance parallels or spacers are under the stock to protect the machine table.${op === 'drill' ? ` For a clean through-hole with a 118° drill, program about <strong>${(blockSize + D * 0.3 + 1).toFixed(2)} mm</strong> (thickness + 0.3×D point + 1 mm breakout) and keep at least that much clearance under the part.` : ''}</p>
         </div>`;
     }
 
@@ -1725,11 +1806,19 @@ function calculate(){
         stdFeedVal = Number((rpmStd * f_rev).toFixed(1));
         pitchVal = f_rev;
 
-        if (depth >= (D * 3)) {
+        const drillCycleSel = document.getElementById("drillCycle").value;
+        const pecking = drillCycleSel === 'G83' || drillCycleSel === 'G73';
+        if (depth >= (D * 3) && !pecking) {
             peckWarning += `
             <div class="info-box warning" style="margin-top: 15px;">
                 <div class="info-box-title">⚠️ Peck Drilling Advised</div>
-                <p style="font-size: 0.82rem; margin-top: 2px;">Hole depth &ge; 3× tool diameter. Standard G83 deep hole peck or G73 chip breaker cycles are strongly advised to evacuate metal chips safely.</p>
+                <p style="font-size: 0.82rem; margin-top: 2px;">Hole depth is ${(depth / D).toFixed(1)}× the drill diameter, but ${drillCycleSel} does not peck. Switch to G83 (full retract) or G73 (chip break) so chips can clear and the drill doesn't pack and snap.</p>
+            </div>`;
+        } else if (depth >= (D * 3) && drillCycleSel === 'G73' && depth >= D * 5) {
+            peckWarning += `
+            <div class="info-box warning" style="margin-top: 15px;">
+                <div class="info-box-title">⚠️ Consider G83 Full Retract</div>
+                <p style="font-size: 0.82rem; margin-top: 2px;">At ${(depth / D).toFixed(1)}× D, G73 only breaks chips and does not lift them out of the hole. G83 full-retract pecking is safer unless you have through-spindle coolant.</p>
             </div>`;
         }
     } else {
@@ -1761,7 +1850,7 @@ function calculate(){
         peckWarning += `
         <div class="info-box" style="margin-top: 15px;">
             <div class="info-box-title">⚡ Smart Sync Active</div>
-            <p style="font-size: 0.82rem; margin-top: 2px;">Spindle speed and feed rate are synchronized for Rigid Tapping (G84). Feed rate is locked to <strong>Feed = RPM &times; Pitch</strong> at the programmed spindle speed.</p>
+            <p style="font-size: 0.82rem; margin-top: 2px;">Spindle speed and feed rate are synchronized for Rigid Tapping (G84). Feed rate is locked to <strong>Feed = RPM &times; Pitch</strong> at the programmed spindle speed.${prog.controller === 'haas' ? ' Haas style: G84 is rigid without M29 (check Setting 130 / rigid tap option).' : ' Fanuc style: M29 S__ precedes G84; some controls use parameter-selected rigid mode instead.'}</p>
         </div>`;
     }
 
@@ -1780,7 +1869,7 @@ function calculate(){
     simBlockSize = parseFloat(document.getElementById("blockSize").value) || 50;
 
     // Append G-code and Timeline elements
-    const rawGCode = generateGCode(op, D, depth, stdRpmVal, stdFeedVal, pitchVal, simDrillCycle, simQ);
+    const rawGCode = generateGCode(op, D, depth, stdRpmVal, stdFeedVal, pitchVal, simDrillCycle, simQ, prog);
     const highlightedCode = highlightGCode(rawGCode);
  
     const plane = document.getElementById("coordPlane") ? document.getElementById("coordPlane").value : "G17";
@@ -1796,7 +1885,7 @@ function calculate(){
                 <div class="timeline-step active blue-node">
                     <div class="timeline-node"></div>
                     <div class="timeline-content">
-                        <div class="timeline-title">Approach Clearance <span class="badge blue">${axisChar}2.0</span></div>
+                        <div class="timeline-title">Approach Clearance <span class="badge blue">${axisChar}${progRText}</span></div>
                         <div class="timeline-desc">Spindle active at CW <strong>${stdRpmVal} RPM</strong>. Rapid ${axisChar}-axis down to safety clearance plane.</div>
                     </div>
                 </div>
@@ -1822,7 +1911,7 @@ function calculate(){
                     <div class="timeline-step active">
                         <div class="timeline-node"></div>
                         <div class="timeline-content">
-                            <div class="timeline-title">Approach Position <span class="badge">${axisChar}2.0</span></div>
+                            <div class="timeline-title">Approach Position <span class="badge">${axisChar}${progRText}</span></div>
                             <div class="timeline-desc">Spindle active at CW <strong>${stdRpmVal} RPM</strong>. Rapids down to approach safety clearance.</div>
                         </div>
                     </div>
@@ -1837,7 +1926,7 @@ function calculate(){
                         <div class="timeline-node"></div>
                         <div class="timeline-content">
                             <div class="timeline-title">Rapid Retract</div>
-                            <div class="timeline-desc">Rapid retract ${axisChar}-axis back to ${axisChar}30 clearance plane.</div>
+                            <div class="timeline-desc">Rapid retract ${axisChar}-axis back to ${axisChar}${progInitText} clearance plane.</div>
                         </div>
                     </div>
                 </div>`;
@@ -1847,7 +1936,7 @@ function calculate(){
                     <div class="timeline-step active">
                         <div class="timeline-node"></div>
                         <div class="timeline-content">
-                            <div class="timeline-title">Approach Position <span class="badge">${axisChar}2.0</span></div>
+                            <div class="timeline-title">Approach Position <span class="badge">${axisChar}${progRText}</span></div>
                             <div class="timeline-desc">Spindle active at CW <strong>${stdRpmVal} RPM</strong>. Rapids down to clearance plane.</div>
                         </div>
                     </div>
@@ -1869,7 +1958,7 @@ function calculate(){
                         <div class="timeline-node"></div>
                         <div class="timeline-content">
                             <div class="timeline-title">Rapid Retract</div>
-                            <div class="timeline-desc">Rapid retract ${axisChar}-axis back to ${axisChar}30 clearance plane.</div>
+                            <div class="timeline-desc">Rapid retract ${axisChar}-axis back to ${axisChar}${progInitText} clearance plane.</div>
                         </div>
                     </div>
                 </div>`;
@@ -1879,7 +1968,7 @@ function calculate(){
                     <div class="timeline-step active">
                         <div class="timeline-node"></div>
                         <div class="timeline-content">
-                            <div class="timeline-title">Approach Position <span class="badge">${axisChar}2.0</span></div>
+                            <div class="timeline-title">Approach Position <span class="badge">${axisChar}${progRText}</span></div>
                             <div class="timeline-desc">Spindle active at CW <strong>${stdRpmVal} RPM</strong>. Rapids to clearance plane.</div>
                         </div>
                     </div>
@@ -1887,14 +1976,14 @@ function calculate(){
                         <div class="timeline-node"></div>
                         <div class="timeline-content">
                             <div class="timeline-title">Deep Hole Pecking <span class="badge">${axisChar}-${depth.toFixed(3)}</span></div>
-                            <div class="timeline-desc">G83 cycle. Tool feeds Q${simQ.toFixed(2)} mm steps, rapid-retracts fully to clearance ${axisChar}2.0 to clear chips, then replunges.</div>
+                            <div class="timeline-desc">G83 cycle. Tool feeds Q${simQ.toFixed(2)} mm steps, rapid-retracts fully to R plane ${axisChar}${progRText} to clear chips, then replunges.</div>
                         </div>
                     </div>
                     <div class="timeline-step active">
                         <div class="timeline-node"></div>
                         <div class="timeline-content">
                             <div class="timeline-title">Retract and Finish</div>
-                            <div class="timeline-desc">Rapid retract back to safe retract plane ${axisChar}30.</div>
+                            <div class="timeline-desc">Rapid retract back to safe retract plane ${axisChar}${progInitText}.</div>
                         </div>
                     </div>
                 </div>`;
@@ -1904,7 +1993,7 @@ function calculate(){
                     <div class="timeline-step active">
                         <div class="timeline-node"></div>
                         <div class="timeline-content">
-                            <div class="timeline-title">Approach Position <span class="badge">${axisChar}2.0</span></div>
+                            <div class="timeline-title">Approach Position <span class="badge">${axisChar}${progRText}</span></div>
                             <div class="timeline-desc">Spindle active at CW <strong>${stdRpmVal} RPM</strong>. Rapids to clearance plane.</div>
                         </div>
                     </div>
@@ -1919,7 +2008,7 @@ function calculate(){
                         <div class="timeline-node"></div>
                         <div class="timeline-content">
                             <div class="timeline-title">Retract and Finish</div>
-                            <div class="timeline-desc">Rapid retract back to safe retract plane ${axisChar}30.</div>
+                            <div class="timeline-desc">Rapid retract back to safe retract plane ${axisChar}${progInitText}.</div>
                         </div>
                     </div>
                 </div>`;
@@ -1929,7 +2018,7 @@ function calculate(){
                     <div class="timeline-step active">
                         <div class="timeline-node"></div>
                         <div class="timeline-content">
-                            <div class="timeline-title">Approach Position <span class="badge">${axisChar}2.0</span></div>
+                            <div class="timeline-title">Approach Position <span class="badge">${axisChar}${progRText}</span></div>
                             <div class="timeline-desc">Spindle active at CW <strong>${stdRpmVal} RPM</strong>. Rapids to clearance plane.</div>
                         </div>
                     </div>
@@ -1951,7 +2040,7 @@ function calculate(){
                         <div class="timeline-node"></div>
                         <div class="timeline-content">
                             <div class="timeline-title">Safe Stopped Retract</div>
-                            <div class="timeline-desc">Rapid retract back to safe retract plane ${axisChar}30 with stationary spindle.</div>
+                            <div class="timeline-desc">Rapid retract back to safe retract plane ${axisChar}${progInitText} with stationary spindle.</div>
                         </div>
                     </div>
                 </div>`;
@@ -2041,9 +2130,9 @@ function calculate(){
             </div>
             `}
             <div class="metric-card">
-                <span class="metric-label">Est. Cycle Time</span>
-                <span class="metric-value">${metrics.cycleTimeSec} <span class="metric-unit">sec</span></span>
-                <span class="metric-sub">${depthBlank ? '2×D default depth' : depth + ' mm hole depth'}</span>
+                <span class="metric-label">Est. Cycle Time${holeCount > 1 ? ` (${holeCount} holes)` : ''}</span>
+                <span class="metric-value">${holeCount > 1 ? Math.round(metrics.cycleTimeSec * holeCount * 10) / 10 : metrics.cycleTimeSec} <span class="metric-unit">sec</span></span>
+                <span class="metric-sub">${holeCount > 1 ? metrics.cycleTimeSec + ' s per hole, cutting only' : (depthBlank ? '2×D default depth' : depth + ' mm hole depth')}</span>
             </div>
             ${op === 'drill' && simPeck ? `
             <div class="metric-card">
@@ -2261,53 +2350,47 @@ function highlightGCodeLineByCommand(cmdSubStr) {
 }
 
 // Canned G-code generator helper
-function generateGCode(op, dia, depth, rpm, feed, pitch, cycle, q) {
+function generateGCode(op, dia, depth, rpm, feed, pitch, cycle, q, opts) {
+    const o = programOptions(opts);
     const plane = document.getElementById("coordPlane") ? document.getElementById("coordPlane").value : "G17";
-    let axisChar = 'Z';
-    let posCoords = 'X0.0 Y0.0';
-    if (plane === 'G18') {
-        axisChar = 'Y';
-        posCoords = 'Z0.0 X0.0';
-    } else if (plane === 'G19') {
-        axisChar = 'X';
-        posCoords = 'Y0.0 Z0.0';
-    }
-    
-    const rText = 'R2.0';
-    const initialZ = `${axisChar}30.0`;
-    
+    const axisChar = plane === 'G18' ? 'Y' : (plane === 'G19' ? 'X' : 'Z');
+    const [a1, a2] = planeAxes(plane);
+    const holes = o.holes && o.holes.length ? o.holes : [[0, 0]];
+    const pos = h => `${a1}${fmtCoord(h[0])} ${a2}${fmtCoord(h[1])}`;
+    const tool = String(o.tool).padStart(2, '0');
+    const rText = `R${fmtCoord(o.r)}`;
+    const initialZ = `${axisChar}${fmtCoord(o.init)}`;
+    const fText = `F${Number(feed.toFixed(6))}`;
+
     let block = `(SHADER7 SPEEDS & FEEDS G-CODE)\n`;
-    block += `(OP: ${op.toUpperCase()}, TOOL DIA: ${dia.toFixed(2)} mm)\n`;
-    block += `G21 G90 G94 G98 G40 G80 ${plane} G54 (METRIC WORK PLANE)\n`;
-    block += `T01 M06 (SELECT TOOL)\n`;
-    block += `G00 ${posCoords} S${rpm} M03 (RAPID TO HOLE, SPINDLE ON CW)\n`;
-    block += `G43 H01 ${initialZ} M08 (TOOL LENGTH OFFSET, COOLANT ON)\n`;
-    
+    block += `(OP: ${op.toUpperCase()}, TOOL DIA: ${dia.toFixed(2)} mm, ${holes.length} HOLE${holes.length > 1 ? 'S' : ''})\n`;
+    block += `G21 G90 G94 ${o.ret} G40 G80 ${plane} ${o.offset} (METRIC WORK PLANE)\n`;
+    block += `T${tool} M06 (SELECT TOOL)\n`;
+    block += `G00 ${pos(holes[0])} S${rpm} M03 (RAPID TO HOLE, SPINDLE ON CW)\n`;
+    block += `G43 H${tool} ${initialZ} M08 (TOOL LENGTH OFFSET, COOLANT ON)\n`;
+
     depth = depth > 0 ? depth : dia * 2;
     const qText = `Q${(q > 0 ? q : dia * 0.75).toFixed(2)}`;
-    {
-        const depthText = `${axisChar}-${depth.toFixed(3)}`;
-        if (op === 'tap') {
-            block += `M29 S${rpm} (RIGID SYNC ENABLER)\n`;
-            block += `G84 ${depthText} ${rText} F${Number(feed.toFixed(6))} (RIGID TAPPING CYCLE)\n`;
-        } else {
-            if (cycle === 'G83') {
-                block += `G83 ${depthText} ${rText} ${qText} F${Number(feed.toFixed(6))} (DEEP HOLE PECK CYCLE)\n`;
-            } else if (cycle === 'G73') {
-                block += `G73 ${depthText} ${rText} ${qText} F${Number(feed.toFixed(6))} (HIGH-SPEED PECK CYCLE)\n`;
-            } else if (cycle === 'G82') {
-                block += `G82 ${depthText} ${rText} P1000 F${Number(feed.toFixed(6))} (1S DWELL AT BOTTOM)\n`;
-            } else if (cycle === 'G86') {
-                block += `G86 ${depthText} ${rText} F${Number(feed.toFixed(6))} (SPINDLE STOP RETRACT BORING)\n`;
-            } else {
-                block += `G81 ${depthText} ${rText} F${Number(feed.toFixed(6))} (DIRECT DRILLING CYCLE)\n`;
-            }
-        }
+    const depthText = `${axisChar}-${depth.toFixed(3)}`;
+    if (op === 'tap') {
+        if (o.controller !== 'haas') block += `M29 S${rpm} (RIGID SYNC ENABLER)\n`;
+        block += `G84 ${depthText} ${rText} ${fText} (RIGID TAPPING CYCLE)\n`;
+    } else if (cycle === 'G83') {
+        block += `G83 ${depthText} ${rText} ${qText} ${fText} (DEEP HOLE PECK CYCLE)\n`;
+    } else if (cycle === 'G73') {
+        block += `G73 ${depthText} ${rText} ${qText} ${fText} (HIGH-SPEED PECK CYCLE)\n`;
+    } else if (cycle === 'G82') {
+        block += `G82 ${depthText} ${rText} P1000 ${fText} (1S DWELL AT BOTTOM)\n`;
+    } else if (cycle === 'G86') {
+        block += `G86 ${depthText} ${rText} ${fText} (SPINDLE STOP RETRACT BORING)\n`;
+    } else {
+        block += `G81 ${depthText} ${rText} ${fText} (DIRECT DRILLING CYCLE)\n`;
     }
+    holes.slice(1).forEach((h, i) => { block += `${pos(h)} (HOLE ${i + 2})\n`; });
     block += `G80 M09 (CYCLE CANCEL, COOLANT OFF)\n`;
     block += `G00 ${initialZ} M05 (SAFE RETRACT, SPINDLE STOP)\n`;
     block += `M30 (PROGRAM END)\n`;
-    
+
     return block;
 }
 
@@ -2408,7 +2491,7 @@ function updateGCodeMonitor() {
     
     switch (simState) {
         case 'idle':
-            gcode = `G00 ${axisChar}30.0 (SAFE RETRACT POSITION)`;
+            gcode = `G00 ${axisChar}${progInitText} (SAFE RETRACT POSITION)`;
             break;
             
         case 'spindle_start':
@@ -2417,45 +2500,42 @@ function updateGCodeMonitor() {
             
         case 'approach':
             if (simZ < -16.0) {
-                let posCoords = 'X0.0 Y0.0';
-                if (plane === 'G18') posCoords = 'Z0.0 X0.0';
-                else if (plane === 'G19') posCoords = 'Y0.0 Z0.0';
-                gcode = `G00 ${posCoords} S${simRpm} M03 (RAPID TO HOLE, SPINDLE ON CW)`;
+                gcode = `G00 ${progFirstPos} S${simRpm} M03 (RAPID TO HOLE, SPINDLE ON CW)`;
             } else {
-                gcode = `G43 H01 ${axisChar}30.0 M08 (TOOL LENGTH OFFSET, COOLANT ON)`;
+                gcode = `G43 H${progToolText} ${axisChar}${progInitText} M08 (TOOL LENGTH OFFSET, COOLANT ON)`;
             }
             break;
             
         case 'r_dwell':
             if (simOp === 'tap') {
-                gcode = `G84 ${axisChar}-${simDepth.toFixed(2)} R2.0 F${Number(simFeed.toFixed(6))} (RIGID TAPPING CYCLE)`;
+                gcode = `G84 ${axisChar}-${simDepth.toFixed(2)} R${progRText} F${Number(simFeed.toFixed(6))} (RIGID TAPPING CYCLE)`;
             } else if (simDrillCycle === 'G83') {
-                gcode = `G83 ${axisChar}-${simDepth.toFixed(2)} R2.0 Q${simQ.toFixed(2)} F${Number(simFeed.toFixed(6))} (DEEP HOLE PECK CYCLE)`;
+                gcode = `G83 ${axisChar}-${simDepth.toFixed(2)} R${progRText} Q${simQ.toFixed(2)} F${Number(simFeed.toFixed(6))} (DEEP HOLE PECK CYCLE)`;
             } else if (simDrillCycle === 'G73') {
-                gcode = `G73 ${axisChar}-${simDepth.toFixed(2)} R2.0 Q${simQ.toFixed(2)} F${Number(simFeed.toFixed(6))} (HIGH-SPEED PECK CYCLE)`;
+                gcode = `G73 ${axisChar}-${simDepth.toFixed(2)} R${progRText} Q${simQ.toFixed(2)} F${Number(simFeed.toFixed(6))} (HIGH-SPEED PECK CYCLE)`;
             } else if (simDrillCycle === 'G82') {
-                gcode = `G82 ${axisChar}-${simDepth.toFixed(2)} R2.0 P1000 F${Number(simFeed.toFixed(6))} (1S DWELL AT BOTTOM)`;
+                gcode = `G82 ${axisChar}-${simDepth.toFixed(2)} R${progRText} P1000 F${Number(simFeed.toFixed(6))} (1S DWELL AT BOTTOM)`;
             } else if (simDrillCycle === 'G86') {
-                gcode = `G86 ${axisChar}-${simDepth.toFixed(2)} R2.0 F${Number(simFeed.toFixed(6))} (SPINDLE STOP RETRACT BORING)`;
+                gcode = `G86 ${axisChar}-${simDepth.toFixed(2)} R${progRText} F${Number(simFeed.toFixed(6))} (SPINDLE STOP RETRACT BORING)`;
             } else {
-                gcode = `G81 ${axisChar}-${simDepth.toFixed(2)} R2.0 F${Number(simFeed.toFixed(6))} (DIRECT DRILLING CYCLE)`;
+                gcode = `G81 ${axisChar}-${simDepth.toFixed(2)} R${progRText} F${Number(simFeed.toFixed(6))} (DIRECT DRILLING CYCLE)`;
             }
             break;
             
         case 'feed':
             if (simZ <= -1.9) {
                 if (simOp === 'tap') {
-                    gcode = `G84 ${axisChar}-${simDepth.toFixed(2)} R2.0 F${Number(simFeed.toFixed(6))} (RIGID TAPPING CYCLE)`;
+                    gcode = `G84 ${axisChar}-${simDepth.toFixed(2)} R${progRText} F${Number(simFeed.toFixed(6))} (RIGID TAPPING CYCLE)`;
                 } else if (simDrillCycle === 'G83') {
-                    gcode = `G83 ${axisChar}-${simDepth.toFixed(2)} R2.0 Q${simQ.toFixed(2)} F${Number(simFeed.toFixed(6))} (DEEP HOLE PECK CYCLE)`;
+                    gcode = `G83 ${axisChar}-${simDepth.toFixed(2)} R${progRText} Q${simQ.toFixed(2)} F${Number(simFeed.toFixed(6))} (DEEP HOLE PECK CYCLE)`;
                 } else if (simDrillCycle === 'G73') {
-                    gcode = `G73 ${axisChar}-${simDepth.toFixed(2)} R2.0 Q${simQ.toFixed(2)} F${Number(simFeed.toFixed(6))} (HIGH-SPEED PECK CYCLE)`;
+                    gcode = `G73 ${axisChar}-${simDepth.toFixed(2)} R${progRText} Q${simQ.toFixed(2)} F${Number(simFeed.toFixed(6))} (HIGH-SPEED PECK CYCLE)`;
                 } else if (simDrillCycle === 'G82') {
-                    gcode = `G82 ${axisChar}-${simDepth.toFixed(2)} R2.0 P1000 F${Number(simFeed.toFixed(6))} (1S DWELL AT BOTTOM)`;
+                    gcode = `G82 ${axisChar}-${simDepth.toFixed(2)} R${progRText} P1000 F${Number(simFeed.toFixed(6))} (1S DWELL AT BOTTOM)`;
                 } else if (simDrillCycle === 'G86') {
-                    gcode = `G86 ${axisChar}-${simDepth.toFixed(2)} R2.0 F${Number(simFeed.toFixed(6))} (SPINDLE STOP RETRACT BORING)`;
+                    gcode = `G86 ${axisChar}-${simDepth.toFixed(2)} R${progRText} F${Number(simFeed.toFixed(6))} (SPINDLE STOP RETRACT BORING)`;
                 } else {
-                    gcode = `G81 ${axisChar}-${simDepth.toFixed(2)} R2.0 F${Number(simFeed.toFixed(6))} (DIRECT DRILLING CYCLE)`;
+                    gcode = `G81 ${axisChar}-${simDepth.toFixed(2)} R${progRText} F${Number(simFeed.toFixed(6))} (DIRECT DRILLING CYCLE)`;
                 }
             } else {
                 gcode = `G01 ${axisChar}-${simZ.toFixed(2)} F${Number(simFeed.toFixed(6))} (FEED CUTTING)`;
@@ -2463,7 +2543,7 @@ function updateGCodeMonitor() {
             break;
             
         case 'peck_retract':
-            gcode = `G00 ${axisChar}2.0 (RAPID RETRACT TO R PLANE)`;
+            gcode = `G00 ${axisChar}${progRText} (RAPID RETRACT TO R PLANE)`;
             break;
             
         case 'peck_approach':
@@ -2490,9 +2570,9 @@ function updateGCodeMonitor() {
             if (simOp === 'tap') {
                 gcode = `G84 (SPINDLE REVERSE, FEED OUT AT PITCH)`;
             } else if (simDrillCycle === 'G86') {
-                gcode = `G00 ${axisChar}30.0 (SAFE RETRACT SPINDLE STOPPED)`;
+                gcode = `G00 ${axisChar}${progInitText} (SAFE RETRACT SPINDLE STOPPED)`;
             } else {
-                gcode = `G80 G00 ${axisChar}30.0 M09 (CYCLE CANCEL, COOLANT OFF)`;
+                gcode = `G80 G00 ${axisChar}${progInitText} M09 (CYCLE CANCEL, COOLANT OFF)`;
             }
             break;
             
@@ -2523,7 +2603,7 @@ function updateGCodeMonitor() {
             searchCmd = ""; // clear highlight
             break;
         case 'approach':
-            searchCmd = (simZ < -15) ? `S${simRpm} M03` : "G43 H01";
+            searchCmd = (simZ < -15) ? `S${simRpm} M03` : "G43 H";
             break;
         case 'feed':
         case 'peck_retract':
@@ -3669,6 +3749,7 @@ document.getElementById('footerYear').textContent = new Date().getFullYear();
 (function bootDrillCalculator() {
     const setup = restoreSetup();
     handleOperationChange();
+    updateHoleAxesHint();
     if (setup.pitch && opEl.value === 'tap') pitchEl.value = setup.pitch;
     if (setup.diameter) calculate();
 })();

@@ -37,13 +37,13 @@ test('calculates drill metrics: MRR, cycle time, cutting speed Vc, and tip lengt
 });
 test('supports G18 (Y-axis) and G19 (X-axis) canned cycle generation', () => {
   const g18Ctx = vm.createContext({document:{getElementById:(id)=>({value: id==='coordPlane'?'G18':'G18'})}});
-  vm.runInContext(extract('generateGCode', '// Accordion'), g18Ctx);
+  vm.runInContext(extract('fmtCoord', 'let progRText')+extract('generateGCode', '// Accordion'), g18Ctx);
   const codeG18 = g18Ctx.generateGCode('drill', 6, 20, 1000, 100, 0.1, 'G81');
   assert.match(codeG18, /G18/);
   assert.match(codeG18, /G81 Y-20\.000 R2\.0/);
 
   const g19Ctx = vm.createContext({document:{getElementById:(id)=>({value: id==='coordPlane'?'G19':'G19'})}});
-  vm.runInContext(extract('generateGCode', '// Accordion'), g19Ctx);
+  vm.runInContext(extract('fmtCoord', 'let progRText')+extract('generateGCode', '// Accordion'), g19Ctx);
   const codeG19 = g19Ctx.generateGCode('drill', 6, 20, 1000, 100, 0.1, 'G81');
   assert.match(codeG19, /G19/);
   assert.match(codeG19, /G81 X-20\.000 R2\.0/);
@@ -84,4 +84,33 @@ test('G73 peck cycles count pecks in cycle time', () => {
   const a = context.calculateDrillMetrics('drill', 10, 25, 1000, 150, 0.15, 'G81');
   const b = context.calculateDrillMetrics('drill', 10, 25, 1000, 150, 0.15, 'G73', 5);
   assert.ok(b.cycleTimeSec > a.cycleTimeSec);
+});
+
+// ---- Program options: tool, offset, heights, controller, hole list ----
+test('hole list parser accepts spaces, commas and axis letters', () => {
+  assert.deepEqual(JSON.parse(JSON.stringify(context.parseHoleList('0 0\n25, 15\nX-10.5 Y.5\n\n'))), [[0,0],[25,15],[-10.5,0.5]]);
+  assert.deepEqual(JSON.parse(JSON.stringify(context.parseHoleList(''))), [[0,0]]);
+  assert.throws(() => context.parseHoleList('10'), /line 1/);
+});
+test('multi-hole program lists extra positions inside the canned cycle', () => {
+  const code = context.generateGCode('drill', 8, 20, 1000, 100, 0.1, 'G81', 4,
+    { tool: 7, offset: 'G55', r: 3, init: 50, ret: 'G99', holes: [[0,0],[25,0],[25,15]] });
+  assert.match(code, /G94 G99 G40 G80 G17 G55/);
+  assert.match(code, /T07 M06/);
+  assert.match(code, /G43 H07 Z50\.0/);
+  assert.match(code, /G81 Z-20\.000 R3\.0 F100/);
+  const lines = code.split('\n');
+  const cyc = lines.findIndex(l => l.startsWith('G81'));
+  assert.equal(lines[cyc + 1], 'X25.0 Y0.0 (HOLE 2)');
+  assert.equal(lines[cyc + 2], 'X25.0 Y15.0 (HOLE 3)');
+  assert.ok(lines[cyc + 3].startsWith('G80'));
+});
+test('Haas rigid tapping omits M29, Fanuc keeps it', () => {
+  assert.doesNotMatch(context.generateGCode('tap', 6, 12, 500, 500, 1, 'G84', 0, { controller: 'haas' }), /M29/);
+  assert.match(context.generateGCode('tap', 6, 12, 500, 500, 1, 'G84', 0, { controller: 'fanuc' }), /M29 S500 \(RIGID SYNC ENABLER\)\nG84 /);
+});
+test('coordinate formatting keeps a decimal point', () => {
+  assert.equal(context.fmtCoord(2), '2.0');
+  assert.equal(context.fmtCoord(2.25), '2.25');
+  assert.equal(context.fmtCoord(-0.1234), '-0.123');
 });
