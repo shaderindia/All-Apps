@@ -941,8 +941,146 @@
       margin: 8px 0;
       color: #334155;
     }
+    /* ===== Layout v2: setup + log on the left, sticky results on the right ===== */
+    .page-shell { width: min(1240px, calc(100% - 28px)); }
+    .hero { padding: clamp(18px, 3vw, 30px); margin-bottom: 18px; }
+    .hero .tool-header-bar { margin-bottom: 14px; align-items: center; }
+    .hero .tool-switcher { flex-direction: row; flex-wrap: wrap; min-width: 0; padding: 4px; border-radius: 12px; }
+    .hero .tool-tab { width: auto; min-height: 40px; padding: 8px 14px; }
+    .hero .tool-tab:hover { transform: none; }
+    .hero h1 { font-size: clamp(1.5rem, 3.6vw, 2.35rem); }
+    .hero-badges { margin-top: 4px; }
+
+    .app-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 360px;
+      grid-template-areas: "setup results" "log results";
+      gap: 0 20px;
+      align-items: start;
+    }
+    .area-setup { grid-area: setup; }
+    .area-log { grid-area: log; }
+    .area-results { grid-area: results; align-self: stretch; margin-bottom: 20px; }
+    .results-card { position: sticky; top: 16px; margin-bottom: 0; padding: 20px; }
+
+    .section-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
+    .section-head h2, .calendar-toolbar h2 { margin: 0; font-size: clamp(1.15rem, 2.4vw, 1.4rem); font-weight: 800; display: flex; align-items: center; gap: 10px; }
+    .section-head .subtle, .calendar-toolbar .subtle { margin: 4px 0 0; }
+    .step-num { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: #eef2ff; color: var(--primary); font-size: .85rem; font-weight: 800; flex: 0 0 auto; }
+
+    .setup-form { display: grid; gap: 14px; }
+    .field-group { border: 1px solid var(--border); border-radius: 14px; padding: 12px 16px 16px; margin: 0; min-width: 0; background: #fcfdff; }
+    .field-group legend { padding: 0 8px; margin-left: -4px; font-weight: 800; font-size: .82rem; color: var(--primary-dark); text-transform: uppercase; letter-spacing: .4px; display: inline-flex; align-items: center; gap: 7px; }
+    .form-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px 14px; }
+    .form-grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .form-grid.cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .rates-footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 16px; margin-top: 10px; }
+    .rates-footer .switch-line { margin: 0; }
+    .rates-note { margin: 0; font-size: .8rem; flex: 1 1 320px; }
+
+    /* Results panel */
+    .results-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 12px; }
+    .results-head h2 { margin: 0; font-size: 1.1rem; font-weight: 800; }
+    .results-who { color: var(--muted); font-size: .82rem; font-weight: 600; text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 60%; }
+    .results-total { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: #fff; border-radius: 16px; padding: 16px 18px; display: grid; gap: 2px; }
+    .results-total span { font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .4px; opacity: .85; }
+    .results-total strong { font-size: clamp(1.6rem, 3vw, 2rem); font-weight: 800; line-height: 1.15; word-break: break-word; }
+    .results-total small { font-size: .88rem; opacity: .9; }
+    .results-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 10px; }
+    .results-stats div { background: var(--soft); border: 1px solid var(--border); border-radius: 12px; padding: 8px 10px; min-width: 0; }
+    .results-stats span { display: block; color: var(--muted); font-size: .68rem; font-weight: 600; text-transform: uppercase; letter-spacing: .3px; }
+    .results-stats strong { display: block; font-size: .92rem; font-weight: 800; word-break: break-word; }
+    .results-card .pay-breakdown { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .results-card .pb-item { padding: 7px 10px; }
+    .results-card .pb-item strong { font-size: .88rem; }
+    .results-card .salary-alert { margin-top: 10px; font-size: .85rem; }
+    .results-actions { display: grid; gap: 8px; margin-top: 14px; }
+    .results-actions .btn { width: 100%; }
+    .results-actions-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .btn.ghost { background: #fff; color: var(--primary-dark); border: 1.5px solid #c7d2fe; }
+    .btn.ghost:hover { background: #eef2ff; }
+    .results-actions .save-status-badge { justify-self: center; min-height: 30px; font-size: .78rem; padding: 4px 12px; }
+
+    /* Work log */
+    .area-log .calendar-toolbar { margin: 0 0 12px; align-items: flex-start; }
+    .quick-fill-label { white-space: nowrap; }
+    .quick-fill-bar { margin-top: 0; margin-bottom: 8px; flex-wrap: nowrap; padding: 8px 10px; }
+    .quick-fill-scroll { display: flex; gap: 8px; flex-wrap: wrap; flex: 1 1 auto; min-width: 0; }
+    .btn-quick-fill { min-height: 40px; white-space: nowrap; }
+    .btn-quick-fill.btn-quick-clear { margin-left: auto; }
+    .calendar-legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: .76rem; color: var(--muted); font-weight: 600; margin: 0 2px 10px; }
+    .calendar-legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .lg { width: 12px; height: 12px; border-radius: 4px; display: inline-block; }
+    .lg-weekend { background: #fee2e2; border: 1px solid #fca5a5; }
+    .lg-holiday { background: #f3e8ff; border: 1px solid #d8b4fe; }
+    .lg-worked { background: #dbeafe; border: 1px solid #93c5fd; }
+    .calendar-table td.has-hours { box-shadow: inset 0 3px 0 #3b82f6; }
+    .calendar-cards-wrapper { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; padding: 0; }
+    .work-card { padding: 10px 12px; gap: 7px; }
+    .quick-shifts-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 5px; }
+    .quick-pill { min-height: 38px; padding: 4px 6px; white-space: nowrap; }
+    .card-inputs-row select { min-height: 40px; padding: 6px 30px 6px 10px; font-size: 15px; border-radius: 10px; }
+    .log-footer { display: flex; justify-content: flex-end; margin-top: 14px; }
+    .btn.danger-ghost { background: #fff; color: #dc2626; border: 1.5px solid #fecaca; min-height: 42px; }
+    .btn.danger-ghost:hover { background: #fef2f2; }
+
+    /* Converter (collapsible) */
+    .converter-card { padding: 0; }
+    .converter-card details { border: 0; margin: 0; padding: 0; background: transparent; }
+    .converter-card summary { list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 18px clamp(16px, 3vw, 28px); font-weight: 800; font-size: 1.05rem; }
+    .converter-card summary::-webkit-details-marker { display: none; }
+    .converter-card summary > span { display: inline-flex; align-items: center; gap: 10px; }
+    .summary-chevron { color: var(--muted); transition: transform .2s ease; }
+    .converter-card details[open] .summary-chevron { transform: rotate(180deg); }
+    .converter-body { padding: 0 clamp(16px, 3vw, 28px) clamp(16px, 3vw, 28px); }
+    .converter-body .top-row { align-items: center; margin-bottom: 14px; }
+    .converter-body .top-row p { margin: 0; flex: 1 1 300px; }
+
+    /* Footer */
+    .site-footer { border-top: 1px solid #334155; background: #0f172a; padding: 28px 16px; text-align: center; color: #94a3b8; font-size: .85rem; margin: 30px 0 20px; border-radius: 12px; display: grid; gap: 14px; justify-items: center; }
+    .site-footer p { margin: 0; }
+    .site-footer nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 18px; }
+    .site-footer a { color: #94a3b8; text-decoration: none; transition: color .2s; }
+    .site-footer a:hover { color: #fff; }
+    .site-footer a.footer-strong { color: #60a5fa; font-weight: 700; }
+
+    /* Tablets: results move above the log, side by side summary */
+    @media (max-width: 1080px) {
+      .app-layout { grid-template-columns: minmax(0, 1fr); grid-template-areas: "setup" "results" "log"; }
+      .results-card { position: static; }
+      .results-card { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 18px; align-items: start; }
+      .results-head, .results-total, .results-stats { grid-column: 1; }
+      .results-card .salary-alert, .results-card .pay-breakdown, .results-actions { grid-column: 2; }
+      .results-card .pay-breakdown { grid-row: 1 / span 3; margin-top: 0; align-content: start; }
+      .results-actions { grid-row: 4; margin-top: 10px; }
+      .results-card .salary-alert { grid-row: 4; grid-column: 1; }
+      .form-grid.cols-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 760px) {
+      .results-card { display: block; }
+      .form-grid, .form-grid.cols-2 { grid-template-columns: 1fr; }
+      .form-grid.cols-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .results-card .pay-breakdown { margin-top: 10px; }
+    }
+    @media (max-width: 640px) {
+      .hero .tool-switcher { flex-direction: row; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+      .hero .tool-switcher::-webkit-scrollbar { display: none; }
+      .hero .tool-tab { flex: 0 0 auto; padding: 8px 12px; font-size: .8rem; }
+      .hero-badges .badge:nth-child(n+3) { display: none; }
+      .field-group { padding: 10px 12px 12px; }
+      .quick-fill-bar { flex-direction: column; align-items: stretch; gap: 6px; padding: 8px; }
+      .quick-fill-scroll { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; padding-bottom: 2px; }
+      .quick-fill-scroll::-webkit-scrollbar { display: none; }
+      .btn-quick-fill { flex: 0 0 auto; min-height: 40px; font-size: .8rem; padding: 6px 12px; }
+      .btn-quick-fill.btn-quick-clear { margin-left: 0; width: auto; }
+      .work-card { padding: 9px 10px; gap: 6px; }
+      .quick-pill { min-height: 36px; font-size: .78rem; flex: initial; }
+      .area-log .calendar-toolbar { flex-direction: column; gap: 10px; }
+      .log-footer { justify-content: stretch; }
+      .log-footer .btn { width: 100%; }
+      .results-total strong { font-size: 1.7rem; }
+    }
   </style>
-<link rel="stylesheet" href="/css/app-banners.css?v=20260904-banners"/>
 </head>
 <body>
   <main class="page-shell">
@@ -959,97 +1097,142 @@
       </div>
       <div class="hero-content">
         <h1>Advanced Hourly Salary Calculator</h1>
-        <p>Calculate monthly pay from daily hours, weekend, night shift, and C shift multipliers, RON to INR conversion, saved monthly logs, and downloadable salary reports.</p>
-        <p id="motivational-message" aria-live="polite"></p>
+        <p>Log your daily hours and shifts to see your monthly pay, with weekend, night, C shift and public holiday rates, RON&nbsp;&rarr;&nbsp;INR conversion and A4, PDF and Excel reports.</p>
         <div class="hero-badges" aria-label="Features">
-          <span class="badge">Weekend rates</span>
-          <span class="badge">Night shift rates</span><span class="badge">C shift rates</span>
-          <span class="badge">Excel/PDF/JPG reports</span>
-          <span class="badge">RON &rarr; INR</span>
-          <span class="badge">Mobile friendly</span>
+          <span class="badge">Weekend, night &amp; C shift rates</span>
+          <span class="badge">Romanian holidays</span>
+          <span class="badge">PDF / JPG / Excel</span>
+          <span class="badge">Private &middot; saved in your browser</span>
         </div>
       </div>
     </header>
-<figure class="app-banner" aria-hidden="true"><img alt="" decoding="async" height="360" loading="eager" src="/assets/banners/salary-640.webp" srcset="/assets/banners/salary-640.webp 640w, /assets/banners/salary-1280.webp 1280w" sizes="(max-width: 480px) calc(100vw - 32px), 400px" width="640"/></figure>
 
-    <section id="app-section" class="card" aria-labelledby="calculator-title">
-      <div class="top-row">
-        <div>
-          <h2 id="calculator-title">Welcome, <span id="employee-display-name">Guest</span>!</h2>
-          <p class="subtle">Your saved month data stays locally in this browser.</p>
+    <div class="app-layout">
+      <section id="app-section" class="card area-setup" aria-labelledby="calculator-title">
+        <div class="section-head">
+          <div>
+            <h2 id="calculator-title"><span class="step-num" aria-hidden="true">1</span> Monthly setup</h2>
+            <p class="subtle">Everything is saved automatically in this browser.</p>
+          </div>
         </div>
-      </div>
 
-      <div class="summary-strip" aria-label="Current summary">
-        <div class="summary-item"><span>Today</span><strong id="current-date">&mdash;</strong></div>
-        <div class="summary-item"><span>Employee</span><strong id="employee-info-display">N/A</strong></div>
-        <div class="summary-item"><span>Total Hours</span><strong id="summary-hours">0</strong></div>
-        <div class="summary-item"><span>Estimated Salary</span><strong id="summary-salary">0.00 RON</strong></div>
-      </div>
+        <form class="setup-form" onsubmit="return false;" autocomplete="on">
+          <fieldset class="field-group">
+            <legend><i class="fa-solid fa-user" aria-hidden="true"></i> You &amp; period</legend>
+            <div class="form-grid">
+              <div class="form-group"><label for="employee-name-input">Employee name <span class="sync-indicator-pill" title="Shared with the Hours Only and Attendance pages"><i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i> Synced</span></label><input type="text" id="employee-name-input" placeholder="e.g. Jane Doe" autocomplete="name" /></div>
+              <div class="form-group"><label for="company-name">Company name <span class="sync-indicator-pill" title="Shared with the Hours Only and Attendance pages"><i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i> Synced</span></label><input type="text" id="company-name" placeholder="Company or organisation" autocomplete="organization" /></div>
+              <div class="form-group"><label for="month-year-picker">Month</label><input type="month" id="month-year-picker" /></div>
+            </div>
+          </fieldset>
 
-      <form class="form-grid" onsubmit="return false;" autocomplete="on">
-        <div class="form-group"><label for="employee-name-input">Employee Name <span class="sync-indicator-pill"><i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i> Synced</span></label><input type="text" id="employee-name-input" placeholder="e.g. Jane Doe" autocomplete="name" /></div>
-        <div class="form-group"><label for="company-name">Company Name <span class="sync-indicator-pill"><i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i> Synced</span></label><input type="text" id="company-name" placeholder="Company or organisation" autocomplete="organization" /></div>
-        <div class="form-group"><label for="month-year-picker">Select Month and Year</label><input type="month" id="month-year-picker" /></div>
-        <div class="form-group"><label for="salary">Base Salary (RON)</label><input type="number" id="salary" min="0" step="0.01" inputmode="decimal" placeholder="Example: 4000" aria-describedby="salary-warning" /><small id="salary-warning" class="field-warning" aria-live="polite"><i class="fa-solid fa-triangle-exclamation"></i> Base salary is missing. Enter it to calculate salary correctly.</small></div>
-        <div class="form-group"><label for="fixedBaseHours">Fixed Base Hours per Month</label><div class="input-with-btn"><input type="number" id="fixedBaseHours" min="1" step="0.5" inputmode="decimal" value="160" placeholder="Example: 160" aria-describedby="base-hours-hint" /><button type="button" class="btn-inline" id="auto-base-hours-btn" title="Set to this month's working days × 8 hours">Auto</button></div><small class="subtle" id="base-hours-hint">&nbsp;</small></div>
-        <div class="form-group"><label for="weekendRate">Weekend Rate Multiplier</label><select id="weekendRate"><option value="1">1x</option><option value="1.25">1.25x</option><option value="1.5">1.5x</option><option value="2">2x</option></select></div>
-        <div class="form-group"><label for="nightRate">Night Shift Multiplier</label><select id="nightRate"><option value="1">1x - No extra</option><option value="1.1">1.10x</option><option value="1.15">1.15x</option><option value="1.25" selected>1.25x</option><option value="1.5">1.5x</option><option value="2">2x</option></select><small class="subtle">Applies when shift is set to Night. Weekend + Night are multiplied together.</small></div>
-        <div class="form-group"><label for="cShiftRate">C Shift Multiplier</label><select id="cShiftRate"><option value="1">1x - No extra</option><option value="1.1">1.10x</option><option value="1.15">1.15x</option><option value="1.25" selected>1.25x</option><option value="1.5">1.5x</option><option value="2">2x</option></select><small class="subtle">Applies when shift is set to C. Weekend + C Shift are multiplied together.</small></div>
-        <div class="form-group"><label for="holidayRate">Public Holiday Multiplier</label><select id="holidayRate"><option value="1" selected>1x - No extra</option><option value="1.5">1.5x</option><option value="2">2x (+100%)</option><option value="2.5">2.5x</option><option value="3">3x</option></select><div class="switch-line" style="margin-top:2px;"><label class="switch" aria-label="Detect Romanian public holidays"><input type="checkbox" id="use-holidays" checked /><span class="slider"></span></label><span class="subtle">Mark Romanian public holidays</span></div><small class="subtle">Used instead of the weekend rate on holidays (the higher one wins).</small></div>
-      </form>
+          <fieldset class="field-group">
+            <legend><i class="fa-solid fa-coins" aria-hidden="true"></i> Pay</legend>
+            <div class="form-grid cols-2">
+              <div class="form-group"><label for="salary">Base salary (RON / month)</label><input type="number" id="salary" min="0" step="0.01" inputmode="decimal" placeholder="Example: 4000" aria-describedby="salary-warning" /><small id="salary-warning" class="field-warning" aria-live="polite"><i class="fa-solid fa-triangle-exclamation"></i> Base salary is missing. Enter it to calculate salary correctly.</small></div>
+              <div class="form-group"><label for="fixedBaseHours">Fixed base hours per month</label><div class="input-with-btn"><input type="number" id="fixedBaseHours" min="1" step="0.5" inputmode="decimal" value="160" placeholder="Example: 160" aria-describedby="base-hours-hint" /><button type="button" class="btn-inline" id="auto-base-hours-btn" title="Set to this month's working days × 8 hours">Auto</button></div><small class="subtle" id="base-hours-hint">&nbsp;</small></div>
+            </div>
+          </fieldset>
 
-      <div class="calendar-toolbar">
-        <div class="calendar-toolbar-info">
-          <h3>Daily Work Log</h3>
-          <p class="subtle">Tip: Use Quick-Fill to batch-apply shifts or adjust days individually below.</p>
+          <fieldset class="field-group">
+            <legend><i class="fa-solid fa-percent" aria-hidden="true"></i> Rate multipliers</legend>
+            <div class="form-grid cols-4">
+              <div class="form-group"><label for="weekendRate">Weekend</label><select id="weekendRate"><option value="1">1x</option><option value="1.25">1.25x</option><option value="1.5">1.5x</option><option value="2">2x</option></select></div>
+              <div class="form-group"><label for="nightRate">Night shift</label><select id="nightRate"><option value="1">1x - No extra</option><option value="1.1">1.10x</option><option value="1.15">1.15x</option><option value="1.25" selected>1.25x</option><option value="1.5">1.5x</option><option value="2">2x</option></select></div>
+              <div class="form-group"><label for="cShiftRate">C shift</label><select id="cShiftRate"><option value="1">1x - No extra</option><option value="1.1">1.10x</option><option value="1.15">1.15x</option><option value="1.25" selected>1.25x</option><option value="1.5">1.5x</option><option value="2">2x</option></select></div>
+              <div class="form-group"><label for="holidayRate">Public holiday</label><select id="holidayRate"><option value="1" selected>1x - No extra</option><option value="1.5">1.5x</option><option value="2">2x (+100%)</option><option value="2.5">2.5x</option><option value="3">3x</option></select></div>
+            </div>
+            <div class="rates-footer">
+              <div class="switch-line"><label class="switch" aria-label="Mark Romanian public holidays"><input type="checkbox" id="use-holidays" checked /><span class="slider"></span></label><span class="subtle">Mark Romanian public holidays</span></div>
+              <p class="subtle rates-note"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> Night and C shift rates multiply with the weekend or holiday rate. On a holiday, the higher of the holiday and weekend rates is used.</p>
+            </div>
+          </fieldset>
+        </form>
+      </section>
+
+      <aside class="area-results" aria-label="Results">
+        <section class="card results-card" aria-labelledby="results-title">
+          <div class="results-head">
+            <h2 id="results-title">This month</h2>
+            <span id="employee-info-display" class="results-who">N/A</span>
+          </div>
+          <div class="results-total">
+            <span>Total gross salary</span>
+            <strong id="total-salary">0.00 RON</strong>
+            <small>&asymp; <b id="total-salary-in-rupees">N/A</b></small>
+          </div>
+          <div class="results-stats">
+            <div><span>Hours</span><strong id="summary-hours">0 hrs</strong></div>
+            <div><span>Days worked</span><strong id="summary-days">0</strong></div>
+            <div><span>Hourly rate</span><strong id="hourly-rate">0.00 RON</strong></div>
+          </div>
+          <div id="salary-alert" class="salary-alert" role="alert"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i><span>Enter your base salary to see your pay.</span></div>
+          <div class="pay-breakdown" id="pay-breakdown" aria-label="Pay breakdown" aria-live="polite"></div>
+          <div class="results-actions">
+            <button class="btn" type="button" id="report-btn" aria-haspopup="dialog"><i class="fa-solid fa-file-invoice" aria-hidden="true"></i> Preview A4 report</button>
+            <div class="results-actions-row">
+              <button class="btn ghost" type="button" id="save-month-btn"><i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> Save</button>
+              <button class="btn ghost" type="button" id="share-btn"><i class="fa-solid fa-share-nodes" aria-hidden="true"></i> Share</button>
+            </div>
+            <span id="save-status-badge" class="save-status-badge saved" aria-live="polite"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Saved in browser ✓</span>
+          </div>
+        </section>
+      </aside>
+
+      <section class="card area-log" aria-labelledby="log-title">
+        <div class="calendar-toolbar">
+          <div class="calendar-toolbar-info">
+            <h2 id="log-title"><span class="step-num" aria-hidden="true">2</span> Daily work log</h2>
+            <p class="subtle">Tap a preset or pick hours and shift for each day.</p>
+          </div>
+          <div class="view-toggle" role="group" aria-label="Calendar view mode">
+            <button type="button" id="view-cards-btn" class="view-toggle-btn active" title="List of day cards (best on phones)"><i class="fa-solid fa-list" aria-hidden="true"></i> List</button>
+            <button type="button" id="view-table-btn" class="view-toggle-btn" title="Calendar grid"><i class="fa-solid fa-table-cells" aria-hidden="true"></i> Calendar</button>
+          </div>
         </div>
-        <div class="view-toggle" role="group" aria-label="Calendar view mode">
-          <button type="button" id="view-cards-btn" class="view-toggle-btn active" title="Touch Cards View (Mobile friendly)"><i class="fa-solid fa-mobile-screen-button" aria-hidden="true"></i> Cards</button>
-          <button type="button" id="view-table-btn" class="view-toggle-btn" title="Grid Table View"><i class="fa-solid fa-table-cells" aria-hidden="true"></i> Grid</button>
+
+        <div class="quick-fill-bar" role="toolbar" aria-label="Quick-fill work calendar">
+          <span class="quick-fill-label"><i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i> Quick-fill</span>
+          <div class="quick-fill-scroll">
+            <button type="button" class="btn-quick-fill" data-action="weekdays-8"><i class="fa-solid fa-sun" aria-hidden="true"></i> Weekdays 8h</button>
+            <button type="button" class="btn-quick-fill" data-action="weekdays-12-day"><i class="fa-solid fa-clock" aria-hidden="true"></i> Weekdays 12h day</button>
+            <button type="button" class="btn-quick-fill" data-action="weekdays-12-night"><i class="fa-solid fa-moon" aria-hidden="true"></i> Weekdays 12h night</button>
+            <button type="button" class="btn-quick-fill" data-action="weekends-off"><i class="fa-solid fa-bed" aria-hidden="true"></i> Weekends off</button>
+            <button type="button" class="btn-quick-fill btn-quick-clear" data-action="clear-all"><i class="fa-solid fa-eraser" aria-hidden="true"></i> Clear month</button>
+          </div>
         </div>
-      </div>
-
-      <div class="quick-fill-bar" role="toolbar" aria-label="Quick-fill work calendar">
-        <span class="quick-fill-label"><i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i> Quick-Fill:</span>
-        <button type="button" class="btn-quick-fill" data-action="weekdays-8"><i class="fa-solid fa-sun" aria-hidden="true"></i> Weekdays 8h</button>
-        <button type="button" class="btn-quick-fill" data-action="weekdays-12-day"><i class="fa-solid fa-clock" aria-hidden="true"></i> Weekdays 12h Day</button>
-        <button type="button" class="btn-quick-fill" data-action="weekdays-12-night"><i class="fa-solid fa-moon" aria-hidden="true"></i> Weekdays 12h Night</button>
-        <button type="button" class="btn-quick-fill" data-action="weekends-off"><i class="fa-solid fa-bed" aria-hidden="true"></i> Weekends Off</button>
-        <button type="button" class="btn-quick-fill btn-quick-clear" data-action="clear-all"><i class="fa-solid fa-eraser" aria-hidden="true"></i> Clear Month</button>
-      </div>
-      <div id="calendar-container" class="calendar-wrapper" aria-live="polite"><p class="subtle" style="padding:16px;text-align:center;">Please select a month and year to generate the calendar.</p></div>
-
-      <div class="actions" aria-label="Actions">
-        <button class="btn warning" type="button" id="clear-hours-btn"><i class="fa-solid fa-trash" aria-hidden="true"></i> Remove All Hours</button>
-        <div class="save-btn-group">
-          <button class="btn" type="button" id="save-month-btn"><i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> Save This Month</button>
-          <span id="save-status-badge" class="save-status-badge saved" aria-live="polite"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Saved in browser ✓</span>
+        <div class="calendar-legend" aria-hidden="true">
+          <span><i class="lg lg-weekend"></i> Weekend</span>
+          <span><i class="lg lg-holiday"></i> Public holiday</span>
+          <span><i class="lg lg-worked"></i> Hours logged</span>
         </div>
-        <button class="btn secondary" type="button" id="report-btn" aria-haspopup="dialog"><i class="fa-solid fa-eye" aria-hidden="true"></i> Preview A4 Report</button>
-        <button class="btn neutral" type="button" id="share-btn"><i class="fa-solid fa-share-nodes" aria-hidden="true"></i> Share App</button>
-      </div>
+        <div id="calendar-container" class="calendar-wrapper" aria-live="polite"><p class="subtle" style="padding:16px;text-align:center;">Please select a month to generate the calendar.</p></div>
 
-      <div class="salary-panel" aria-label="Calculated salary">
-        <div class="salary-box"><span>Hourly Rate</span><strong id="hourly-rate">0.00 RON</strong></div>
-        <div class="salary-box"><span>Total Monthly Salary</span><strong id="total-salary">0.00 RON</strong></div>
-        <div class="salary-box"><span>Approximate INR</span><strong id="total-salary-in-rupees">N/A</strong></div>
-      </div>
-      <div class="pay-breakdown" id="pay-breakdown" aria-label="Pay breakdown" aria-live="polite"></div>
-      <div id="salary-alert" class="salary-alert" role="alert"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i><span>Please enter your Base Salary (RON). Calculations are currently showing 0.</span></div>
-    </section>
-
-    <section class="card" aria-labelledby="currency-title">
-      <div class="top-row"><div><h2 id="currency-title">Currency Converter</h2><p class="subtle">Live rates use EUR as the API base. Salary INR conversion can be auto-updated or manually edited.</p></div><button class="btn neutral" type="button" id="refresh-rates"><i class="fa-solid fa-rotate" aria-hidden="true"></i> Refresh Rates</button></div>
-      <div class="currency-grid">
-        <div class="live-rates"><div class="live-rates-title"><i class="fa-solid fa-chart-line" aria-hidden="true"></i><span>Live Exchange Rates</span><span id="rate-loading" class="hidden" aria-label="Loading exchange rates"><span class="spinner"></span></span></div><div class="rates-grid" id="live-rates-grid"></div><p class="subtle" style="font-size:.78rem;margin:12px 0 0;">Rates from Frankfurter API, updated daily when available.</p></div>
-        <div class="converter">
-          <div class="form-group"><label for="amount-input">Amount to Convert</label><input type="number" id="amount-input" min="0" step="0.01" inputmode="decimal" placeholder="Enter amount" /></div>
-          <div class="converter-row"><div class="form-group"><label for="from-currency-select">From Currency</label><select id="from-currency-select"></select></div><div class="form-group"><label for="to-currency-select">To Currency</label><select id="to-currency-select"></select></div></div>
-          <div id="conversion-result" class="converter-result" aria-live="polite">Enter amount and select currencies.</div>
-          <div class="form-group"><label for="exchange-rate-manual">RON to INR Exchange Rate for Salary</label><input type="number" id="exchange-rate-manual" value="18.5" step="0.0001" min="0" inputmode="decimal" /><div class="switch-line"><label class="switch" aria-label="Auto-update RON to INR rate"><input type="checkbox" id="auto-update-rate" checked /><span class="slider"></span></label><span class="subtle">Auto-update RON to INR rate</span></div></div>
+        <div class="log-footer">
+          <button class="btn danger-ghost" type="button" id="clear-hours-btn"><i class="fa-solid fa-trash" aria-hidden="true"></i> Remove all hours</button>
         </div>
-      </div>
+      </section>
+    </div>
+
+    <section class="card converter-card" aria-labelledby="currency-title">
+      <details id="converter-details">
+        <summary>
+          <span><i class="fa-solid fa-money-bill-transfer" aria-hidden="true"></i> <span id="currency-title">Currency converter &amp; RON&rarr;INR rate</span></span>
+          <i class="fa-solid fa-chevron-down summary-chevron" aria-hidden="true"></i>
+        </summary>
+        <div class="converter-body">
+          <div class="top-row"><p class="subtle">Live rates use EUR as the API base. The RON&rarr;INR rate used for your salary can update automatically or be set by hand.</p><button class="btn neutral" type="button" id="refresh-rates"><i class="fa-solid fa-rotate" aria-hidden="true"></i> Refresh rates</button></div>
+          <div class="currency-grid">
+            <div class="live-rates"><div class="live-rates-title"><i class="fa-solid fa-chart-line" aria-hidden="true"></i><span>Live exchange rates</span><span id="rate-loading" class="hidden" aria-label="Loading exchange rates"><span class="spinner"></span></span></div><div class="rates-grid" id="live-rates-grid"></div><p class="subtle" style="font-size:.78rem;margin:12px 0 0;">Rates from the Frankfurter API, updated daily when available.</p></div>
+            <div class="converter">
+              <div class="form-group"><label for="exchange-rate-manual">RON to INR rate for salary</label><input type="number" id="exchange-rate-manual" value="18.5" step="0.0001" min="0" inputmode="decimal" /><div class="switch-line"><label class="switch" aria-label="Auto-update RON to INR rate"><input type="checkbox" id="auto-update-rate" checked /><span class="slider"></span></label><span class="subtle">Auto-update from live rates</span></div></div>
+              <div class="form-group"><label for="amount-input">Amount to convert</label><input type="number" id="amount-input" min="0" step="0.01" inputmode="decimal" placeholder="Enter amount" /></div>
+              <div class="converter-row"><div class="form-group"><label for="from-currency-select">From</label><select id="from-currency-select"></select></div><div class="form-group"><label for="to-currency-select">To</label><select id="to-currency-select"></select></div></div>
+              <div id="conversion-result" class="converter-result" aria-live="polite">Enter amount and select currencies.</div>
+            </div>
+          </div>
+        </div>
+      </details>
     </section>
 
     <section class="card" aria-labelledby="guide-title">
@@ -1137,20 +1320,16 @@
       </div>
     </section>
 
-        <footer style="width: 100%; border-top: 1px solid #334155; background-color: #0f172a; padding: 30px 16px; text-align: center; color: #94a3b8; font-size: 0.85rem; font-family: 'Inter', system-ui, -apple-system, sans-serif; margin-top: 40px; border-radius: 12px; margin-bottom: 20px;">
-        <div style="max-width: 1120px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 15px;">
-            <p style="margin: 0;">&copy; <span id="copyright-year"></span> SHADER7 &bull; Hourly Salary Calculator</p>
-            
-            <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 16px;">
-                <a href="/" style="color: #94a3b8; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">Main Site</a>
-                <a href="/about.html" style="color: #94a3b8; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">About Us</a>
-                <a href="/contact.html" style="color: #94a3b8; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">Contact Us</a>
-                <a href="/privacy-policy.html" style="color: #60a5fa; text-decoration: none; transition: color 0.2s; font-weight: bold;" onmouseover="this.style.color='#93c5fd'" onmouseout="this.style.color='#60a5fa'">Privacy Policy</a>
-                <a href="/terms.html" style="color: #94a3b8; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">Terms of Service</a>
-                <a href="/sitemap.html" style="color: #94a3b8; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">Sitemap</a>
-            </div>
-            
-        </div>
+    <footer class="site-footer">
+      <p>&copy; <span id="copyright-year"></span> SHADER7 &bull; Hourly Salary Calculator</p>
+      <nav aria-label="Site links">
+        <a href="/">Main Site</a>
+        <a href="/about.html">About Us</a>
+        <a href="/contact.html">Contact Us</a>
+        <a href="/privacy-policy.html" class="footer-strong">Privacy Policy</a>
+        <a href="/terms.html">Terms of Service</a>
+        <a href="/sitemap.html">Sitemap</a>
+      </nav>
     </footer>
   </main>
 
@@ -1228,9 +1407,8 @@
     function escapeHTML(value) { return String(value ?? '').replace(/[&<>'"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char])); }
     function formatNumber(value, decimals = 2) { return Number(value || 0).toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals }); }
     function showToast(message) { const toast = $('#toast'); toast.textContent = message; toast.classList.add('show'); clearTimeout(showToast.timer); showToast.timer = setTimeout(() => toast.classList.remove('show'), 2600); }
-    function updateDate() { const now = new Date(); $('#current-date').textContent = now.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }); $('#copyright-year').textContent = now.getFullYear(); }
-    function displayMotivationalMessage() { const messages = ["Believe you can and you're halfway there. - Theodore Roosevelt", "The future belongs to those who believe in the beauty of their dreams. - Eleanor Roosevelt", "The only way to do great work is to love what you do. - Steve Jobs", "Strive not to be a success, but rather to be of value. - Albert Einstein", "Keep pushing forward. Your consistency matters.", "Your dedication today shapes your success tomorrow."]; $('#motivational-message').textContent = messages[Math.floor(Math.random() * messages.length)]; }
-    function updateEmployeeInfo() { const employeeName = $('#employee-name-input').value.trim(); const companyName = $('#company-name').value.trim(); if (employeeName) localStorage.setItem('shader7_active_employee', employeeName); if (companyName) localStorage.setItem('shader7_active_company', companyName); $('#employee-display-name').textContent = employeeName || 'Guest'; $('#employee-info-display').textContent = employeeName && companyName ? `${employeeName} / ${companyName}` : employeeName || (companyName ? `Company: ${companyName}` : 'N/A'); }
+    function updateDate() { $('#copyright-year').textContent = new Date().getFullYear(); }
+    function updateEmployeeInfo() { const employeeName = $('#employee-name-input').value.trim(); const companyName = $('#company-name').value.trim(); if (employeeName) localStorage.setItem('shader7_active_employee', employeeName); if (companyName) localStorage.setItem('shader7_active_company', companyName); $('#employee-info-display').textContent = employeeName && companyName ? `${employeeName} · ${companyName}` : employeeName || companyName || 'Add your name'; }
     function getDateSuffix(day) { if (day > 3 && day < 21) return 'th'; return ['th', 'st', 'nd', 'rd'][day % 10] || 'th'; }
     function getMonthKey() { return $('#month-year-picker').value || null; }
     function useHolidays() { return $('#use-holidays')?.checked !== false; }
@@ -1322,24 +1500,24 @@
                   <span class="work-card-badge ${isWeekend ? 'badge-weekend' : 'badge-weekday'}">${weekdayName}</span>
                   ${holiday ? '<span class="work-card-badge badge-holiday">Holiday</span>' : ''}
                 </div>
-                <span class="daily-pay-chip" id="pay-chip-${day}">0 RON</span>
+                <span class="daily-pay-chip" id="pay-chip-${day}">—</span>
               </div>
               ${holiday ? `<div class="holiday-name">${escapeHTML(holiday)}</div>` : ''}
               <div class="quick-shifts-row" role="group" aria-label="Quick shift presets for day ${day}">
-                <button type="button" class="quick-pill pill-off" data-day="${day}" data-hours="0" data-shift="0">Off (0h)</button>
+                <button type="button" class="quick-pill pill-off" data-day="${day}" data-hours="0" data-shift="0">Off</button>
                 <button type="button" class="quick-pill" data-day="${day}" data-hours="8" data-shift="8">8h Day</button>
                 <button type="button" class="quick-pill" data-day="${day}" data-hours="12" data-shift="Day">12h Day</button>
-                <button type="button" class="quick-pill" data-day="${day}" data-hours="12" data-shift="Night">12h Night</button>
+                <button type="button" class="quick-pill" data-day="${day}" data-hours="12" data-shift="Night" aria-label="12h Night"><i class="fa-solid fa-moon" aria-hidden="true"></i> 12h</button>
               </div>
               <div class="card-inputs-row">
                 <div>
-                  <label for="hours-${day}">Hours Worked</label>
+                  <label class="sr-only" for="hours-${day}">Hours worked on day ${day}</label>
                   <select id="hours-${day}" class="hours-select" data-day="${day}" data-is-weekend="${isWeekend}">
                     ${hoursOptions}
                   </select>
                 </div>
                 <div>
-                  <label for="shift-${day}">Shift Type</label>
+                  <label class="sr-only" for="shift-${day}">Shift on day ${day}</label>
                   <select id="shift-${day}" class="shift-select" data-day="${day}">
                     ${shiftOptions}
                   </select>
@@ -1517,7 +1695,7 @@
         card.querySelectorAll('.quick-pill').forEach(pill => {
           const pHours = pill.dataset.hours;
           const pShift = pill.dataset.shift;
-          const isMatch = (pHours === String(hours) && (pShift === shift || (!shift && hours === 0 && pShift === '0')));
+          const isMatch = hoursSelect?.value !== '' && pHours === String(hours) && (pShift === shift || (!shift && hours === 0 && pShift === '0'));
           pill.classList.toggle('active', isMatch);
         });
 
@@ -1527,7 +1705,7 @@
         const dailyPay = hours * rates.hourlyRate * multiplier;
         const chip = $(`#pay-chip-${day}`);
         if (chip) {
-          chip.textContent = dailyPay > 0 ? `+${formatNumber(dailyPay)} RON` : (isOff ? 'Off (0h)' : '0 RON');
+          chip.textContent = dailyPay > 0 ? `+${formatNumber(dailyPay)} RON` : (isOff ? 'Off' : '—');
           chip.style.opacity = dailyPay > 0 ? '1' : '0.6';
         }
       }
@@ -1774,10 +1952,10 @@
       const { hourlyRate, totalHours, weekdayHours, weekendHours, holidayHours, nightHours, cShiftHours, daysWorked, gross } = result;
       const salaryInINR = convertSalaryToINR(gross);
       state.lastSalary = { ...result, totalWeekdayHours: weekdayHours, totalWeekendHours: weekendHours, totalNightHours: nightHours, totalCShiftHours: cShiftHours, calculatedSalary: gross, salaryInINR };
-      $('#hourly-rate').textContent = `${formatNumber(hourlyRate)} RON/hr`;
+      $('#hourly-rate').textContent = `${formatNumber(hourlyRate)} RON/h`;
       $('#total-salary').textContent = `${formatNumber(gross)} RON`;
       $('#summary-hours').textContent = `${hoursLabel(totalHours)} hrs`;
-      $('#summary-salary').textContent = `${formatNumber(gross)} RON`;
+      $('#summary-days').textContent = String(daysWorked);
       $('#hourly-rate').title = `Weekday: ${hoursLabel(weekdayHours)} hrs • Weekend: ${hoursLabel(weekendHours)} hrs • Holiday: ${hoursLabel(holidayHours)} hrs • Night: ${hoursLabel(nightHours)} hrs • C Shift: ${hoursLabel(cShiftHours)} hrs`;
       renderPayBreakdown(result);
 
@@ -1803,7 +1981,6 @@
         result.nightHours ? ['Night hours', `${hoursLabel(result.nightHours)} h`] : null,
         result.cShiftHours ? ['C shift hours', `${hoursLabel(result.cShiftHours)} h`] : null,
         result.otShiftHours ? ['OT shift hours', `${hoursLabel(result.otShiftHours)} h`] : null,
-        ['Days worked', String(result.daysWorked)],
         ['Shift premiums', `+${formatNumber(result.premiumPay)} RON`, result.premiumPay > 0 ? 'pb-pos' : ''],
         ['Avg. paid rate', `${formatNumber(result.effectiveHourlyRate)} RON/h`],
         (parseFloat($('#fixedBaseHours').value) || 0) > 0
@@ -2100,7 +2277,10 @@
       $('#sticky-report-btn')?.addEventListener('click', () => $('#report-btn')?.click());
       const onScrollCheck = () => {
         if (!stickyBar) return;
-        if (window.scrollY > 200 || (window.innerWidth <= 640 && window.scrollY > 80)) {
+        const results = $('.results-card');
+        const rect = results?.getBoundingClientRect();
+        const resultsVisible = rect && rect.bottom > 0 && rect.top < window.innerHeight;
+        if (!resultsVisible && window.scrollY > 200) {
           stickyBar.classList.add('visible');
         } else {
           stickyBar.classList.remove('visible');
@@ -2114,7 +2294,6 @@
     document.addEventListener('DOMContentLoaded', () => {
       bindStaticEvents();
       updateDate();
-      displayMotivationalMessage();
 
       const urlParams = new URLSearchParams(window.location.search);
       const queryMonth = urlParams.get('month');

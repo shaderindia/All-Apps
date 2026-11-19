@@ -1,5 +1,17 @@
 # Salary Calculator - Changelog
 
+## Version 2.2 - November 19, 2026
+
+### Layout
+- Two-column desktop layout: setup and daily log on the left, a sticky **This month** results panel on the right (total, INR, hours, days, hourly rate, breakdown, report/save/share).
+- Settings grouped into **You & period**, **Pay** and **Rate multipliers**; numbered steps.
+- Compact hero (horizontal tool tabs, no quote/date card/banner image).
+- Phone: results above the log, day cards ~30% shorter, Quick-fill as one swipeable row; floating bar only shows when the results panel is off-screen.
+- Calendar legend (weekend / holiday / logged), currency converter folded into a collapsible section, footer styles moved to CSS.
+
+### Fixed
+- Unlogged days no longer show the "Off" preset as selected.
+
 ## Version 2.1 - November 19, 2026
 
 ### Added
