@@ -1101,7 +1101,7 @@
         }
     </style>
 <link rel="stylesheet" href="/css/app-banners.css?v=20260904-banners"/>
-<link rel="stylesheet" href="workspace.css?v=20260905-ui3">
+<link rel="stylesheet" href="workspace.css?v=20261119-ui4">
 </head>
 <body>
 
@@ -1222,7 +1222,7 @@
                 <div class="form-group">
                     <label for="blockSize">Block Thickness</label>
                     <div class="input-wrapper">
-                        <input type="number" id="blockSize" min="0.001" step="any" value="50" placeholder="50" oninput="resetResults()">
+                        <input type="number" id="blockSize" min="0.001" step="any" value="50" placeholder="50">
                         <div class="input-suffix">mm</div>
                     </div>
                 </div>
@@ -1234,10 +1234,12 @@
 <label for="customFn">Drill feed per revolution (mm/rev, optional)</label><input id="customFn" type="number" min="0.000001" step="any" placeholder="Use diameter estimate">
 <p>Use your tool maker’s cutting data when available. Material presets are starting estimates. Tapping feed always follows thread pitch.</p></details>
 <p id="calcError" role="alert" hidden></p>
-<button class="calc-btn" onclick="calculate()">
+<button type="button" class="calc-btn" onclick="clearTimeout(recalcTimer); calculate()">
                 <svg style="width:18px; height:18px; fill:currentColor;" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"></path></svg>
                 Calculate feed &amp; RPM
             </button>
+            <button type="button" id="shareBtn" class="share-btn" onclick="copyShareLink()">Copy link to this setup</button>
+            <p class="live-note">Results update automatically as you edit. Your last setup is remembered on this device.</p>
 
         </div>
 
@@ -1289,7 +1291,7 @@
         <div class="accordion">
             <!-- Accordion Item 1 -->
             <div class="accordion-item active">
-                <button class="accordion-header" onclick="toggleAccordion(this)">
+                <button type="button" class="accordion-header" aria-expanded="true" onclick="toggleAccordion(this)">
                     <span class="accordion-title-wrapper">
                         <span class="accordion-icon">📋</span>
                         CNC Speeds & Feeds Theory & Real-World Equations
@@ -1311,7 +1313,7 @@
 
             <!-- Accordion Item 2 -->
             <div class="accordion-item">
-                <button class="accordion-header" onclick="toggleAccordion(this)">
+                <button type="button" class="accordion-header" aria-expanded="false" onclick="toggleAccordion(this)">
                     <span class="accordion-title-wrapper">
                         <span class="accordion-icon">🛠️</span>
                         Step-by-Step Tapping & Drilling Instructions
@@ -1333,7 +1335,7 @@
 
             <!-- Accordion Item 3 -->
             <div class="accordion-item">
-                <button class="accordion-header" onclick="toggleAccordion(this)">
+                <button type="button" class="accordion-header" aria-expanded="false" onclick="toggleAccordion(this)">
                     <span class="accordion-title-wrapper">
                         <span class="accordion-icon">⚡</span>
                         Shop-Floor Tapping Integration: Rigid Tapping (G84)
@@ -1350,7 +1352,7 @@
 
             <!-- Accordion Item 4 -->
             <div class="accordion-item">
-                <button class="accordion-header" onclick="toggleAccordion(this)">
+                <button type="button" class="accordion-header" aria-expanded="false" onclick="toggleAccordion(this)">
                     <span class="accordion-title-wrapper">
                         <span class="accordion-icon">❓</span>
                         Drilling & Tapping Frequently Asked Questions (FAQ)
@@ -1384,7 +1386,7 @@
 
     <footer style="width: 100%; border-top: 1px solid #334155; background-color: #0f172a; padding: 30px 16px; text-align: center; color: #94a3b8; font-size: 0.85rem; font-family: 'Inter', system-ui, -apple-system, sans-serif; margin-top: 40px; border-radius: 12px; margin-bottom: 20px;">
         <div style="max-width: 1120px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 15px;">
-            <p style="margin: 0;">&copy; <script>document.write(new Date().getFullYear())</script> SHADER7 &bull; CNC Machinist Toolkit</p>
+            <p style="margin: 0;">&copy; <span id="footerYear">2026</span> SHADER7 &bull; CNC Machinist Toolkit</p>
             <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 16px;">
                 <a href="/" style="color: #94a3b8; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">Main Site</a>
                 <a href="/about.html" style="color: #94a3b8; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">About Us</a>
@@ -1446,10 +1448,61 @@ function resetResults() {
     if (error) error.hidden = true;
 }
 
-// Clear results when user changes inputs to prevent stale data
-document.querySelectorAll('input, select').forEach(el => {
-    el.addEventListener('input', resetResults);
+// Live recalculation: results follow the inputs (debounced) instead of going stale
+let recalcTimer = null;
+function scheduleRecalc(delay = 350) {
+    clearTimeout(recalcTimer);
+    recalcTimer = setTimeout(() => {
+        if (diaEl.value.trim()) calculate();
+        else resetResults();
+    }, delay);
+}
+document.querySelectorAll('.panel input, .panel select').forEach(el => {
+    el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', () => scheduleRecalc());
+    if (el.tagName === 'INPUT') {
+        el.addEventListener('keydown', e => {
+            if (e.key === 'Enter') { e.preventDefault(); clearTimeout(recalcTimer); calculate(); }
+        });
+    }
 });
+
+// Saved setup: persisted locally and encoded in the URL so a setup can be shared
+const SETUP_FIELDS = ['operation','coordPlane','drillCycle','diameter','pitch','toolMaterial','workMaterial','depth','blockSize','maxRpm','customVc','customFn'];
+const SETUP_KEY = 'shader7.drill.setup';
+function readSetup() {
+    const data = {};
+    SETUP_FIELDS.forEach(id => { const el = document.getElementById(id); if (el && el.value.trim() !== '') data[id] = el.value.trim(); });
+    return data;
+}
+function saveSetup() {
+    const data = readSetup();
+    try { localStorage.setItem(SETUP_KEY, JSON.stringify(data)); } catch (e) {}
+    try { history.replaceState(null, '', location.pathname + '?' + new URLSearchParams(data).toString() + location.hash); } catch (e) {}
+}
+function restoreSetup() {
+    let data = {};
+    const params = new URLSearchParams(location.search);
+    if (params.has('diameter')) {
+        params.forEach((v, k) => { if (SETUP_FIELDS.includes(k)) data[k] = v; });
+    } else {
+        try { data = JSON.parse(localStorage.getItem(SETUP_KEY) || '{}') || {}; } catch (e) { data = {}; }
+    }
+    SETUP_FIELDS.forEach(id => {
+        if (data[id] === undefined) return;
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (el.tagName === 'SELECT' && !Array.from(el.options).some(o => o.value === data[id])) return;
+        el.value = data[id];
+    });
+    return data;
+}
+function copyShareLink() {
+    saveSetup();
+    const btn = document.getElementById('shareBtn');
+    const done = msg => { if (!btn) return; btn.textContent = msg; setTimeout(() => { btn.textContent = 'Copy link to this setup'; }, 2000); };
+    if (navigator.clipboard) navigator.clipboard.writeText(location.href).then(() => done('Link copied!'), () => done('Copy the address bar URL'));
+    else done('Copy the address bar URL');
+}
 
 // Show/Hide Pitch and Cycle Inputs based on Operation & Auto-fill coarse pitch
 function handleOperationChange() {
@@ -1504,17 +1557,46 @@ function getSyncedTap(baseRpm, pitch) {
     return {r, f: Number((r * pitch).toFixed(6))};
 }
 
-function calculateDrillMetrics(op, dia, depth, rpm, feed, pitch, cycle) {
+// Workpiece feed multipliers applied to the diameter-based feed/rev estimate
+const drillFeedFactors = { mild:1.0, alloy:0.85, stainless:0.75, aluminum:1.25, castiron:1.1, brass:1.1 };
+function drillFeedFactor(mat){
+    return drillFeedFactors[mat] || 1.0;
+}
+
+// Material-aware feed/rev estimate (mm/rev), rounded to 3 decimals
+function materialFeedPerRev(d, mat){
+    return Number((drillFeedPerRev(d) * drillFeedFactor(mat)).toFixed(3));
+}
+
+// Peck increment Q: smaller pecks in gummy/tough materials, larger in free-cutting ones
+const peckFactors = { mild:0.75, alloy:0.6, stainless:0.5, aluminum:1.0, castiron:1.0, brass:1.0 };
+function peckDepth(d, mat){
+    const factor = peckFactors[mat] || 0.75;
+    return Number(Math.max(d * factor, 0.5).toFixed(2));
+}
+
+// Pre-drill depth for a blind tapped hole: thread depth + ~4 pitches of tap chamfer/clearance + 118° drill point
+function tapPreDrillDepth(d, pitch, threadDepth){
+    const drill = getTapDrillSize(d, pitch);
+    if (!drill || !(threadDepth > 0)) return null;
+    return Number((threadDepth + 4 * pitch + drill * 0.3).toFixed(2));
+}
+function getTapDrillSize(d, pitch){
+    if (!d || !pitch || d <= pitch) return null;
+    return Number((d - pitch).toFixed(2));
+}
+
+function calculateDrillMetrics(op, dia, depth, rpm, feed, pitch, cycle, q) {
     const tipLength = op === 'drill' ? Number((dia * 0.3).toFixed(2)) : 0;
     const effectiveDepth = depth > 0 ? depth : Number((dia * 2).toFixed(2));
     const totalTravel = effectiveDepth + tipLength + 2.0;
     let feedTimeSec = feed > 0 ? (totalTravel / feed) * 60 : 0;
     if (op === 'tap') {
         feedTimeSec = (effectiveDepth / feed) * 60 * 2 + 0.5;
-    } else if (cycle === 'G83') {
-        const q = Math.max(dia * 0.75, 1.0);
-        const pecks = Math.ceil(effectiveDepth / q);
-        feedTimeSec = (totalTravel / feed) * 60 + pecks * 0.25;
+    } else if (cycle === 'G83' || cycle === 'G73') {
+        const step = q > 0 ? q : Math.max(dia * 0.75, 1.0);
+        const pecks = Math.ceil(effectiveDepth / step);
+        feedTimeSec = (totalTravel / feed) * 60 + pecks * (cycle === 'G83' ? 0.25 : 0.05);
     } else if (cycle === 'G82') {
         feedTimeSec += 1.0;
     }
@@ -1552,6 +1634,7 @@ let chips = [];
 let landedChips = [];
 let animFrameId = null;
 let simDrillCycle = 'G83';
+let simQ = 4.5;
 
 function calculate(){
     const op = opEl.value;
@@ -1569,15 +1652,21 @@ function calculate(){
         if (!Number.isFinite(n) || n <= 0 || !el.checkValidity()) throw new Error(el.labels?.[0]?.textContent + ': enter a positive valid number.');
         return n;
     };
-    let depth, blockSize, maxRpm, customVc, customFn;
+    let depth, blockSize, maxRpm, customVc, customFn, depthBlank = false;
     try {
         readPositive('diameter');
-        depth = readPositive('depth', true) || D * 2;
+        depth = readPositive('depth', true);
+        if (!depth) { depthBlank = true; depth = D * 2; }
         blockSize = readPositive('blockSize');
         maxRpm = readPositive('maxRpm');
         customVc = readPositive('customVc', true);
         customFn = readPositive('customFn', true);
-        if (op === 'tap') readPositive('pitch');
+        if (op === 'tap') {
+            if (!pitchEl.value.trim() && getPitch(D)) pitchEl.value = getPitch(D);
+            if (!pitchEl.value.trim()) throw new Error('Thread pitch: no ISO coarse pitch for Ø' + D + ' mm. Enter the pitch manually.');
+            const p = readPositive('pitch');
+            if (p >= D) throw new Error('Thread pitch must be smaller than the tap diameter.');
+        }
     } catch (e) { error.textContent = e.message; error.hidden = false; return; }
 
     // Cutting speeds (m/min)
@@ -1610,7 +1699,7 @@ function calculate(){
     let stdRpmVal = 0;
     let stdFeedVal = 0;
     let pitchVal = 0;
-    let peckWarning = `<div class="info-box"><div class="info-box-title">⚙️ Machine Telemetry &amp; Speed Limits</div><p style="font-size:0.84rem; margin:0;">RPM limit: <strong>${maxRpm} RPM</strong>. Actual cutting speed: <strong>${(Math.PI * D * rpmStdRaw / 1000).toFixed(2)} m/min</strong>.${requestedRpm > maxRpm ? " Spindle limit applied; feed recalculated." : ""} Blank depth uses 2 × diameter.</p></div>`;
+    let peckWarning = `<div class="info-box"><div class="info-box-title">⚙️ Machine Telemetry &amp; Speed Limits</div><p style="font-size:0.84rem; margin:0;">RPM limit: <strong>${maxRpm} RPM</strong>. Actual cutting speed: <strong>${(Math.PI * D * rpmStdRaw / 1000).toFixed(2)} m/min</strong>${requestedRpm > maxRpm ? ` (target ${V} m/min needs ${Math.round(requestedRpm)} RPM; spindle limit applied and feed recalculated)` : ""}.${depthBlank ? " No depth entered, so 2 × diameter is used." : ""}</p></div>`;
     let minTap = { r: 0, f: 0 };
     let stdTap = { r: 0, f: 0 };
     let maxTap = { r: 0, f: 0 };
@@ -1625,7 +1714,7 @@ function calculate(){
     }
 
     if(op === "drill"){
-        const f_rev = customFn || drillFeedPerRev(D);
+        const f_rev = customFn || materialFeedPerRev(D, mat);
         
         // Ensure Drill values are rounded integers
         const rpmMin = Math.round(rpmMinRaw);
@@ -1633,7 +1722,7 @@ function calculate(){
         const rpmMax = Math.round(rpmMaxRaw);
         
         stdRpmVal = rpmStd;
-        stdFeedVal = Number((rpmStd * f_rev).toFixed(6));
+        stdFeedVal = Number((rpmStd * f_rev).toFixed(1));
         pitchVal = f_rev;
 
         if (depth >= (D * 3)) {
@@ -1661,6 +1750,14 @@ function calculate(){
         stdRpmVal = stdTap.r;
         stdFeedVal = stdTap.f;
 
+        if (depth > D * 3) {
+            peckWarning += `
+            <div class="info-box warning" style="margin-top: 15px;">
+                <div class="info-box-title">⚠️ Deep Tapping</div>
+                <p style="font-size: 0.82rem; margin-top: 2px;">Thread depth exceeds 3× diameter. Engagement beyond about 1.5× D adds little strength but raises torque and breakage risk. Consider a spiral-flute tap, reduced speed, or shortening the thread.</p>
+            </div>`;
+        }
+
         peckWarning += `
         <div class="info-box" style="margin-top: 15px;">
             <div class="info-box-title">⚡ Smart Sync Active</div>
@@ -1678,11 +1775,12 @@ function calculate(){
     currentStdFeed = stdFeedVal; // Save backup
     simPitch = pitchVal;
     simDrillCycle = (op === 'drill') ? document.getElementById("drillCycle").value : 'G84';
+    simQ = peckDepth(D, mat);
     simPeck = (op === 'drill' && (simDrillCycle === 'G83' || simDrillCycle === 'G73'));
     simBlockSize = parseFloat(document.getElementById("blockSize").value) || 50;
 
     // Append G-code and Timeline elements
-    const rawGCode = generateGCode(op, D, depth, stdRpmVal, stdFeedVal, pitchVal, simDrillCycle);
+    const rawGCode = generateGCode(op, D, depth, stdRpmVal, stdFeedVal, pitchVal, simDrillCycle, simQ);
     const highlightedCode = highlightGCode(rawGCode);
  
     const plane = document.getElementById("coordPlane") ? document.getElementById("coordPlane").value : "G17";
@@ -1789,7 +1887,7 @@ function calculate(){
                         <div class="timeline-node"></div>
                         <div class="timeline-content">
                             <div class="timeline-title">Deep Hole Pecking <span class="badge">${axisChar}-${depth.toFixed(3)}</span></div>
-                            <div class="timeline-desc">G83 cycle. Tool feeds Q steps, rapid-retracts fully to clearance ${axisChar}2.0 to clear chips, then replunges.</div>
+                            <div class="timeline-desc">G83 cycle. Tool feeds Q${simQ.toFixed(2)} mm steps, rapid-retracts fully to clearance ${axisChar}2.0 to clear chips, then replunges.</div>
                         </div>
                     </div>
                     <div class="timeline-step active">
@@ -1814,7 +1912,7 @@ function calculate(){
                         <div class="timeline-node"></div>
                         <div class="timeline-content">
                             <div class="timeline-title">Chip Breaker Pecking <span class="badge">${axisChar}-${depth.toFixed(3)}</span></div>
-                            <div class="timeline-desc">G73 cycle. Tool feeds Q steps and retracts by only 0.8mm to break metal shavings, maintaining high speeds.</div>
+                            <div class="timeline-desc">G73 cycle. Tool feeds Q${simQ.toFixed(2)} mm steps and retracts by only 0.8mm to break metal shavings, maintaining high speeds.</div>
                         </div>
                     </div>
                     <div class="timeline-step active">
@@ -1866,8 +1964,9 @@ function calculate(){
         </div>`;
     }
 
-    const metrics = calculateDrillMetrics(op, D, depth, stdRpmVal, stdFeedVal, pitchVal, simDrillCycle);
+    const metrics = calculateDrillMetrics(op, D, depth, stdRpmVal, stdFeedVal, pitchVal, simDrillCycle, simQ);
     const tapDrill = (op === 'tap') ? getTapDrill(D, pitchVal) : null;
+    const preDrillDepth = (op === 'tap') ? tapPreDrillDepth(D, pitchVal, depth) : null;
 
     // Build Telemetry HTML for Right Side Panel
     let telemetryHtml = `
@@ -1882,7 +1981,7 @@ function calculate(){
                 </div>
                 <div class="hud-right">
                     <span>Feed Rate</span>
-                    <span>${op === "drill" ? Number((rpmMinRaw * pitchVal).toFixed(6)) : minTap.f} <span style="font-size:0.75rem; font-weight:500;">mm/min</span></span>
+                    <span>${op === "drill" ? Number((rpmMinRaw * pitchVal).toFixed(1)) : minTap.f} <span style="font-size:0.75rem; font-weight:500;">mm/min</span></span>
                 </div>
             </div>
 
@@ -1906,7 +2005,7 @@ function calculate(){
                 </div>
                 <div class="hud-right">
                     <span>Feed Rate</span>
-                    <span>${op === "drill" ? Number((rpmMaxRaw * pitchVal).toFixed(6)) : maxTap.f} <span style="font-size:0.75rem; font-weight:500;">mm/min</span></span>
+                    <span>${op === "drill" ? Number((rpmMaxRaw * pitchVal).toFixed(1)) : maxTap.f} <span style="font-size:0.75rem; font-weight:500;">mm/min</span></span>
                 </div>
             </div>
         </div>
@@ -1920,7 +2019,7 @@ function calculate(){
             <div class="metric-card">
                 <span class="metric-label">${op === 'drill' ? 'Feed / Rev (fn)' : 'Thread Pitch'}</span>
                 <span class="metric-value">${pitchVal} <span class="metric-unit">${op === 'drill' ? 'mm/rev' : 'mm'}</span></span>
-                <span class="metric-sub">${op === 'drill' ? 'Chip load per rev' : 'Thread lead'}</span>
+                <span class="metric-sub">${op === 'drill' ? (customFn ? 'Custom feed/rev' : 'Material-adjusted estimate') : 'Thread lead'}</span>
             </div>
             ${op === 'tap' && tapDrill ? `
             <div class="metric-card highlight">
@@ -1928,6 +2027,12 @@ function calculate(){
                 <span class="metric-value">Ø ${tapDrill.toFixed(2)} <span class="metric-unit">mm</span></span>
                 <span class="metric-sub">Formula: Ø − Pitch</span>
             </div>
+            ${preDrillDepth ? `
+            <div class="metric-card">
+                <span class="metric-label">Pre-drill Depth (blind)</span>
+                <span class="metric-value">${preDrillDepth} <span class="metric-unit">mm</span></span>
+                <span class="metric-sub">Thread + 4P + drill point</span>
+            </div>` : ''}
             ` : `
             <div class="metric-card">
                 <span class="metric-label">Material Removal</span>
@@ -1938,8 +2043,15 @@ function calculate(){
             <div class="metric-card">
                 <span class="metric-label">Est. Cycle Time</span>
                 <span class="metric-value">${metrics.cycleTimeSec} <span class="metric-unit">sec</span></span>
-                <span class="metric-sub">${depth > 0 ? depth + ' mm hole depth' : '2×D standard depth'}</span>
+                <span class="metric-sub">${depthBlank ? '2×D default depth' : depth + ' mm hole depth'}</span>
             </div>
+            ${op === 'drill' && simPeck ? `
+            <div class="metric-card">
+                <span class="metric-label">Peck Increment (Q)</span>
+                <span class="metric-value">${simQ.toFixed(2)} <span class="metric-unit">mm</span></span>
+                <span class="metric-sub">${Math.ceil(depth / simQ)} pecks to depth</span>
+            </div>
+            ` : ''}
             ${op === 'drill' ? `
             <div class="metric-card">
                 <span class="metric-label">118° Point Length</span>
@@ -1958,7 +2070,7 @@ function calculate(){
             <div class="gcode-header-bar">
                 <div class="gcode-filename">shader7_cycle.nc</div>
                 <div class="gcode-actions">
-                    <button class="gcode-copy-btn" onclick="copyGCode()">Copy Block</button>
+                    <button type="button" id="gcodeCopyBtn" class="gcode-copy-btn" onclick="copyGCode()">Copy Block</button>
                     <button class="gcode-dl-btn" onclick="downloadGCode()">Download .NC</button>
                 </div>
             </div>
@@ -2016,6 +2128,7 @@ function calculate(){
     
     // Automatically initialize and prepare canvas elements
     initSimCanvas();
+    saveSetup();
 }
 
 // Switch between panels tabs (G-code & Simulation details)
@@ -2045,17 +2158,22 @@ function copyGCode() {
     const gcodeBox = document.getElementById("gcodeBox");
     const text = Array.from(gcodeBox.querySelectorAll('.gcode-line'), line => line.textContent).join('\n');
     navigator.clipboard.writeText(text).then(() => {
-        const btn = document.querySelector(".gcode-copy-btn");
+        const btn = document.getElementById("gcodeCopyBtn");
+        if (!btn) return;
         btn.textContent = "Copied!";
-        btn.style.background = "var(--primary)";
-        btn.style.color = "#022c22";
+        btn.classList.add("copied");
         setTimeout(() => {
             btn.textContent = "Copy Block";
-            btn.style.background = "var(--border)";
-            btn.style.color = "var(--text-main)";
+            btn.classList.remove("copied");
         }, 2000);
-    }).catch(err => {
-        alert("Clipboard copy failed. Please select text manually and copy.");
+    }).catch(() => {
+        const btn = document.getElementById("gcodeCopyBtn");
+        if (btn) btn.textContent = "Select text to copy";
+        const range = document.createRange();
+        range.selectNodeContents(gcodeBox);
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
     });
 }
 
@@ -2143,7 +2261,7 @@ function highlightGCodeLineByCommand(cmdSubStr) {
 }
 
 // Canned G-code generator helper
-function generateGCode(op, dia, depth, rpm, feed, pitch, cycle) {
+function generateGCode(op, dia, depth, rpm, feed, pitch, cycle, q) {
     const plane = document.getElementById("coordPlane") ? document.getElementById("coordPlane").value : "G17";
     let axisChar = 'Z';
     let posCoords = 'X0.0 Y0.0';
@@ -2162,11 +2280,11 @@ function generateGCode(op, dia, depth, rpm, feed, pitch, cycle) {
     block += `(OP: ${op.toUpperCase()}, TOOL DIA: ${dia.toFixed(2)} mm)\n`;
     block += `G21 G90 G94 G98 G40 G80 ${plane} G54 (METRIC WORK PLANE)\n`;
     block += `T01 M06 (SELECT TOOL)\n`;
-    block += `S${rpm} M03 (SPINDLE ON CW)\n`;
-    block += `G00 G43 H01 ${initialZ} M08 (TOOL OFFSET, COOLANT ON)\n`;
-    block += `G00 ${posCoords} (RAPID TO POSITION)\n`;
+    block += `G00 ${posCoords} S${rpm} M03 (RAPID TO HOLE, SPINDLE ON CW)\n`;
+    block += `G43 H01 ${initialZ} M08 (TOOL LENGTH OFFSET, COOLANT ON)\n`;
     
     depth = depth > 0 ? depth : dia * 2;
+    const qText = `Q${(q > 0 ? q : dia * 0.75).toFixed(2)}`;
     {
         const depthText = `${axisChar}-${depth.toFixed(3)}`;
         if (op === 'tap') {
@@ -2174,9 +2292,9 @@ function generateGCode(op, dia, depth, rpm, feed, pitch, cycle) {
             block += `G84 ${depthText} ${rText} F${Number(feed.toFixed(6))} (RIGID TAPPING CYCLE)\n`;
         } else {
             if (cycle === 'G83') {
-                block += `G83 ${depthText} ${rText} Q${(dia * 0.75).toFixed(2)} F${Number(feed.toFixed(6))} (DEEP HOLE PECK CYCLE)\n`;
+                block += `G83 ${depthText} ${rText} ${qText} F${Number(feed.toFixed(6))} (DEEP HOLE PECK CYCLE)\n`;
             } else if (cycle === 'G73') {
-                block += `G73 ${depthText} ${rText} Q${(dia * 0.75).toFixed(2)} F${Number(feed.toFixed(6))} (HIGH-SPEED PECK CYCLE)\n`;
+                block += `G73 ${depthText} ${rText} ${qText} F${Number(feed.toFixed(6))} (HIGH-SPEED PECK CYCLE)\n`;
             } else if (cycle === 'G82') {
                 block += `G82 ${depthText} ${rText} P1000 F${Number(feed.toFixed(6))} (1S DWELL AT BOTTOM)\n`;
             } else if (cycle === 'G86') {
@@ -2186,8 +2304,8 @@ function generateGCode(op, dia, depth, rpm, feed, pitch, cycle) {
             }
         }
     }
-    block += `G80 G00 ${initialZ} M09 (CYCLE CANCEL, COOLANT OFF)\n`;
-    block += `G00 ${axisChar}30 M05 (SAFE RETRACT, SPINDLE STOP)\n`;
+    block += `G80 M09 (CYCLE CANCEL, COOLANT OFF)\n`;
+    block += `G00 ${initialZ} M05 (SAFE RETRACT, SPINDLE STOP)\n`;
     block += `M30 (PROGRAM END)\n`;
     
     return block;
@@ -2204,10 +2322,12 @@ function toggleAccordion(header) {
     document.querySelectorAll('.accordion-item').forEach(el => {
         el.classList.remove('active');
         el.querySelector('.accordion-content').style.maxHeight = null;
+        el.querySelector('.accordion-header')?.setAttribute('aria-expanded', 'false');
     });
     
     if (!isActive) {
         item.classList.add('active');
+        header.setAttribute('aria-expanded', 'true');
         content.style.maxHeight = content.scrollHeight + "px";
     }
 }
@@ -2297,12 +2417,12 @@ function updateGCodeMonitor() {
             
         case 'approach':
             if (simZ < -16.0) {
-                gcode = `G00 G43 H01 ${axisChar}30.0 M08 (TOOL OFFSET, COOLANT ON)`;
-            } else {
                 let posCoords = 'X0.0 Y0.0';
                 if (plane === 'G18') posCoords = 'Z0.0 X0.0';
                 else if (plane === 'G19') posCoords = 'Y0.0 Z0.0';
-                gcode = `G00 ${posCoords} (RAPID TO POSITION)`;
+                gcode = `G00 ${posCoords} S${simRpm} M03 (RAPID TO HOLE, SPINDLE ON CW)`;
+            } else {
+                gcode = `G43 H01 ${axisChar}30.0 M08 (TOOL LENGTH OFFSET, COOLANT ON)`;
             }
             break;
             
@@ -2310,9 +2430,9 @@ function updateGCodeMonitor() {
             if (simOp === 'tap') {
                 gcode = `G84 ${axisChar}-${simDepth.toFixed(2)} R2.0 F${Number(simFeed.toFixed(6))} (RIGID TAPPING CYCLE)`;
             } else if (simDrillCycle === 'G83') {
-                gcode = `G83 ${axisChar}-${simDepth.toFixed(2)} R2.0 Q${(simDia * 0.75).toFixed(2)} F${Number(simFeed.toFixed(6))} (DEEP HOLE PECK CYCLE)`;
+                gcode = `G83 ${axisChar}-${simDepth.toFixed(2)} R2.0 Q${simQ.toFixed(2)} F${Number(simFeed.toFixed(6))} (DEEP HOLE PECK CYCLE)`;
             } else if (simDrillCycle === 'G73') {
-                gcode = `G73 ${axisChar}-${simDepth.toFixed(2)} R2.0 Q${(simDia * 0.75).toFixed(2)} F${Number(simFeed.toFixed(6))} (HIGH-SPEED PECK CYCLE)`;
+                gcode = `G73 ${axisChar}-${simDepth.toFixed(2)} R2.0 Q${simQ.toFixed(2)} F${Number(simFeed.toFixed(6))} (HIGH-SPEED PECK CYCLE)`;
             } else if (simDrillCycle === 'G82') {
                 gcode = `G82 ${axisChar}-${simDepth.toFixed(2)} R2.0 P1000 F${Number(simFeed.toFixed(6))} (1S DWELL AT BOTTOM)`;
             } else if (simDrillCycle === 'G86') {
@@ -2327,9 +2447,9 @@ function updateGCodeMonitor() {
                 if (simOp === 'tap') {
                     gcode = `G84 ${axisChar}-${simDepth.toFixed(2)} R2.0 F${Number(simFeed.toFixed(6))} (RIGID TAPPING CYCLE)`;
                 } else if (simDrillCycle === 'G83') {
-                    gcode = `G83 ${axisChar}-${simDepth.toFixed(2)} R2.0 Q${(simDia * 0.75).toFixed(2)} F${Number(simFeed.toFixed(6))} (DEEP HOLE PECK CYCLE)`;
+                    gcode = `G83 ${axisChar}-${simDepth.toFixed(2)} R2.0 Q${simQ.toFixed(2)} F${Number(simFeed.toFixed(6))} (DEEP HOLE PECK CYCLE)`;
                 } else if (simDrillCycle === 'G73') {
-                    gcode = `G73 ${axisChar}-${simDepth.toFixed(2)} R2.0 Q${(simDia * 0.75).toFixed(2)} F${Number(simFeed.toFixed(6))} (HIGH-SPEED PECK CYCLE)`;
+                    gcode = `G73 ${axisChar}-${simDepth.toFixed(2)} R2.0 Q${simQ.toFixed(2)} F${Number(simFeed.toFixed(6))} (HIGH-SPEED PECK CYCLE)`;
                 } else if (simDrillCycle === 'G82') {
                     gcode = `G82 ${axisChar}-${simDepth.toFixed(2)} R2.0 P1000 F${Number(simFeed.toFixed(6))} (1S DWELL AT BOTTOM)`;
                 } else if (simDrillCycle === 'G86') {
@@ -2368,7 +2488,7 @@ function updateGCodeMonitor() {
             
         case 'retract':
             if (simOp === 'tap') {
-                gcode = `G84 ${axisChar}30.0 F${Math.round(simFeed)} M04 (SPINDLE CCW RETRACT)`;
+                gcode = `G84 (SPINDLE REVERSE, FEED OUT AT PITCH)`;
             } else if (simDrillCycle === 'G86') {
                 gcode = `G00 ${axisChar}30.0 (SAFE RETRACT SPINDLE STOPPED)`;
             } else {
@@ -2393,9 +2513,7 @@ function updateGCodeMonitor() {
     textEl.textContent = codePart;
     if (commentEl) {
         commentEl.textContent = commentPart;
-        if (!commentPart) {
-            commentEl.style.display = 'none';
-        }
+        commentEl.style.display = commentPart ? '' : 'none';
     }
     
     // Highlight active line in the G-code panel
@@ -2405,13 +2523,7 @@ function updateGCodeMonitor() {
             searchCmd = ""; // clear highlight
             break;
         case 'approach':
-            if (simZ < -15) {
-                searchCmd = `S${simRpm} M03`;
-            } else if (simZ < -2.0) {
-                searchCmd = "G00 G43";
-            } else {
-                searchCmd = "G00 X0.0 Y0.0";
-            }
+            searchCmd = (simZ < -15) ? `S${simRpm} M03` : "G43 H01";
             break;
         case 'feed':
         case 'peck_retract':
@@ -2471,7 +2583,7 @@ function toggleSimPlay() {
             
             // Peck initial values
             if (simPeck) {
-                simPeckTarget = Math.max(simDia * 0.75, 1.0); // Q peck step
+                simPeckTarget = simQ; // Q peck step
                 simLastPeckZ = 0;
             }
         }
@@ -2641,7 +2753,7 @@ function updateSim(dt) {
             simZ += approachSpeed * dt;
             if (simZ >= simLastPeckZ - 0.5) { // approaching previous hole boundary
                 simZ = simLastPeckZ;
-                simPeckTarget = Math.min(simDepth, simLastPeckZ + Math.max(simDia * 0.75, 1.0));
+                simPeckTarget = Math.min(simDepth, simLastPeckZ + simQ);
                 simState = 'feed';
             }
             break;
@@ -2654,7 +2766,7 @@ function updateSim(dt) {
             simZ -= retractSpeed * dt * 0.4;
             if (simZ <= simLastPeckZ - 0.8) {
                 simZ = simLastPeckZ - 0.8;
-                simPeckTarget = Math.min(simDepth, simLastPeckZ + Math.max(simDia * 0.75, 1.0));
+                simPeckTarget = Math.min(simDepth, simLastPeckZ + simQ);
                 simState = 'feed';
             }
             break;
@@ -3551,6 +3663,15 @@ window.addEventListener('resize', () => {
         initSimCanvas(true);
     }
 });
+
+// Boot: restore last/shared setup and calculate it straight away
+document.getElementById('footerYear').textContent = new Date().getFullYear();
+(function bootDrillCalculator() {
+    const setup = restoreSetup();
+    handleOperationChange();
+    if (setup.pitch && opEl.value === 'tap') pitchEl.value = setup.pitch;
+    if (setup.diameter) calculate();
+})();
 </script>
 
 </body>

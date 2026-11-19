@@ -55,3 +55,33 @@ test('customVc takes precedence over default material cutting speed', () => {
   assert.equal(resolveV(55), 55);
   assert.equal(resolveV(null), 22);
 });
+
+// ---- Material-aware feeds, peck depth and tap pre-drill depth ----
+const helperCtx = vm.createContext({});
+vm.runInContext(extract('drillFeedPerRev','// SMART TAPPING')+extract('getSyncedTap','// Global simulation'), helperCtx);
+test('drill feed/rev is adjusted by workpiece material', () => {
+  assert.equal(helperCtx.materialFeedPerRev(10, 'mild'), 0.14);
+  assert.equal(helperCtx.materialFeedPerRev(10, 'stainless'), 0.105);
+  assert.equal(helperCtx.materialFeedPerRev(10, 'aluminum'), 0.175);
+  assert.equal(helperCtx.materialFeedPerRev(10, 'unknown'), 0.14);
+});
+test('peck increment Q scales with material and has a floor', () => {
+  assert.equal(helperCtx.peckDepth(8, 'mild'), 6);
+  assert.equal(helperCtx.peckDepth(8, 'stainless'), 4);
+  assert.equal(helperCtx.peckDepth(8, 'aluminum'), 8);
+  assert.equal(helperCtx.peckDepth(0.5, 'stainless'), 0.5);
+});
+test('blind tap pre-drill depth = thread + 4P + drill point', () => {
+  assert.equal(helperCtx.tapPreDrillDepth(10, 1.5, 15), 23.55);
+  assert.equal(helperCtx.tapPreDrillDepth(8, 1.25, 0), null);
+});
+test('G83 uses supplied Q and positions XY before tool length offset', () => {
+  const code = context.generateGCode('drill', 8, 30, 1000, 100, 0.1, 'G83', 4);
+  assert.match(code, /G83 Z-30\.000 R2\.0 Q4\.00 F100/);
+  assert.ok(code.indexOf('X0.0 Y0.0') < code.indexOf('G43 H01'));
+});
+test('G73 peck cycles count pecks in cycle time', () => {
+  const a = context.calculateDrillMetrics('drill', 10, 25, 1000, 150, 0.15, 'G81');
+  const b = context.calculateDrillMetrics('drill', 10, 25, 1000, 150, 0.15, 'G73', 5);
+  assert.ok(b.cycleTimeSec > a.cycleTimeSec);
+});
