@@ -187,3 +187,49 @@ html:not([data-theme="dark"]) .sim-block-monitor { background: #f0f9ff; border-c
 .cutting-options textarea { width:100%; box-sizing:border-box; padding:12px 14px; border-radius:10px; border:1px solid var(--border); background:var(--bg-input); color:var(--text-main); font-family:'JetBrains Mono',ui-monospace,monospace; font-size:.9rem; line-height:1.5; resize:vertical; }
 .cutting-options textarea:focus { outline:none; border-color:var(--primary); }
 .cutting-options code { font-size:.8rem; }
+
+/* ---- Layout refinements ---- */
+/* Line up inputs in two-column rows even when one label wraps */
+.form-row { align-items:end; }
+/* Active-block monitor: let the comment line show instead of clipping */
+.sim-block-monitor { height:auto !important; min-height:40px; padding:6px 10px !important; }
+#simGCodeComment { padding-left:0 !important; }
+/* G-code reads like the real file: one block per line, scroll sideways if needed */
+#gcodeContainer .gcode-container { overflow-x:auto !important; }
+#gcodeBox { white-space:pre !important; width:max-content; min-width:100%; }
+.gcode-actions button { white-space:nowrap; }
+
+/* Desktop: keep results in view while editing the long setup column */
+@media (min-width:868px) {
+  .results-panel { position:sticky; top:16px; max-height:calc(100vh - 32px); overflow-y:auto; scrollbar-width:thin; }
+}
+
+@media (max-width:760px) {
+  .gcode-header-bar { flex-wrap:wrap; gap:8px; padding:8px 12px; }
+  .gcode-actions button { padding:6px 10px; font-size:.72rem; }
+  #gcodeContainer .gcode-container { padding:14px !important; }
+  #gcodeBox { font-size:.8rem !important; }
+  .app-info-section { padding:20px 14px; margin-top:30px; }
+  .section-title { font-size:1.2rem; }
+  .accordion-inner { padding-left:16px !important; padding-right:16px !important; }
+  #gcodePanel, #simPanel { margin-top:20px !important; }
+  .app-container { gap:20px; }
+}
+@media (max-width:420px) {
+  /* two compact metric columns instead of a long single stack */
+  .metrics-grid { grid-template-columns:repeat(2, minmax(0,1fr)); gap:8px; }
+  .metric-card { padding:10px 12px; }
+  .metric-label { font-size:.62rem; }
+  .metric-value { font-size:1.05rem; }
+}
+
+/* Mobile quick-result bar: the answer stays one tap away while editing inputs */
+.result-dock { display:none; }
+@media (max-width:867px) {
+  .result-dock { position:fixed; left:12px; right:12px; bottom:12px; z-index:50; display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 14px; border-radius:14px; background:#0f172a; color:#f8fafc; border:1px solid rgba(16,185,129,.45); box-shadow:0 10px 30px rgba(0,0,0,.35); font-family:var(--font-mono, ui-monospace, monospace); font-size:.85rem; font-weight:700; cursor:pointer; transform:translateY(140%); transition:transform .25s ease; width:auto; min-height:48px; text-align:left; }
+  .result-dock.show { transform:translateY(0); }
+  .result-dock .dock-vals { display:flex; gap:12px; flex-wrap:wrap; }
+  .result-dock .dock-vals b { color:#34d399; }
+  .result-dock .dock-go { font-family:var(--font-main, system-ui); font-size:.75rem; color:#94a3b8; white-space:nowrap; }
+}
+@media (prefers-reduced-motion:reduce) { .result-dock { transition:none; } }

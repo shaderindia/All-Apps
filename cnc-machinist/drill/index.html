@@ -1101,7 +1101,7 @@
         }
     </style>
 <link rel="stylesheet" href="/css/app-banners.css?v=20260904-banners"/>
-<link rel="stylesheet" href="workspace.css?v=20261119-ui4">
+<link rel="stylesheet" href="workspace.css?v=20261119-ui5">
 </head>
 <body>
 
@@ -1416,6 +1416,10 @@
         </div>
     </footer>
 
+<button type="button" id="resultDock" class="result-dock" aria-label="Jump to calculated results" hidden>
+    <span class="dock-vals"><span><b id="dockRpm">0</b> RPM</span><span>F<b id="dockFeed">0</b> mm/min</span></span>
+    <span class="dock-go">Results ↓</span>
+</button>
 <script>
 // Elements
 const opEl = document.getElementById("operation");
@@ -1464,6 +1468,7 @@ function resetResults() {
     resetSim();
     const error = document.getElementById('calcError');
     if (error) error.hidden = true;
+    if (typeof updateResultDock === 'function') updateResultDock(0, 0);
 }
 
 // Live recalculation: results follow the inputs (debounced) instead of going stale
@@ -2218,7 +2223,39 @@ function calculate(){
     // Automatically initialize and prepare canvas elements
     initSimCanvas();
     saveSetup();
+    updateResultDock(stdRpmVal, stdFeedVal);
 }
+
+// Mobile quick-result bar: visible while the results panel is below the screen
+let dockHasResult = false;
+function updateResultDock(rpm, feed) {
+    const dock = document.getElementById('resultDock');
+    if (!dock) return;
+    dockHasResult = rpm > 0;
+    document.getElementById('dockRpm').textContent = rpm;
+    document.getElementById('dockFeed').textContent = feed;
+    dock.hidden = !dockHasResult;
+    syncResultDock();
+}
+function syncResultDock() {
+    const dock = document.getElementById('resultDock');
+    const panel = document.querySelector('.results-panel');
+    if (!dock || !panel) return;
+    const below = panel.getBoundingClientRect().top > window.innerHeight - 60;
+    dock.classList.toggle('show', dockHasResult && below);
+}
+(function initResultDock() {
+    const dock = document.getElementById('resultDock');
+    if (!dock) return;
+    let ticking = false;
+    const onMove = () => { if (!ticking) { ticking = true; requestAnimationFrame(() => { ticking = false; syncResultDock(); }); } };
+    window.addEventListener('scroll', onMove, { passive: true });
+    window.addEventListener('resize', onMove);
+    dock.addEventListener('click', () => {
+        const panel = document.querySelector('.results-panel');
+        if (panel) panel.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+    });
+})();
 
 // Switch between panels tabs (G-code & Simulation details)
 function switchTab(tabId) {
