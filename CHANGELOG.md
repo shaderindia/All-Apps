@@ -1,5 +1,22 @@
 # Salary Calculator - Changelog
 
+## Version 2.1 - November 19, 2026
+
+### Added
+- **Romanian public holidays**: all 17 legal holidays (including Orthodox Easter and Pentecost) are marked in the calendar, with a new Public Holiday Multiplier (default 1x, so existing totals are unchanged) and an on/off switch.
+- **Auto base hours**: one click sets Fixed Base Hours to this month's working days × 8 h; a hint under the field shows the month's working days.
+- **Pay breakdown panel**: weekday / weekend / holiday / night / C / OT hours, days worked, shift premiums, average paid rate and hours above or below base.
+- Hours per day now go up to 24 (for 24-hour shifts).
+- Holiday rate and holiday hours in the A4 report and the Excel export (new Public Holiday column in the Daily Log).
+- `salary-math.js`: one calculation engine shared by the screen, the report and the Excel export, with regression tests in `tests/salary-calculator.test.cjs`.
+
+### Fixed
+- Choosing the **OT** shift no longer wipes the hours entered for that day.
+- **Remove All Hours** no longer brings the hours back after a reload (the copy shared with the Hours Only page is cleared too), and salary settings are kept.
+- Literal `&bull;` text in the exchange-rate source line and hours tooltip.
+- Daily pay chips now update immediately when salary, base hours or multipliers change.
+- Weekday Quick-Fill leaves public holidays empty.
+
 ## Version 2.0 - November 2, 2025
 
 ### 🎯 Major Improvements

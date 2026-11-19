@@ -25,39 +25,23 @@
       const weekendRate = Math.max(0, parseFloat(find('weekendRate').value) || 1);
       const nightRate = Math.max(0, parseFloat(find('nightRate').value) || 1);
       const cShiftRate = Math.max(0, parseFloat(find('cShiftRate').value) || 1);
+      const holidayRate = Math.max(0, parseFloat(find('holidayRate').value) || 1);
       const exchangeRate = Math.max(0, parseFloat(find('exchange-rate-manual').value) || 0);
-      const dailyData = [];
-      let weekdayHours = 0, weekendHours = 0, nightHours = 0, cShiftHours = 0, daysWorked = 0, grossSalary = 0;
-      const daysInMonth = new Date(year, month, 0).getDate();
-
-      for (let day = 1; day <= daysInMonth; day++) {
+      const result = window.ShaderSalary.calculateSalary(monthKey, getLoggedHours(), getSalarySettings());
+      const { weekdayHours, weekendHours, holidayHours, nightHours, cShiftHours, daysWorked, gross: grossSalary } = result;
+      const daysInMonth = result.days.length;
+      const dailyData = result.days.map(({ day, hours, weekend, holiday, pay }) => {
         const date = new Date(year, month - 1, day);
-        const hoursSelect = find(`hours-${day}`);
         const shiftSelect = find(`shift-${day}`);
-        const hours = Math.max(0, parseFloat(hoursSelect?.value) || 0);
-        const weekend = hoursSelect?.dataset.isWeekend === 'true';
-        const shift = shiftSelect?.value || '';
-        const night = shift.toLowerCase() === 'night';
-        const cShift = shift.toLowerCase() === 'c';
-        const weekendMultiplier = weekend ? weekendRate : 1;
-        const nightMultiplier = night ? nightRate : 1;
-        const cShiftMultiplier = cShift ? cShiftRate : 1;
-        const multiplier = weekendMultiplier * nightMultiplier * cShiftMultiplier;
-        const dailyPay = hours * hourlyRate * multiplier;
-        const weekday = date.toLocaleDateString('en-GB', { weekday: 'long' });
-        const shiftText = shiftSelect?.options[shiftSelect.selectedIndex]?.text || 'N/A';
-
-        if (weekend) weekendHours += hours; else weekdayHours += hours;
-        if (night) nightHours += hours;
-        if (cShift) cShiftHours += hours;
-        if (hours > 0) daysWorked++;
-        grossSalary += dailyPay;
-        dailyData.push({
+        return {
           day,
           dateSerial: Math.floor((Date.UTC(year, month - 1, day) - Date.UTC(1899, 11, 30)) / 86400000),
-          weekday, shift: shiftText, dayType: weekend ? 'Weekend' : 'Weekday', hours, dailyPay
-        });
-      }
+          weekday: date.toLocaleDateString('en-GB', { weekday: 'long' }),
+          shift: shiftSelect?.options[shiftSelect.selectedIndex]?.text || 'N/A',
+          dayType: holiday ? 'Holiday' : (weekend ? 'Weekend' : 'Weekday'),
+          holiday, hours, dailyPay: pay
+        };
+      });
 
       const totalHours = weekdayHours + weekendHours;
       const monthName = new Date(year, month - 1, 1).toLocaleString(undefined, { month: 'long', year: 'numeric' });
@@ -73,23 +57,26 @@
         ['Category', 'Metric', 'Value', 'Unit'].map(value => cell(value, 12))
       ];
       const dailyEndRow = dailyData.length + 1;
+      const logRange = column => `'Daily Log'!${column}2:${column}${dailyEndRow}`;
       const summaryEntries = [
-        ['Compensation', 'Base Salary', salary, 'RON', 6],
-        ['Compensation', 'Fixed Base Hours', baseHours, 'hours', 7],
-        ['Compensation', 'Standard Hourly Rate', hourlyRate, 'RON/hr', 6, 'IF(C7>0,C6/C7,0)'],
-        ['Pay Multipliers', 'Weekend Rate', weekendRate, 'x', 7],
-        ['Pay Multipliers', 'Night Rate', nightRate, 'x', 7],
-        ['Pay Multipliers', 'C Shift Rate', cShiftRate, 'x', 7],
-        ['Attendance', 'Total Hours Worked', totalHours, 'hours', 7, `SUM('Daily Log'!F2:F${dailyEndRow})`],
-        ['Attendance', 'Weekday Hours', weekdayHours, 'hours', 7, `SUMIF('Daily Log'!E2:E${dailyEndRow},"Weekday",'Daily Log'!F2:F${dailyEndRow})`],
-        ['Attendance', 'Weekend Hours', weekendHours, 'hours', 7, `SUMIF('Daily Log'!E2:E${dailyEndRow},"Weekend",'Daily Log'!F2:F${dailyEndRow})`],
-        ['Attendance', 'Night Shift Hours', nightHours, 'hours', 7, `SUMIF('Daily Log'!D2:D${dailyEndRow},"Night Shift",'Daily Log'!F2:F${dailyEndRow})`],
-        ['Attendance', 'C Shift Hours', cShiftHours, 'hours', 7, `SUMIF('Daily Log'!D2:D${dailyEndRow},"C",'Daily Log'!F2:F${dailyEndRow})`],
-        ['Attendance', 'Days Worked', daysWorked, 'days', 7, `COUNTIF('Daily Log'!F2:F${dailyEndRow},">0")`],
-        ['Attendance', 'Days Off', daysInMonth - daysWorked, 'days', 7, `${daysInMonth}-C17`],
-        ['Compensation', 'Total Gross Salary', grossSalary, 'RON', 6, `SUM('Daily Log'!G2:G${dailyEndRow})`],
-        ['Currency', 'RON to INR Rate', exchangeRate, 'INR per RON', 7],
-        ['Currency', 'Converted Value', grossSalary * exchangeRate, 'INR', 6, 'C19*C20']
+        ['Compensation', 'Base Salary', salary, 'RON', 6],                                          // C6
+        ['Compensation', 'Fixed Base Hours', baseHours, 'hours', 7],                                 // C7
+        ['Compensation', 'Standard Hourly Rate', hourlyRate, 'RON/hr', 6, 'IF(C7>0,C6/C7,0)'],       // C8
+        ['Pay Multipliers', 'Weekend Rate', weekendRate, 'x', 7],                                    // C9
+        ['Pay Multipliers', 'Night Rate', nightRate, 'x', 7],                                        // C10
+        ['Pay Multipliers', 'C Shift Rate', cShiftRate, 'x', 7],                                     // C11
+        ['Pay Multipliers', 'Public Holiday Rate', holidayRate, 'x', 7],                             // C12
+        ['Attendance', 'Total Hours Worked', result.totalHours, 'hours', 7, `SUM(${logRange('F')})`], // C13
+        ['Attendance', 'Weekday Hours', weekdayHours, 'hours', 7, 'C13-C15'],                        // C14
+        ['Attendance', 'Weekend Hours', weekendHours, 'hours', 7, `SUMIF(${logRange('C')},"Saturday",${logRange('F')})+SUMIF(${logRange('C')},"Sunday",${logRange('F')})`], // C15
+        ['Attendance', 'Public Holiday Hours', holidayHours, 'hours', 7, `SUMIF(${logRange('E')},"Holiday",${logRange('F')})`], // C16
+        ['Attendance', 'Night Shift Hours', nightHours, 'hours', 7, `SUMIF(${logRange('D')},"Night Shift",${logRange('F')})`], // C17
+        ['Attendance', 'C Shift Hours', cShiftHours, 'hours', 7, `SUMIF(${logRange('D')},"C",${logRange('F')})`], // C18
+        ['Attendance', 'Days Worked', daysWorked, 'days', 7, `COUNTIF(${logRange('F')},">0")`],      // C19
+        ['Attendance', 'Days Off', daysInMonth - daysWorked, 'days', 7, `${daysInMonth}-C19`],       // C20
+        ['Compensation', 'Total Gross Salary', grossSalary, 'RON', 6, `SUM(${logRange('G')})`],      // C21
+        ['Currency', 'RON to INR Rate', exchangeRate, 'INR per RON', 7],                             // C22
+        ['Currency', 'Converted Value', grossSalary * exchangeRate, 'INR', 6, 'C21*C22']             // C23
       ];
       summaryEntries.forEach(([category, metric, value, unit, style, formula]) => {
         rows.push([cell(category, 4), cell(metric, 5), formula ? formulaCell(value, style, formula) : cell(value, style), cell(unit, 8)]);
@@ -113,21 +100,22 @@
       rows.push([cell('Generated with SHADER7 • Monthly salary and work log', 3)]);
       merges.push(`A${reportNoteRow}:D${reportNoteRow}`);
       const dataRows = [[
-        'Day', 'Date', 'Weekday', 'Shift', 'Day Type', 'Hours Worked', 'Daily Pay (RON)'
+        'Day', 'Date', 'Weekday', 'Shift', 'Day Type', 'Hours Worked', 'Daily Pay (RON)', 'Public Holiday'
       ].map(value => cell(value, 12))];
       dailyData.forEach((item, index) => {
         const excelRow = index + 2;
         dataRows.push([
           cell(item.day, 7), cell(item.dateSerial, 19), cell(item.weekday, 9), cell(item.shift, 9), cell(item.dayType, 9),
           cell(item.hours, 10),
-          formulaCell(item.dailyPay, 11, `F${excelRow}*Summary!$C$8*IF(E${excelRow}="Weekend",Summary!$C$9,1)*IF(D${excelRow}="Night Shift",Summary!$C$10,1)*IF(D${excelRow}="C",Summary!$C$11,1)`)
+          formulaCell(item.dailyPay, 11, `F${excelRow}*Summary!$C$8*IF(E${excelRow}="Holiday",MAX(Summary!$C$12,IF(OR(C${excelRow}="Saturday",C${excelRow}="Sunday"),Summary!$C$9,1)),IF(E${excelRow}="Weekend",Summary!$C$9,1))*IF(D${excelRow}="Night Shift",Summary!$C$10,1)*IF(D${excelRow}="C",Summary!$C$11,1)`),
+          cell(item.holiday, 9)
         ]);
       });
-      dataRows.push(Array(7).fill(null));
+      dataRows.push(Array(8).fill(null));
       const dataTotalRow = dataRows.length + 1;
       dataRows.push([
         cell('Monthly Total', 16), null, null, null, null,
-        formulaCell(totalHours, 10, `SUM(F2:F${dailyData.length + 1})`),
+        formulaCell(result.totalHours, 10, `SUM(F2:F${dailyData.length + 1})`),
         formulaCell(grossSalary, 11, `SUM(G2:G${dailyData.length + 1})`)
       ]);
 
@@ -168,7 +156,7 @@
         ['xl/workbook.xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><bookViews><workbookView activeTab="0"/></bookViews><sheets><sheet name="Summary" sheetId="1" r:id="rId1"/><sheet name="Daily Log" sheetId="2" r:id="rId2"/></sheets><calcPr calcMode="auto" fullCalcOnLoad="1"/></workbook>'],
         ['xl/_rels/workbook.xml.rels', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet2.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>'],
         ['xl/worksheets/sheet1.xml', worksheetXml(rows, [18, 28, 20, 28], merges, `A5:D${summaryEndRow}`, 5, 5)],
-        ['xl/worksheets/sheet2.xml', worksheetXml(dataRows, [8, 14, 14, 18, 14, 14, 22], [], `A1:G${dailyData.length + 1}`, 1, 1)],
+        ['xl/worksheets/sheet2.xml', worksheetXml(dataRows, [8, 14, 14, 18, 14, 14, 22, 28], [], `A1:H${dailyData.length + 1}`, 1, 1)],
         ['xl/styles.xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><numFmts count="4"><numFmt numFmtId="164" formatCode="#,##0.00"/><numFmt numFmtId="165" formatCode="#,##0.##"/><numFmt numFmtId="166" formatCode="#,##0.00&quot; RON&quot;"/><numFmt numFmtId="167" formatCode="#,##0.##&quot;h&quot;"/></numFmts><fonts count="6"><font><name val="Calibri"/><sz val="10"/><color rgb="FF182338"/></font><font><name val="Calibri"/><b/><sz val="16"/><color rgb="FF172C4B"/></font><font><name val="Calibri"/><b/><sz val="12"/><color rgb="FF355DD1"/></font><font><name val="Calibri"/><sz val="9"/><color rgb="FF526176"/></font><font><name val="Calibri"/><b/><sz val="9"/><color rgb="FF172C4B"/></font><font><name val="Calibri"/><sz val="8"/><color rgb="FF66748A"/></font></fonts><fills count="5"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFEAF0F8"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFF3F6FA"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFFFF7F7"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="3"><border><left/><right/><top/><bottom/><diagonal/></border><border><left style="thin"><color rgb="FFD4DCE7"/></left><right style="thin"><color rgb="FFD4DCE7"/></right><top style="thin"><color rgb="FFD4DCE7"/></top><bottom style="thin"><color rgb="FFD4DCE7"/></bottom><diagonal/></border><border><left/><right/><top/><bottom style="medium"><color rgb="FF355DD1"/></bottom><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="19"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="0" borderId="2" xfId="0" applyFont="1" applyBorder="1"><alignment horizontal="left" vertical="center"/></xf><xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1"><alignment horizontal="left" vertical="center"/></xf><xf numFmtId="0" fontId="3" fillId="0" borderId="0" xfId="0" applyFont="1"><alignment horizontal="left" vertical="center"/></xf><xf numFmtId="0" fontId="4" fillId="3" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf><xf numFmtId="0" fontId="0" fillId="3" borderId="1" xfId="0" applyFill="1" applyBorder="1" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf><xf numFmtId="164" fontId="0" fillId="3" borderId="1" xfId="0" applyNumberFormat="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf><xf numFmtId="165" fontId="0" fillId="3" borderId="1" xfId="0" applyNumberFormat="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf><xf numFmtId="0" fontId="3" fillId="3" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"/><xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf><xf numFmtId="165" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf><xf numFmtId="164" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf><xf numFmtId="0" fontId="4" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf><xf numFmtId="0" fontId="0" fillId="4" borderId="1" xfId="0" applyFill="1" applyBorder="1" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf><xf numFmtId="165" fontId="0" fillId="4" borderId="1" xfId="0" applyNumberFormat="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf><xf numFmtId="164" fontId="0" fillId="4" borderId="1" xfId="0" applyNumberFormat="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf><xf numFmtId="0" fontId="4" fillId="0" borderId="2" xfId="0" applyFont="1" applyBorder="1"/><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf><xf numFmtId="0" fontId="5" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>']
       ];
       const stylesFile = files.find(([path]) => path === 'xl/styles.xml');

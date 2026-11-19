@@ -350,7 +350,8 @@
     }
 </style>
   <link rel="stylesheet" href="salary-report.css?v=20260903b"/>
-  <script defer src="salary-report.js?v=20261004b"></script>
+  <script src="salary-math.js?v=20261119"></script>
+  <script defer src="salary-report.js?v=20261119"></script>
   <style id="report-print-page" media="print">@page { size: A4 portrait; margin: 0; }</style>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Advanced Hourly Salary Calculator | Excel & PDF Reports - SHADER7</title>
@@ -548,7 +549,8 @@
     .summary-item span { display: block; color: var(--muted); font-size: .78rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
     .summary-item strong { display: block; margin-top: 3px; font-size: clamp(0.92rem, 1.8vw, 1.05rem); word-break: break-word; font-weight: 800; }
     .form-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
-    .form-group { display: grid; gap: 6px; }
+    .form-grid { align-items: start; }
+    .form-group { display: grid; gap: 6px; align-content: start; }
     label { font-weight: 600; color: #475569; font-size: .88rem; }
     input, select {
       width: 100%;
@@ -913,6 +915,22 @@
     .edu-resource-card .link-btn:hover {
       text-decoration: underline;
     }
+    .input-with-btn { display: flex; gap: 8px; }
+    .input-with-btn input { flex: 1 1 auto; min-width: 0; }
+    .btn-inline { flex: 0 0 auto; border: 1.8px solid var(--border); background: #eef4ff; color: var(--primary-dark); border-radius: 12px; padding: 0 14px; font-weight: 700; font-size: .85rem; cursor: pointer; min-height: 46px; }
+    .btn-inline:hover { border-color: var(--accent); background: #e0eaff; }
+    .pay-breakdown { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; margin-top: 12px; }
+    .pay-breakdown:empty { display: none; }
+    .pb-item { background: var(--soft); border: 1px solid var(--border); border-radius: 12px; padding: 8px 12px; }
+    .pb-item span { display: block; color: var(--muted); font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .3px; }
+    .pb-item strong { display: block; font-size: .95rem; font-weight: 800; }
+    .pb-item.pb-pos strong { color: #059669; }
+    .pb-item.pb-neg strong { color: #b45309; }
+    .work-card.is-holiday { border-left: 4px solid #a855f7; background: #fdf8ff; }
+    .badge-holiday, .holiday-label { background: #f3e8ff; color: #7e22ce; }
+    .holiday-label { font-size: .68rem; font-weight: 700; padding: 2px 5px; border-radius: 4px; }
+    .holiday-name { font-size: .72rem; color: #7e22ce; font-weight: 600; line-height: 1.25; }
+    .calendar-table td.holiday { background: #fdf8ff !important; }
     .salary-math-box {
       background: #f1f5f9;
       border-left: 4px solid var(--primary);
@@ -974,10 +992,11 @@
         <div class="form-group"><label for="company-name">Company Name <span class="sync-indicator-pill"><i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i> Synced</span></label><input type="text" id="company-name" placeholder="Company or organisation" autocomplete="organization" /></div>
         <div class="form-group"><label for="month-year-picker">Select Month and Year</label><input type="month" id="month-year-picker" /></div>
         <div class="form-group"><label for="salary">Base Salary (RON)</label><input type="number" id="salary" min="0" step="0.01" inputmode="decimal" placeholder="Example: 4000" aria-describedby="salary-warning" /><small id="salary-warning" class="field-warning" aria-live="polite"><i class="fa-solid fa-triangle-exclamation"></i> Base salary is missing. Enter it to calculate salary correctly.</small></div>
-        <div class="form-group"><label for="fixedBaseHours">Fixed Base Hours per Month</label><input type="number" id="fixedBaseHours" min="1" step="0.5" inputmode="decimal" value="160" placeholder="Example: 160" /></div>
+        <div class="form-group"><label for="fixedBaseHours">Fixed Base Hours per Month</label><div class="input-with-btn"><input type="number" id="fixedBaseHours" min="1" step="0.5" inputmode="decimal" value="160" placeholder="Example: 160" aria-describedby="base-hours-hint" /><button type="button" class="btn-inline" id="auto-base-hours-btn" title="Set to this month's working days × 8 hours">Auto</button></div><small class="subtle" id="base-hours-hint">&nbsp;</small></div>
         <div class="form-group"><label for="weekendRate">Weekend Rate Multiplier</label><select id="weekendRate"><option value="1">1x</option><option value="1.25">1.25x</option><option value="1.5">1.5x</option><option value="2">2x</option></select></div>
         <div class="form-group"><label for="nightRate">Night Shift Multiplier</label><select id="nightRate"><option value="1">1x - No extra</option><option value="1.1">1.10x</option><option value="1.15">1.15x</option><option value="1.25" selected>1.25x</option><option value="1.5">1.5x</option><option value="2">2x</option></select><small class="subtle">Applies when shift is set to Night. Weekend + Night are multiplied together.</small></div>
         <div class="form-group"><label for="cShiftRate">C Shift Multiplier</label><select id="cShiftRate"><option value="1">1x - No extra</option><option value="1.1">1.10x</option><option value="1.15">1.15x</option><option value="1.25" selected>1.25x</option><option value="1.5">1.5x</option><option value="2">2x</option></select><small class="subtle">Applies when shift is set to C. Weekend + C Shift are multiplied together.</small></div>
+        <div class="form-group"><label for="holidayRate">Public Holiday Multiplier</label><select id="holidayRate"><option value="1" selected>1x - No extra</option><option value="1.5">1.5x</option><option value="2">2x (+100%)</option><option value="2.5">2.5x</option><option value="3">3x</option></select><div class="switch-line" style="margin-top:2px;"><label class="switch" aria-label="Detect Romanian public holidays"><input type="checkbox" id="use-holidays" checked /><span class="slider"></span></label><span class="subtle">Mark Romanian public holidays</span></div><small class="subtle">Used instead of the weekend rate on holidays (the higher one wins).</small></div>
       </form>
 
       <div class="calendar-toolbar">
@@ -1016,6 +1035,7 @@
         <div class="salary-box"><span>Total Monthly Salary</span><strong id="total-salary">0.00 RON</strong></div>
         <div class="salary-box"><span>Approximate INR</span><strong id="total-salary-in-rupees">N/A</strong></div>
       </div>
+      <div class="pay-breakdown" id="pay-breakdown" aria-label="Pay breakdown" aria-live="polite"></div>
       <div id="salary-alert" class="salary-alert" role="alert"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i><span>Please enter your Base Salary (RON). Calculations are currently showing 0.</span></div>
     </section>
 
@@ -1073,6 +1093,10 @@
       <details>
         <summary><strong>How do the weekend, night shift, and C shift multipliers work?</strong></summary>
         <p>Multipliers scale your base hourly rate for specific hours worked. The weekend multiplier (e.g., 1.5x or 2.0x) scales weekend hours. The night shift and C shift multipliers scale hours logged under those shift designations. Under our advanced billing engine, if you log night hours on a weekend, both multipliers are compounded together (e.g., Hourly Rate * Weekend Multiplier * Night Multiplier) to ensure accurate shift differential tracking.</p>
+      </details>
+      <details>
+        <summary><strong>How are Romanian public holidays handled?</strong></summary>
+        <p>The calculator automatically marks Romania's 17 legal public holidays, including moveable Orthodox Easter and Pentecost dates. Hours logged on a holiday use the Public Holiday Multiplier instead of the weekend multiplier (whichever is higher), and night or C shift multipliers still apply on top. The weekday Quick-Fill buttons leave holidays empty, and the <strong>Auto</strong> button sets Fixed Base Hours to this month's working days × 8 hours. Under the Romanian Labour Code, work on a public holiday is normally compensated with time off within 30 days; if that is not possible, it is paid with a bonus of at least 100% of the base salary (2x). You can switch holiday detection off if it does not apply to you.</p>
       </details>
       <details>
         <summary><strong>What are the standard hours and shift assumptions?</strong></summary>
@@ -1133,7 +1157,7 @@
     <!-- Clear Confirmation Dialog -->
   <dialog id="clear-dialog" class="clear-dialog" aria-labelledby="clear-dialog-title">
     <h2 id="clear-dialog-title">Clear this month’s hours?</h2>
-    <p>This will clear all daily hours and shifts currently entered for this month. Save This Month afterward to replace its saved log.</p>
+    <p>This will clear all daily hours and shifts entered for this month, including the copy shared with the Hours Only page. Your salary and multiplier settings are kept.</p>
     <form method="dialog">
       <button type="button" class="btn neutral" id="cancel-clear-btn">Cancel</button>
       <button type="button" class="btn danger" id="confirm-clear-btn">Clear hours</button>
@@ -1209,6 +1233,40 @@
     function updateEmployeeInfo() { const employeeName = $('#employee-name-input').value.trim(); const companyName = $('#company-name').value.trim(); if (employeeName) localStorage.setItem('shader7_active_employee', employeeName); if (companyName) localStorage.setItem('shader7_active_company', companyName); $('#employee-display-name').textContent = employeeName || 'Guest'; $('#employee-info-display').textContent = employeeName && companyName ? `${employeeName} / ${companyName}` : employeeName || (companyName ? `Company: ${companyName}` : 'N/A'); }
     function getDateSuffix(day) { if (day > 3 && day < 21) return 'th'; return ['th', 'st', 'nd', 'rd'][day % 10] || 'th'; }
     function getMonthKey() { return $('#month-year-picker').value || null; }
+    function useHolidays() { return $('#use-holidays')?.checked !== false; }
+    function holidayFor(monthKey, day) { return monthKey && useHolidays() && window.ShaderSalary ? ShaderSalary.holidayName(monthKey, day) : ''; }
+    function getSalarySettings() {
+      return {
+        salary: $('#salary').value, fixedBaseHours: $('#fixedBaseHours').value,
+        weekendRate: $('#weekendRate').value, nightRate: $('#nightRate').value,
+        cShiftRate: $('#cShiftRate').value, holidayRate: $('#holidayRate').value,
+        useHolidays: useHolidays()
+      };
+    }
+    function getLoggedHours() {
+      const hours = {}, shifts = {};
+      $$('.hours-select').forEach(select => { hours[select.dataset.day] = select.value; });
+      $$('.shift-select').forEach(select => { shifts[select.dataset.day] = select.value; });
+      return { hours, shifts };
+    }
+    function hoursLabel(value) { return formatNumber(value, value % 1 ? 1 : 0); }
+    function updateBaseHoursHint() {
+      const hint = $('#base-hours-hint');
+      const monthKey = getMonthKey();
+      if (!hint) return;
+      if (!monthKey) { hint.innerHTML = '&nbsp;'; return; }
+      const days = ShaderSalary.workingDays(monthKey, { excludeHolidays: useHolidays() });
+      hint.textContent = `This month: ${days} working days = ${days * 8} h at 8 h/day.`;
+    }
+    function applyAutoBaseHours() {
+      const monthKey = getMonthKey();
+      if (!monthKey) return showToast('Please select a month and year first.');
+      const hours = ShaderSalary.standardMonthlyHours(monthKey, 8, { excludeHolidays: useHolidays() });
+      $('#fixedBaseHours').value = hours;
+      recalculateSalary();
+      scheduleAutoSave();
+      showToast(`Fixed base hours set to ${hours} h for this month.`);
+    }
 
     function setCalendarView(viewMode) {
       if (state.calendarView === viewMode) return;
@@ -1241,7 +1299,7 @@
       const monthNameShort = monthObj.toLocaleString('default', { month: 'short' });
 
       let hoursOptions = '<option value="">Hrs</option>'; 
-      for (let h = 0; h <= 16; h += 0.5) hoursOptions += `<option value="${h}">${h}</option>`;
+      for (let h = 0; h <= 24; h += 0.5) hoursOptions += `<option value="${h}">${h}</option>`;
       const shiftOptions = '<option value="">Shift</option><option value="8">8 hrs</option><option value="12">12 hrs</option><option value="0">Off</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="Day">Day</option><option value="Night">Night Shift</option><option value="OT">OT</option>';
 
       $('#view-cards-btn')?.classList.toggle('active', state.calendarView === 'cards');
@@ -1255,15 +1313,18 @@
           const weekday = new Date(year, month - 1, day).getDay(); 
           const isWeekend = weekday === 0 || weekday === 6;
           const weekdayName = weekdayNames[weekday];
+          const holiday = holidayFor(monthYearValue, day);
           cardsHtml += `
-            <div class="work-card ${isWeekend ? 'is-weekend' : ''}" id="card-day-${day}" data-day="${day}">
+            <div class="work-card ${isWeekend ? 'is-weekend' : ''} ${holiday ? 'is-holiday' : ''}" id="card-day-${day}" data-day="${day}">
               <div class="work-card-header">
                 <div class="work-card-date">
                   <span>${day}${getDateSuffix(day)} ${monthNameShort}</span>
                   <span class="work-card-badge ${isWeekend ? 'badge-weekend' : 'badge-weekday'}">${weekdayName}</span>
+                  ${holiday ? '<span class="work-card-badge badge-holiday">Holiday</span>' : ''}
                 </div>
                 <span class="daily-pay-chip" id="pay-chip-${day}">0 RON</span>
               </div>
+              ${holiday ? `<div class="holiday-name">${escapeHTML(holiday)}</div>` : ''}
               <div class="quick-shifts-row" role="group" aria-label="Quick shift presets for day ${day}">
                 <button type="button" class="quick-pill pill-off" data-day="${day}" data-hours="0" data-shift="0">Off (0h)</button>
                 <button type="button" class="quick-pill" data-day="${day}" data-hours="8" data-shift="8">8h Day</button>
@@ -1297,7 +1358,8 @@
         for (let day = 1; day <= daysInMonth; day++) {
           const weekday = new Date(year, month - 1, day).getDay(); 
           const isWeekend = weekday === 0 || weekday === 6;
-          html += `<td class="${isWeekend ? 'weekend' : ''}"><div class="calendar-day"><div class="day-number"><span>${day}${getDateSuffix(day)}</span>${isWeekend ? '<span class="weekend-label">Weekend</span>' : ''}</div><div class="day-inputs"><label class="sr-only" for="hours-${day}">Hours for day ${day}</label><select id="hours-${day}" class="hours-select" data-day="${day}" data-is-weekend="${isWeekend}">${hoursOptions}</select><label class="sr-only" for="shift-${day}">Shift for day ${day}</label><select id="shift-${day}" class="shift-select" data-day="${day}">${shiftOptions}</select></div></div></td>`;
+          const holiday = holidayFor(monthYearValue, day);
+          html += `<td class="${isWeekend ? 'weekend' : ''} ${holiday ? 'holiday' : ''}"${holiday ? ` title="${escapeHTML(holiday)}"` : ''}><div class="calendar-day"><div class="day-number"><span>${day}${getDateSuffix(day)}</span>${holiday ? '<span class="holiday-label">Holiday</span>' : (isWeekend ? '<span class="weekend-label">Weekend</span>' : '')}</div><div class="day-inputs"><label class="sr-only" for="hours-${day}">Hours for day ${day}</label><select id="hours-${day}" class="hours-select" data-day="${day}" data-is-weekend="${isWeekend}">${hoursOptions}</select><label class="sr-only" for="shift-${day}">Shift for day ${day}</label><select id="shift-${day}" class="shift-select" data-day="${day}">${shiftOptions}</select></div></div></td>`;
           if ((firstDayOfMonth + day) % 7 === 0 && day < daysInMonth) html += '</tr><tr>';
         }
         const remainingCells = (7 - ((firstDayOfMonth + daysInMonth) % 7)) % 7; 
@@ -1392,6 +1454,7 @@
       const [yearStr, monthStr] = monthKey.split('-');
       const year = Number(yearStr), month = Number(monthStr);
       const daysInMonth = new Date(year, month, 0).getDate();
+      let skippedHolidays = 0;
 
       for (let day = 1; day <= daysInMonth; day++) {
         const weekday = new Date(year, month - 1, day).getDay();
@@ -1399,6 +1462,7 @@
         const hoursSelect = $(`#hours-${day}`);
         const shiftSelect = $(`#shift-${day}`);
         if (!hoursSelect || !shiftSelect) continue;
+        if (action.startsWith('weekdays-') && holidayFor(monthKey, day)) { skippedHolidays++; continue; }
 
         if (action === 'weekdays-8') {
           if (!isWeekend) {
@@ -1429,9 +1493,10 @@
       recalculateSalary();
       scheduleAutoSave();
 
-      if (action === 'weekdays-8') showToast('Set weekdays to 8h shifts.');
-      else if (action === 'weekdays-12-day') showToast('Set weekdays to 12h Day shifts.');
-      else if (action === 'weekdays-12-night') showToast('Set weekdays to 12h Night shifts.');
+      const holidayNote = skippedHolidays ? ` ${skippedHolidays} public holiday${skippedHolidays === 1 ? '' : 's'} left empty.` : '';
+      if (action === 'weekdays-8') showToast(`Set weekdays to 8h shifts.${holidayNote}`);
+      else if (action === 'weekdays-12-day') showToast(`Set weekdays to 12h Day shifts.${holidayNote}`);
+      else if (action === 'weekdays-12-night') showToast(`Set weekdays to 12h Night shifts.${holidayNote}`);
       else if (action === 'weekends-off') showToast('Set weekends to Off.');
       else if (action === 'clear-all') showToast('Cleared month entries.');
     }
@@ -1456,17 +1521,10 @@
           pill.classList.toggle('active', isMatch);
         });
 
-        const salary = Math.max(0, parseFloat($('#salary').value) || 0);
-        const fixedBaseHours = Math.max(0, parseFloat($('#fixedBaseHours').value) || 0);
-        const hourlyRate = fixedBaseHours > 0 ? salary / fixedBaseHours : 0;
-        const weekendRate = Math.max(0, parseFloat($('#weekendRate').value) || 1);
-        const nightRate = Math.max(0, parseFloat($('#nightRate').value) || 1);
-        const cShiftRate = Math.max(0, parseFloat($('#cShiftRate').value) || 1);
-        const isWeekend = hoursSelect?.dataset.isWeekend === 'true';
-        const isNight = isNightShift(day);
-        const isC = isCShift(day);
-        const multiplier = (isWeekend ? weekendRate : 1) * (isNight ? nightRate : 1) * (isC ? cShiftRate : 1);
-        const dailyPay = hours * hourlyRate * multiplier;
+        const rates = ShaderSalary.normalizeSettings(getSalarySettings());
+        const monthKey = getMonthKey();
+        const multiplier = ShaderSalary.dayMultiplier({ weekend: hoursSelect?.dataset.isWeekend === 'true', holiday: Boolean(holidayFor(monthKey, Number(day))), shift }, rates);
+        const dailyPay = hours * rates.hourlyRate * multiplier;
         const chip = $(`#pay-chip-${day}`);
         if (chip) {
           chip.textContent = dailyPay > 0 ? `+${formatNumber(dailyPay)} RON` : (isOff ? 'Off (0h)' : '0 RON');
@@ -1535,7 +1593,7 @@
     function setHoursFromShift(shiftSelectElement) {
       const selectedValue = shiftSelectElement.value;
       const hoursSelectElement = $(`#hours-${shiftSelectElement.dataset.day}`);
-      const shiftHoursMap = { '8': '8', '12': '12', '0': '0', A: '8', B: '8', C: '8', Day: '12', Night: '12', OT: '' };
+      const shiftHoursMap = { '8': '8', '12': '12', '0': '0', A: '8', B: '8', C: '8', Day: '12', Night: '12' }; // OT keeps the hours you entered
       if (Object.prototype.hasOwnProperty.call(shiftHoursMap, selectedValue)) {
         hoursSelectElement.value = shiftHoursMap[selectedValue];
       }
@@ -1543,10 +1601,7 @@
     }
 
     function collectMonthData() {
-      const hours = {};
-      const shifts = {};
-      $$('.hours-select').forEach(select => { hours[select.dataset.day] = select.value; });
-      $$('.shift-select').forEach(select => { shifts[select.dataset.day] = select.value; });
+      const { hours, shifts } = getLoggedHours();
       return {
         hours, shifts,
         employeeName: $('#employee-name-input').value.trim(),
@@ -1556,6 +1611,8 @@
         weekendRate: $('#weekendRate').value,
         nightRate: $('#nightRate').value,
         cShiftRate: $('#cShiftRate').value,
+        holidayRate: $('#holidayRate').value,
+        useHolidays: useHolidays(),
         savedDate: new Date().toISOString()
       };
     }
@@ -1633,8 +1690,13 @@
           fixedBaseHours: 'fixedBaseHours',
           weekendRate: 'weekendRate',
           nightRate: 'nightRate',
-          cShiftRate: 'cShiftRate'
+          cShiftRate: 'cShiftRate',
+          holidayRate: 'holidayRate'
         };
+        if (typeof monthData.useHolidays === 'boolean' && $('#use-holidays').checked !== monthData.useHolidays) {
+          $('#use-holidays').checked = monthData.useHolidays;
+          renderCalendarMarkup();
+        }
         Object.keys(idMap).forEach(key => {
           if (monthData[key] !== undefined && monthData[key] !== '') {
             $(`#${idMap[key]}`).value = monthData[key];
@@ -1670,12 +1732,17 @@
       $$('.hours-select, .shift-select').forEach(select => { select.value = ''; });
       const monthKey = getMonthKey();
       if (monthKey) {
-        try { localStorage.removeItem(`calendarData_${monthKey}`); } catch (e) {}
+        try {
+          clearTimeout(autoSaveTimer);
+          const data = collectMonthData();
+          localStorage.setItem(`calendarData_${monthKey}`, JSON.stringify(data));
+          syncSharedMonthData(monthKey, data);
+        } catch (e) { console.error(e); }
       }
       updateAllCards();
       recalculateSalary();
       setSaveBadge('saved');
-      showToast('Hours cleared.');
+      showToast('Hours cleared. Your salary settings were kept.');
     }
 
     function isNightShift(day) {
@@ -1701,50 +1768,49 @@
     }
 
     function recalculateSalary() {
-      const salary = Math.max(0, parseFloat($('#salary').value) || 0);
-      const fixedBaseHours = Math.max(0, parseFloat($('#fixedBaseHours').value) || 0);
-      const weekendRateMultiplier = Math.max(0, parseFloat($('#weekendRate').value) || 1);
-      const nightRateMultiplier = Math.max(0, parseFloat($('#nightRate').value) || 1);
-      const cShiftRateMultiplier = Math.max(0, parseFloat($('#cShiftRate').value) || 1);
-      let totalWeekdayHours = 0;
-      let totalWeekendHours = 0;
-      let totalNightHours = 0;
-      let totalCShiftHours = 0;
-      let calculatedSalary = 0;
-      const hourlyRate = fixedBaseHours > 0 ? salary / fixedBaseHours : 0;
-
-      $$('.hours-select').forEach(select => {
-        const hours = Math.max(0, parseFloat(select.value) || 0);
-        const isWeekend = select.dataset.isWeekend === 'true';
-        const isNight = isNightShift(select.dataset.day);
-        const isC = isCShift(select.dataset.day);
-        if (isWeekend) totalWeekendHours += hours; else totalWeekdayHours += hours;
-        if (isNight) totalNightHours += hours;
-        if (isC) totalCShiftHours += hours;
-        const effectiveMultiplier = (isWeekend ? weekendRateMultiplier : 1) * (isNight ? nightRateMultiplier : 1) * (isC ? cShiftRateMultiplier : 1);
-        calculatedSalary += hours * hourlyRate * effectiveMultiplier;
-      });
-
-      const totalHours = totalWeekdayHours + totalWeekendHours;
-      const daysWorked = $$('.hours-select').filter(select => (parseFloat(select.value) || 0) > 0).length;
-      const salaryInINR = convertSalaryToINR(calculatedSalary);
-      state.lastSalary = { hourlyRate, totalWeekdayHours, totalWeekendHours, totalNightHours, totalCShiftHours, totalHours, calculatedSalary, salaryInINR };
+      const monthKey = getMonthKey();
+      const empty = { hourlyRate: ShaderSalary.normalizeSettings(getSalarySettings()).hourlyRate, totalHours: 0, weekdayHours: 0, weekendHours: 0, holidayHours: 0, nightHours: 0, cShiftHours: 0, otShiftHours: 0, daysWorked: 0, gross: 0, premiumPay: 0, extraHours: 0, effectiveHourlyRate: 0, days: [] };
+      const result = monthKey ? ShaderSalary.calculateSalary(monthKey, getLoggedHours(), getSalarySettings()) : empty;
+      const { hourlyRate, totalHours, weekdayHours, weekendHours, holidayHours, nightHours, cShiftHours, daysWorked, gross } = result;
+      const salaryInINR = convertSalaryToINR(gross);
+      state.lastSalary = { ...result, totalWeekdayHours: weekdayHours, totalWeekendHours: weekendHours, totalNightHours: nightHours, totalCShiftHours: cShiftHours, calculatedSalary: gross, salaryInINR };
       $('#hourly-rate').textContent = `${formatNumber(hourlyRate)} RON/hr`;
-      $('#total-salary').textContent = `${formatNumber(calculatedSalary)} RON`;
-      $('#summary-hours').textContent = `${formatNumber(totalHours, totalHours % 1 ? 1 : 0)} hrs`;
-      $('#summary-salary').textContent = `${formatNumber(calculatedSalary)} RON`;
-      $('#total-salary-in-rupees').textContent = `${formatNumber(salaryInINR)} INR`;
-      $('#hourly-rate').title = `Weekday: ${formatNumber(totalWeekdayHours, totalWeekdayHours % 1 ? 1 : 0)} hrs &bull; Weekend: ${formatNumber(totalWeekendHours, totalWeekendHours % 1 ? 1 : 0)} hrs &bull; Night: ${formatNumber(totalNightHours, totalNightHours % 1 ? 1 : 0)} hrs &bull; C Shift: ${formatNumber(totalCShiftHours, totalCShiftHours % 1 ? 1 : 0)} hrs`;
+      $('#total-salary').textContent = `${formatNumber(gross)} RON`;
+      $('#summary-hours').textContent = `${hoursLabel(totalHours)} hrs`;
+      $('#summary-salary').textContent = `${formatNumber(gross)} RON`;
+      $('#hourly-rate').title = `Weekday: ${hoursLabel(weekdayHours)} hrs • Weekend: ${hoursLabel(weekendHours)} hrs • Holiday: ${hoursLabel(holidayHours)} hrs • Night: ${hoursLabel(nightHours)} hrs • C Shift: ${hoursLabel(cShiftHours)} hrs`;
+      renderPayBreakdown(result);
 
-      // Update sticky summary bar
       const stickyHours = $('#sticky-hours');
       const stickyDays = $('#sticky-days');
       const stickyPay = $('#sticky-pay');
-      if (stickyHours) stickyHours.textContent = `${formatNumber(totalHours, totalHours % 1 ? 1 : 0)} hrs`;
+      if (stickyHours) stickyHours.textContent = `${hoursLabel(totalHours)} hrs`;
       if (stickyDays) stickyDays.textContent = `${daysWorked} ${daysWorked === 1 ? 'day' : 'days'}`;
-      if (stickyPay) stickyPay.textContent = `${formatNumber(calculatedSalary)} RON`;
+      if (stickyPay) stickyPay.textContent = `${formatNumber(gross)} RON`;
 
+      updateBaseHoursHint();
       updateSalaryValidation(totalHours);
+    }
+
+    function renderPayBreakdown(result) {
+      const panel = $('#pay-breakdown');
+      if (!panel) return;
+      if (!result.totalHours) { panel.innerHTML = ''; return; }
+      const items = [
+        ['Weekday hours', `${hoursLabel(result.weekdayHours)} h`],
+        ['Weekend hours', `${hoursLabel(result.weekendHours)} h`],
+        result.holidayHours ? ['Holiday hours', `${hoursLabel(result.holidayHours)} h`] : null,
+        result.nightHours ? ['Night hours', `${hoursLabel(result.nightHours)} h`] : null,
+        result.cShiftHours ? ['C shift hours', `${hoursLabel(result.cShiftHours)} h`] : null,
+        result.otShiftHours ? ['OT shift hours', `${hoursLabel(result.otShiftHours)} h`] : null,
+        ['Days worked', String(result.daysWorked)],
+        ['Shift premiums', `+${formatNumber(result.premiumPay)} RON`, result.premiumPay > 0 ? 'pb-pos' : ''],
+        ['Avg. paid rate', `${formatNumber(result.effectiveHourlyRate)} RON/h`],
+        (parseFloat($('#fixedBaseHours').value) || 0) > 0
+          ? [result.extraHours >= 0 ? 'Above base hours' : 'Below base hours', `${result.extraHours >= 0 ? '+' : '−'}${hoursLabel(Math.abs(result.extraHours))} h`, result.extraHours > 0 ? 'pb-pos' : (result.extraHours < 0 ? 'pb-neg' : '')]
+          : null
+      ].filter(Boolean);
+      panel.innerHTML = items.map(([label, value, cls]) => `<div class="pb-item ${cls || ''}"><span>${label}</span><strong>${value}</strong></div>`).join('');
     }
 
     async function fetchJSONWithTimeout(url, timeoutMs = 9000) {
@@ -1860,7 +1926,7 @@
       ratesGrid.innerHTML = '';
       const meta = document.createElement('p');
       meta.style.cssText = 'grid-column:1/-1;margin:0 0 4px;color:#64748b;font-size:.78rem;text-align:center;';
-      meta.textContent = `Source: ${state.exchangeRateSource || 'Frankfurter'}${state.exchangeRateDate ? ` &bull; Date: ${state.exchangeRateDate}` : ''}`;
+      meta.textContent = `Source: ${state.exchangeRateSource || 'Frankfurter'}${state.exchangeRateDate ? ` • Date: ${state.exchangeRateDate}` : ''}`;
       ratesGrid.appendChild(meta);
       ['RON','USD','GBP','INR','JPY','AUD','CAD','CHF','CNY'].forEach(code => {
         if (!state.exchangeRates[code]) return;
@@ -1892,32 +1958,23 @@
       const daysInMonth = new Date(year, month, 0).getDate();
       const hourlyRate = fixedBaseHours > 0 ? salary / fixedBaseHours : 0;
 
-      let totalWeekdayHours = 0, totalWeekendHours = 0, totalNightHours = 0, totalCShiftHours = 0, daysWorked = 0, daysOff = 0, totalSalaryRON = 0;
+      const holidayRate = Math.max(0, parseFloat($('#holidayRate').value) || 1);
+      const result = ShaderSalary.calculateSalary(getMonthKey(), getLoggedHours(), getSalarySettings());
+      const totalWeekdayHours = result.weekdayHours, totalWeekendHours = result.weekendHours, totalNightHours = result.nightHours, totalCShiftHours = result.cShiftHours, totalHolidayHours = result.holidayHours;
+      const daysWorked = result.daysWorked, daysOff = result.daysOff, totalSalaryRON = result.gross;
       const leftRows = [], rightRows = [];
       const splitDay = Math.ceil(daysInMonth / 2);
 
-      for (let day = 1; day <= daysInMonth; day++) {
+      result.days.forEach(({ day, hours: hrs, weekend: isWeekend, holiday, pay: dailyPay }) => {
         const dateObj = new Date(year, month - 1, day);
-        const hoursSelect = $(`#hours-${day}`);
         const shiftSelect = $(`#shift-${day}`);
-        const hrs = Math.max(0, parseFloat(hoursSelect?.value) || 0);
-        const isWeekend = hoursSelect?.dataset.isWeekend === 'true';
-        const shiftValue = (shiftSelect?.value || '').toLowerCase();
-        const isNight = shiftValue === 'night';
-        const isC = shiftValue === 'c';
-        const shiftText = escapeHTML(shiftSelect?.options[shiftSelect.selectedIndex]?.text || 'N/A');
-        const effectiveMultiplier = (isWeekend ? weekendRate : 1) * (isNight ? nightRate : 1) * (isC ? cShiftRate : 1);
-        const dailyPay = hrs * hourlyRate * effectiveMultiplier;
-        totalSalaryRON += dailyPay;
-        if (isWeekend) totalWeekendHours += hrs; else totalWeekdayHours += hrs;
-        if (isNight) totalNightHours += hrs;
-        if (isC) totalCShiftHours += hrs;
-        if (hrs > 0) daysWorked++; else daysOff++;
+        const shiftText = escapeHTML(shiftSelect?.value ? shiftSelect.options[shiftSelect.selectedIndex]?.text : 'N/A');
         const hoursLabel = `${formatNumber(hrs, hrs % 1 ? 1 : 0)}h`;
-        const dateLabel = `${dateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })} (${dateObj.toLocaleDateString('en-GB', { weekday: 'short' })}) - ${shiftText}`;
-        const row = `<tr style="${isWeekend ? 'background:#fff7f7;' : ''}"><td>${dateLabel}</td><td>${hoursLabel}</td><td>${formatNumber(dailyPay)} RON</td></tr>`;
+        const dateLabel = `${dateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })} (${dateObj.toLocaleDateString('en-GB', { weekday: 'short' })}) - ${shiftText}${holiday ? ' · Holiday' : ''}`;
+        const rowStyle = holiday ? 'background:#fdf8ff;' : (isWeekend ? 'background:#fff7f7;' : '');
+        const row = `<tr style="${rowStyle}"${holiday ? ` title="${escapeHTML(holiday)}"` : ''}><td>${dateLabel}</td><td>${hoursLabel}</td><td>${formatNumber(dailyPay)} RON</td></tr>`;
         if (day <= splitDay) leftRows.push(row); else rightRows.push(row);
-      }
+      });
 
       const totalHours = totalWeekdayHours + totalWeekendHours;
       const totalSalaryINR = totalSalaryRON * exchangeRate;
@@ -1936,11 +1993,11 @@
       <p><strong>Base Salary:</strong> ${formatNumber(salary)} RON</p>
       <p><strong>Fixed Base Hours:</strong> ${formatNumber(fixedBaseHours, fixedBaseHours % 1 ? 1 : 0)} hrs</p>
       <p><strong>Standard Hourly Rate:</strong> ${formatNumber(hourlyRate)} RON/hr</p>
-      <p><strong>Multipliers:</strong> Weekend: ${weekendRate}x | Night: ${nightRate}x | C Shift: ${cShiftRate}x</p>
+      <p><strong>Multipliers:</strong> Weekend: ${weekendRate}x | Night: ${nightRate}x | C Shift: ${cShiftRate}x | Holiday: ${holidayRate}x</p>
     </div>
     <div>
       <p><strong>Total Hours Worked:</strong> ${formatNumber(totalHours, totalHours % 1 ? 1 : 0)} hrs</p>
-      <p><strong>Breakdown:</strong> Weekday: ${formatNumber(totalWeekdayHours, totalWeekdayHours % 1 ? 1 : 0)}h | Weekend: ${formatNumber(totalWeekendHours, totalWeekendHours % 1 ? 1 : 0)}h | Night: ${formatNumber(totalNightHours, totalNightHours % 1 ? 1 : 0)}h | C shift: ${formatNumber(totalCShiftHours, totalCShiftHours % 1 ? 1 : 0)}h</p>
+      <p><strong>Breakdown:</strong> Weekday: ${formatNumber(totalWeekdayHours, totalWeekdayHours % 1 ? 1 : 0)}h | Weekend: ${formatNumber(totalWeekendHours, totalWeekendHours % 1 ? 1 : 0)}h | Holiday: ${formatNumber(totalHolidayHours, totalHolidayHours % 1 ? 1 : 0)}h | Night: ${formatNumber(totalNightHours, totalNightHours % 1 ? 1 : 0)}h | C shift: ${formatNumber(totalCShiftHours, totalCShiftHours % 1 ? 1 : 0)}h</p>
       <p><strong>Days Worked:</strong> ${daysWorked} | <strong>Days Off:</strong> ${daysOff}</p>
       <p><strong>Total Gross Salary:</strong> <strong>${formatNumber(totalSalaryRON)} RON</strong></p>
       <p><strong>Converted Value (INR):</strong> ${formatNumber(totalSalaryINR)} INR</p>
@@ -1998,6 +2055,16 @@
       $('#weekendRate').addEventListener('change', () => { recalculateSalary(); scheduleAutoSave(); });
       $('#nightRate').addEventListener('change', () => { recalculateSalary(); scheduleAutoSave(); });
       $('#cShiftRate').addEventListener('change', () => { recalculateSalary(); scheduleAutoSave(); });
+      $('#holidayRate').addEventListener('change', () => { updateAllCards(); recalculateSalary(); scheduleAutoSave(); });
+      $('#use-holidays').addEventListener('change', () => {
+        const current = getLoggedHours();
+        renderCalendarMarkup();
+        $$('.hours-select').forEach(select => { select.value = current.hours[select.dataset.day] ?? ''; });
+        $$('.shift-select').forEach(select => { select.value = current.shifts[select.dataset.day] ?? ''; });
+        updateAllCards(); recalculateSalary(); scheduleAutoSave();
+      });
+      $('#auto-base-hours-btn').addEventListener('click', applyAutoBaseHours);
+      ['#salary', '#fixedBaseHours', '#weekendRate', '#nightRate', '#cShiftRate'].forEach(id => $(id).addEventListener('input', updateAllCards));
       $('#view-cards-btn')?.addEventListener('click', () => setCalendarView('cards'));
       $('#view-table-btn')?.addEventListener('click', () => setCalendarView('table'));
       $('#clear-hours-btn').addEventListener('click', clearAllHours);
