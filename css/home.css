@@ -1,5 +1,8 @@
 /* Homepage-only enhancements. Loaded by index.html after landing.css/pages.css. */
 
+/* Decorative glows must never cause sideways scrolling on phones/tablets. */
+body.home-page { overflow-x: clip; }
+
 /* Sticky, translucent header that spans the full viewport width. */
 .home-page .site-header {
   position: sticky;
@@ -17,7 +20,7 @@
 .home-page .hero::before {
   content: '';
   position: absolute;
-  inset: -40px -20% auto;
+  inset: -40px 0 auto;
   height: 420px;
   z-index: -1;
   background:
@@ -75,14 +78,14 @@
 
 /* Cards: whole card is clickable, with a gentle lift and banner zoom. */
 .home-page .tool-card { position: relative; transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease; }
-.home-page .tool-card:hover { transform: translateY(-3px); box-shadow: 0 14px 34px rgb(15 23 42 / 10%); }
-[data-theme='dark'] .home-page .tool-card:hover { box-shadow: 0 14px 34px rgb(0 0 0 / 35%); }
+@media (hover: hover) { .home-page .tool-card:hover { transform: translateY(-3px); box-shadow: 0 14px 34px rgb(15 23 42 / 10%); } }
+@media (hover: hover) { [data-theme='dark'] .home-page .tool-card:hover { box-shadow: 0 14px 34px rgb(0 0 0 / 35%); } }
 .home-page .tool-card-banner img { transition: transform 400ms ease; }
-.home-page .tool-card:hover .tool-card-banner img { transform: scale(1.04); }
+@media (hover: hover) { .home-page .tool-card:hover .tool-card-banner img { transform: scale(1.04); } }
 .home-page .tool-link::after { content: ''; position: absolute; inset: 0; border-radius: inherit; }
-.home-page .tool-card:hover .tool-link { background: #1d4ed8; color: #fff; }
+@media (hover: hover) { .home-page .tool-card:hover .tool-link { background: #1d4ed8; color: #fff; } }
 .home-page .tool-link i { transition: transform 180ms ease; }
-.home-page .tool-card:hover .tool-link i { transform: translateX(3px); }
+@media (hover: hover) { .home-page .tool-card:hover .tool-link i { transform: translateX(3px); } }
 .home-page .tool-link:focus-visible { outline-offset: 2px; }
 
 /* Install banner: a bit more presence. */
@@ -92,6 +95,15 @@
 .home-page .install-note .install-btn { background: #1d4ed8; color: #fff; border-color: #1d4ed8; }
 .home-page .install-note .install-btn:hover { background: #1e40af; }
 
+@media (pointer: coarse) {
+  .home-page .brand-link, .home-page .about-link { display: inline-flex; align-items: center; min-height: 44px; }
+  .home-page .footer-col li { margin-bottom: 2px; }
+  .home-page .footer-col a, .home-page .footer-bottom-links a { display: inline-flex; align-items: center; min-height: 40px; }
+}
+/* iPad portrait: give the hero a bit more room. */
+@media (min-width: 601px) and (max-width: 1024px) {
+  .home-page .hero { padding-left: 32px; padding-right: 32px; }
+}
 @media (max-width: 600px) {
   .home-page .hero { padding-top: 32px; padding-bottom: 28px; }
   .home-page .hero-eyebrow { font-size: 12px; }

@@ -1,0 +1,129 @@
+/* Shared enhancements for the app launch pages (body.launch-page).
+   Loaded after landing.css / pages.css; does not affect articles or other pages. */
+
+/* Sticky, translucent header spanning the full viewport width. */
+.launch-page .site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: color-mix(in srgb, var(--bg-page) 86%, transparent);
+  backdrop-filter: saturate(1.4) blur(14px);
+  -webkit-backdrop-filter: saturate(1.4) blur(14px);
+  box-shadow: 0 0 0 100vmax color-mix(in srgb, var(--bg-page) 86%, transparent);
+  clip-path: inset(0 -100vmax);
+}
+html { scroll-padding-top: 88px; }
+/* Decorative glows must never cause sideways scrolling on phones/tablets. */
+body.launch-page { overflow-x: clip; }
+
+/* Hero */
+.launch-page .launch-hero { position: relative; isolation: isolate; }
+.launch-page .launch-hero::before {
+  content: '';
+  position: absolute;
+  inset: -20px 0 0;
+  z-index: -1;
+  background:
+    radial-gradient(38% 60% at 22% 40%, rgb(29 78 216 / 9%), transparent 70%),
+    radial-gradient(34% 55% at 78% 45%, rgb(124 58 237 / 7%), transparent 70%);
+  pointer-events: none;
+}
+[data-theme='dark'] .launch-page .launch-hero::before {
+  background:
+    radial-gradient(38% 60% at 22% 40%, rgb(147 180 255 / 13%), transparent 70%),
+    radial-gradient(34% 55% at 78% 45%, rgb(167 139 250 / 9%), transparent 70%);
+}
+.launch-page .launch-hero .hero-eyebrow {
+  display: inline-flex;
+  padding: 5px 12px;
+  border: 1px solid color-mix(in srgb, var(--primary) 25%, transparent);
+  border-radius: 999px;
+  background: var(--bg-card);
+}
+.launch-page .launch-actions .btn-primary { box-shadow: 0 8px 22px rgb(29 78 216 / 22%); }
+.launch-page .launch-preview { transition: transform 300ms ease, box-shadow 300ms ease; }
+@media (hover: hover) { .launch-page .launch-preview:hover { transform: translateY(-4px) rotate(-0.4deg); box-shadow: 0 24px 54px rgb(15 23 42 / 12%); } }
+
+.launch-points {
+  display: flex; flex-wrap: wrap; gap: 8px 18px;
+  margin: 22px 0 0; padding: 0; list-style: none;
+  color: var(--text-muted); font-size: 13.5px; font-weight: 550;
+}
+.launch-points li { display: inline-flex; align-items: center; gap: 8px; }
+.launch-points i {
+  display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 8px;
+  background: var(--bg-subtle); color: var(--primary); font-size: 11px;
+}
+
+/* Feature cards: icons instead of 01/02/03, gentle hover. */
+.launch-page .feature-card { transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease; }
+@media (hover: hover) { .launch-page .feature-card:hover { transform: translateY(-3px); border-color: var(--primary); box-shadow: 0 14px 30px rgb(15 23 42 / 8%); } }
+[data-theme='dark'] .launch-page .feature-card:hover { box-shadow: 0 14px 30px rgb(0 0 0 / 35%); }
+.feature-icon {
+  display: inline-grid; place-items: center; width: 44px; height: 44px; flex-shrink: 0;
+  border-radius: 12px; font-size: 18px; color: #fff;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  box-shadow: 0 6px 16px rgb(29 78 216 / 25%);
+}
+
+/* Steps: numbered cards with a connecting rail. */
+.launch-page .steps-list { position: relative; gap: 12px; }
+.launch-page .steps-list::before {
+  content: ''; position: absolute; left: 33px; top: 30px; bottom: 30px; width: 2px;
+  background: linear-gradient(var(--border), color-mix(in srgb, var(--primary) 40%, var(--border)), var(--border));
+}
+.launch-page .steps-list li {
+  position: relative; align-items: center; padding: 14px 16px;
+  border: 1px solid var(--border); border-radius: 14px; background: var(--bg-card);
+}
+.launch-page .steps-list .step-number { background: #1d4ed8; color: #fff; position: relative; }
+.launch-page .steps-list p { padding-top: 0; color: var(--text-main); }
+
+/* Guidance callout */
+.launch-page .guide-callout {
+  background: linear-gradient(120deg, var(--bg-subtle) 0%, color-mix(in srgb, var(--bg-subtle) 60%, var(--bg-card)) 100%);
+}
+
+/* More tools */
+.more-tools { padding: 40px 0 0; }
+.more-tools-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-bottom: 18px; }
+.more-tools-head h2 { font-size: clamp(21px, 2vw, 26px); letter-spacing: -.6px; font-weight: 750; }
+.more-tools-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.more-tool {
+  position: relative; display: grid; grid-template-columns: 112px minmax(0, 1fr); align-items: center; gap: 14px;
+  padding: 10px; border: 1px solid var(--border); border-radius: 16px; background: var(--bg-card);
+  color: var(--text-main); text-decoration: none;
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+@media (hover: hover) { .more-tool:hover { transform: translateY(-2px); border-color: var(--primary); box-shadow: 0 12px 26px rgb(15 23 42 / 8%); } }
+.more-tool img { display: block; width: 112px; height: 63px; object-fit: cover; border-radius: 10px; background: #f1f5f9; }
+.more-tool strong { display: block; font-size: 15px; line-height: 1.3; letter-spacing: -.3px; }
+.more-tool span { display: block; margin-top: 3px; color: var(--text-muted); font-size: 12.5px; line-height: 1.45; }
+
+/* Tablets & touch: comfortable tap targets in header, breadcrumbs and footer. */
+@media (pointer: coarse) {
+  .launch-page .brand-link, .launch-page .about-link { display: inline-flex; align-items: center; min-height: 44px; }
+  .launch-page .breadcrumbs a { display: inline-flex; align-items: center; min-height: 40px; }
+  .launch-page .site-footer nav a { display: inline-flex; align-items: center; min-height: 44px; }
+}
+/* iPad landscape / small laptops: four feature cards become two per row. */
+@media (max-width: 1100px) {
+  .launch-page .feature-grid.feature-grid-four { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+/* iPad portrait & large phones: stack the hero so text and artwork both get full width. */
+@media (max-width: 900px) {
+  .launch-page .launch-hero { grid-template-columns: minmax(0, 1fr); gap: 28px; padding: 28px 0 40px; }
+  .launch-page .launch-preview { width: 100%; max-width: 640px; }
+  .launch-page .launch-intro { max-width: 62ch; }
+  .launch-page .how-section { grid-template-columns: minmax(0, 1fr); gap: 20px; padding: 36px 0; }
+  .more-tools-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .launch-page .guide-callout { margin-left: 0; margin-right: 0; }
+}
+@media (max-width: 640px) { .more-tools-grid { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 600px) {
+  .launch-points { gap: 8px 14px; font-size: 13px; }
+  .launch-page .steps-list::before { left: 31px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .launch-page .launch-preview:hover, .launch-page .feature-card:hover, .more-tool:hover { transform: none; }
+}
