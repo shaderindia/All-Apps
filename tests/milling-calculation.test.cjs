@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { calculate, suggestMaterial } = require('../cnc-machinist/millingcalculation/milling-core.js');
+const { calculate, suggestMaterial, chipThinningFactor, gcode } = require('../cnc-machinist/millingcalculation/milling-core.js');
 
 const setup = { vc: 120, fz: 0.06, diameter: 12, teeth: 4, ap: 3, ae: 4, length: 150, passes: 1, maxRpm: 8000, maxToolRpm: 12000, maxFeed: 3000, kc: '', availablePower: '' };
 
@@ -82,4 +82,28 @@ test('material chart boundaries and depth mismatch are explicit', () => {
   assert.match(suggestMaterial('unalloyed_steel', 12, 2).error, /Below 30%/);
   const result = calculate({ ...setup, material: 'unalloyed_steel', ap: 13 });
   assert.match(result.warnings.join(' '), /Axial depth exceeds/);
+});
+
+test('radial chip thinning reports max chip thickness and compensated feed per tooth', () => {
+  assert.equal(chipThinningFactor(12, 6), 1);
+  assert.equal(chipThinningFactor(12, 12), 1);
+  const factor = chipThinningFactor(10, 1); // ae/D = 10%
+  assert.ok(Math.abs(factor - 0.6) < 1e-9);
+  const result = calculate({ ...setup, diameter: 10, ae: 1, maxFeed: 100000 });
+  assert.ok(Math.abs(result.hex - result.actualFz * 0.6) < 1e-9);
+  assert.ok(Math.abs(result.compensatedFz - 0.1) < 1e-9);
+  assert.match(result.warnings.join(' '), /Radial chip thinning/);
+});
+
+test('engagement angle, torque and power utilisation follow from the pass', () => {
+  assert.ok(Math.abs(calculate({ ...setup, ae: 6 }).engagementAngle - 90) < 1e-9);
+  assert.ok(Math.abs(calculate({ ...setup, ae: 12 }).engagementAngle - 180) < 1e-9);
+  const result = calculate({ ...setup, kc: 1800, availablePower: 1 });
+  assert.ok(Math.abs(result.torque - result.power * 60000 / (2 * Math.PI * result.rpm)) < 1e-9);
+  assert.ok(Math.abs(result.powerUse - result.power) < 1e-9);
+  assert.equal(calculate(setup).torque, null);
+});
+
+test('G-code line uses the programmed, limit-respecting values', () => {
+  assert.equal(gcode(calculate(setup)), 'S3183 M03\nG01 F763.9');
 });

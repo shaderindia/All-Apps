@@ -6,7 +6,16 @@
   <title>CNC Milling Speeds, Feeds &amp; Machine Limits Calculator | SHADER7</title>
   <meta name="description" content="Plan a CNC milling pass with real machine RPM and feed limits. Calculate achieved cutting speed, chip load, material removal, cutting time, and optional power demand.">
   <link rel="canonical" href="https://www.shader7.com/cnc-machinist/millingcalculation/">
+  <meta name="theme-color" content="#142f53">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="CNC Milling Speeds, Feeds &amp; Machine Limits Calculator | SHADER7">
+  <meta property="og:description" content="Machine-ready RPM and feed with machine limits, chip thinning, removal rate, cycle time, power and torque. Copy the G-code line or share the setup.">
+  <meta property="og:url" content="https://www.shader7.com/cnc-machinist/millingcalculation/">
+  <meta property="og:image" content="https://www.shader7.com/assets/banners/milling-1280.webp">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../../favicon.png">
   <link rel="stylesheet" href="./style.css">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"CNC Milling Speeds, Feeds & Machine Limits Calculator","url":"https://www.shader7.com/cnc-machinist/millingcalculation/","applicationCategory":"EngineeringApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"publisher":{"@type":"Organization","name":"SHADER7","url":"https://www.shader7.com/"}}</script>
   <script defer src="./milling-core.js"></script>
   <script defer src="./app.js"></script>
 </head>
@@ -40,7 +49,7 @@
           <button type="button" id="apply-material" hidden>Apply material starting values</button>
         </div>
         <fieldset><legend>Tool and cutting data</legend><div class="fields">
-          <label>Cutting speed <span>Vc · m/min</span><input id="vc" name="vc" type="number" min="0.01" step="any" value="120" required><small>From the insert or tool maker</small></label>
+          <label>Cutting speed <span>Vc · m/min</span><input id="vc" name="vc" type="number" min="0.01" step="any" value="120" required><small>From the tool maker's cutting-data chart</small></label>
           <label>Feed per tooth <span>fz · mm/tooth</span><input id="fz" name="fz" type="number" min="0.001" step="any" value="0.06" required><small>Target chip load</small></label>
           <label>Cutter diameter <span>D · mm</span><input id="diameter" name="diameter" type="number" min="0.01" step="any" value="12" required></label>
           <label>Effective teeth <span>zc · count</span><input id="teeth" name="teeth" type="number" min="1" max="100" step="1" value="4" required><small>Active cutting edges on the tool</small></label>
@@ -64,23 +73,28 @@
     </section>
     <section class="results" aria-labelledby="results-title">
       <div class="panel result-panel">
-        <div class="section-heading"><div><span class="eyebrow">02 / Result</span><h2 id="results-title">Machine-ready values</h2></div><button type="button" id="copy" disabled>Copy setup</button></div>
+        <div class="section-heading"><div><span class="eyebrow">02 / Result</span><h2 id="results-title">Machine-ready values</h2></div><div class="actions"><button type="button" id="share" disabled title="Copy a link that reopens this exact setup">Copy link</button><button type="button" id="copy" disabled>Copy setup</button></div></div>
         <p id="error" class="error" role="alert" hidden></p>
         <div id="result-content" aria-live="polite">
-          <div class="hero-results"><div><span>Program spindle</span><strong id="rpm">—</strong><small>RPM</small></div><div><span>Program cutting feed</span><strong id="feed">—</strong><small>mm/min</small></div></div>
+          <div class="hero-results"><div><span>Program spindle</span><strong id="rpm">—</strong><small>RPM</small></div><div><span>Program cutting feed</span><strong id="feed">—</strong><small>mm/min · <span id="feedIpm" class="alt-unit">—</span> in/min</small></div></div>
+          <div class="gcode"><div><span>G-code</span><code id="gcode">—</code></div><button type="button" id="copy-gcode" disabled>Copy G-code</button></div>
           <div class="comparison"><div><span>Requested RPM</span><strong id="requestedRpm">—</strong></div><div><span>Feed at selected fz and programmed RPM</span><strong id="requestedFeed">—</strong></div></div>
           <div class="metric-grid">
-            <div><span>Actual cutting speed</span><strong id="actualVc">—</strong><small>m/min</small></div>
+            <div><span>Actual cutting speed</span><strong id="actualVc">—</strong><small>m/min · <span id="actualSfm">—</span> SFM</small></div>
             <div><span>Actual feed per tooth</span><strong id="actualFz">—</strong><small>mm/tooth</small></div>
             <div><span>Material removal rate</span><strong id="mrr">—</strong><small>cm³/min</small></div>
             <div><span>Total in-cut time</span><strong id="time">—</strong><small>min:sec</small></div>
-            <div><span>Radial engagement</span><strong id="engagement">—</strong><small>% of diameter</small></div>
+            <div><span>Max chip thickness</span><strong id="hex">—</strong><small>hex · mm, after radial thinning</small></div>
+            <div><span>Radial engagement</span><strong id="engagement">—</strong><small>% of diameter · <span id="angle">—</span>° arc</small></div>
             <div><span>Estimated cutting power</span><strong id="power">—</strong><small>kW, when kc supplied</small></div>
+            <div><span>Spindle torque</span><strong id="torque">—</strong><small>N·m at programmed RPM</small></div>
           </div>
+          <div id="thinning" class="thinning" hidden><p id="thinning-text"></p><button type="button" id="apply-thinning">Use compensated fz</button></div>
+          <div id="power-meter" class="power-meter" hidden><div class="power-meter-label"><span>Spindle power used</span><strong id="power-use">—</strong></div><div class="power-track" role="progressbar" aria-label="Spindle power used" aria-valuemin="0" aria-valuemax="100" id="power-track"><div id="power-fill"></div></div></div>
         </div>
       </div>
       <div class="panel notes-panel"><span class="eyebrow">03 / Check before running</span><h2>Setup checks</h2><ul id="warnings" aria-live="polite"></ul><p class="hint">These calculations describe steady cutting only. Verify workholding, tool overhang, entry/exit, coolant, tool grade, machine torque and the final program before machining.</p></div>
-      <div class="panel reference-panel"><h2>How the numbers are calculated</h2><p>RPM = 1000 × Vc ÷ (π × D). Feed = RPM × effective teeth × fz. MRR = ap × ae × feed ÷ 1000. Program values round down and respect your machine and tool limits. Time = in-cut length × passes ÷ achieved feed; it excludes rapids, acceleration and tool changes.</p><p>Material starting values come from the short CoroMill Dura solid-carbide end-mill chart. At 30–50% radial engagement the app uses the 50% case (ap = 1 × D); above 50% it uses the 100% case (ap = 0.5 × D). Below 30%, enter supplier data for chip thinning. Between listed cutter diameters, fz is interpolated. These are reference values for that tool family, not universal material recommendations.</p><p>When kc is supplied, cutting power = ap × ae × feed × kc ÷ 60,000,000. This is a simplified cutting-zone estimate, not motor input power.</p><div class="source-links"><a href="https://cdn.sandvik.coromant.com/files/sitecollectiondocuments/services/metal-cutting-e-learning/formulas-and-definitions/formulas-and-deinitions-for-milling-metric-enu.pdf" target="_blank" rel="noopener noreferrer">Milling formulas — Sandvik Coromant ↗</a><a href="https://cdn.sandvik.coromant.com/files/en-gb/products/coromill-dura/documents/coromill-dura-cutting-data.pdf" target="_blank" rel="noopener noreferrer">Material cutting-data chart — Sandvik Coromant ↗</a></div></div>
+      <div class="panel reference-panel"><h2>How the numbers are calculated</h2><p>RPM = 1000 × Vc ÷ (π × D). Feed = RPM × effective teeth × fz. MRR = ap × ae × feed ÷ 1000. Program values round down and respect your machine and tool limits. Time = in-cut length × passes ÷ achieved feed; it excludes rapids, acceleration and tool changes.</p><p>Material starting values come from Sandvik Coromant's short CoroMill Dura solid-carbide end-mill chart. The chart has two cases: side milling at 50% radial width with full-diameter depth (ap = 1 × D), and slotting at 100% width with half-diameter depth (ap = 0.5 × D). For widths from 30% to 50% of D the app uses the side-milling case; above 50% it uses the slotting case. Below 30%, enter supplier data for chip thinning. Between listed cutter diameters, fz is interpolated. These are reference values for that tool family, not universal material recommendations.</p><p>When kc is supplied, cutting power = ap × ae × feed × kc ÷ 60,000,000. This is a simplified cutting-zone estimate, not motor input power. Torque = power × 60,000 ÷ (2π × RPM).</p><p>Below 50% radial engagement the chip never reaches full fz. Maximum chip thickness hex = fz × √(1 − (1 − 2·ae/D)²) for a straight-edged end mill. "Use compensated fz" raises fz so hex matches the value you entered; check that the result stays within the tool maker's limits.</p><div class="source-links"><a href="https://cdn.sandvik.coromant.com/files/sitecollectiondocuments/services/metal-cutting-e-learning/formulas-and-definitions/formulas-and-deinitions-for-milling-metric-enu.pdf" target="_blank" rel="noopener noreferrer">Milling formulas — Sandvik Coromant ↗</a><a href="https://cdn.sandvik.coromant.com/files/en-gb/products/coromill-dura/documents/coromill-dura-cutting-data.pdf" target="_blank" rel="noopener noreferrer">Material cutting-data chart — Sandvik Coromant ↗</a></div></div>
     </section>
   </main>
   <footer><a href="../">← CNC Machinist tools</a><span>Use supplier cutting data and verify on the machine.</span></footer>

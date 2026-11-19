@@ -54,6 +54,18 @@
     };
   }
 
+  // Radial chip thinning for a straight-edged cutter (κr = 90°): below 50% engagement the
+  // maximum chip thickness is hex = fz × √(1 − (1 − 2·ae/D)²).
+  function chipThinningFactor(diameter, ae) {
+    const ratio = ae / diameter;
+    if (!(ratio > 0) || ratio >= 0.5) return 1;
+    return Math.sqrt(1 - Math.pow(1 - 2 * ratio, 2));
+  }
+
+  function gcode(result) {
+    return `S${result.rpm} M03\nG01 F${result.feed.toFixed(1)}`;
+  }
+
   function calculate(raw) {
     const values = {};
     const required = ['vc', 'fz', 'diameter', 'teeth', 'ap', 'ae', 'maxRpm', 'maxToolRpm', 'maxFeed', 'length', 'passes'];
@@ -90,6 +102,13 @@
     const mrr = values.ap * values.ae * feed / 1000;
     const minutes = values.length * values.passes / feed;
     const power = kc === null ? null : values.ap * values.ae * feed * kc / 60000000;
+    const ratio = values.ae / values.diameter;
+    const engagementAngle = Math.acos(Math.max(-1, 1 - 2 * ratio)) * 180 / Math.PI;
+    const thinning = chipThinningFactor(values.diameter, values.ae);
+    const hex = actualFz * thinning;
+    const compensatedFz = thinning < 1 ? values.fz / thinning : values.fz;
+    const torque = power === null ? null : power * 60000 / (2 * Math.PI * rpm);
+    const powerUse = power !== null && availablePower !== null ? power / availablePower : null;
     if (![requestedRpm, requestedFeed, mrr, minutes, power === null ? 0 : power].every(Number.isFinite)) {
       return { error: 'The input values produce a result outside the calculator range.' };
     }
@@ -98,12 +117,13 @@
     if (requestedFeed > values.maxFeed) warnings.push('Feed capped by machine. Actual chip load is lower than requested; check for rubbing.');
     if (power !== null && availablePower !== null && power > availablePower) warnings.push('Estimated cutting power exceeds available spindle power. Reduce engagement or feed.');
     if (availablePower !== null && power === null) warnings.push('Enter specific cutting force to compare the pass with available spindle power.');
-    if (values.ae / values.diameter < 0.5) warnings.push('Narrow radial engagement can reduce chip thickness. Review radial chip thinning for this cutter geometry.');
+    if (powerUse !== null && powerUse <= 1 && powerUse > 0.8) warnings.push(`Estimated cutting power uses ${Math.round(powerUse * 100)}% of available spindle power. Leave margin for tool wear and entry spikes.`);
+    if (ratio < 0.5) warnings.push(`Radial chip thinning: at ${(ratio * 100).toFixed(1)}% engagement the maximum chip thickness is about ${hex.toFixed(4)} mm, thinner than the ${actualFz.toFixed(4)} mm feed per tooth. Chips that are too thin rub and wear the edge; compare hex with the tool maker's recommended chip thickness.`);
     const reference = suggestMaterial(raw.material, values.diameter, values.ae);
     if (reference && reference.error) warnings.push('Selected material baseline does not cover this diameter and radial engagement; use tool-specific cutting data.');
     else if (reference && values.ap > reference.referenceAp * values.diameter) warnings.push('Axial depth exceeds the selected material chart case. Confirm the tool maker permits this depth.');
     if (reference && !reference.error && reference.note) warnings.push(reference.note);
-    return { requestedRpm, rpm, requestedFeed, feed, actualVc, actualFz, mrr, minutes, power, warnings, engagement: values.ae / values.diameter };
+    return { requestedRpm, rpm, requestedFeed, feed, actualVc, actualFz, mrr, minutes, power, torque, powerUse, hex, compensatedFz, engagementAngle, warnings, engagement: ratio };
   }
-  return { calculate, suggestMaterial, MATERIALS };
+  return { calculate, suggestMaterial, chipThinningFactor, gcode, MATERIALS };
 });
