@@ -75,6 +75,15 @@
     filter();
   }));
 
+  // Press "/" anywhere (outside a text field) to jump to the search box.
+  document.addEventListener('keydown', event => {
+    if (event.key !== '/' || event.ctrlKey || event.metaKey || event.altKey) return;
+    const target = event.target;
+    if (target.closest('input, textarea, select, [contenteditable="true"]')) return;
+    event.preventDefault();
+    search.focus();
+  });
+
   // Static cards and links remain usable if JavaScript is unavailable.
   document.getElementById('directory-controls').hidden = false;
   filter();
