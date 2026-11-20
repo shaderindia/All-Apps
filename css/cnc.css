@@ -1,0 +1,201 @@
+/* CNC Machinist directory page (body.cnc-directory).
+   Glass panels over the scroll-driven machining animation, and a "focus reel"
+   of tool cards: the card nearest the middle of the screen is full size and sharp,
+   the ones before and after it are smaller, blurred and dimmed.
+   --f (0..1) is set per card by cnc-machinist/focus-reel.js. */
+
+body.cnc-directory { overflow-x: clip; }
+html { scroll-padding-top: 88px; }
+
+.cnc-directory {
+  --glass: rgb(255 255 255 / 62%);
+  --glass-strong: rgb(255 255 255 / 80%);
+  --glass-border: rgb(255 255 255 / 55%);
+  --glass-shadow: 0 18px 50px rgb(7 11 20 / 28%);
+  --glass-blur: blur(12px) saturate(1.3);
+}
+[data-theme='dark'] .cnc-directory {
+  --glass: rgb(10 16 30 / 58%);
+  --glass-strong: rgb(10 16 30 / 76%);
+  --glass-border: rgb(255 255 255 / 14%);
+  --glass-shadow: 0 18px 50px rgb(0 0 0 / 45%);
+}
+
+/* Soft vignette so text stays readable while the animation stays visible. */
+.cnc-bg-scroll-container::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(120% 90% at 50% 40%, transparent 45%, rgb(7 11 20 / 45%) 100%),
+    linear-gradient(180deg, rgb(7 11 20 / 10%) 0%, transparent 30%, transparent 70%, rgb(7 11 20 / 30%) 100%);
+  pointer-events: none;
+}
+
+/* Header: full-width frosted bar. */
+.cnc-directory .site-header {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  border-bottom-color: transparent;
+  background: var(--glass-strong);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow: 0 0 0 100vmax var(--glass-strong);
+  clip-path: inset(0 -100vmax);
+}
+
+/* ---------- Hero: glass panel on the left, the animation shows on the right ---------- */
+.site-page.cnc-directory .hero.cnc-hero {
+  grid-template-columns: minmax(0, 620px);
+  justify-content: start;
+  min-height: min(62vh, 560px);
+  align-content: center;
+  padding-top: 40px;
+  padding-bottom: 56px;
+}
+.site-page.cnc-directory .cnc-hero-copy {
+  background: var(--glass);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+.cnc-directory .cnc-hero .hero-eyebrow {
+  display: inline-flex; padding: 5px 12px; border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--primary) 30%, transparent);
+  background: var(--glass-strong);
+}
+.cnc-directory .cnc-hero h1 { text-wrap: balance; }
+.cnc-directory .cnc-hero .hero-description { color: var(--text-main); opacity: .82; }
+.cnc-directory .launch-actions .btn-primary { min-height: 48px; padding: 12px 20px; box-shadow: 0 8px 22px rgb(29 78 216 / 30%); }
+.cnc-points {
+  display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 20px 0 0; padding: 0; list-style: none;
+  color: var(--text-main); font-size: 13.5px; font-weight: 600;
+}
+.cnc-points li { display: inline-flex; align-items: center; gap: 8px; opacity: .85; }
+.cnc-points i {
+  display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 8px;
+  background: var(--glass-strong); color: var(--primary); font-size: 11px;
+}
+
+/* ---------- Directory controls: glass, centred over the reel ---------- */
+.site-page.cnc-directory .directory { max-width: 920px; margin-inline: auto; }
+.site-page.cnc-directory .directory-heading,
+.site-page.cnc-directory .directory-controls {
+  background: var(--glass);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+.site-page.cnc-directory .directory-heading { margin-inline: auto; }
+.site-page.cnc-directory .directory-controls {
+  background: var(--glass-strong);
+}
+.cnc-directory .filter-tabs { justify-content: center; }
+.cnc-directory .search-input-wrap input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 15%, transparent); }
+
+/* ---------- Focus reel ---------- */
+.site-page.cnc-directory .tools-grid {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(18px, 3vh, 34px);
+  padding: 12px 0 18vh;
+}
+.site-page.cnc-directory .tool-card {
+  --f: 1;
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 46%) minmax(0, 1fr);
+  align-items: stretch;
+  border-radius: 22px;
+  background: var(--glass-strong);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  transform: scale(calc(0.86 + 0.14 * var(--f)));
+  filter: blur(calc((1 - var(--f)) * 5px));
+  opacity: calc(0.45 + 0.55 * var(--f));
+  transform-origin: center;
+  will-change: transform, filter, opacity;
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+}
+.site-page.cnc-directory .tool-card.is-focused {
+  border-color: color-mix(in srgb, var(--primary) 70%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--primary) 40%, transparent), 0 26px 60px rgb(7 11 20 / 38%);
+}
+/* Keyboard users always get the card they are on in full focus. */
+.site-page.cnc-directory .tool-card:focus-within { --f: 1 !important; }
+.cnc-directory .catalog-card .tool-card-banner { height: 100%; aspect-ratio: 16 / 9; background: #0f172a; }
+.cnc-directory .catalog-card .tool-card-banner img { height: 100%; object-fit: cover; object-position: left center; }
+.cnc-directory .catalog-card .tool-card-content { justify-content: center; padding: 26px 30px; }
+.cnc-directory .tool-card h3 { font-size: 22px; letter-spacing: -.6px; margin: 8px 0 10px; }
+.cnc-directory .tool-card p { color: var(--text-main); opacity: .78; font-size: 14.5px; }
+.cnc-directory .tool-link { width: auto; min-width: 180px; margin-top: 4px; }
+.cnc-directory .tool-card.is-focused .tool-link { background: #1d4ed8; color: #fff; }
+.cnc-directory .tool-link::after { content: ''; position: absolute; inset: 0; border-radius: inherit; }
+@media (hover: hover) {
+  .cnc-directory .tool-card:hover { border-color: var(--primary); }
+  .cnc-directory .tool-card:hover .tool-link { background: #1d4ed8; color: #fff; }
+}
+
+/* Guide callout & footer as glass too. */
+.cnc-directory .guide-callout {
+  max-width: 920px; margin-inline: auto;
+  background: var(--glass-strong);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+.site-page.cnc-directory .site-footer {
+  background: var(--glass-strong);
+  border-color: var(--glass-border);
+}
+
+/* Touch devices: finger-sized targets. */
+@media (pointer: coarse) {
+  .cnc-directory .brand-link, .cnc-directory .about-link { display: inline-flex; align-items: center; min-height: 44px; }
+  .cnc-directory .site-footer nav a { display: inline-flex; align-items: center; min-height: 44px; }
+}
+
+/* iPad portrait and below */
+@media (max-width: 900px) {
+  .site-page.cnc-directory .hero.cnc-hero { min-height: 0; padding: 28px 24px 40px; }
+  .site-page.cnc-directory .directory { padding-left: 24px; padding-right: 24px; }
+  .cnc-directory .guide-callout { margin-left: 24px; margin-right: 24px; }
+}
+/* Narrow screens: card image on top, softer effect. */
+@media (max-width: 700px) {
+  .site-page.cnc-directory .tool-card {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 0;
+    transform: scale(calc(0.92 + 0.08 * var(--f)));
+    filter: blur(calc((1 - var(--f)) * 3px));
+    opacity: calc(0.55 + 0.45 * var(--f));
+  }
+  .cnc-directory .catalog-card .tool-card-banner { width: 100%; height: auto; aspect-ratio: 16 / 9; border-radius: 0; }
+  .cnc-directory .catalog-card .tool-card-content { padding: 20px; }
+  .cnc-directory .tool-card h3 { font-size: 19px; }
+  .cnc-directory .tool-link { width: 100%; }
+}
+
+/* Phones */
+@media (max-width: 600px) {
+  .site-page.cnc-directory .hero.cnc-hero { padding: 20px 16px 30px; }
+  .site-page.cnc-directory .cnc-hero-copy { padding: 24px 20px; border-radius: 20px; }
+  .cnc-directory .cnc-hero h1 { font-size: 27px; }
+  .cnc-directory .launch-actions .btn-primary { width: 100%; }
+  .cnc-points { gap: 8px 14px; font-size: 13px; }
+  .site-page.cnc-directory .directory { padding-left: 16px; padding-right: 16px; }
+  .cnc-directory .filter-tabs { justify-content: flex-start; }
+  .cnc-directory .guide-callout { margin-left: 16px; margin-right: 16px; }
+  .site-page.cnc-directory .site-footer { margin-left: 16px; margin-right: 16px; padding: 24px 20px; }
+}
+
+/* Reduced motion: no scaling or blur. */
+@media (prefers-reduced-motion: reduce) {
+  .site-page.cnc-directory .tool-card { transform: none !important; filter: none !important; opacity: 1 !important; }
+}

@@ -42,11 +42,28 @@
     return String(num).padStart(4, '0');
   }
 
-  // Preload all 240 frames into memory
-  function preloadFrames() {
-    for (let i = 1; i <= TOTAL_FRAMES; i++) {
+  // Respect data-saver and reduced-motion: show one still frame instead of scrubbing.
+  const connection = navigator.connection || {};
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const saveData = Boolean(connection.saveData) || /(^|-)2g$/.test(connection.effectiveType || '');
+  const STATIC_MODE = reduceMotion || saveData;
+
+  // Load order: the frame for the current scroll position, then a coarse pass
+  // (every 8th, 4th, 2nd frame) so scrubbing works early, then the rest.
+  function loadOrder(startIdx) {
+    const order = [startIdx];
+    const seen = new Set(order);
+    [8, 4, 2, 1].forEach(step => {
+      for (let i = 0; i < TOTAL_FRAMES; i += step) {
+        if (!seen.has(i)) { seen.add(i); order.push(i); }
+      }
+    });
+    return order;
+  }
+
+  function loadFrame(idx) {
+    return new Promise(resolve => {
       const img = new Image();
-      const idx = i - 1;
       images[idx] = img;
       img.decoding = 'async';
       img.onload = () => {
@@ -55,12 +72,25 @@
         if (loadedCount === 1 || idx === baseIdx || idx === Math.min(TOTAL_FRAMES - 1, baseIdx + 1)) {
           renderFrame(currentFrameFloat);
         }
+        resolve();
       };
       img.onerror = () => {
-        console.warn(`Unable to preload CNC animation frame ${i}.`);
+        console.warn(`Unable to preload CNC animation frame ${idx + 1}.`);
+        resolve();
       };
-      img.src = `${FRAME_DIR}${FRAME_PREFIX}${padFrame(i)}${FRAME_EXT}`;
-    }
+      img.src = `${FRAME_DIR}${FRAME_PREFIX}${padFrame(idx + 1)}${FRAME_EXT}`;
+    });
+  }
+
+  // A few parallel workers keep the network busy without flooding phones with 240 requests at once.
+  function preloadFrames() {
+    const start = Math.round(currentFrameFloat);
+    if (STATIC_MODE) { loadFrame(start); return; }
+    const queue = loadOrder(start);
+    const worker = async () => {
+      while (queue.length) await loadFrame(queue.shift());
+    };
+    for (let i = 0; i < 6; i++) worker();
   }
 
   function isDrawable(img) {
@@ -93,7 +123,7 @@
 
   // Draw frame with cover scaling, HiDPI support, and sub-frame alpha crossfading
   function renderFrame(frameFloat) {
-    const dpr = window.devicePixelRatio || 1;
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
     const w = window.innerWidth;
     const h = window.innerHeight;
 
@@ -181,18 +211,26 @@
   }
 
   function onScroll() {
+    if (STATIC_MODE) return;
     targetFrameFloat = calculateTargetFrame();
     startLoop();
   }
 
   window.addEventListener('scroll', onScroll, { passive: true });
+  // Mobile browsers fire resize when the address bar shows/hides; coalesce into one redraw per frame.
+  let resizeQueued = false;
   window.addEventListener('resize', () => {
-    targetFrameFloat = calculateTargetFrame();
-    renderFrame(currentFrameFloat);
-    startLoop();
+    if (resizeQueued) return;
+    resizeQueued = true;
+    window.requestAnimationFrame(() => {
+      resizeQueued = false;
+      if (!STATIC_MODE) targetFrameFloat = calculateTargetFrame();
+      renderFrame(currentFrameFloat);
+      if (!STATIC_MODE) startLoop();
+    });
   }, { passive: true });
 
-  targetFrameFloat = calculateTargetFrame();
+  targetFrameFloat = STATIC_MODE ? 0 : calculateTargetFrame();
   currentFrameFloat = targetFrameFloat;
   preloadFrames();
 })();
