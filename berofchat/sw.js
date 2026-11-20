@@ -1,11 +1,12 @@
-const CACHE_NAME = "shader7-quick-private-chat-v1";
+const CACHE_NAME = "shader7-quick-private-chat-v2";
 
 const APP_SHELL = [
   "./",
   "./index.html",
   "./app.html",
   "./manifest.json",
-  "./app.js"
+  "./app.js",
+  "./app.css"
 ];
 
 self.addEventListener("install", (event) => {
@@ -37,8 +38,8 @@ self.addEventListener("fetch", (event) => {
 
   event.respondWith(
     fetch(event.request).catch(() => {
-      return caches.match(event.request).then((cached) => {
-        return cached || caches.match("./index.html");
+      return caches.match(event.request, { ignoreSearch: true }).then((cached) => {
+        return cached || (event.request.mode === "navigate" ? caches.match("./app.html") : Response.error());
       });
     })
   );
