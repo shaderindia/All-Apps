@@ -6,19 +6,20 @@
 
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Getting started with CNC G-code | Shader7</title>
-<meta content="Get oriented with common commands, program structure, canned cycles, and the checks around a machining workflow." name="description"/>
+<title>Getting started with CNC G-code using the Shader7 generators | Shader7</title>
+<meta content="Learn how a CNC mill program is built, block by block, then use the Shader7 CNC Machinist generators to write face milling, contour, drilling and circle programs you can read and check." name="description"/>
 <link href="https://www.shader7.com/cnc-gcode-beginners-guide.html" rel="canonical"/>
-<meta content="Getting started with CNC G-code" property="og:title"/>
-<meta content="Get oriented with common commands, program structure, canned cycles, and the checks around a machining workflow." property="og:description"/>
+<meta content="Getting started with CNC G-code using the Shader7 generators" property="og:title"/>
+<meta content="Learn how a CNC mill program is built, block by block, then use the Shader7 CNC Machinist generators to write face milling, contour, drilling and circle programs you can read and check." property="og:description"/>
 <meta content="https://www.shader7.com/cnc-gcode-beginners-guide.html" property="og:url"/>
 <meta content="article" property="og:type"/>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Getting started with CNC G-code", "author": {"@type": "Person", "name": "Nishikant Xalxo"}, "publisher": {"@type": "Organization", "name": "SHADER7"}, "datePublished": "2026-03-28", "dateModified": "2026-05-23", "description": "Get oriented with common commands, program structure, canned cycles, and the checks around a machining workflow."}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Getting started with CNC G-code using the Shader7 generators", "author": {"@type": "Person", "name": "Nishikant Xalxo"}, "publisher": {"@type": "Organization", "name": "SHADER7"}, "datePublished": "2026-03-28", "dateModified": "2026-11-20", "description": "Learn how a CNC mill program is built, block by block, then use the Shader7 CNC Machinist generators to write face milling, contour, drilling and circle programs you can read and check.", "wordCount": 1436}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Do I need CAM software to start with G-code?", "acceptedAnswer": {"@type": "Answer", "text": "No. Simple parts and operations such as facing, drilling, bolt circles and circle milling are easy to program by hand or with generators. CAM becomes useful for complex 3D shapes."}}, {"@type": "Question", "name": "Which controls do the Shader7 generators support?", "acceptedAnswer": {"@type": "Answer", "text": "Most write Fanuc-style code, several with Fanuc Custom Macro B variables and loops. The Siemens helper writes Sinumerik CYCLE95 programs, and the 3D CAD Studio can output Fanuc/Haas, Siemens, LinuxCNC-style and macro dialects."}}, {"@type": "Question", "name": "What does the # in some programs mean?", "acceptedAnswer": {"@type": "Answer", "text": "It marks a macro variable. For example, #1=-2.0 stores −2.0 in variable 1, and later lines can use #1 instead of a fixed number. The Macro B guide explains this in detail."}}, {"@type": "Question", "name": "Is the generated code ready to run?", "acceptedAnswer": {"@type": "Answer", "text": "Treat it as a draft. Check the tool numbers, offsets, clearance heights and end code for your machine, and verify it in simulation before cutting."}}, {"@type": "Question", "name": "Do the generators work on a phone?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. They run in any modern browser and do not need an account."}}]}</script>
 <style>body { font-family: 'Inter', sans-serif; }</style>
 <link crossorigin="" href="https://cdnjs.cloudflare.com" rel="preconnect"/>
 <link href="/css/tailwind.min.css" rel="stylesheet"/>
-<meta content="Getting started with CNC G-code" name="twitter:title"/>
-<meta content="Get oriented with common commands, program structure, canned cycles, and the checks around a machining workflow." name="twitter:description"/>
+<meta content="Getting started with CNC G-code using the Shader7 generators" name="twitter:title"/>
+<meta content="Learn how a CNC mill program is built, block by block, then use the Shader7 CNC Machinist generators to write face milling, contour, drilling and circle programs you can read and check." name="twitter:description"/>
 <meta content="#f8fafc" name="theme-color"/>
 <link href="/css/font-awesome.min.css" rel="stylesheet"/>
 <link href="/css/landing.css?v=20260903g" rel="stylesheet"/>
@@ -69,22 +70,28 @@
   CNC &amp; design
  </p>
 <h1>
-  Getting started with CNC G-code
+  Getting started with CNC G-code using the Shader7 generators
  </h1>
 <p class="article-intro">
-  Get oriented with common commands, program structure, canned cycles, and the checks around a machining workflow.
+  Learn how a CNC mill program is built, block by block, then use the Shader7 CNC Machinist generators to write face milling, contour, drilling and circle programs you can read and check.
  </p>
 <div class="article-meta">
 <span>
    By Nishikant Xalxo
   </span>
 <span>
-   15 min read
+   7 min read
   </span>
 <span>
    Published
    <time datetime="2026-03-28">
     2026-03-28
+   </time>
+</span>
+<span>
+   Updated
+   <time datetime="2026-11-20">
+    2026-11-20
    </time>
 </span>
 </div>
@@ -97,42 +104,42 @@
 <ol>
 <li>
 <a href="#section-1">
-     Historical Context &amp; Technological Significance
+     The shape of a mill program
     </a>
 </li>
 <li>
 <a href="#section-2">
-     Deep-Dive Technical &amp; Algorithmic Analysis
+     What the Shader7 generators write
     </a>
 </li>
 <li>
 <a href="#section-3">
-     The Core "G" and "M" Commands Explained
+     A learning routine that works
     </a>
 </li>
 <li>
 <a href="#section-4">
-     Canned Drilling Cycles &amp; Coordinate Controls Reference Grid
+     Safety habits from day one
     </a>
 </li>
 <li>
 <a href="#section-5">
-     Anatomy of a Standard CNC Mill Program
+     Reading a drilling block line by line
     </a>
 </li>
 <li>
 <a href="#section-6">
-     Step-by-Step CNC Setup &amp; Program Verification Checklist
+     Common beginner mistakes
     </a>
 </li>
 <li>
 <a href="#section-7">
-     Standard CNC Safety Procedures
+     Frequently asked questions
     </a>
 </li>
 <li>
 <a href="#section-8">
-     CNC G-Code Frequently Asked Questions (FAQ)
+     Try the CNC generators
     </a>
 </li>
 </ol>
@@ -145,262 +152,192 @@
 </a>
 </aside>
 <div class="prose prose-indigo max-w-none text-gray-700 leading-relaxed space-y-6 article-body">
-<p><strong>G-Code</strong> (Geometric Code) is the universal machine language used to control CNC (Computer Numerical Control) machine tools. It tells the machine precisely where to move the spindle, how fast to feed the cutter, what path to trace (straight line vs. arc), and when to activate peripheral systems like coolant pumps or tool changers.</p>
-<p>While modern CAD/CAM software (like Fusion 360, Mastercam, or SolidWorks) generates thousands of lines of G-code automatically, <strong>a professional machinist must know how to read and write G-code manually</strong>. Troubleshooting a program directly at the machine control controller is the difference between a simple tweak and a multi-thousand-dollar crash.</p>
+<p>G-code looks cryptic until you notice that almost every mill program has the same shape: set up the machine, call a tool, start the spindle, move, cut, and finish safely. Once you can see that shape, you can read most programs line by line.</p>
+<p>This guide explains that structure, then shows how the free generators in the Shader7 <strong>CNC Machinist hub</strong> write each kind of program. Generating a program, changing one value and comparing the output is one of the quickest ways to learn what each code does.</p>
 <figure class="my-8">
-<img alt="G-Code reference tool with syntax-highlighted commands and 3D toolpath visualization" class="w-full rounded-xl shadow-lg border border-gray-200" decoding="async" height="1024" loading="lazy" src="/screenshots/gcode-reference.webp" width="1024"/>
-<figcaption class="text-center text-sm text-gray-500 mt-3 italic">Modern G-Code editors provide syntax highlighting and real-time 3D toolpath visualization to help machinists verify their programs before cutting.</figcaption>
+<img alt="A G-code reference: the most common motion, plane and cycle codes on a CNC mill" class="w-full rounded-xl shadow-lg border border-gray-200" decoding="async" height="1024" loading="lazy" src="/screenshots/gcode-reference.webp" width="1024"/>
+<figcaption class="text-center text-sm text-gray-500 mt-3 italic">A G-code reference: the most common motion, plane and cycle codes on a CNC mill.</figcaption>
 </figure>
-<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4" id="section-1">Historical Context &amp; Technological Significance</h2>
-<p>The genesis of Computer Numerical Control (CNC) and G-Code dates back to the late 1940s and early 1950s, amidst the post-World War II industrial boom. John T. Parsons, working alongside the Massachusetts Institute of Technology (MIT) Servomechanisms Laboratory, pioneered the concept of using numerical data to control machine tool motions for manufacturing complex helicopter rotor blades. By feeding coordinates from punch cards into motorized axes, Parsons proved that human manual control could be replaced by repeatable, mathematical precision.</p>
-<p>To unify this emerging field, the Electronic Industries Alliance (EIA) standardized this programmatic vocabulary in the early 1960s, formalizing it as the EIA-274 standard. This standard established the "G-Code" (geometric function) and "M-Code" (miscellaneous function) paradigm we use today. Standardization was crucial: it allowed tooling manufacturers, aerospace engineers, and machine shops to deploy code across different machine control systems without complete rewrites. Today, despite decades of computational advancements and the rise of highly sophisticated CAD/CAM environments, EIA-274 G-Code remains the bedrock language of global manufacturing. It powers everything from simple 3-axis entry-level mills to advanced multi-axis turn-mill centers, robotic arms, and industrial 3D printers. Standardizing coordinates via Cartesian math redefined precision manufacturing, enabling tolerances down to microns and laying the groundwork for digital fabrication and Industry 4.0 automation.</p>
-<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4" id="section-2">Deep-Dive Technical &amp; Algorithmic Analysis</h2>
-<h3 class="text-xl font-semibold text-gray-900 mt-6 mb-3">1. The Anatomy of an EIA-274 Command Block</h3>
-<p>Under the EIA-274 standard, G-code is structured in "blocks" of instructions, which the machine controller reads and executes sequentially from top to bottom. Each block represents a line of code and consists of one or more <strong>words</strong>. A word is composed of a <strong>letter address</strong> (such as <code>G</code>, <code>M</code>, <code>X</code>, <code>Y</code>, <code>Z</code>, <code>F</code>, <code>S</code>, <code>T</code>) followed by a numeric value.</p>
-<p>A typical instruction block follows this syntax:</p>
-<pre class="bg-gray-100 p-4 rounded-lg font-mono text-sm leading-relaxed text-indigo-900 border mb-4">N105 G01 X75.25 Y45.80 Z-2.50 F250. S1800 T02 M03</pre>
-<ul class="list-disc pl-6 space-y-2 mb-4">
-<li><strong>N105 (Sequence Number):</strong> Used for code organization, searching, and seeking specific entry points on the controller.</li>
-<li><strong>G01 (Preparatory Function):</strong> Prepares the controller for linear cutting motion.</li>
-<li><strong>X75.25 Y45.80 Z-2.50 (Coordinate Words):</strong> Instruct the machine axes to move to those exact Cartesian coordinates.</li>
-<li><strong>F250. (Feed Rate Word):</strong> Sets the linear travel speed of the cutter (e.g., 250 mm/min or inches/min).</li>
-<li><strong>S1800 (Spindle Speed Word):</strong> Commands the spindle to rotate at 1800 revolutions per minute (RPM).</li>
-<li><strong>T02 (Tool Select Word):</strong> Signals the automatic tool changer to stage Tool 2.</li>
-<li><strong>M03 (Miscellaneous Function):</strong> Executes the spindle clockwise command.</li>
-</ul>
-<p>An essential concept in G-code is the distinction between <strong>Modal</strong> and <strong>Non-Modal</strong> commands. Modal commands remain active in the controller's memory until they are explicitly overwritten or cancelled by another command in the same group. For example, once <code>G01</code> is programmed, every subsequent line containing coordinate inputs will execute as a linear feed cut until a <code>G00</code>, <code>G02</code>, or <code>G03</code> command replaces it. Non-modal commands (like <code>G04</code> for dwell time or <code>G28</code> for homing) only affect the specific block in which they are written.</p>
-<h3 class="text-xl font-semibold text-gray-900 mt-6 mb-3">2. Linear &amp; Circular Interpolation Mechanics (G00, G01, G02, G03)</h3>
-<p>Controlling the physical path of the cutting tool requires precise mathematical interpolation algorithms inside the machine's CNC controller:</p>
-<ul class="list-disc pl-6 space-y-3 mb-4">
-<li><strong>G00: Rapid Positioning:</strong> Moves all commanded axes simultaneously at their maximum rapid traverse rates to reach the destination. Because axis motors run at full speed, the resulting tool path is often not a straight line but a "dogleg" path (the shorter axis completes its travel first, followed by the remaining travel of the longer axis). <strong>G00 should never be used for cutting material</strong>, as it is designed solely for rapid repositioning through empty space.</li>
-<li><strong>G01: Linear Interpolation:</strong> Moves the tool in a perfectly straight line to the target coordinate at a specified feed rate (<code>F</code>). The controller calculates the vector components for each axis drive motor using basic vector math:
-                    <div class="my-3 font-semibold text-center text-gray-900 bg-gray-50 p-3 rounded-lg border font-mono">
-                        V_x = F × (ΔX / L)  |  V_y = F × (ΔY / L)  |  V_z = F × (ΔZ / L)
-                    </div>
-                    Where <code>L = √((ΔX)² + (ΔY)² + (ΔZ)²)</code> represents the total vector length. This ensures that the tool head maintains a constant feed rate along the exact diagonal path.
-                </li>
-<li><strong>G02 &amp; G03: Circular Interpolation:</strong> Used to cut arcs, fillets, and circles. <code>G02</code> commands a clockwise (CW) circular path, while <code>G03</code> commands a counter-clockwise (CCW) path. These commands require specifying the arc's end coordinate (<code>X, Y</code>) and its center point. There are two primary methods for center-point definition:
-                    <ul class="list-decimal pl-6 mt-2 space-y-2">
-<li><strong>Radius Programming (<code>R</code>):</strong> Specifying the endpoint and radius, e.g., <code class="bg-gray-100 px-1 font-mono rounded">G02 X50. Y50. R25. F150.</code> While simple, the R method is limited. If the radius is slightly incorrect, the controller can produce geometric rounding errors. Furthermore, R cannot be used to cut a full 360-degree circle in a single block because the controller cannot mathematically determine a unique center point.</li>
-<li><strong>Vector Offset Programming (<code>I, J, K</code>):</strong> Specifying the incremental distance from the arc's starting point to the arc's center point. <code>I</code> represents the X-axis offset, <code>J</code> represents the Y-axis offset, and <code>K</code> represents the Z-axis offset. For a circle starting at <code class="bg-gray-100 px-1 font-mono rounded">X0 Y25.</code> with its center at <code class="bg-gray-100 px-1 font-mono rounded">X0 Y0</code> moving CW to <code class="bg-gray-100 px-1 font-mono rounded">X25. Y0</code>, the block would read:
-                            <pre class="bg-gray-100 p-2 rounded-lg font-mono text-sm leading-relaxed text-indigo-900 border mt-1">G02 X25. Y0. I0. J-25. F150.</pre>
-                            The vector method is mathematically robust, handles full 360-degree paths flawlessly, and is standard practice in CAM-generated code.
-                        </li>
-</ul>
-</li>
-</ul>
-<h3 class="text-xl font-semibold text-gray-900 mt-6 mb-3">3. Work Coordinate Systems (G54-G59) and Offsets</h3>
-<p>A CNC machine has its own internal coordinates called <strong>Machine Coordinates</strong> (Machine Zero), which is typically determined by physical limit switches at the extremes of axis travel. However, programming relative to Machine Zero is extremely difficult because every part would have to be loaded in the exact same spot on the table.</p>
-<p>To solve this, CNC controllers utilize <strong>Work Coordinate Systems (WCS)</strong>, mapped through G-codes <code>G54</code> to <code>G59</code> (and extended coordinates like <code>G54.1 P1</code> to <code>P48</code>). The WCS acts as a translation offset between the Machine Zero and the <strong>Part Zero</strong> (or Workpiece Origin) established by the machinist.</p>
-<ul class="list-disc pl-6 space-y-2 mb-4">
-<li><strong>G54:</strong> Standard first WCS fixture offset.</li>
-<li><strong>G55 - G59:</strong> Auxiliary WCS coordinates for machining multiple parts or fixtures in the same setup.</li>
-</ul>
-<p>Additionally, tools have varying lengths and diameters. To account for this, the program applies:</p>
-<ul class="list-disc pl-6 space-y-2 mb-4">
-<li><strong>Tool Length Compensation (G43 Hxx):</strong> Where <code>H</code> specifies the offset index containing the physical length of the tool, measured from the gauge line of the spindle.</li>
-<li><strong>Cutter Radius Compensation (G41 / G42 / G40):</strong> <code>G41</code> (left compensation) and <code>G42</code> (right compensation) offset the tool center path by the cutter's radius (defined by <code>Dxx</code>), allowing machinists to program the actual blueprint dimensions rather than the tool center path. <code>G40</code> cancels this compensation.</li>
-</ul>
-<h3 class="text-xl font-semibold text-gray-900 mt-6 mb-3">4. Feed and Speed Calculations</h3>
-<p>Executing a successful CNC cut relies on physical science and metallurgy formulas. Calculating the correct Spindle Speed (<code>N</code>, in RPM) and Feed Rate (<code>F</code>, in mm/min or inches/min) prevents tool breakage and ensures superior surface finishes.</p>
-<ul class="list-disc pl-6 space-y-3 mb-4">
-<li><strong>Spindle Speed Formula (RPM):</strong>
-<div class="my-3 font-semibold text-center text-gray-900 bg-gray-50 p-3 rounded-lg border font-mono">
-                        Metric: N = (1000 × V_c) / (π × D_c)  |  Imperial: N = (12 × SFM) / (π × D_c)
-                    </div>
-                    Where:
-                    <ul class="list-disc pl-6 mt-1 space-y-1">
-<li><code>V_c</code> is the Surface Cutting Speed in meters per minute (m/min), a constant determined by the cutting tool material and the workpiece hardness.</li>
-<li><code>SFM</code> is Surface Feet per Minute (feet/min), the imperial equivalent of <code>V_c</code>.</li>
-<li><code>D_c</code> is the cutting tool diameter (in mm or inches).</li>
-</ul>
-</li>
-<li><strong>Feed Rate Formula (F):</strong>
-<div class="my-3 font-semibold text-center text-gray-900 bg-gray-50 p-3 rounded-lg border font-mono">
-                        F = N × z × f_z
-                    </div>
-                    Where:
-                    <ul class="list-disc pl-6 mt-1 space-y-1">
-<li><code>N</code> is the Spindle Speed (RPM) calculated above.</li>
-<li><code>z</code> is the number of cutting flutes/teeth on the tool.</li>
-<li><code>f_z</code> is the Feed Per Tooth (also known as chipload, in mm/tooth or inches/tooth).</li>
-</ul>
-</li>
-</ul>
-<p>If these formulas are ignored, high spindle speeds combined with too slow a feed rate will cause friction heating, burning the tool's coating. Conversely, too high a feed rate will exceed the maximum physical shear strength of the carbide substrate, causing catastrophic tool breakage.</p>
-<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4" id="section-3">The Core "G" and "M" Commands Explained</h2>
-<p>CNC programs rely on two main classes of alphanumeric codes: <strong>G-codes</strong> (geometric motion commands) and <strong>M-codes</strong> (miscellaneous machine actions). Below are the most critical codes used in everyday milling and turning:</p>
-<div aria-label="Scrollable reference table" class="article-table-scroll" role="region" tabindex="0"><table class="w-full border-collapse my-6 text-sm">
-<thead><tr class="bg-orange-50"><th class="p-3 text-left border">Code</th><th class="p-3 text-left border">Description</th><th class="p-3 text-left border">Example / Function</th></tr></thead>
-<tbody>
-<tr><td class="p-3 border font-bold">G00</td><td class="p-3 border">Rapid Positioning</td><td class="p-3 border">Moves the tool through the air at maximum speed. <code class="bg-gray-100 px-1 font-mono rounded">G00 X50. Y100.</code></td></tr>
-<tr><td class="p-3 border font-bold">G01</td><td class="p-3 border">Linear Interpolation</td><td class="p-3 border">Cuts material in a straight line at a specified feed rate. <code class="bg-gray-100 px-1 font-mono rounded">G01 Z-5. F250.</code></td></tr>
-<tr><td class="p-3 border font-bold">G02</td><td class="p-3 border">Circular Interpolation (CW)</td><td class="p-3 border">Cuts an arc or circle in a clockwise direction.</td></tr>
-<tr><td class="p-3 border font-bold">G03</td><td class="p-3 border">Circular Interpolation (CCW)</td><td class="p-3 border">Cuts an arc or circle in a counter-clockwise direction.</td></tr>
-<tr><td class="p-3 border font-bold">G20 / G21</td><td class="p-3 border">Units Selection</td><td class="p-3 border"><code class="bg-gray-100 px-1 font-mono rounded">G20</code> for Inches, <code class="bg-gray-100 px-1 font-mono rounded">G21</code> for Millimeters.</td></tr>
-<tr><td class="p-3 border font-bold">G90 / G91</td><td class="p-3 border">Coordinate Mode</td><td class="p-3 border"><code class="bg-gray-100 px-1 font-mono rounded">G90</code> for Absolute coordinates, <code class="bg-gray-100 px-1 font-mono rounded">G91</code> for Incremental coordinates.</td></tr>
-<tr><td class="p-3 border font-bold">M03</td><td class="p-3 border">Spindle CW On</td><td class="p-3 border">Turns spindle on clockwise at specified RPM. <code class="bg-gray-100 px-1 font-mono rounded">M03 S2000</code></td></tr>
-<tr><td class="p-3 border font-bold">M05</td><td class="p-3 border">Spindle Stop</td><td class="p-3 border">Stops the spindle from rotating.</td></tr>
-<tr><td class="p-3 border font-bold">M08 / M09</td><td class="p-3 border">Coolant Control</td><td class="p-3 border"><code class="bg-gray-100 px-1 font-mono rounded">M08</code> turns coolant ON, <code class="bg-gray-100 px-1 font-mono rounded">M09</code> turns coolant OFF.</td></tr>
-<tr><td class="p-3 border font-bold">M30</td><td class="p-3 border">End of Program</td><td class="p-3 border">Stops execution and rewinds code back to the first line.</td></tr>
-</tbody>
-</table></div>
-<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4" id="section-4">Canned Drilling Cycles &amp; Coordinate Controls Reference Grid</h2>
-<p>CNC controllers utilize canned cycles to simplify programming. Instead of writing five lines of motion for every hole (rapid in, feed, retract, etc.), a canned cycle executes the entire sequence automatically at each new set of coordinates until cancelled.</p>
-<div class="overflow-x-auto my-6">
-<div aria-label="Scrollable reference table" class="article-table-scroll" role="region" tabindex="0"><table class="w-full border-collapse text-sm">
+<h2 id="section-1">The shape of a mill program</h2>
+<p>Here is the start of a face-milling program from the Shader7 <strong>Mill / Drill Contour</strong> generator, with notes:</p>
+<pre><code>G17 G21 G90 G40 G80        (XY plane, mm, absolute, cancel comp and cycles)
+#4=200.000 (LENGTH IN X)
+#5=100.000 (WIDTH IN Y)
+T1 M6                       (tool change to tool 1)
+G43 H1 Z55.000              (tool length offset, move to a safe height)
+M3 S...                     (spindle on clockwise)
+M8                          (coolant on)
+</code></pre>
+<p>Then the cutting moves, and finally:</p>
+<pre><code>G00 Z55.000                 (retract)
+G28 G91 Z0                  (return Z to home)
+G28 X0 Y0
+M5                          (spindle stop)
+M9                          (coolant off)
+M30                         (end of program)
+</code></pre>
+<h3>Codes you will meet everywhere</h3>
+<div class="article-table-scroll"><table>
 <thead>
-<tr class="bg-indigo-950 text-white">
-<th class="p-3 text-left border border-indigo-900">Command</th>
-<th class="p-3 text-left border border-indigo-900">Name / Purpose</th>
-<th class="p-3 text-left border border-indigo-900">Operational Mechanics</th>
-<th class="p-3 text-left border border-indigo-900">Syntax Example</th>
+<tr>
+<th>Code</th>
+<th>Meaning</th>
 </tr>
 </thead>
 <tbody>
-<tr class="hover:bg-indigo-50/30">
-<td class="p-3 border font-bold">G80</td>
-<td class="p-3 border font-semibold">Canned Cycle Cancel</td>
-<td class="p-3 border">Deactivates all active canned cycles and returns the machine to standard linear motion.</td>
-<td class="p-3 border"><code class="bg-gray-100 px-1 font-mono rounded">G80 G00 Z25.</code></td>
+<tr>
+<td>G00</td>
+<td>Rapid move (positioning, never cutting)</td>
 </tr>
-<tr class="hover:bg-indigo-50/30">
-<td class="p-3 border font-bold">G81</td>
-<td class="p-3 border font-semibold">Standard Drilling Cycle</td>
-<td class="p-3 border">Feeds straight to depth (Z) and immediately rapids back to the retraction plane. Best for shallow holes or soft materials.</td>
-<td class="p-3 border"><code class="bg-gray-100 px-1 font-mono rounded">G81 Z-12. R2. F120.</code></td>
+<tr>
+<td>G01</td>
+<td>Straight-line cutting move at feed F</td>
 </tr>
-<tr class="hover:bg-indigo-50/30">
-<td class="p-3 border font-bold">G82</td>
-<td class="p-3 border font-semibold">Drill Cycle with Dwell</td>
-<td class="p-3 border">Feeds to depth (Z), pauses (dwells) for a specified duration in seconds/milliseconds to clear chips and achieve a flat bottom, then rapids out.</td>
-<td class="p-3 border"><code class="bg-gray-100 px-1 font-mono rounded">G82 Z-15. R2. P500 F100.</code></td>
+<tr>
+<td>G02 / G03</td>
+<td>Clockwise / counter-clockwise arc</td>
 </tr>
-<tr class="hover:bg-indigo-50/30">
-<td class="p-3 border font-bold">G83</td>
-<td class="p-3 border font-semibold">Deep Peck Drilling</td>
-<td class="p-3 border">Feeds in increments (pecks). After each peck, it retracts completely to the clearance plane to clear stringy chips and flood the hole with coolant, then returns to cut deeper.</td>
-<td class="p-3 border"><code class="bg-gray-100 px-1 font-mono rounded">G83 Z-30. R2. Q5. F150.</code></td>
+<tr>
+<td>G17 / G18 / G19</td>
+<td>XY / XZ / YZ working plane</td>
 </tr>
-<tr class="hover:bg-indigo-50/30">
-<td class="p-3 border font-bold">G84</td>
-<td class="p-3 border font-semibold">Rigid Tapping Cycle</td>
-<td class="p-3 border">Feeds spindle clockwise to cut threads. At the bottom, spindle stops and reverses counter-clockwise, then feeds out at the identical pitch feed.</td>
-<td class="p-3 border"><code class="bg-gray-100 px-1 font-mono rounded">G84 Z-20. R4. F1.25</code></td>
+<tr>
+<td>G21 / G20</td>
+<td>Millimetres / inches</td>
 </tr>
-<tr class="hover:bg-indigo-50/30">
-<td class="p-3 border font-bold">G85</td>
-<td class="p-3 border font-semibold">Boring Cycle</td>
-<td class="p-3 border">Feeds to Z-depth, then feeds back out at the same feed rate. Used for precise boring bars to ensure tight dimensional control and smooth surface finishes.</td>
-<td class="p-3 border"><code class="bg-gray-100 px-1 font-mono rounded">G85 Z-40. R3. F50.</code></td>
+<tr>
+<td>G90 / G91</td>
+<td>Absolute / incremental coordinates</td>
 </tr>
-<tr class="hover:bg-indigo-50/30">
-<td class="p-3 border font-bold">G98</td>
-<td class="p-3 border font-semibold">Initial Plane Retract</td>
-<td class="p-3 border">Forces the tool to retract all the way back to the initial clearance height (the Z height before the canned cycle was activated) between holes. Safest for bypassing clamps or obstacles.</td>
-<td class="p-3 border"><code class="bg-gray-100 px-1 font-mono rounded">G98 G81 Z-10. R2. F100.</code></td>
+<tr>
+<td>G40 / G41 / G42</td>
+<td>Cancel / left / right cutter compensation</td>
 </tr>
-<tr class="hover:bg-indigo-50/30">
-<td class="p-3 border font-bold">G99</td>
-<td class="p-3 border font-semibold">R-Plane Retract</td>
-<td class="p-3 border">Instructs the tool to retract only to the designated rapid coordinate R-plane (usually 1-3mm above the part) between holes. Maximizes efficiency by minimizing Z axis travel time.</td>
-<td class="p-3 border"><code class="bg-gray-100 px-1 font-mono rounded">G99 G81 Z-10. R2. F100.</code></td>
+<tr>
+<td>G43 H..</td>
+<td>Tool length offset</td>
+</tr>
+<tr>
+<td>G54</td>
+<td>First work coordinate system</td>
+</tr>
+<tr>
+<td>G80</td>
+<td>Cancel canned cycle</td>
+</tr>
+<tr>
+<td>G81 / G83 / G73 / G84</td>
+<td>Drill / deep peck / chip-break peck / rigid tap cycles</td>
+</tr>
+<tr>
+<td>M3 / M5</td>
+<td>Spindle on clockwise / stop</td>
+</tr>
+<tr>
+<td>M6</td>
+<td>Tool change</td>
+</tr>
+<tr>
+<td>M8 / M9</td>
+<td>Coolant on / off</td>
+</tr>
+<tr>
+<td>M30</td>
+<td>End of program and rewind</td>
 </tr>
 </tbody>
 </table></div>
-</div>
-<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4" id="section-5">Anatomy of a Standard CNC Mill Program</h2>
-<p>Every standard CNC mill program is structured systematically to ensure machine state is defined before any cuts are made. Here is a typical code structure:</p>
-<pre class="bg-gray-100 p-4 rounded-lg font-mono text-sm leading-relaxed text-indigo-900 border">
-%
-O1001 (PART NUMBER ONE)
-G90 G21 G17 G40 G80 G49 (Safety block - clears coordinate/canned cycle states)
-T01 M06 (Select Tool 1 and execute automatic tool change)
-G54 (Select Work Coordinate System - active WCS)
-S2200 M03 (Start spindle clockwise at 2200 RPM)
-G00 X0. Y0. M08 (Rapid positioning to center, turn coolant on)
-G43 H01 Z25. (Apply Tool Length Offset H1, rapid to clearance plane)
-G01 Z-3. F300. (Linear feed in Z to cut depth at 300 mm/min)
-G01 X50. Y50. (Linear cut diagonally to X50, Y50)
-G00 Z25. M09 (Rapid Z retraction to clearance plane, coolant off)
-M05 (Spindle Stop)
-G28 G91 Z0. (Return tool home in Z)
-G28 X0. Y0. (Return table home in X and Y)
-M30 (End of program and rewind)
-%</pre>
+<h2 id="section-2">What the Shader7 generators write</h2>
+<p>Each generator in the hub focuses on one job. They all run in your browser, show a preview, and give you code to copy.</p>
+<h3>Face milling, contours and PCD drilling</h3>
+<p>The <strong><a href="/cnc-machinist/milldrillcontour/">Mill / Drill Contour</a></strong> generator has three tabs:</p>
+<ul>
+<li><strong>Face Milling</strong>: enter the workpiece length, width, total depth, depth of cut, cutter diameter, stepover %, safety distances, plane and origin (corner or centre). The program steps across the part in zigzag passes and uses a small macro loop for depth: <code>#1=#1+#3</code>, then <code>IF[#1 GT #2] GOTO 10</code> until it reaches the total depth.</li>
+<li><strong>Simple Contour</strong>: choose the plane, workpiece size, cutter diameter, which sides to machine and where the origin is, the final depth and depth of cut, and <strong>Climb (G41)</strong> or <strong>Conventional (G42)</strong>. The material selection sets the cutting data.</li>
+<li><strong>PCD Drilling</strong>: PCD, first hole angle, angle between holes, maximum angle and drill depth.</li>
+</ul>
+<h3>Drilling and tapping</h3>
+<p>The <strong><a href="/cnc-machinist/drill/">Drill Feed &amp; RPM Calculator</a></strong> writes a canned-cycle program (G81, G82, G83, G73, G86 or G84 rigid tapping) for one or many holes, with RPM and feed based on tool and work material, and lets you pick a Fanuc or Haas style, tool number, work offset and G98/G99 return. It is a good place to learn how canned cycles work, because its animated preview shows each peck and retract.</p>
+<h3>Bolt circles</h3>
+<p>The <strong><a href="/cnc-machinist/pcd/">PCD Generator</a></strong> converts a bolt circle into X/Y coordinates and writes a G81 program that visits each hole, then cancels the cycle with G80.</p>
+<h3>Arcs and circles</h3>
+<p>The <strong><a href="/cnc-machinist/idodinterpolation/">ID / OD Circular Interpolation Generator</a></strong> writes helical G03 programs for bores and bosses using I/J arc centres, in G17, G18 or G19.</p>
+<h3>Chamfers</h3>
+<p>The <strong><a href="/cnc-machinist/CircularChamfer/">Circular Chamfer</a></strong> and <strong><a href="/cnc-machinist/XYchamfer/">XY Chamfer</a></strong> generators write macro programs with WHILE loops that step a chamfer mill down a bevel.</p>
+<h3>Turning on Siemens controls</h3>
+<p>The <strong><a href="/cnc-machinist/siemens/">Siemens Sinumerik helper</a></strong> writes CYCLE95 turning programs for 840D and 828D controls and builds tool offset cards.</p>
 <figure class="my-8">
-<img alt="CNC G-Code Rapid Traverse G00 vs Linear Interpolation G01 Motion Comparison Diagram" class="w-full rounded-xl shadow-lg border border-gray-200" decoding="async" height="536" loading="lazy" sizes="(max-width: 760px) calc(100vw - 40px), 760px" src="/assets/articles/cnc-gcode-motion-diagram-cccbe8-960.webp" srcset="/assets/articles/cnc-gcode-motion-diagram-cccbe8-480.webp 480w, /assets/articles/cnc-gcode-motion-diagram-cccbe8-960.webp 960w" width="960"/>
-<figcaption class="text-center text-sm text-gray-500 mt-3 italic">G00 rapid non-cutting positioning versus G01 controlled linear feed motion comparison on CNC machine tools.</figcaption>
+<img alt="How rapid moves, feed moves and arcs combine into a toolpath" class="w-full rounded-xl shadow-lg border border-gray-200" decoding="async" height="536" loading="lazy" sizes="(max-width: 760px) calc(100vw - 40px), 760px" src="/assets/articles/cnc-gcode-motion-diagram-cccbe8-960.webp" srcset="/assets/articles/cnc-gcode-motion-diagram-cccbe8-480.webp 480w, /assets/articles/cnc-gcode-motion-diagram-cccbe8-960.webp 960w" width="960"/>
+<figcaption class="text-center text-sm text-gray-500 mt-3 italic">How rapid moves, feed moves and arcs combine into a toolpath.</figcaption>
 </figure>
-<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4" id="section-6">Step-by-Step CNC Setup &amp; Program Verification Checklist</h2>
-<p>Before pressing the green "Cycle Start" button on any CNC machine, follow this detailed, systematic validation checklist to prevent catastrophic spindle crashes and tool breakages:</p>
-<ol class="list-decimal pl-6 space-y-4">
-<li><strong>Workholding and Clearance Verification:</strong>
-<ul class="list-disc pl-6 mt-1 space-y-1">
-<li>Ensure that all clamps, vises, raw material stock, and fixtures are fully secured to the machine bed.</li>
-<li>Verify that the physical path of the tool will not collide with clamps or vise jaws. Use a height gauge or manual jogging to double-check that the Z-axis height clearance is sufficient.</li>
-</ul>
-</li>
-<li><strong>Zero Point Calibration (WCS):</strong>
-<ul class="list-disc pl-6 mt-1 space-y-1">
-<li>Set your work coordinate zero (e.g., G54) exactly as specified in the setup sheet (e.g., center of part, back-left corner of vise jaw, or top-center of stock).</li>
-<li>Confirm that the active G54 X, Y, and Z registers on the controller match the physical coordinates measured with the edge finder or probe.</li>
-</ul>
-</li>
-<li><strong>Tool Offset and Loading Audit:</strong>
-<ul class="list-disc pl-6 mt-1 space-y-1">
-<li>Inspect each cutting tool for excessive wear, chipping, or thermal discoloration.</li>
-<li>Verify that the tool sequence loaded in the carousel matches the G-code program's assignments (e.g., Tool 1 is a 12mm roughing endmill, Tool 2 is a 6mm finishing endmill, etc.).</li>
-<li>Confirm that all tool length offsets (H-values) and diameter offsets (D-values) are calibrated and saved in the controller's registry.</li>
-</ul>
-</li>
-<li><strong>Dry Run Execution in Free Air:</strong>
-<ul class="list-disc pl-6 mt-1 space-y-1">
-<li>Adjust the Z-axis offset upward by a safe distance (typically +50.0mm or +2.0 inches) on the controller.</li>
-<li>Enable "Dry Run" mode and set feed rate overrides to 10% or 20%.</li>
-<li>Run the program entirely in the air. Visually check that the movement paths correspond to the expected geometry of the workpiece without physical contact.</li>
-</ul>
-</li>
-<li><strong>Single Block Verification at 0% Rapid Override:</strong>
-<ul class="list-disc pl-6 mt-1 space-y-1">
-<li>Reset the Z-axis offset back to its real cutting position.</li>
-<li>Turn on "Single Block" mode (causing the machine to halt after every individual line of G-code) and lower the rapid override dial to 0%.</li>
-<li>Press Cycle Start line-by-line. Carefully monitor the "Distance-to-Go" (DTG) indicator on the screen as the tool approaches the part. If the screen shows it has 20mm left to travel in Z, but the tool tip is only 2mm away from the surface, press the Emergency Stop immediately!</li>
-</ul>
-</li>
+<h2 id="section-3">A learning routine that works</h2>
+<ol>
+<li><strong>Generate a simple program.</strong> Start with Face Milling on a small block.</li>
+<li><strong>Read it top to bottom.</strong> Find the setup line, tool change, spindle start, the first cutting move and the end.</li>
+<li><strong>Change one input.</strong> Change the stepover from 70% to 50% and generate again. Count how many more passes appear.</li>
+<li><strong>Change the plane or origin.</strong> See which axis letters change and which coordinates flip sign.</li>
+<li><strong>Compare with the preview.</strong> Every G01 line in the code should match a straight segment in the drawing.</li>
+<li><strong>Run it in a simulator</strong> or on your control's graphics before it ever goes near a part.</li>
 </ol>
-<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4" id="section-7">Standard CNC Safety Procedures</h2>
-<p>Safety is the single most critical aspect of CNC operations. When verifying a newly generated or modified G-code program, always employ these safety habits:</p>
-<ul class="list-disc pl-6 space-y-3">
-<li><strong>G-Code Simulation:</strong> Always load your file into a graphic simulator first to check for stray rapid lines or cutting paths going into the vise or table.</li>
-<li><strong>Dry Run:</strong> Run the program in the air (without a part loaded and Z-axis offset elevated +50mm) to verify visual paths safely.</li>
-<li><strong>Single Block Mode:</strong> Run the controller line-by-line using Single Block execution, holding the feed hold button down as the tool approaches the part.</li>
-<li><strong>Distance-To-Go (DTG):</strong> Keep an eye on the "Distance-to-Go" monitor. If the display shows the tool is moving another 50mm in -Z, but the workpiece is only 10mm away, hit E-stop immediately!</li>
+<h2 id="section-4">Safety habits from day one</h2>
+<ul>
+<li><strong>Start every program with a safe line.</strong> <code>G17 G21 G90 G40 G80</code> (or similar) cancels anything left active from a previous program.</li>
+<li><strong>Know your origin.</strong> Every coordinate is relative to the work offset (G54). If G54 is not where the program expects, the toolpath is in the wrong place.</li>
+<li><strong>Rapid only through air.</strong> G00 moves are not controlled for cutting. Make sure the clearance height is above clamps and the vise.</li>
+<li><strong>Single block and reduced rapid</strong> the first time you run any program, including ones from a generator.</li>
+<li><strong>Check cutter compensation.</strong> G41/G42 need the right D register and a lead-in move long enough for the control to apply the offset.</li>
 </ul>
-<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4" id="section-8">CNC G-Code Frequently Asked Questions (FAQ)</h2>
-<div class="space-y-6 mb-8">
-<div class="bg-gray-50 p-5 rounded-lg border border-gray-150">
-<h3 class="font-bold text-indigo-950 text-lg">Q1: What is the primary difference between G-code and M-code?</h3>
-<p class="mt-2 text-gray-700"><strong>A:</strong> G-codes (Geometric Codes) control the coordinate movement, path interpolation, coordinate systems, and structural physics of the cutting process. They define <em>where</em> and <em>how</em> the cutting tool moves through Cartesian or polar space (e.g., moving in a straight line with G01 or an arc with G02). In contrast, M-codes (Miscellaneous/Machine Codes) manage auxiliary machine state functions. They act as on/off switches for hardware systems outside the axis motors. Examples include starting/stopping the spindle rotation (M03/M05), engaging the automatic tool changer (M06), turning coolant on/off (M08/M09), and terminating the program execution (M30).</p>
+<h2 id="section-5">Reading a drilling block line by line</h2>
+<p>The <a href="/cnc-machinist/drill/">Drill Feed &amp; RPM Calculator</a> writes a short program like this:</p>
+<pre><code>(SHADER7 SPEEDS &amp; FEEDS G-CODE)
+(OP: DRILL, TOOL DIA: 8.50 mm, 2 HOLES)
+G21 G90 G94 G98 G40 G80 G17 G54 (METRIC WORK PLANE)
+T01 M06 (SELECT TOOL)
+G00 X0.0 Y0.0 S1049 M03 (RAPID TO HOLE, SPINDLE ON CW)
+G43 H01 Z30.0 M08 (TOOL LENGTH OFFSET, COOLANT ON)
+G83 Z-25.000 R2.0 Q6.38 F146.86 (DEEP HOLE PECK CYCLE)
+X25.0 Y15.0 (HOLE 2)
+G80 M09 (CYCLE CANCEL, COOLANT OFF)
+G00 Z30.0 M05 (SAFE RETRACT, SPINDLE STOP)
+M30 (PROGRAM END)
+</code></pre>
+<ul>
+<li>Lines in brackets are <strong>comments</strong>; the control ignores them.</li>
+<li><strong>G94</strong> sets feed in mm per minute, and <strong>G98</strong> returns the tool to the starting height between holes (G99 would return to the R plane).</li>
+<li><strong>G00 X0.0 Y0.0 S1049 M03</strong> rapids to the first hole while starting the spindle clockwise at 1,049 RPM.</li>
+<li><strong>G43 H01</strong> applies the tool length offset stored for tool 1 and moves to the clearance height.</li>
+<li><strong>G83</strong> drills to Z−25 in pecks of 6.38 mm, retracting to R2.0 to clear chips each time.</li>
+<li><strong>X25.0 Y15.0</strong> on its own line repeats the same cycle at the next hole, because canned cycles stay active until cancelled.</li>
+<li><strong>G80</strong> cancels the cycle so later moves do not drill, then the program turns off coolant and the spindle and ends with M30.</li>
+</ul>
+<p>Comparing this with the face-milling program above shows the same skeleton: setup, tool, spindle, approach, cut, cancel and retract.</p>
+<h2 id="section-6">Common beginner mistakes</h2>
+<ul>
+<li><strong>Missing decimal points.</strong> On some controls, <code>X10</code> means 10 mm but on others it means 0.010 mm. Writing <code>X10.</code> is always safe.</li>
+<li><strong>Forgetting G80.</strong> A drilling cycle that is not cancelled will drill at every following position.</li>
+<li><strong>Leaving G91 active.</strong> An incremental mode left on turns every following coordinate into a relative move.</li>
+<li><strong>Wrong work offset.</strong> Running a G54 program when the part is set on G55 puts the toolpath in the wrong place.</li>
+<li><strong>Rapid into the part.</strong> A G00 move to a Z level below the top face is a crash. Check every G00 Z value.</li>
+</ul>
+<h2 id="section-7">Frequently asked questions</h2>
+<h3>Do I need CAM software to start with G-code?</h3>
+<p>No. Simple parts and operations such as facing, drilling, bolt circles and circle milling are easy to program by hand or with generators. CAM becomes useful for complex 3D shapes.</p>
+<h3>Which controls do the Shader7 generators support?</h3>
+<p>Most write Fanuc-style code, several with Fanuc Custom Macro B variables and loops. The Siemens helper writes Sinumerik CYCLE95 programs, and the 3D CAD Studio can output Fanuc/Haas, Siemens, LinuxCNC-style and macro dialects.</p>
+<h3>What does the # in some programs mean?</h3>
+<p>It marks a macro variable. For example, #1=-2.0 stores −2.0 in variable 1, and later lines can use #1 instead of a fixed number. The <a href="/cnc-macro-programming-fanuc-b.html">Macro B guide</a> explains this in detail.</p>
+<h3>Is the generated code ready to run?</h3>
+<p>Treat it as a draft. Check the tool numbers, offsets, clearance heights and end code for your machine, and verify it in simulation before cutting.</p>
+<h3>Do the generators work on a phone?</h3>
+<p>Yes. They run in any modern browser and do not need an account.</p>
+<section class="bg-gradient-to-r from-indigo-900 to-blue-900 text-white p-8 rounded-2xl text-center space-y-4 my-10">
+<h2 class="text-2xl md:text-3xl font-bold text-white" id="section-8">Try the CNC generators</h2>
+<p class="text-indigo-200 max-w-xl mx-auto text-sm md:text-base">Pick a generator from the CNC Machinist hub, change one value at a time and watch how the program changes. It is the fastest way to learn what each block does.</p>
+<div class="pt-2">
+<a class="inline-block bg-white text-indigo-900 font-bold px-8 py-3 rounded-full hover:bg-indigo-50 transition shadow-lg" href="/cnc-machinist/index.html">Open the CNC Machinist hub →</a>
 </div>
-<div class="bg-gray-50 p-5 rounded-lg border border-gray-150">
-<h3 class="font-bold text-indigo-950 text-lg">Q2: Why is the vector method (I, J, K) preferred over the radius method (R) for circular arcs?</h3>
-<p class="mt-2 text-gray-700"><strong>A:</strong> The Vector Offset method is mathematically superior and safer for several reasons. First, the <code>R</code> (radius) method is geometrically ambiguous: if a programmer types a radius value that is mathematically impossible to reach given the start and end points, different CNC controllers will handle the error differently—some will stop, while others will compute a distorted path. Second, the <code>R</code> method cannot program a full 360-degree circle in a single block because the start and end coordinates are identical; a circle requires splitting the path into two 180-degree arcs. The <code>I, J, K</code> vector method defines the absolute coordinate center of the arc, eliminating ambiguity, ensuring identical path computation across all controllers, and permitting full 360-degree operations in one line.</p>
-</div>
-<div class="bg-gray-50 p-5 rounded-lg border border-gray-150">
-<h3 class="font-bold text-indigo-950 text-lg">Q3: What is the difference between G90 (Absolute) and G91 (Incremental) coordinate programming?</h3>
-<p class="mt-2 text-gray-700"><strong>A:</strong> <code>G90</code> establishes <strong>Absolute Positioning Mode</strong>. In G90, all coordinate inputs represent physical dimensions relative to a fixed coordinate system origin (usually Part Zero/WCS G54). If you command <code>X50.</code> twice, the tool moves to the 50mm coordinate on the first block and remains exactly at 50mm on the second block. Conversely, <code>G91</code> establishes <strong>Incremental Positioning Mode</strong>. In G91, every coordinate coordinate input represents a relative distance from the tool's <em>current location</em>. If you command <code>X50.</code> twice under G91, the tool will travel 50mm to the right, and then travel another 50mm to the right, ending up at X100. G91 is highly useful for repetitive features like slotting or bolt patterns, while G90 is standard for primary program shapes.</p>
-</div>
-<div class="bg-gray-50 p-5 rounded-lg border border-gray-150">
-<h3 class="font-bold text-indigo-950 text-lg">Q4: How does Tool Length Compensation (G43 Hxx) protect the machine and workpieces?</h3>
-<p class="mt-2 text-gray-700"><strong>A:</strong> In a CNC machine, every cutting tool has a different length: a drill bit is longer than a short chamfer mill. If the machine moved to <code>Z0</code> without compensation, the longer tool would crash into the table, while the shorter tool would cut in the air. <code>G43</code> activates Tool Length Compensation, telling the controller to read the specific tool length offset from the registry index specified by the <code>H</code> code (which must match the active tool number, e.g., T01 matches H01). The controller dynamically offsets its Z-axis travel coordinates by this tool length value, ensuring that <code>Z0</code> always represents the exact same physical plane (usually the top of the workpiece) regardless of which tool is currently loaded in the spindle.</p>
-</div>
-</div>
-<div class="bg-orange-50 p-6 rounded-lg my-8 border-l-4 border-orange-600">
-<h3 class="font-bold text-orange-900 mb-2">Simulate and Generate G-Code — Free</h3>
-<p class="mb-4">Use the Shader7 CNC Machinist Hub to calculate RPM &amp; feeds, calculate bolt circle coordinates, generate circular interpolation paths, and test your code on our built-in G-Code simulator.</p>
-<a class="inline-block bg-orange-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-700 transition" href="cnc-machinist/">Enter CNC Machinist Hub →</a>
-</div>
+</section>
+
 </div></div><section aria-labelledby="related-title" class="related-reading">
 <h2 id="related-title">
   Keep reading
@@ -411,8 +348,7 @@ M30 (End of program and rewind)
     CNC &amp; design
    </span>
 <strong>
-    Browser-based 3D CAD for CNC machinists
-   </strong>
+    Model, program and simulate a part in Shader7 3D CAD Studio</strong>
 <span>
     Read guide →
    </span>
@@ -422,8 +358,7 @@ M30 (End of program and rewind)
     CNC &amp; design
    </span>
 <strong>
-    CNC angles, lengths, and tapers
-   </strong>
+    Points on a circle with the Shader7 Angle Length Calculator</strong>
 <span>
     Read guide →
    </span>
@@ -433,8 +368,7 @@ M30 (End of program and rewind)
     CNC &amp; design
    </span>
 <strong>
-    CNC chamfer programming
-   </strong>
+    CNC chamfer programs with the Shader7 Circular and XY Chamfer generators</strong>
 <span>
     Read guide →
    </span>

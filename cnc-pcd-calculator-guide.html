@@ -6,19 +6,20 @@
 
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>PCD bolt-hole coordinates | Shader7</title>
-<meta content="Follow the coordinate calculations, manual examples, and setup references for a bolt-hole circle." name="description"/>
+<title>PCD bolt-hole coordinates with the Shader7 PCD Generator | Shader7</title>
+<meta content="How to use the Shader7 PCD Coordinate &amp; G-Code Generator for full and partial bolt circles, read its coordinate table, and check the Fanuc G81 program it writes." name="description"/>
 <link href="https://www.shader7.com/cnc-pcd-calculator-guide.html" rel="canonical"/>
-<meta content="PCD bolt-hole coordinates" property="og:title"/>
-<meta content="Follow the coordinate calculations, manual examples, and setup references for a bolt-hole circle." property="og:description"/>
+<meta content="PCD bolt-hole coordinates with the Shader7 PCD Generator" property="og:title"/>
+<meta content="How to use the Shader7 PCD Coordinate &amp; G-Code Generator for full and partial bolt circles, read its coordinate table, and check the Fanuc G81 program it writes." property="og:description"/>
 <meta content="https://www.shader7.com/cnc-pcd-calculator-guide.html" property="og:url"/>
 <meta content="article" property="og:type"/>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "PCD bolt-hole coordinates", "author": {"@type": "Person", "name": "Nishikant Xalxo"}, "publisher": {"@type": "Organization", "name": "SHADER7"}, "datePublished": "2026-03-28", "dateModified": "2026-05-23", "description": "Follow the coordinate calculations, manual examples, and setup references for a bolt-hole circle."}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "PCD bolt-hole coordinates with the Shader7 PCD Generator", "author": {"@type": "Person", "name": "Nishikant Xalxo"}, "publisher": {"@type": "Organization", "name": "SHADER7"}, "datePublished": "2026-03-28", "dateModified": "2026-11-20", "description": "How to use the Shader7 PCD Coordinate & G-Code Generator for full and partial bolt circles, read its coordinate table, and check the Fanuc G81 program it writes.", "wordCount": 1425}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Where is X0 Y0 in the generated program?", "acceptedAnswer": {"@type": "Answer", "text": "At the centre of the bolt circle. Set your G54 work offset on that centre, or shift the offset to it, before you run the program."}}, {"@type": "Question", "name": "How do I program holes on only part of a circle?", "acceptedAnswer": {"@type": "Answer", "text": "Untick Full Circle and enter a Start Angle and a Last Angle. The app puts a hole on both angles and spaces the others evenly between them."}}, {"@type": "Question", "name": "Where does the RPM and feed come from?", "acceptedAnswer": {"@type": "Answer", "text": "The app uses typical cutting speeds for the tool material and work material you choose, together with the drill diameter. Treat them as starting values and use your tool maker's data when you have it."}}, {"@type": "Question", "name": "Can I use it for a lathe with live tooling or a horizontal mill?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Change Axis for Coordinates to G18 (X, Z) or G19 (Y, Z) so the program uses the right pair of axes."}}, {"@type": "Question", "name": "Does the app need an internet connection or an account?", "acceptedAnswer": {"@type": "Answer", "text": "No account is needed. Everything is calculated in your browser."}}]}</script>
 <style>body { font-family: 'Inter', sans-serif; }</style>
 <link crossorigin="" href="https://cdnjs.cloudflare.com" rel="preconnect"/>
 <link href="/css/tailwind.min.css" rel="stylesheet"/>
-<meta content="PCD bolt-hole coordinates" name="twitter:title"/>
-<meta content="Follow the coordinate calculations, manual examples, and setup references for a bolt-hole circle." name="twitter:description"/>
+<meta content="PCD bolt-hole coordinates with the Shader7 PCD Generator" name="twitter:title"/>
+<meta content="How to use the Shader7 PCD Coordinate &amp; G-Code Generator for full and partial bolt circles, read its coordinate table, and check the Fanuc G81 program it writes." name="twitter:description"/>
 <meta content="#f8fafc" name="theme-color"/>
 <link href="/css/font-awesome.min.css" rel="stylesheet"/>
 <link href="/css/landing.css?v=20260903g" rel="stylesheet"/>
@@ -69,22 +70,28 @@
   CNC &amp; design
  </p>
 <h1>
-  PCD bolt-hole coordinates
+  PCD bolt-hole coordinates with the Shader7 PCD Generator
  </h1>
 <p class="article-intro">
-  Follow the coordinate calculations, manual examples, and setup references for a bolt-hole circle.
+  How to use the Shader7 PCD Coordinate &amp; G-Code Generator for full and partial bolt circles, read its coordinate table, and check the Fanuc G81 program it writes.
  </p>
 <div class="article-meta">
 <span>
    By Nishikant Xalxo
   </span>
 <span>
-   12 min read
+   7 min read
   </span>
 <span>
    Published
    <time datetime="2026-03-28">
     2026-03-28
+   </time>
+</span>
+<span>
+   Updated
+   <time datetime="2026-11-20">
+    2026-11-20
    </time>
 </span>
 </div>
@@ -97,42 +104,62 @@
 <ol>
 <li>
 <a href="#section-1">
-     Historical Evolution: From Manual Layouts to CNC Systems
+     What the app does
     </a>
 </li>
 <li>
 <a href="#section-2">
-     The Trigonometry Behind PCD Calculations
+     Step by step
     </a>
 </li>
 <li>
 <a href="#section-3">
-     Step-by-Step Manual Calculation
+     How the coordinates are calculated
     </a>
 </li>
 <li>
 <a href="#section-4">
-     Manual Calculation Example
+     The program the app writes
     </a>
 </li>
 <li>
 <a href="#section-5">
-     PCD Tap Drill &amp; Clearance Hole Reference Chart
+     Tips from the shop floor
     </a>
 </li>
 <li>
 <a href="#section-6">
-     Practical CNC Machine Setup and Canned Cycles
+     When the circle centre is not at X0 Y0
     </a>
 </li>
 <li>
 <a href="#section-7">
-     Frequently Asked Questions (FAQ)
+     Unevenly spaced patterns
+    </a>
+</li>
+<li>
+<a href="#section-8">
+     Common mistakes
+    </a>
+</li>
+<li>
+<a href="#section-9">
+     Inspection tip
+    </a>
+</li>
+<li>
+<a href="#section-10">
+     Frequently asked questions
+    </a>
+</li>
+<li>
+<a href="#section-11">
+     Generate your bolt circle
     </a>
 </li>
 </ol>
 </details>
-<a class="sidebar-tool" href="/cnc-machinist/index.html">
+<a class="sidebar-tool" href="/cnc-machinist/pcd/">
   Open the related tool
   <span aria-hidden="true">
    →
@@ -140,278 +167,169 @@
 </a>
 </aside>
 <div class="prose prose-indigo max-w-none text-gray-700 leading-relaxed space-y-6 article-body">
-<p>In CNC programming and structural engineering, a <strong>PCD</strong> (Pitch Circle Diameter) or <strong>bolt circle</strong> represents a circular pattern of evenly spaced holes. Machining flange interfaces, engine blocks, brake rotors, and couplings requires precise positioning of each hole center relative to a centralized Work Coordinate System (WCS).</p>
-<p>While computer CAM programs generate circular drilling cycles automatically, a professional machinist should know the trigonometry behind <strong>PCD coordinates</strong>. If you're on the shop floor adjusting a blueprint with a custom offset, calculating these positions manually prevents tool offsets from wandering.</p>
+<p>A flange, hub or coupling with a ring of holes is one of the most common jobs on a vertical mill. The drawing gives you a pitch circle diameter (PCD), a hole count and maybe a start angle. The machine needs X and Y for every hole. The <strong>PCD Coordinate &amp; G-Code Generator</strong> in the Shader7 CNC Machinist hub does that conversion, previews the pattern, suggests a spindle speed and feed for the drill, and writes a ready-to-review Fanuc program.</p>
 <figure class="my-8">
-<img alt="PCD bolt circle calculator showing hole pattern diagram with coordinate outputs" class="w-full rounded-xl shadow-lg border border-gray-200" decoding="async" height="1024" loading="lazy" src="/screenshots/cnc-machinist-app.webp" width="1024"/>
-<figcaption class="text-center text-sm text-gray-500 mt-3 italic">The SHADER7 PCD Calculator generates precise X,Y coordinates for evenly-spaced bolt circle patterns, eliminating manual trigonometry calculations.</figcaption>
+<img alt="The PCD Generator with the live pattern preview, coordinate table and generated Fanuc program" class="w-full rounded-xl shadow-lg border border-gray-200" decoding="async" height="1024" loading="lazy" src="/screenshots/cnc-machinist-app.webp" width="1024"/>
+<figcaption class="text-center text-sm text-gray-500 mt-3 italic">The PCD Generator with the live pattern preview, coordinate table and generated Fanuc program.</figcaption>
 </figure>
-<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4" id="section-1">Historical Evolution: From Manual Layouts to CNC Systems</h2>
-<p>Before the advent of modern Computer Numerical Control (CNC) and coordinate measuring machines, machinists relied on manual layout methods to locate bolt hole patterns. Using basic mechanical tools like dividers, height gages, surface plates, and blue layout fluid (such as Dykem), layout technicians would physically scribe the Pitch Circle Diameter and divide the circumference using chordal measurements. This method was time-consuming, prone to cumulative human errors, and struggled to meet the tight tolerances required by high-pressure piping flanges, automotive wheel hubs, and aerospace turbine assemblies.</p>
-<p>The introduction of manual jig boring machines in the early 20th century, equipped with precise vernier scales and rotary tables, represented a massive technological leap. This allowed machinists to rotate workpieces by exact indexing angles relative to a stationary spindle axis. Today, CNC machining centers interpret Cartesian coordinates (X, Y, Z axes) directly from G-code programs. However, the foundational mathematics governing circular arrays—rooted in trigonometry—remains unchanged. Understanding these equations is critical for manual programming, debugging post-processor errors on the shop floor, and verifying coordinate positions when CAM software is unavailable.</p>
-<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4" id="section-2">The Trigonometry Behind PCD Calculations</h2>
-<p>Every hole coordinate on a bolt circle represents a point on a circle that can be solved using standard right-triangle trigonometry (sine and cosine). For any given hole index, the formulas are:</p>
-<div class="bg-gray-50 p-6 rounded-lg my-6 border border-gray-200 font-mono text-sm leading-relaxed space-y-3">
-<span class="text-orange-700 font-bold block mb-1">// Mathematical Equations:</span>
-                X = CenterX + (Radius × cos(Angle))
-                <br/>Y = CenterY + (Radius × sin(Angle))
-                <br/><span class="text-xs text-gray-500 font-sans italic">Where Radius = Pitch Circle Diameter (PCD) ÷ 2.</span>
-</div>
-<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Foundational Mathematical Principles of PCD Geometry</h3>
-<p>A Pitch Circle Diameter (PCD) pattern is mathematically represented as a set of points distributed uniformly along a two-dimensional circle. In a Cartesian coordinate system, the position of any point on a circle can be calculated using the parametric equations of a circle. When programming a CNC mill, the machine operates using a coordinate system relative to a set origin, known as the Work Coordinate System (WCS, e.g., G54).</p>
-<p>For any individual hole in a pattern, the absolute coordinate \((X_i, Y_i)\) is calculated using the following general trigonometric equations:</p>
-<div class="bg-gray-50 p-4 rounded-lg border border-gray-100 font-mono text-sm space-y-1">
-<p>X<sub>i</sub> = X<sub>c</sub> + R × cos(θ<sub>i</sub>)</p>
-<p>Y<sub>i</sub> = Y<sub>c</sub> + R × sin(θ<sub>i</sub>)</p>
-</div>
-<p>Where:</p>
-<ul class="list-disc pl-6 space-y-1">
-<li><strong>X<sub>c</sub>, Y<sub>c</sub></strong> represent the absolute coordinate values of the circle's center relative to the active WCS origin.</li>
-<li><strong>R</strong> represents the radius of the pitch circle (i.e., half of the Pitch Circle Diameter).</li>
-<li><strong>θ<sub>i</sub></strong> represents the absolute angular position of the <em>i</em>-th hole, measured counter-clockwise starting from the positive X-axis (0 degrees).</li>
-<li><strong>i</strong> is the zero-based index of the hole (from 0 to N-1, where N is the total number of holes).</li>
+<h2 id="section-1">What the app does</h2>
+<p>You enter the pattern and drill details on the left. The app then gives you:</p>
+<ul>
+<li>A <strong>live pattern preview</strong> with the origin at G54 X0 Y0, +X to the right and +Y up.</li>
+<li>A <strong>coordinate table</strong> listing every hole position to four decimals, with <strong>Copy Code</strong> for quick pasting.</li>
+<li>A <strong>Fanuc G-code program</strong> using a G81 drilling cycle, also with <strong>Copy Code</strong>.</li>
+<li><strong>RPM</strong> and <strong>Feed Rate</strong> for the drill, based on the tool and work material you pick.</li>
+<li><strong>Export PDF</strong>, a printable sheet of the coordinates and program for the setup folder.</li>
 </ul>
-<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Indexing Angles and Custom Rotational Offsets</h3>
-<p>The absolute angle for each hole is a function of the starting angle (\(θ_0\)) and the cumulative incremental angle (\(θ_{\text{step}}\)) of the pattern. The equations are:</p>
-<div class="bg-gray-50 p-4 rounded-lg border border-gray-100 font-mono text-sm space-y-1">
-<p>θ<sub>step</sub> = 360° / N</p>
-<p>θ<sub>i</sub> = θ<sub>0</sub> + i × θ<sub>step</sub></p>
-</div>
-<p>For a standard 6-hole pattern with a starting angle of 15 degrees:</p>
-<ul class="list-disc pl-6 space-y-1">
-<li>θ<sub>step</sub> = 360° / 6 = 60°</li>
-<li>Hole 1 (i = 0): θ<sub>0</sub> = 15° + 0 × 60° = 15°</li>
-<li>Hole 2 (i = 1): θ<sub>1</sub> = 15° + 1 × 60° = 75°</li>
-<li>Hole 3 (i = 2): θ<sub>2</sub> = 15° + 2 × 60° = 135°</li>
-<li>Hole 4 (i = 3): θ<sub>3</sub> = 15° + 3 × 60° = 195°</li>
-<li>Hole 5 (i = 4): θ<sub>4</sub> = 15° + 4 × 60° = 255°</li>
-<li>Hole 6 (i = 5): θ<sub>5</sub> = 15° + 5 × 60° = 315°</li>
+<p>The circle centre is the program origin, so set G54 on the centre of the bolt circle (or shift your work offset to it) before running the program.</p>
+<h2 id="section-2">Step by step</h2>
+<h3>1. Describe the hole pattern</h3>
+<ul>
+<li><strong>Full Circle</strong> (checked by default): holes are spaced evenly around 360°. Enter the <strong>Start Angle</strong> of the first hole; the <strong>Last Angle</strong> is ignored.</li>
+<li><strong>Partial arc</strong>: untick Full Circle and enter both <strong>Start Angle</strong> and <strong>Last Angle</strong>. The first hole sits on the start angle, the last hole on the last angle, and the rest are spaced evenly between them.</li>
+<li><strong>Pitch Circle Diameter (PCD)</strong> in mm and <strong>Number of Holes</strong>.</li>
 </ul>
-<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Behavior Across the Cartesian Quadrants</h3>
-<p>An essential aspect of manual calculation is understanding how the signs (positive or negative) of the trigonometric outputs behave across the four mathematical quadrants. When the PCD center is aligned with the active datum (X0, Y0):</p>
-<ul class="list-disc pl-6 space-y-2">
-<li><strong>Quadrant I (0° to 90°):</strong> Both sine and cosine are positive. Absolute coordinates will have positive X and positive Y offsets (+X, +Y).</li>
-<li><strong>Quadrant II (90° to 180°):</strong> Cosine is negative, sine is positive. Absolute coordinates will have negative X and positive Y offsets (-X, +Y).</li>
-<li><strong>Quadrant III (180° to 270°):</strong> Both sine and cosine are negative. Absolute coordinates will have negative X and negative Y offsets (-X, -Y).</li>
-<li><strong>Quadrant IV (270° to 360°):</strong> Cosine is positive, sine is negative. Absolute coordinates will have positive X and negative Y offsets (+X, -Y).</li>
+<p>Angles are measured from the 3 o'clock position (+X axis), counter-clockwise. A start angle of 90° puts the first hole at 12 o'clock.</p>
+<h3>2. Fill in the G-code parameters</h3>
+<ul>
+<li><strong>Program Number</strong> (the O-number).</li>
+<li><strong>Drill Diameter</strong>, used for the RPM and feed calculation.</li>
+<li><strong>Retract Plane (R)</strong>, the R level the drill rapids to between holes.</li>
+<li><strong>Drill Depth (Z)</strong>, a negative value for a hole below the top face.</li>
+<li><strong>Tool Material</strong> (HSS, Cobalt HSS-Co or Carbide) and <strong>Work Material</strong> (Mild Steel, Alloy Steel, Stainless or Aluminium).</li>
+<li><strong>Axis for Coordinates</strong>: G17 (X, Y) for a normal vertical mill, or G18 (X, Z) and G19 (Y, Z) for patterns on other faces.</li>
 </ul>
-<p>Modern CNC control systems compute these values with floating-point precision, but manual calculation using a scientific calculator is a crucial quality assurance step. If a programmer accidentally swaps a sign or misses a negative prefix in the G-code, the tool will drill in the wrong quadrant, resulting in immediate part scrap and potential machine spindle crashes.</p>
-<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4" id="section-3">Step-by-Step Manual Calculation</h2>
-<p>To calculate a complete bolt circle manually, follow this sequential structure:</p>
-<ol class="list-decimal pl-6 space-y-3">
-<li><strong>Determine the Radius (R):</strong> Divide the PCD by 2. If the PCD is 100mm, the Radius is 50mm.</li>
-<li><strong>Calculate the Incremental Angle (θ<sub>step</sub>):</strong> Divide 360 degrees by the total number of holes. For a 6-hole circle: <code class="bg-gray-100 px-1 font-mono rounded">360 ÷ 6 = 60°</code> increment per hole.</li>
-<li><strong>Determine Starting Angle:</strong> Identify where the first hole sits (typically 0° on the positive X-axis, or 90° on the positive Y-axis).</li>
-<li><strong>Iterate Hole Angles:</strong> Calculate the cumulative angle for each hole:
-                  <ul class="list-disc pl-6 mt-1 space-y-1">
-<li>Hole 1: Starting Angle (e.g., 0°)</li>
-<li>Hole 2: Starting Angle + 60° = 60°</li>
-<li>Hole 3: Starting Angle + 120° = 120°</li>
-<li>Hole 4: 180°, Hole 5: 240°, Hole 6: 300°</li>
+<h3>3. Review the results</h3>
+<p>Check the preview first: the number of holes, where the first hole is and which way the pattern runs. Then check the coordinates against one hole you can work out by hand (the hole at 0° should be at X = PCD ÷ 2, Y = 0).</p>
+<h2 id="section-3">How the coordinates are calculated</h2>
+<p>Each hole is a point on a circle of radius r = PCD ÷ 2:</p>
+<pre><code>X = r × cos(θ)
+Y = r × sin(θ)
+</code></pre>
+<p>For a full circle, the angle step is 360° ÷ number of holes. For a partial arc, it is (last angle − start angle) ÷ (number of holes − 1), so both end angles get a hole.</p>
+<p><strong>Worked example:</strong> PCD 100 mm, 6 holes, start angle 0°. The radius is 50 mm and the step is 60°.</p>
+<div class="article-table-scroll"><table>
+<thead>
+<tr>
+<th>Hole</th>
+<th>Angle</th>
+<th>X</th>
+<th>Y</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>0°</td>
+<td>50.0000</td>
+<td>0.0000</td>
+</tr>
+<tr>
+<td>2</td>
+<td>60°</td>
+<td>25.0000</td>
+<td>43.3013</td>
+</tr>
+<tr>
+<td>3</td>
+<td>120°</td>
+<td>−25.0000</td>
+<td>43.3013</td>
+</tr>
+<tr>
+<td>4</td>
+<td>180°</td>
+<td>−50.0000</td>
+<td>0.0000</td>
+</tr>
+<tr>
+<td>5</td>
+<td>240°</td>
+<td>−25.0000</td>
+<td>−43.3013</td>
+</tr>
+<tr>
+<td>6</td>
+<td>300°</td>
+<td>25.0000</td>
+<td>−43.3013</td>
+</tr>
+</tbody>
+</table></div>
+<p>The straight-line distance between neighbouring holes (the chord) is PCD × sin(180° ÷ n). Here that is 100 × sin(30°) = 50 mm, which is easy to check with calipers on the finished part.</p>
+<figure class="my-8">
+<img alt="Polar-to-Cartesian geometry behind every hole position on a pitch circle" class="w-full rounded-xl shadow-lg border border-gray-200" decoding="async" height="536" loading="lazy" sizes="(max-width: 760px) calc(100vw - 40px), 760px" src="/assets/articles/triangle-solver-banner-e7e0d6-960.webp" srcset="/assets/articles/triangle-solver-banner-e7e0d6-480.webp 480w, /assets/articles/triangle-solver-banner-e7e0d6-960.webp 960w" width="960"/>
+<figcaption class="text-center text-sm text-gray-500 mt-3 italic">Polar-to-Cartesian geometry behind every hole position on a pitch circle.</figcaption>
+</figure>
+<h2 id="section-4">The program the app writes</h2>
+<p>The generated program follows a simple, readable structure:</p>
+<pre><code>O1001 (PCD DRILLING - DIA: 6MM)
+(TOOL: HSS, WORK: MILD)
+(SPEED: ... RPM, FEED: ... MM/MIN)
+G21 G90 G17 G54 G40 G80
+(ADD TOOL CHANGE HERE, e.g., T01 M06)
+S... M03
+G00 X50.0000 Y0.0000
+G43 Z50.0 H01
+G81 Z-10.000 R5.000 F...
+X25.0000 Y43.3013
+...
+G80
+G49
+G00 Z100.0 M05
+M30
+</code></pre>
+<p>A few things to check before running it:</p>
+<ul>
+<li><strong>Add your tool change.</strong> The program leaves a comment where your T and M06 go.</li>
+<li><strong>Tool length offset.</strong> The program calls H01. Change it to match your tool number.</li>
+<li><strong>Clearance heights.</strong> Z50 on approach and Z100 at the end are safe defaults; adjust them for your vise, clamps and fixtures.</li>
+<li><strong>Cycle type.</strong> G81 drills each hole in one pass. For holes deeper than about three times the drill diameter, change G81 to G83 and add a peck depth (Q), or use the <a href="/cnc-machinist/drill/">Drill Feed &amp; RPM Calculator</a>, which can write G83 and G73 peck cycles.</li>
 </ul>
-</li>
-<li><strong>Apply Sin/Cos Formulas:</strong> Compute X and Y offsets for each angle, adding them to the Center coordinates.</li>
+<h2 id="section-5">Tips from the shop floor</h2>
+<ul>
+<li><strong>Spot first.</strong> Spot or centre-drill every position before drilling, especially on a large PCD where the drill could walk.</li>
+<li><strong>Watch clamp positions.</strong> Holes near 0°, 90°, 180° and 270° often land close to vise jaws. Rotate the start angle if the drawing allows it.</li>
+<li><strong>Check the mating part.</strong> If the bolt pattern must line up with another component, measure the chord on both parts, not just the diameter.</li>
+<li><strong>Use the PDF.</strong> A printed coordinate sheet next to the machine makes it easy to jog to each hole and check positions during first-article inspection.</li>
+</ul>
+<h2 id="section-6">When the circle centre is not at X0 Y0</h2>
+<p>The generator puts the bolt-circle centre at the program origin. If your part origin is somewhere else, for example the corner of a plate, you have two easy options:</p>
+<ol>
+<li><strong>Shift the work offset.</strong> Touch off the part corner as usual, then add the centre's distance to G54 (or use a second offset such as G55) so that X0 Y0 lands on the circle centre.</li>
+<li><strong>Shift the coordinates.</strong> Add the centre's X and Y to every coordinate in the table. For a circle centred at X60 Y40, the hole at (25.0000, 43.3013) becomes (85.0000, 83.3013).</li>
 </ol>
-<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4" id="section-4">Manual Calculation Example</h2>
-<p>Let's calculate the coordinates for a 4-hole pattern, PCD 100mm, centered at X0 Y0, with the first hole at 45°:</p>
-<div class="overflow-x-auto shadow border border-gray-200 rounded-lg my-6">
-<div aria-label="Scrollable reference table" class="article-table-scroll" role="region" tabindex="0"><table class="w-full border-collapse text-sm">
-<thead>
-<tr class="bg-orange-50 border-b border-gray-200">
-<th class="p-3 text-left font-bold text-gray-700">Hole Index</th>
-<th class="p-3 text-left font-bold text-gray-700">Hole Angle (θ)</th>
-<th class="p-3 text-left font-bold text-gray-700">X Coordinate Formula (50 × cos(θ))</th>
-<th class="p-3 text-left font-bold text-gray-700">Y Coordinate Formula (50 × sin(θ))</th>
-<th class="p-3 text-left font-bold text-gray-700">Final Coordinates (X, Y)</th>
-</tr>
-</thead>
-<tbody class="divide-y divide-gray-100 bg-white">
-<tr>
-<td class="p-3 font-bold text-gray-900">Hole 1</td>
-<td class="p-3 text-gray-600">45°</td>
-<td class="p-3 text-gray-600">50 × 0.7071 = 35.355 mm</td>
-<td class="p-3 text-gray-600">50 × 0.7071 = 35.355 mm</td>
-<td class="p-3 font-mono font-bold text-indigo-900">X35.355, Y35.355</td>
-</tr>
-<tr>
-<td class="p-3 font-bold text-gray-900">Hole 2</td>
-<td class="p-3 text-gray-600">135°</td>
-<td class="p-3 text-gray-600">50 × -0.7071 = -35.355 mm</td>
-<td class="p-3 text-gray-600">50 × 0.7071 = 35.355 mm</td>
-<td class="p-3 font-mono font-bold text-indigo-900">X-35.355, Y35.355</td>
-</tr>
-<tr>
-<td class="p-3 font-bold text-gray-900">Hole 3</td>
-<td class="p-3 text-gray-600">225°</td>
-<td class="p-3 text-gray-600">50 × -0.7071 = -35.355 mm</td>
-<td class="p-3 text-gray-600">50 × -0.7071 = -35.355 mm</td>
-<td class="p-3 font-mono font-bold text-indigo-900">X-35.355, Y-35.355</td>
-</tr>
-<tr>
-<td class="p-3 font-bold text-gray-900">Hole 4</td>
-<td class="p-3 text-gray-600">315°</td>
-<td class="p-3 text-gray-600">50 × 0.7071 = 35.355 mm</td>
-<td class="p-3 text-gray-600">50 × -0.7071 = -35.355 mm</td>
-<td class="p-3 font-mono font-bold text-indigo-900">X35.355, Y-35.355</td>
-</tr>
-</tbody>
-</table></div>
-</div>
-<figure class="my-8">
-<img alt="PCD Bolt Circle Polar to Cartesian Coordinate Trigonometric Geometry Layout" class="w-full rounded-xl shadow-lg border border-gray-200" decoding="async" height="536" loading="lazy" sizes="(max-width: 760px) calc(100vw - 40px), 760px" src="/assets/articles/triangle-solver-banner-e7e0d6-960.webp" srcset="/assets/articles/triangle-solver-banner-e7e0d6-480.webp 480w, /assets/articles/triangle-solver-banner-e7e0d6-960.webp 960w" width="960"/>
-<figcaption class="text-center text-sm text-gray-500 mt-3 italic">PCD polar angle to Cartesian coordinate trigonometry geometry blueprint for bolt circle hole generation.</figcaption>
-</figure>
-<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4" id="section-5">PCD Tap Drill &amp; Clearance Hole Reference Chart</h2>
-<p>Selecting the proper tap drill or clearance hole diameter is critical when machining bolt patterns to avoid thread failures, broken taps, or mating misalignments. The table below outlines standard metric and imperial fasteners commonly utilized in PCD layouts:</p>
-<div class="overflow-x-auto shadow border border-gray-200 rounded-lg my-6">
-<div aria-label="Scrollable reference table" class="article-table-scroll" role="region" tabindex="0"><table class="w-full border-collapse text-sm">
-<thead>
-<tr class="bg-indigo-50 border-b border-gray-200">
-<th class="p-3 text-left font-bold text-gray-700">Bolt Size</th>
-<th class="p-3 text-left font-bold text-gray-700">Thread Pitch / TPI</th>
-<th class="p-3 text-left font-bold text-gray-700">Tap Drill Size</th>
-<th class="p-3 text-left font-bold text-gray-700">Close-Fit Clearance Dia.</th>
-<th class="p-3 text-left font-bold text-gray-700">Free-Fit Clearance Dia.</th>
-<th class="p-3 text-left font-bold text-gray-700">Min. Flange Wall Clearance</th>
-</tr>
-</thead>
-<tbody class="divide-y divide-gray-100 bg-white">
-<tr>
-<td class="p-3 font-semibold text-gray-900">M6</td>
-<td class="p-3 text-gray-600">1.00 mm</td>
-<td class="p-3 font-mono text-gray-600">5.0 mm</td>
-<td class="p-3 font-mono text-gray-600">6.2 mm</td>
-<td class="p-3 font-mono text-gray-600">6.6 mm</td>
-<td class="p-3 text-gray-600">12.0 mm</td>
-</tr>
-<tr>
-<td class="p-3 font-semibold text-gray-900">M8</td>
-<td class="p-3 text-gray-600">1.25 mm</td>
-<td class="p-3 font-mono text-gray-600">6.8 mm</td>
-<td class="p-3 font-mono text-gray-600">8.4 mm</td>
-<td class="p-3 font-mono text-gray-600">9.0 mm</td>
-<td class="p-3 text-gray-600">16.0 mm</td>
-</tr>
-<tr>
-<td class="p-3 font-semibold text-gray-900">M10</td>
-<td class="p-3 text-gray-600">1.50 mm</td>
-<td class="p-3 font-mono text-gray-600">8.5 mm</td>
-<td class="p-3 font-mono text-gray-600">10.5 mm</td>
-<td class="p-3 font-mono text-gray-600">11.0 mm</td>
-<td class="p-3 text-gray-600">20.0 mm</td>
-</tr>
-<tr>
-<td class="p-3 font-semibold text-gray-900">M12</td>
-<td class="p-3 text-gray-600">1.75 mm</td>
-<td class="p-3 font-mono text-gray-600">10.2 mm</td>
-<td class="p-3 font-mono text-gray-600">13.0 mm</td>
-<td class="p-3 font-mono text-gray-600">14.0 mm</td>
-<td class="p-3 text-gray-600">24.0 mm</td>
-</tr>
-<tr>
-<td class="p-3 font-semibold text-gray-900">M16</td>
-<td class="p-3 text-gray-600">2.00 mm</td>
-<td class="p-3 font-mono text-gray-600">14.0 mm</td>
-<td class="p-3 font-mono text-gray-600">17.0 mm</td>
-<td class="p-3 font-mono text-gray-600">18.0 mm</td>
-<td class="p-3 text-gray-600">32.0 mm</td>
-</tr>
-<tr>
-<td class="p-3 font-semibold text-gray-900">1/4"-20 UNC</td>
-<td class="p-3 text-gray-600">20 TPI</td>
-<td class="p-3 font-mono text-gray-600">0.201" (#7)</td>
-<td class="p-3 font-mono text-gray-600">0.257" (F)</td>
-<td class="p-3 font-mono text-gray-600">0.266" (H)</td>
-<td class="p-3 text-gray-600">0.500" (12.7 mm)</td>
-</tr>
-<tr>
-<td class="p-3 font-semibold text-gray-900">3/8"-16 UNC</td>
-<td class="p-3 text-gray-600">16 TPI</td>
-<td class="p-3 font-mono text-gray-600">0.312" (5/16")</td>
-<td class="p-3 font-mono text-gray-600">0.386" (W)</td>
-<td class="p-3 font-mono text-gray-600">0.397" (X)</td>
-<td class="p-3 text-gray-600">0.750" (19.0 mm)</td>
-</tr>
-<tr>
-<td class="p-3 font-semibold text-gray-900">1/2"-13 UNC</td>
-<td class="p-3 text-gray-600">13 TPI</td>
-<td class="p-3 font-mono text-gray-600">0.422" (27/64")</td>
-<td class="p-3 font-mono text-gray-600">0.515" (33/64")</td>
-<td class="p-3 font-mono text-gray-600">0.531" (17/32")</td>
-<td class="p-3 text-gray-600">1.000" (25.4 mm)</td>
-</tr>
-</tbody>
-</table></div>
-</div>
-<p class="text-sm text-gray-500 italic mt-2">Note: Tight clearance diameters should only be used when precise dowel pinning or rigid mating fixture alignments are executed. Free-fit clearance values accommodate typical mechanical manufacturing tolerances without binding the assembly.</p>
-<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4" id="section-6">Practical CNC Machine Setup and Canned Cycles</h2>
-<p>Executing a physical drilling operation on a Vertical Machining Center (VMC) or Horizontal Machining Center (HMC) requires setting up the machine coordinate systems, establishing proper tool offsets, and selecting appropriate drilling cycles.</p>
-<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Pre-Machining Setup Checklist</h3>
-<ul class="list-disc pl-6 space-y-2">
-<li><strong>Work Coordinate System (WCS) Centering:</strong> Sweep the inner bore or outer diameter of the workpiece using a dial test indicator or a wireless 3D touch probe (such as a Renishaw probe) to establish the exact center of the Pitch Circle (X0, Y0). Store these values in G54.</li>
-<li><strong>Tool Length Offset Calibration:</strong> Measure the drilling tool length relative to the Z-axis datum (top of the part) using a touch-off block or laser tool setter. Ensure that the corresponding H-code (e.g., H01 for Tool 1) matches in the program.</li>
-<li><strong>Tooling Runout Verification:</strong> Runout greater than 0.01mm (0.0004 inches) at the drill tip leads to oversized hole diameters and accelerated tool wear. Utilize ER collets or hydraulic tool holders rather than standard side-lock Weldon holders for high-precision drilling.</li>
-<li><strong>Retract Plane (R-Plane) Clearance:</strong> Set the retract height (R) in the canned cycle to clear all workholding clamps, material burrs, and casting variations (typically Z2.0mm to Z5.0mm above the material surface).</li>
+<p>Many controls also support a local coordinate shift with G52 (for example <code>G52 X60. Y40.</code> before the holes and <code>G52 X0 Y0</code> after), which keeps the generated coordinates unchanged.</p>
+<h2 id="section-7">Unevenly spaced patterns</h2>
+<p>Some flanges have holes that are not evenly spaced, such as two groups of three. Generate each group as a partial arc with Full Circle unticked, using its own start and last angle, then combine the coordinate lists in one program under the same G81 cycle.</p>
+<h2 id="section-8">Common mistakes</h2>
+<ul>
+<li><strong>Wrong start angle reference.</strong> Angles start at 3 o'clock (+X) and run counter-clockwise. Drawings that measure from 12 o'clock need 90° added.</li>
+<li><strong>Clockwise drawings.</strong> If the print numbers holes clockwise, the positions are the same but the order is reversed. That is fine for drilling; it only matters if hole numbering is checked during inspection.</li>
+<li><strong>Forgetting the minus sign on depth.</strong> Drill Depth (Z) should be negative for a hole below the top face.</li>
+<li><strong>Retract plane below a clamp.</strong> The R level is where the drill travels between holes. Make sure it clears every clamp and step on the part, or switch to G98 so the tool returns to the initial level.</li>
 </ul>
-<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Understanding Canned Drilling Cycles (G81 vs G83)</h3>
-<p>Canned cycles automate repetitive vertical motions. Under a canned cycle, moving the tool to new X and Y coordinates triggers an automatic repeat of the drilling cycle. The most common canned cycles are:</p>
-<ul class="list-disc pl-6 space-y-2">
-<li><strong>G81 (Standard Drilling Cycle):</strong> Plunges the drill directly to the programmed Z depth at the active feed rate, then executes a rapid retract out of the hole. This cycle is ideal for shallow holes where depth-to-diameter ratio is less than 3:1.</li>
-<li><strong>G82 (Drilling with Dwell):</strong> Similar to G81, but adds a programmed delay (using the P parameter in milliseconds, e.g., P500 for a 0.5-second dwell) at the bottom of the hole. This ensures a clean, flat bottom for counterbores.</li>
-<li><strong>G83 (Deep Hole Peck Drilling):</strong> Retracts the drill completely to the R-plane between feed steps (pecks, defined by the Q parameter). This is vital for deep holes (depth &gt; 3x diameter) to clear long stringy chips and allow coolant to flood the bottom.</li>
-<li><strong>G73 (High-Speed Peck / Chip Break Cycle):</strong> Performs a minor retract (0.5mm to 1.0mm) to break the chip ribbon before continuing the plunge. It saves time on production runs but is not ideal for deep blind holes in gummy materials like aluminum.</li>
-<li><strong>G98 vs G99 Retract Modes:</strong> <code>G98</code> instructs the machine to retract the tool to the initial safety plane (e.g., Z25.0) between holes, which is crucial for skipping over clamps. <code>G99</code> retracts only to the closer R-plane (e.g., Z2.0), minimizing cycle times when no obstacles stand between holes.</li>
-</ul>
-<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Example G-Code Implementation</h3>
-<p>Once you have computed each coordinate point, you can code them directly as absolute coordinates under a drilling canned cycle (like <strong>G81</strong> for drilling or <strong>G83</strong> for peck drilling):</p>
-<pre class="bg-gray-100 p-4 rounded-lg font-mono text-sm leading-relaxed text-indigo-900 border">
-G90 G54 (Absolute coordinates, WCS G54)
-G00 X35.355 Y35.355 Z25. S1500 M03 (Spindle ON, rapid to Hole 1)
-G43 H01 Z5. M08 (Apply tool offset, rapid to clearance plane, coolant ON)
-G81 G98 Z-10. R2. F150. (Initiate G81 cycle at Hole 1, depth Z-10, retract to Z2 clearance)
-X-35.355 Y35.355 (Executes drilling cycle automatically at Hole 2)
-X-35.355 Y-35.355 (Executes drilling cycle automatically at Hole 3)
-X35.355 Y-35.355 (Executes drilling cycle automatically at Hole 4)
-G80 G00 Z25. M09 (Cancel canned drilling cycle, rapid retract, coolant OFF)
-M05 (Spindle Stop)
-M30 (End Program)</pre>
-<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4" id="section-7">Frequently Asked Questions (FAQ)</h2>
-<div class="space-y-6">
-<div>
-<h3 class="font-bold text-gray-900 text-lg">1. How do I calculate PCD coordinates if the center is not at X0 Y0?</h3>
-<p class="text-gray-600 mt-1">If the pattern center is located at custom offsets (for example, X15.5 Y-22.3), you must add these offsets directly to the calculated coordinates. The formula becomes: <code>X = CenterX + (Radius × cos(Angle))</code> and <code>Y = CenterY + (Radius × sin(Angle))</code>. Simply plug in the center values: <code>X = 15.5 + (Radius × cos(Angle))</code> and <code>Y = -22.3 + (Radius × sin(Angle))</code>.</p>
+<h2 id="section-9">Inspection tip</h2>
+<p>After drilling, measure across two opposite holes on an even-numbered pattern: the distance between their centres should equal the PCD. On an odd-numbered pattern, measure the chord between neighbouring holes and compare it with PCD × sin(180° ÷ n).</p>
+<h2 id="section-10">Frequently asked questions</h2>
+<h3>Where is X0 Y0 in the generated program?</h3>
+<p>At the centre of the bolt circle. Set your G54 work offset on that centre, or shift the offset to it, before you run the program.</p>
+<h3>How do I program holes on only part of a circle?</h3>
+<p>Untick Full Circle and enter a Start Angle and a Last Angle. The app puts a hole on both angles and spaces the others evenly between them.</p>
+<h3>Where does the RPM and feed come from?</h3>
+<p>The app uses typical cutting speeds for the tool material and work material you choose, together with the drill diameter. Treat them as starting values and use your tool maker's data when you have it.</p>
+<h3>Can I use it for a lathe with live tooling or a horizontal mill?</h3>
+<p>Yes. Change Axis for Coordinates to G18 (X, Z) or G19 (Y, Z) so the program uses the right pair of axes.</p>
+<h3>Does the app need an internet connection or an account?</h3>
+<p>No account is needed. Everything is calculated in your browser.</p>
+<section class="bg-gradient-to-r from-indigo-900 to-blue-900 text-white p-8 rounded-2xl text-center space-y-4 my-10">
+<h2 class="text-2xl md:text-3xl font-bold text-white" id="section-11">Generate your bolt circle</h2>
+<p class="text-indigo-200 max-w-xl mx-auto text-sm md:text-base">Enter the PCD, hole count and angles to get X/Y coordinates, a live pattern preview, a Fanuc G81 program and a PDF you can print for the machine.</p>
+<div class="pt-2">
+<a class="inline-block bg-white text-indigo-900 font-bold px-8 py-3 rounded-full hover:bg-indigo-50 transition shadow-lg" href="/cnc-machinist/pcd/">Open the PCD Generator →</a>
 </div>
-<div>
-<h3 class="font-bold text-gray-900 text-lg">2. What is the chordal distance between two adjacent holes in a PCD, and how is it calculated?</h3>
-<p class="text-gray-600 mt-1">The chordal distance represents the direct, straight-line physical distance between the centers of two adjacent holes. Machinists use this measurement with calipers to verify the accuracy of a pattern. The formula is: <code>Chordal Distance = PCD × sin(180° ÷ N)</code>, where N is the total number of holes. For instance, on a 100mm PCD with 6 holes, the chordal distance is <code>100 × sin(30°) = 50.0mm</code>.</p>
-</div>
-<div>
-<h3 class="font-bold text-gray-900 text-lg">3. How do I program a PCD pattern if the holes are not evenly spaced?</h3>
-<p class="text-gray-600 mt-1">For unevenly spaced patterns, a single incremental angle step cannot be used. You must calculate the unique absolute angular position (\(θ\)) for each hole from the blueprint. Once you determine the specific angles, solve for each X and Y coordinate individually using the standard trigonometric equations, and list them sequentially under the active canned cycle in your G-code.</p>
-</div>
-<div>
-<h3 class="font-bold text-gray-900 text-lg">4. What is the difference between G98 and G99 retract modes in G-code?</h3>
-<p class="text-gray-600 mt-1"><code>G98</code> instructs the spindle to retract to the initial safety plane (Z height specified before the canned cycle call) between coordinates. This is essential if clamps, fixtures, or part features protrude between hole locations. <code>G99</code> tells the machine to retract only to the closer R-plane (clearance plane), which minimizes "air-cut" time and speeds up cycle times on flat parts.</p>
-</div>
-<div>
-<h3 class="font-bold text-gray-900 text-lg">5. Why does my physical bolt pattern fail to align with its mating part even though my coordinates are mathematically correct?</h3>
-<p class="text-gray-600 mt-1">Alignment errors typically stem from three shop floor issues: Work Coordinate System (WCS) drift (probing error), thermal expansion (especially in aluminum components machined under hot conditions), or tooling deflection (where the drill tip walks or bends as it initiates the plunge). Using rigid spot drills to pre-locate the centers and ensuring clean part deburring are standard practices to prevent alignment stack-up errors.</p>
-</div>
-</div>
-<div class="bg-orange-50 p-6 rounded-lg my-8 border-l-4 border-orange-600">
-<h3 class="font-bold text-orange-900 mb-2">Get Bolt Hole Coordinates Instantly</h3>
-<p class="mb-4">Avoid manual trigonometry errors. Use the Shader7 PCD calculator to input center coordinates, PCD, number of holes, and starting angle, and instantly copy absolute or incremental G-code outputs.</p>
-<a class="inline-block bg-orange-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-700 transition" href="cnc-machinist/pcd/">Open PCD Calculator →</a>
-</div>
-<div class="mt-12 pt-6 border-t border-gray-100 flex items-center gap-4 text-sm text-gray-500">
-<div class="bg-indigo-100 text-indigo-700 h-10 w-10 rounded-full flex items-center justify-center font-bold text-lg">
-                    NX
-                </div>
-<div>
-<p class="text-gray-900 font-semibold">Written by Nishikant Xalxo</p>
-<p class="text-xs">CNC Programming Expert &amp; Technical Writer | Follow <a class="text-indigo-600 hover:underline" href="https://twitter.com/nishix_vamp" rel="noopener noreferrer" target="_blank">@nishix_vamp</a></p>
-</div>
-</div>
+</section>
+
 </div></div><section aria-labelledby="related-title" class="related-reading">
 <h2 id="related-title">
   Keep reading
@@ -422,8 +340,7 @@ M30 (End Program)</pre>
     CNC &amp; design
    </span>
 <strong>
-    Browser-based 3D CAD for CNC machinists
-   </strong>
+    Model, program and simulate a part in Shader7 3D CAD Studio</strong>
 <span>
     Read guide →
    </span>
@@ -433,8 +350,7 @@ M30 (End Program)</pre>
     CNC &amp; design
    </span>
 <strong>
-    CNC angles, lengths, and tapers
-   </strong>
+    Points on a circle with the Shader7 Angle Length Calculator</strong>
 <span>
     Read guide →
    </span>
@@ -444,8 +360,7 @@ M30 (End Program)</pre>
     CNC &amp; design
    </span>
 <strong>
-    CNC chamfer programming
-   </strong>
+    CNC chamfer programs with the Shader7 Circular and XY Chamfer generators</strong>
 <span>
     Read guide →
    </span>

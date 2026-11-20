@@ -6,20 +6,21 @@
 
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Triangle solving for CNC geometry | Shader7</title>
-<meta content="Explore triangle-solving methods, altitudes, medians, and the machining examples that connect them." name="description"/>
+<title>How to use the Shader7 Universal Triangle Solver for CNC geometry | Shader7</title>
+<meta content="A practical guide to the Universal Triangle Solver: General and Right-Angled modes, which inputs it needs, how it handles the SSA case, and the shop-floor jobs it speeds up." name="description"/>
 <link href="https://www.shader7.com/cnc-triangle-solver-trigonometry-guide.html" rel="canonical"/>
-<meta content="Triangle solving for CNC geometry" property="og:title"/>
-<meta content="Explore triangle-solving methods, altitudes, medians, and the machining examples that connect them." property="og:description"/>
+<meta content="How to use the Shader7 Universal Triangle Solver for CNC geometry" property="og:title"/>
+<meta content="A practical guide to the Universal Triangle Solver: General and Right-Angled modes, which inputs it needs, how it handles the SSA case, and the shop-floor jobs it speeds up." property="og:description"/>
 <meta content="https://www.shader7.com/cnc-triangle-solver-trigonometry-guide.html" property="og:url"/>
 <meta content="article" property="og:type"/>
 <meta content="https://www.shader7.com/screenshots/triangle-solver-app.webp" property="og:image"/>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Triangle solving for CNC geometry", "author": {"@type": "Person", "name": "Nishikant Xalxo", "email": "nxdecore@gmail.com"}, "publisher": {"@type": "Organization", "name": "SHADER7", "logo": {"@type": "ImageObject", "url": "https://www.shader7.com/og-image.jpg"}}, "datePublished": "2026-08-17", "dateModified": "2026-08-17", "description": "Explore triangle-solving methods, altitudes, medians, and the machining examples that connect them.", "image": "https://www.shader7.com/screenshots/triangle-solver-app.webp"}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "How to use the Shader7 Universal Triangle Solver for CNC geometry", "author": {"@type": "Person", "name": "Nishikant Xalxo", "email": "nxdecore@gmail.com"}, "publisher": {"@type": "Organization", "name": "SHADER7", "logo": {"@type": "ImageObject", "url": "https://www.shader7.com/og-image.jpg"}}, "datePublished": "2026-08-17", "dateModified": "2026-11-20", "description": "A practical guide to the Universal Triangle Solver: General and Right-Angled modes, which inputs it needs, how it handles the SSA case, and the shop-floor jobs it speeds up.", "image": "https://www.shader7.com/screenshots/triangle-solver-app.webp", "wordCount": 1526}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Which combinations of inputs does the solver accept?", "acceptedAnswer": {"@type": "Answer", "text": "Any combination that fixes a triangle: three sides (SSS), two sides and the included angle (SAS), two angles and a side (ASA or AAS), or two sides and a non-included angle (SSA). In Right-Angled mode, C is fixed at 90°, so two more values are enough."}}, {"@type": "Question", "name": "What happens if two triangles fit my inputs?", "acceptedAnswer": {"@type": "Answer", "text": "That is the SSA ambiguous case. The app warns you and shows the acute solution. The other solution uses 180° − B for angle B."}}, {"@type": "Question", "name": "Can I work in radians?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Switch the unit toggle to Radians. Angles you have already typed are converted for you."}}, {"@type": "Question", "name": "Is my data sent anywhere?", "acceptedAnswer": {"@type": "Answer", "text": "No. The calculation and the diagram run entirely in your browser."}}, {"@type": "Question", "name": "Which other Shader7 tools work well with it?", "acceptedAnswer": {"@type": "Answer", "text": "For circle-based geometry, such as points on a radius at a given angle, use the Angle & Length Calculator. For bolt-hole patterns, use the PCD Generator."}}]}</script>
 <style>body { font-family: 'Inter', sans-serif; }</style>
 <link crossorigin="" href="https://cdnjs.cloudflare.com" rel="preconnect"/>
 <link href="/css/tailwind.min.css" rel="stylesheet"/>
-<meta content="Triangle solving for CNC geometry" name="twitter:title"/>
-<meta content="Explore triangle-solving methods, altitudes, medians, and the machining examples that connect them." name="twitter:description"/>
+<meta content="How to use the Shader7 Universal Triangle Solver for CNC geometry" name="twitter:title"/>
+<meta content="A practical guide to the Universal Triangle Solver: General and Right-Angled modes, which inputs it needs, how it handles the SSA case, and the shop-floor jobs it speeds up." name="twitter:description"/>
 <meta content="#f8fafc" name="theme-color"/>
 <link href="/css/font-awesome.min.css" rel="stylesheet"/>
 <link href="/css/landing.css?v=20260903g" rel="stylesheet"/>
@@ -69,22 +70,28 @@
   CNC &amp; design
  </p>
 <h1>
-  Triangle solving for CNC geometry
+  How to use the Shader7 Universal Triangle Solver for CNC geometry
  </h1>
 <p class="article-intro">
-  Explore triangle-solving methods, altitudes, medians, and the machining examples that connect them.
+  A practical guide to the Universal Triangle Solver: General and Right-Angled modes, which inputs it needs, how it handles the SSA case, and the shop-floor jobs it speeds up.
  </p>
 <div class="article-meta">
 <span>
    By Nishikant Xalxo
   </span>
 <span>
-   3 min read
+   7 min read
   </span>
 <span>
    Published
    <time datetime="2026-08-17">
     2026-08-17
+   </time>
+</span>
+<span>
+   Updated
+   <time datetime="2026-11-20">
+    2026-11-20
    </time>
 </span>
 </div>
@@ -97,27 +104,57 @@
 <ol>
 <li>
 <a href="#section-1">
-     Fundamental Triangle Solving Theorems
+     What the solver gives you
     </a>
 </li>
 <li>
 <a href="#section-2">
-     Perpendicular Altitude, Median &amp; Segment Splits
+     Step by step: using the app
     </a>
 </li>
 <li>
 <a href="#section-3">
-     Practical CNC Shop Floor Applications
+     The maths inside the app
     </a>
 </li>
 <li>
 <a href="#section-4">
-     Solve Triangles Online for Free
+     Shop-floor jobs it speeds up
+    </a>
+</li>
+<li>
+<a href="#section-5">
+     Tips for reliable results
+    </a>
+</li>
+<li>
+<a href="#section-6">
+     Worked example: an oblique triangle from a drawing
+    </a>
+</li>
+<li>
+<a href="#section-7">
+     Common mistakes and how to avoid them
+    </a>
+</li>
+<li>
+<a href="#section-8">
+     Checking a result by hand
+    </a>
+</li>
+<li>
+<a href="#section-9">
+     Frequently asked questions
+    </a>
+</li>
+<li>
+<a href="#section-10">
+     Solve your triangle now
     </a>
 </li>
 </ol>
 </details>
-<a class="sidebar-tool" href="/cnc-machinist/index.html">
+<a class="sidebar-tool" href="/cnc-machinist/Triangle/index.html">
   Open the related tool
   <span aria-hidden="true">
    →
@@ -125,100 +162,141 @@
 </a>
 </aside>
 <div class="prose prose-indigo max-w-none text-gray-700 leading-relaxed space-y-8 article-body">
-<!-- SECTION 0: Introduction -->
-<section class="space-y-4">
-<p class="text-xl text-gray-600 leading-relaxed italic">
-                    Whether setting up a sine bar for a tapered fixture or calculating toolpath offset coordinates for angular profiles, triangle geometry is the bedrock of precision engineering.
-                </p>
-<p>
-                    On the machine shop floor, technical blueprints rarely provide every single coordinate directly. Machinists frequently encounter non-right-angled cuts, compound bevels, dovetail slide angles, and bolt-hole spacing offsets where only two sides and an angle (SAS), or three sides (SSS), are specified.
-                </p>
-<p>
-                    Understanding how to solve right and oblique triangles using the Law of Sines, the Law of Cosines, and altitude projections ensures you can verify dimensions at the machine controller without waiting for a CAM revision.
-                </p>
+<p>Drawings rarely give you every dimension you need at the machine. You get two sides and an angle, or three sides, and you still need the height of a fixture, the length of a bevel, or the offset of a hole. The <strong>Universal Triangle Solver</strong> in the Shader7 CNC Machinist hub fills in the rest. It runs in your browser, needs no account, and draws the triangle as it solves it so you can see whether the answer makes sense before you use it.</p>
+<p>This guide walks through the app screen by screen, then shows the maths it uses and a few jobs where it saves time.</p>
 <figure class="my-8">
-<img alt="Universal Triangle Solver Web Application Interface" class="w-full rounded-xl shadow-lg border border-gray-200" decoding="async" height="536" loading="lazy" sizes="(max-width: 760px) calc(100vw - 40px), 760px" src="/assets/articles/triangle-solver-app-251d03-960.webp" srcset="/assets/articles/triangle-solver-app-251d03-480.webp 480w, /assets/articles/triangle-solver-app-251d03-960.webp 960w" width="960"/>
-<figcaption class="text-center text-sm text-gray-500 mt-3 italic">Figure 1: The SHADER7 Universal Triangle Solver dynamically calculates all side lengths, angles, perpendicular altitude (h_c), and median lines with live angle badges.</figcaption>
+<img alt="The Universal Triangle Solver with all sides, angles, the perpendicular altitude h_c and the median m_c solved and drawn on the canvas" class="w-full rounded-xl shadow-lg border border-gray-200" decoding="async" height="536" loading="lazy" sizes="(max-width: 760px) calc(100vw - 40px), 760px" src="/assets/articles/triangle-solver-app-251d03-960.webp" srcset="/assets/articles/triangle-solver-app-251d03-480.webp 480w, /assets/articles/triangle-solver-app-251d03-960.webp 960w" width="960"/>
+<figcaption class="text-center text-sm text-gray-500 mt-3 italic">The Universal Triangle Solver with all sides, angles, the perpendicular altitude h_c and the median m_c solved and drawn on the canvas.</figcaption>
 </figure>
-</section>
-<!-- SECTION 1: Core Mathematical Rules -->
-<section class="space-y-6 pt-6 border-t border-gray-100" id="math-rules">
-<h2 class="text-3xl font-extrabold text-gray-900" id="section-1">1. Fundamental Triangle Solving Theorems</h2>
-<p>
-                    A triangle is fully determined when you know any 3 independent parameters (with at least one parameter being a side length). The two primary laws governing all planar triangles are:
-                </p>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-<div class="bg-gray-50 p-6 rounded-lg border border-gray-200 space-y-3">
-<h3 class="font-bold text-indigo-900 text-lg">Law of Cosines (SSS &amp; SAS)</h3>
-<p class="text-sm text-gray-600">Used when you know all three sides (SSS) or two sides and the included angle (SAS):</p>
-<div class="bg-white p-3 rounded font-mono text-sm border text-indigo-700">
-                            c² = a² + b² - 2ab • cos(C)
-                        </div>
-<p class="text-xs text-gray-500">Angle derivation: <code>cos(C) = (a² + b² - c²) / (2ab)</code></p>
-</div>
-<div class="bg-gray-50 p-6 rounded-lg border border-gray-200 space-y-3">
-<h3 class="font-bold text-indigo-900 text-lg">Law of Sines (AAS, ASA &amp; SSA)</h3>
-<p class="text-sm text-gray-600">Relates each side length to the sine of its opposite interior angle:</p>
-<div class="bg-white p-3 rounded font-mono text-sm border text-indigo-700">
-                            a / sin(A) = b / sin(B) = c / sin(C)
-                        </div>
-<p class="text-xs text-gray-500">Essential for determining unknown side lengths once angles are known.</p>
-</div>
-</div>
-<figure class="my-8">
-<img alt="Triangle Trigonometry Laws of Sines and Cosines Engineering Blueprint" class="w-full rounded-xl shadow-lg border border-gray-200" decoding="async" height="536" loading="lazy" sizes="(max-width: 760px) calc(100vw - 40px), 760px" src="/assets/articles/triangle-solver-banner-e7e0d6-960.webp" srcset="/assets/articles/triangle-solver-banner-e7e0d6-480.webp 480w, /assets/articles/triangle-solver-banner-e7e0d6-960.webp 960w" width="960"/>
-<figcaption class="text-center text-sm text-gray-500 mt-3 italic">Figure 2: Geometric trigonometry laws for right and oblique triangles with acute and obtuse angle resolutions.</figcaption>
-</figure>
-</section>
-<!-- SECTION 2: Auxiliaries & Advanced Geometry -->
-<section class="space-y-6 pt-6 border-t border-gray-100" id="auxiliaries">
-<h2 class="text-3xl font-extrabold text-gray-900" id="section-2">2. Perpendicular Altitude, Median &amp; Segment Splits</h2>
-<p>
-                    In manufacturing, finding the perpendicular drop height (altitude) from a vertex to the base is critical for depth-of-cut calculations and fixture clamping heights:
-                </p>
-<div class="bg-indigo-50 p-6 rounded-xl border border-indigo-100 space-y-4">
-<h3 class="text-lg font-bold text-indigo-950">Formulas for Triangle Auxiliaries</h3>
-<ul class="space-y-2 text-sm text-gray-700">
-<li><strong>Semi-Perimeter (s):</strong> <code>s = (a + b + c) / 2</code></li>
-<li><strong>Heron's Area Formula:</strong> <code>Area = √[s • (s - a) • (s - b) • (s - c)]</code></li>
-<li><strong>Perpendicular Altitude (h_c):</strong> <code>h_c = (2 • Area) / c</code></li>
-<li><strong>Median to Base (m_c):</strong> <code>m_c = 0.5 • √[2a² + 2b² - c²]</code></li>
-<li><strong>Base Segments (p, q):</strong> <code>p = (b² + c² - a²) / (2c)</code>, and <code>q = c - p</code></li>
+<h2 id="section-1">What the solver gives you</h2>
+<p>Enter any valid set of three values (at least one of them a side) and press <strong>Solve Triangle</strong>. The app fills in every missing side and angle and also reports:</p>
+<ul>
+<li><strong>Perpendicular altitude (h_c)</strong>: the height dropped from vertex C onto side c.</li>
+<li><strong>Median (m_c)</strong>: the line from C to the midpoint of side c.</li>
+<li><strong>Segments p (AD) and q (DB)</strong>: where the altitude splits side c.</li>
+<li><strong>Area</strong>, <strong>perimeter</strong> and <strong>semi-perimeter</strong>.</li>
+<li><strong>Type</strong>: acute, right or obtuse, plus scalene, isosceles or equilateral.</li>
 </ul>
-</div>
-</section>
-<!-- SECTION 3: Practical Shop Floor Applications -->
-<section class="space-y-6 pt-6 border-t border-gray-100" id="shop-applications">
-<h2 class="text-3xl font-extrabold text-gray-900" id="section-3">3. Practical CNC Shop Floor Applications</h2>
-<div class="space-y-4">
-<h3 class="text-xl font-bold text-gray-900">A. Sine Bar Height Setup</h3>
-<p>
-                        A sine bar creates precision inspection angles using gauge block stacks. The setup forms a right triangle where the sine bar roll center distance is hypotenuse <code>c</code> (usually 5.000" or 100mm) and the block stack is side <code>a</code>:
-                    </p>
-<div class="bg-gray-100 p-4 rounded font-mono text-sm text-gray-800">
-                        Stack Height (a) = Sine Bar Length (c) × sin(Target Angle A)
-                    </div>
-<h3 class="text-xl font-bold text-gray-900 mt-6">B. Taper Angle &amp; Length Calculations</h3>
-<p>
-                        When machining a morse taper or machine spindle taper, the big diameter <code>D</code>, small diameter <code>d</code>, and taper length <code>L</code> form a right triangle with half-angle <code>α</code>:
-                    </p>
-<div class="bg-gray-100 p-4 rounded font-mono text-sm text-gray-800">
-                        tan(α) = (D - d) / (2 × L)
-                    </div>
-</div>
-</section>
-<!-- SECTION 4: Live Tool CTA -->
+<p>The canvas on the right redraws the triangle to scale with the altitude and median shown, so a wrong entry is usually obvious at a glance. <strong>Copy Summary</strong> puts all the results on your clipboard as text, ready to paste into a setup sheet or a message. <strong>Clear All</strong> resets the form.</p>
+<h2 id="section-2">Step by step: using the app</h2>
+<ol>
+<li><strong>Pick a mode.</strong> <em>General Triangle</em> is for any triangle. <em>Right-Angled</em> locks angle C at 90° and relabels the sides as <em>Height (a)</em>, <em>Base (b)</em> and <em>Hypotenuse (c)</em>, which matches how most people think about right triangles on a drawing.</li>
+<li><strong>Pick the angle unit.</strong> Switch between <strong>Degrees</strong> and <strong>Radians</strong>. When you change units, the angles you have already entered are converted, so you do not lose your work.</li>
+<li><strong>Enter what you know.</strong> Side a is opposite angle A, side b is opposite angle B and side c is opposite angle C. In Right-Angled mode you only need two more values, because C is already known.</li>
+<li><strong>Press Solve Triangle.</strong> Calculated values are filled into the empty fields and marked as calculated, so you can still tell which numbers you typed.</li>
+<li><strong>Check the drawing</strong>, then copy the summary.</li>
+</ol>
+<p>If the values cannot form a triangle (for example, two short sides that do not reach each other, or angles that add up to more than 180°), the app shows an error instead of a number.</p>
+<h3>The SSA case</h3>
+<p>Two sides and an angle that is <em>not</em> between them can describe two different triangles. When that happens the solver shows a warning, <em>"Ambiguous Case (SSA): Two valid triangles exist"</em>, and displays the acute solution. If your part needs the obtuse version, check the drawing: the second solution has angle B replaced by 180° − B.</p>
+<h2 id="section-3">The maths inside the app</h2>
+<p>You do not need to know these formulas to use the solver, but they help you sanity-check a result.</p>
+<p><strong>Law of Cosines</strong> (used for SSS and SAS):</p>
+<pre><code>c² = a² + b² − 2ab·cos(C)
+cos(C) = (a² + b² − c²) / (2ab)
+</code></pre>
+<p><strong>Law of Sines</strong> (used for ASA, AAS and SSA):</p>
+<pre><code>a / sin(A) = b / sin(B) = c / sin(C)
+</code></pre>
+<p><strong>Auxiliary values</strong> that appear in the results panel:</p>
+<div class="article-table-scroll"><table>
+<thead>
+<tr>
+<th>Result</th>
+<th>Formula</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Semi-perimeter s</td>
+<td>(a + b + c) / 2</td>
+</tr>
+<tr>
+<td>Area (Heron)</td>
+<td>√[s(s − a)(s − b)(s − c)]</td>
+</tr>
+<tr>
+<td>Altitude h_c</td>
+<td>2 × Area / c</td>
+</tr>
+<tr>
+<td>Median m_c</td>
+<td>0.5 × √(2a² + 2b² − c²)</td>
+</tr>
+<tr>
+<td>Segment p</td>
+<td>(b² + c² − a²) / (2c)</td>
+</tr>
+<tr>
+<td>Segment q</td>
+<td>c − p</td>
+</tr>
+</tbody>
+</table></div>
+<figure class="my-8">
+<img alt="Law of Sines and Law of Cosines relationships for acute and obtuse triangles" class="w-full rounded-xl shadow-lg border border-gray-200" decoding="async" height="536" loading="lazy" sizes="(max-width: 760px) calc(100vw - 40px), 760px" src="/assets/articles/triangle-solver-banner-e7e0d6-960.webp" srcset="/assets/articles/triangle-solver-banner-e7e0d6-480.webp 480w, /assets/articles/triangle-solver-banner-e7e0d6-960.webp 960w" width="960"/>
+<figcaption class="text-center text-sm text-gray-500 mt-3 italic">Law of Sines and Law of Cosines relationships for acute and obtuse triangles.</figcaption>
+</figure>
+<h2 id="section-4">Shop-floor jobs it speeds up</h2>
+<h3>Sine bar stack height</h3>
+<p>A sine bar forms a right triangle: the roll spacing is the hypotenuse and the gauge block stack is the height. Choose <strong>Right-Angled</strong>, enter the bar length as <em>Hypotenuse (c)</em> (for example 100 mm) and the setting angle as <em>A</em>. The solver returns <em>Height (a)</em>, which is your stack height. For 100 mm and 12°, that is about 20.791 mm.</p>
+<h3>Taper half-angle</h3>
+<p>For a taper with large diameter D, small diameter d and length L, the radial drop (D − d)/2 and the length form a right triangle. Enter the drop as <em>Height (a)</em> and the length as <em>Base (b)</em>. Angle A is the half-angle you set on the compound slide or program in your toolpath.</p>
+<h3>Distance between two features</h3>
+<p>When a drawing gives two holes as distances from a third point plus the angle between them, that is an SAS triangle. Enter the two distances and the included angle in General mode; side c is the straight-line distance you can check with calipers.</p>
+<h3>Depth from a known slope</h3>
+<p>The altitude h_c is the perpendicular height from the top vertex to the base. On a V-block, dovetail or angled pocket, it gives you the depth to program or to check with a height gauge.</p>
+<h2 id="section-5">Tips for reliable results</h2>
+<ul>
+<li><strong>Keep units consistent.</strong> Sides can be in mm or inches, but all three must use the same unit. Results come back in that same unit.</li>
+<li><strong>Enter only what the drawing gives you.</strong> Over-specifying (four or more values) can lead to conflicting inputs. Start from three values and let the app calculate the rest.</li>
+<li><strong>Watch the decimals on angles.</strong> A small angle rounding error grows on long sides. Enter angles with as many decimals as the drawing provides.</li>
+<li><strong>Use the diagram as a check.</strong> If the drawing on the canvas does not look like the feature on your print, an input is probably in the wrong field.</li>
+</ul>
+<h2 id="section-6">Worked example: an oblique triangle from a drawing</h2>
+<p>A bracket drawing gives two edges of a gusset, 80 mm and 65 mm, with 50° between them, and you need the length of the third edge and the height of the gusset.</p>
+<ol>
+<li>Choose <strong>General Triangle</strong> and <strong>Degrees</strong>.</li>
+<li>Enter <strong>Side a = 80</strong>, <strong>Side b = 65</strong> and <strong>Angle C = 50</strong> (the angle between a and b).</li>
+<li>Press <strong>Solve Triangle</strong>.</li>
+</ol>
+<p>The solver uses the Law of Cosines for the missing side: c² = 80² + 65² − 2 × 80 × 65 × cos 50°, so c ≈ 62.77 mm. It then finds the other angles (A ≈ 77.51°, B ≈ 52.49°), the area (½ × 80 × 65 × sin 50° ≈ 1,991.72 mm²) and the altitude onto side c (2 × area ÷ c ≈ 63.46 mm). The diagram shows a slightly acute triangle, which matches the bracket on the print, so the numbers can go straight onto your setup sheet.</p>
+<h2 id="section-7">Common mistakes and how to avoid them</h2>
+<ul>
+<li><strong>Swapping a side and its opposite angle.</strong> Side a must be opposite angle A. If your drawing labels corners differently, write the letters on a sketch first.</li>
+<li><strong>Typing an angle that is not between the two sides.</strong> SAS needs the <em>included</em> angle. If the angle is elsewhere, it is an SSA case and the app will warn you if two triangles fit.</li>
+<li><strong>Using a diameter instead of a radius.</strong> On circular features, the triangle side is usually the radius. Halve the diameter before entering it.</li>
+<li><strong>Mixing degrees and minutes.</strong> 30°15' is 30.25°, not 30.15°. Convert minutes by dividing by 60.</li>
+<li><strong>Forgetting tool radius.</strong> The solver gives part geometry. For a toolpath, offset the result by the cutter radius or use cutter compensation on the control.</li>
+</ul>
+<h2 id="section-8">Checking a result by hand</h2>
+<p>A quick sanity check catches most input errors:</p>
+<ul>
+<li>The three angles should add up to 180°.</li>
+<li>The longest side must be opposite the largest angle.</li>
+<li>In a right triangle, a² + b² should equal c².</li>
+<li>The altitude can never be longer than either of the two sides that meet at its vertex.</li>
+</ul>
+<p>If any of these fail, look again at which field each value went into.</p>
+<h2 id="section-9">Frequently asked questions</h2>
+<h3>Which combinations of inputs does the solver accept?</h3>
+<p>Any combination that fixes a triangle: three sides (SSS), two sides and the included angle (SAS), two angles and a side (ASA or AAS), or two sides and a non-included angle (SSA). In Right-Angled mode, C is fixed at 90°, so two more values are enough.</p>
+<h3>What happens if two triangles fit my inputs?</h3>
+<p>That is the SSA ambiguous case. The app warns you and shows the acute solution. The other solution uses 180° − B for angle B.</p>
+<h3>Can I work in radians?</h3>
+<p>Yes. Switch the unit toggle to Radians. Angles you have already typed are converted for you.</p>
+<h3>Is my data sent anywhere?</h3>
+<p>No. The calculation and the diagram run entirely in your browser.</p>
+<h3>Which other Shader7 tools work well with it?</h3>
+<p>For circle-based geometry, such as points on a radius at a given angle, use the <a href="/cnc-machinist/angleslengthcalculator/">Angle &amp; Length Calculator</a>. For bolt-hole patterns, use the <a href="/cnc-machinist/pcd/">PCD Generator</a>.</p>
 <section class="bg-gradient-to-r from-indigo-900 to-blue-900 text-white p-8 rounded-2xl text-center space-y-4 my-10">
-<h2 class="text-2xl md:text-3xl font-bold text-white" id="section-4">Solve Triangles Online for Free</h2>
-<p class="text-indigo-200 max-w-xl mx-auto text-sm md:text-base">
-                    Use our interactive client-side Universal Triangle Solver with live canvas visualization, altitude toggle, and unit support.
-                </p>
+<h2 class="text-2xl md:text-3xl font-bold text-white" id="section-10">Solve your triangle now</h2>
+<p class="text-indigo-200 max-w-xl mx-auto text-sm md:text-base">Enter any three known values and get every side, angle, altitude, median, segment split and area, with a live diagram you can copy into your notes.</p>
 <div class="pt-2">
-<a class="inline-block bg-white text-indigo-900 font-bold px-8 py-3 rounded-full hover:bg-indigo-50 transition shadow-lg" href="cnc-machinist/Triangle/index.html">
-                        Launch Universal Triangle Solver →
-                    </a>
+<a class="inline-block bg-white text-indigo-900 font-bold px-8 py-3 rounded-full hover:bg-indigo-50 transition shadow-lg" href="/cnc-machinist/Triangle/index.html">Open the Universal Triangle Solver →</a>
 </div>
 </section>
+
 </div></div><section aria-labelledby="related-title" class="related-reading">
 <h2 id="related-title">
   Keep reading
@@ -229,8 +307,7 @@
     CNC &amp; design
    </span>
 <strong>
-    Browser-based 3D CAD for CNC machinists
-   </strong>
+    Model, program and simulate a part in Shader7 3D CAD Studio</strong>
 <span>
     Read guide →
    </span>
@@ -240,8 +317,7 @@
     CNC &amp; design
    </span>
 <strong>
-    CNC angles, lengths, and tapers
-   </strong>
+    Points on a circle with the Shader7 Angle Length Calculator</strong>
 <span>
     Read guide →
    </span>
@@ -251,8 +327,7 @@
     CNC &amp; design
    </span>
 <strong>
-    CNC chamfer programming
-   </strong>
+    CNC chamfer programs with the Shader7 Circular and XY Chamfer generators</strong>
 <span>
     Read guide →
    </span>

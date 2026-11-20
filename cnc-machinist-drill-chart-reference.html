@@ -6,19 +6,20 @@
 
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Tap drill charts and thread calculations | Shader7</title>
-<meta content="Find the drill-size reference tables, thread-percentage explanations, and tapping workflow in one place." name="description"/>
+<title>Tap drills, thread pitch and drill cycles with the Shader7 Drill Calculator | Shader7</title>
+<meta content="How the Shader7 Drill Feed &amp; RPM Calculator handles twist drilling and rigid tapping: the built-in metric coarse pitch table, tap drill sizes, G81 to G86 cycles and the safety warnings it shows." name="description"/>
 <link href="https://www.shader7.com/cnc-machinist-drill-chart-reference.html" rel="canonical"/>
-<meta content="Tap drill charts and thread calculations" property="og:title"/>
-<meta content="Find the drill-size reference tables, thread-percentage explanations, and tapping workflow in one place." property="og:description"/>
+<meta content="Tap drills, thread pitch and drill cycles with the Shader7 Drill Calculator" property="og:title"/>
+<meta content="How the Shader7 Drill Feed &amp; RPM Calculator handles twist drilling and rigid tapping: the built-in metric coarse pitch table, tap drill sizes, G81 to G86 cycles and the safety warnings it shows." property="og:description"/>
 <meta content="https://www.shader7.com/cnc-machinist-drill-chart-reference.html" property="og:url"/>
 <meta content="article" property="og:type"/>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Tap drill charts and thread calculations", "author": {"@type": "Person", "name": "Nishikant Xalxo"}, "publisher": {"@type": "Organization", "name": "SHADER7"}, "datePublished": "2026-03-28", "dateModified": "2026-05-23", "description": "Find the drill-size reference tables, thread-percentage explanations, and tapping workflow in one place."}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Tap drills, thread pitch and drill cycles with the Shader7 Drill Calculator", "author": {"@type": "Person", "name": "Nishikant Xalxo"}, "publisher": {"@type": "Organization", "name": "SHADER7"}, "datePublished": "2026-03-28", "dateModified": "2026-11-20", "description": "How the Shader7 Drill Feed & RPM Calculator handles twist drilling and rigid tapping: the built-in metric coarse pitch table, tap drill sizes, G81 to G86 cycles and the safety warnings it shows.", "wordCount": 1763}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How does the app choose the thread pitch?", "acceptedAnswer": {"@type": "Answer", "text": "For standard metric sizes it fills in the ISO coarse pitch from its built-in table (M1.6 to M42). Type a different value to use a fine pitch."}}, {"@type": "Question", "name": "What tap drill does it recommend?", "acceptedAnswer": {"@type": "Answer", "text": "Nominal diameter minus pitch, which gives about 75% thread engagement. Round to the nearest drill you have, such as 6.8 mm for M8."}}, {"@type": "Question", "name": "Why can't I change the tapping feed?", "acceptedAnswer": {"@type": "Answer", "text": "In rigid tapping the feed must equal RPM × pitch, or the tap will strip or break. The app rounds the RPM to a whole number and calculates the feed from it."}}, {"@type": "Question", "name": "When should I use G83 instead of G73?", "acceptedAnswer": {"@type": "Answer", "text": "G83 retracts fully out of the hole after each peck, which clears chips best in deep holes. G73 retracts only a little to break the chip, which is faster in shallower holes and free-cutting materials."}}, {"@type": "Question", "name": "Is the calculator metric only?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Diameters, depths and feeds are in millimetres."}}]}</script>
 <style>body { font-family: 'Inter', sans-serif; }</style>
 <link crossorigin="" href="https://cdnjs.cloudflare.com" rel="preconnect"/>
 <link href="/css/tailwind.min.css" rel="stylesheet"/>
-<meta content="Tap drill charts and thread calculations" name="twitter:title"/>
-<meta content="Find the drill-size reference tables, thread-percentage explanations, and tapping workflow in one place." name="twitter:description"/>
+<meta content="Tap drills, thread pitch and drill cycles with the Shader7 Drill Calculator" name="twitter:title"/>
+<meta content="How the Shader7 Drill Feed &amp; RPM Calculator handles twist drilling and rigid tapping: the built-in metric coarse pitch table, tap drill sizes, G81 to G86 cycles and the safety warnings it shows." name="twitter:description"/>
 <meta content="#f8fafc" name="theme-color"/>
 <link href="/css/font-awesome.min.css" rel="stylesheet"/>
 <link href="/css/landing.css?v=20260903g" rel="stylesheet"/>
@@ -69,22 +70,28 @@
   CNC &amp; design
  </p>
 <h1>
-  Tap drill charts and thread calculations
+  Tap drills, thread pitch and drill cycles with the Shader7 Drill Calculator
  </h1>
 <p class="article-intro">
-  Find the drill-size reference tables, thread-percentage explanations, and tapping workflow in one place.
+  How the Shader7 Drill Feed &amp; RPM Calculator handles twist drilling and rigid tapping: the built-in metric coarse pitch table, tap drill sizes, G81 to G86 cycles and the safety warnings it shows.
  </p>
 <div class="article-meta">
 <span>
    By Nishikant Xalxo
   </span>
 <span>
-   12 min read
+   8 min read
   </span>
 <span>
    Published
    <time datetime="2026-03-28">
     2026-03-28
+   </time>
+</span>
+<span>
+   Updated
+   <time datetime="2026-11-20">
+    2026-11-20
    </time>
 </span>
 </div>
@@ -97,57 +104,62 @@
 <ol>
 <li>
 <a href="#section-1">
-     Historical Context &amp; Technological Significance
+     Two operations in one app
     </a>
 </li>
 <li>
 <a href="#section-2">
-     Cut Taps vs. Roll Form Taps: The Difference
+     The inputs
     </a>
 </li>
 <li>
 <a href="#section-3">
-     Deep-Dive Technical Analysis of Tapping Physics
+     Tap drill size and thread pitch
     </a>
 </li>
 <li>
 <a href="#section-4">
-     The Mathematical Formulas &amp; Thread Percentages
+     How RPM and feed are calculated
     </a>
 </li>
 <li>
 <a href="#section-5">
-     Selecting Thread Percentage Based on Material
+     Warnings the app gives you
     </a>
 </li>
 <li>
 <a href="#section-6">
-     Decimal Equivalents &amp; Application Cross-Reference Table
+     The sample program and preview
     </a>
 </li>
 <li>
 <a href="#section-7">
-     Tap Drill Reference Table (75% Threads)
+     Practical tips
     </a>
 </li>
 <li>
 <a href="#section-8">
-     Step-by-Step Practical Setup &amp; Checklist Guide
+     Worked example: an M10 blind tapped hole in mild steel
     </a>
 </li>
 <li>
 <a href="#section-9">
-     Safety Rules for Manual and CNC Tapping Operations
+     Troubleshooting drilling and tapping
     </a>
 </li>
 <li>
 <a href="#section-10">
-     Frequently Asked Questions (FAQ)
+     Frequently asked questions
+    </a>
+</li>
+<li>
+<a href="#section-11">
+     Calculate your drill or tap setup
     </a>
 </li>
 </ol>
 </details>
-<a class="sidebar-tool" href="/cnc-machinist/index.html">
+<a class="sidebar-tool" href="/cnc-machinist/drill/">
   Open the related tool
   <span aria-hidden="true">
    →
@@ -155,147 +167,305 @@
 </a>
 </aside>
 <div class="prose prose-indigo max-w-none text-gray-700 leading-relaxed space-y-6 article-body">
-<p>Choosing the correct drill size before threading a hole is one of the most fundamental skills for a manual or CNC machinist. Select a drill that is too small, and the excessive threading load will snap your tap inside the part, scrapping it instantly. Select a drill that is too large, and your threads will be too shallow, failing standard thread inspections and load tolerances.</p>
-<p>This guide explains how to calculate tap drill sizes, cross-reference fractional, metric, number, and letter drill sizes, and select correct thread percentages for different materials.</p>
+<p>Every threaded hole starts with two questions: which drill do I use before the tap, and what feed does the tap need? The <strong>Drill Feed &amp; RPM Calculator</strong> in the Shader7 CNC Machinist hub answers both. It knows the ISO metric coarse pitches, works out the tap drill, syncs the tapping feed to the pitch, and writes a canned-cycle program you can review before it goes to the machine.</p>
 <figure class="my-8">
-<img alt="CNC Machinist Drill and Tap Chart Reference Tool Dashboard" class="w-full rounded-xl shadow-lg border border-gray-200" decoding="async" height="536" loading="lazy" sizes="(max-width: 760px) calc(100vw - 40px), 760px" src="/assets/articles/cnc-drill-chart-app-fc5c17-960.webp" srcset="/assets/articles/cnc-drill-chart-app-fc5c17-480.webp 480w, /assets/articles/cnc-drill-chart-app-fc5c17-960.webp 960w" width="960"/>
-<figcaption class="text-center text-sm text-gray-500 mt-3 italic">The SHADER7 Drill &amp; Tap Chart provides instant access to standard tap sizes, drill diameters, and thread specifications for precision machining.</figcaption>
+<img alt="The Drill Feed &amp; RPM Calculator with calculated cutting data, a sample program and the cycle preview" class="w-full rounded-xl shadow-lg border border-gray-200" decoding="async" height="536" loading="lazy" sizes="(max-width: 760px) calc(100vw - 40px), 760px" src="/assets/articles/cnc-drill-chart-app-fc5c17-960.webp" srcset="/assets/articles/cnc-drill-chart-app-fc5c17-480.webp 480w, /assets/articles/cnc-drill-chart-app-fc5c17-960.webp 960w" width="960"/>
+<figcaption class="text-center text-sm text-gray-500 mt-3 italic">The Drill Feed &amp; RPM Calculator with calculated cutting data, a sample program and the cycle preview.</figcaption>
 </figure>
-<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4" id="section-1">Historical Context &amp; Technological Significance</h2>
-<p>The history of threaded fasteners and pre-drill standardization is a history of modern industrial engineering. Prior to the mid-19th century, screw threads were handmade artifacts; a bolt from one workshop would rarely fit a nut from another. In 1841, English engineer Sir Joseph Whitworth introduced the first standardized thread system—the British Standard Whitworth (BSW)—incorporating a 55-degree thread angle and specified pitches for various diameters. This was soon followed in the United States by William Sellers' 60-degree thread standard in 1864, which laid the foundation for the Unified Thread Standard (UTS) used across North America today. With standard thread designs came the urgent requirement for exact hole-making guidelines. If a machinist drilled a hole too small, the tapping tools of the era—made of carbon steel and prone to brittleness—would snap instantly. If the hole was too large, the mechanical structure would fail. Thus, tap drill charts were born, serving as the bridge between theoretical thread geometry and the physical reality of workshop tolerances. Today, in the era of Computer Numerical Control (CNC) machining, these charts are not just wall posters; they are encoded into automated CAM software, driving toolpaths in high-speed manufacturing environments where a single drill offset error can halt a multi-million-dollar production line.</p>
-<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4" id="section-2">Cut Taps vs. Roll Form Taps: The Difference</h2>
-<p>The calculation formula for your drill size depends entirely on the type of tapping process you are utilizing:</p>
-<ul class="list-disc pl-6 space-y-3">
-<li><strong>Cut Tapping (Traditional):</strong> The tap acts as a cutting tool, shearing metal chips away to create the thread grooves. The pre-drill size represents the minor root diameter.</li>
-<li><strong>Roll Form Tapping (Thread Rolling):</strong> The tap has no cutting edges; it cold-forms and displaces the material under pressure into the thread shape. Because no chips are created, the pre-drill size must be <strong>significantly larger</strong> than a cut tap pre-drill.</li>
+<h2 id="section-1">Two operations in one app</h2>
+<p>Choose the <strong>Machining Operation</strong> first:</p>
+<ul>
+<li><strong>Twist Drilling</strong> gives RPM and feed for a drill and lets you choose a drilling cycle.</li>
+<li><strong>Rigid Tapping (G84)</strong> gives RPM and a pitch-synchronised feed for a tap, plus the tap drill diameter.</li>
 </ul>
-<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4" id="section-3">Deep-Dive Technical Analysis of Tapping Physics</h2>
-<p>To understand tap drill selection, one must first grasp the distinct physics of the two primary threading methods: <strong>Cut Tapping</strong> and <strong>Roll Form Tapping</strong>.</p>
-<h3 class="text-xl font-semibold text-gray-900 mt-6 mb-2">The Physics of Cut Tapping</h3>
-<p>Cut tapping is a subtractive machining process. The tap functions like a series of microscopic broaches or lathed single-point tools aligned in a helix. As the tap is driven into the pre-drilled hole, its cutting teeth shear away material, generating metal chips. The torque required is directly proportional to the volume of material removed, the thread pitch, and the shear strength of the workpiece material. The pre-drill size determines the inner boundary of the thread profile (the minor diameter). If the pre-drill diameter is too small, the cutting teeth must remove a massive amount of material at the root of the thread. This leads to chip packing, excessive friction, localized heat spikes (which can cause the workpiece material to work-harden rapidly, particularly in austenitic stainless steels), and high torsional stress. In worst-case scenarios, the torque exceeds the shear limit of the tap's tool steel, leading to immediate fracture.</p>
-<h3 class="text-xl font-semibold text-gray-900 mt-6 mb-2">The Physics of Roll Form Tapping</h3>
-<p>In stark contrast, roll form tapping is an additive, non-cutting process. Form taps have a lobed or polygonal cross-section and contain no flutes for chip evacuation. Instead of cutting, they exert extreme hydraulic and radial pressure on the workpiece material, forcing it past its yield point and causing it to flow plastically along the lobes. The material is squeezed upward to form the peaks (crests) of the thread. Because no material is removed, the volume of the displaced material must be carefully balanced. This makes the pre-drill diameter for roll forming extremely critical. If the pre-drill hole is too small, the displaced metal will have nowhere to flow, clogging the tap, generating immense pressure, and causing the tap to weld to the workpiece or break. If the hole is too large, the crests will be incomplete, resulting in a 'U' shaped profile with a severe loss in thread strength. The physical benefit of roll form tapping is substantial: because the metal grains are redirected and compacted rather than cut, form threads have significantly higher tensile strength, fatigue resistance, and shear load capacity, with no chips to evacuate from blind holes.</p>
-<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4" id="section-4">The Mathematical Formulas &amp; Thread Percentages</h2>
-<p>Instead of memorizing charts, you can use these industry-standard equations to find the exact drill size needed for a 75% thread depth:</p>
-<div class="bg-gray-50 p-6 rounded-lg my-6 border border-gray-200 font-mono text-sm leading-relaxed space-y-4">
-<div>
-<span class="text-orange-700 font-bold block mb-1">// Cut Tapping - Imperial (UNC/UNF):</span>
-                    Drill Size = Major Diameter - (1 / Threads Per Inch)
-                    <br/><span class="text-xs text-gray-500 font-sans italic">Generalized Formula (for arbitrary Thread %): Drill Size = Major Diameter - (0.01299 * Thread % / TPI)</span>
-</div>
-<div>
-<span class="text-orange-700 font-bold block mb-1">// Cut Tapping - Metric (M):</span>
-                    Drill Size = Major Diameter - Pitch (mm)
-                    <br/><span class="text-xs text-gray-500 font-sans italic">Example: For M8 x 1.25 -&gt; 8.0 - 1.25 = 6.75 mm drill size. (Generalized: Major Diameter - (Pitch * Thread % / 100))</span>
-</div>
-<div>
-<span class="text-green-700 font-bold block mb-1">// Roll Form Tapping - Metric:</span>
-                    Drill Size = Major Diameter - (Pitch / 2)
-                    <br/><span class="text-xs text-gray-500 font-sans italic">Example: For M8 x 1.25 -&gt; 8.0 - (1.25 / 2) = 7.38 mm drill size. (Generalized: Major Diameter - (Pitch * Thread % / 200))</span>
-</div>
-<div>
-<span class="text-green-700 font-bold block mb-1">// Roll Form Tapping - Imperial (UNC/UNF):</span>
-                    Drill Size = Major Diameter - (0.0068 * Thread % / TPI)
-                    <br/><span class="text-xs text-gray-500 font-sans italic">Standard 75% approximation: Drill Size = Major Diameter - (0.5 / TPI)</span>
-</div>
-</div>
-<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4" id="section-5">Selecting Thread Percentage Based on Material</h2>
-<p>A 100% thread depth has double the tapping friction of a 75% thread depth but only adds about 5% of physical strength. Most engineering specifications designate a <strong>65% to 75% thread depth</strong> as optimal:</p>
-<ul class="list-disc pl-6 space-y-3">
-<li><strong>Soft Materials (Aluminum, Brass, Plastics):</strong> Use a tighter 75% thread depth to increase holding power in soft grains.</li>
-<li><strong>Tough Materials (Stainless Steel, Titanium, Inconel):</strong> Drop down to a 60% or 65% thread depth. This drastically reduces tap stress and motor load, preventing tool breakages without compromising bulk structure safety.</li>
+<p>The rest of the form adapts to the choice: the pitch field appears for tapping, and the cycle selector appears for drilling.</p>
+<h2 id="section-2">The inputs</h2>
+<ul>
+<li><strong>Coordinate Plane</strong>: G17 (drill along Z), G18 (along Y) or G19 (along X).</li>
+<li><strong>Drill Canned Cycle</strong> (drilling only): G83 deep-hole peck, G73 high-speed peck (chip breaker), G81 direct drilling, G82 drilling with dwell, or G86 boring with spindle-stop retract.</li>
+<li><strong>Tool Diameter</strong> in mm, with quick presets for Ø3, Ø4, Ø5, Ø6, Ø8, Ø10, Ø12 and Ø16.</li>
+<li><strong>Thread Pitch</strong> (tapping): filled in automatically with the coarse pitch for standard sizes. Type a value to use a fine pitch instead.</li>
+<li><strong>Cutting Tool Material</strong>: HSS, Cobalt (HSS-Co) or Solid Carbide.</li>
+<li><strong>Workpiece Material</strong>: mild carbon steel, alloy/tool steel, stainless steel, aluminium alloy, cast iron, or brass/bronze/copper.</li>
+<li><strong>Hole Target Depth</strong> (optional) and <strong>Block Thickness</strong>.</li>
+<li><strong>Maximum spindle speed (RPM)</strong> of your machine.</li>
+<li>Optional <strong>Cutting speed (m/min)</strong> and <strong>Drill feed per revolution (mm/rev)</strong> to override the built-in estimates with your tool maker's data.</li>
 </ul>
-<figure class="my-8">
-<img alt="Screw Thread Engineering Geometry Diagram (60 Degree V-Thread)" class="w-full rounded-xl shadow-lg border border-gray-200" decoding="async" height="536" loading="lazy" sizes="(max-width: 760px) calc(100vw - 40px), 760px" src="/assets/articles/cnc-thread-pitch-diagram-f301c4-960.webp" srcset="/assets/articles/cnc-thread-pitch-diagram-f301c4-480.webp 480w, /assets/articles/cnc-thread-pitch-diagram-f301c4-960.webp 960w" width="960"/>
-<figcaption class="text-center text-sm text-gray-500 mt-3 italic">Screw thread geometry diagram showing Major Diameter, Minor Diameter, Pitch (P), and standard 60° thread angle cross-section.</figcaption>
-</figure>
-<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4" id="section-6">Decimal Equivalents &amp; Application Cross-Reference Table</h2>
-<p>To cross-reference wire-gauge (number), letter, fractional, and metric drill sizes, use the following decimal conversion and application chart:</p>
-<div aria-label="Scrollable reference table" class="article-table-scroll" role="region" tabindex="0"><table class="w-full border-collapse my-6 text-sm">
-<thead><tr class="bg-orange-50"><th class="p-3 text-left border">Drill Size / Gauge</th><th class="p-3 text-left border">Decimal (Inches)</th><th class="p-3 text-left border">Decimal (Metric)</th><th class="p-3 text-left border">Typical Thread Tap Application</th></tr></thead>
+<h3>G-code program options</h3>
+<ul>
+<li><strong>Controller style</strong>: <em>Fanuc / compatible</em>, which adds M29 before rigid tapping, or <em>Haas</em>, which taps without M29.</li>
+<li><strong>Tool number</strong> (used for both T and the H offset) and <strong>Work offset</strong> (G54 to G59).</li>
+<li><strong>R plane</strong> (feed start height, 2 mm by default) and <strong>Initial / clearance height</strong> (30 mm by default). The clearance height must be above the R plane.</li>
+<li><strong>Return between holes</strong>: <em>G98</em> back to the initial height, which clears clamps, or <em>G99</em> to the R plane, which is faster.</li>
+<li><strong>Hole positions (X Y)</strong>: one hole per line, written as <code>25 15</code>, <code>25, 15</code> or <code>X25 Y15</code>. Every line becomes a hole in the same canned cycle.</li>
+</ul>
+<p>Results <strong>update automatically</strong> as you edit. <strong>Copy link to this setup</strong> gives you a link that reopens the calculator with the same values, and your last setup is remembered on this device.</p>
+<h2 id="section-3">Tap drill size and thread pitch</h2>
+<p>For ISO metric threads, the app uses the common rule:</p>
+<pre><code>Tap drill diameter = Nominal diameter − Pitch
+</code></pre>
+<p>This gives roughly 75% thread engagement, which is the usual target for general work. The coarse pitches the app fills in are:</p>
+<div class="article-table-scroll"><table>
+<thead>
+<tr>
+<th>Thread</th>
+<th>Pitch (mm)</th>
+<th>Tap drill (mm)</th>
+</tr>
+</thead>
 <tbody>
-<tr><td class="p-3 border font-bold">#50</td><td class="p-3 border">0.0700"</td><td class="p-3 border">1.78 mm</td><td class="p-3 border">#2-56 UNC Cut Tapping (Standard 75%)</td></tr>
-<tr><td class="p-3 border font-bold">#43</td><td class="p-3 border">0.0890"</td><td class="p-3 border">2.26 mm</td><td class="p-3 border">#4-40 UNC Cut Tapping (Standard 75%)</td></tr>
-<tr><td class="p-3 border font-bold">#36</td><td class="p-3 border">0.1065"</td><td class="p-3 border">2.71 mm</td><td class="p-3 border">#6-32 UNC Cut Tapping (Standard 75%)</td></tr>
-<tr><td class="p-3 border font-bold">#29</td><td class="p-3 border">0.1360"</td><td class="p-3 border">3.45 mm</td><td class="p-3 border">#8-32 UNC Cut Tapping (Standard 75%)</td></tr>
-<tr><td class="p-3 border font-bold">#21</td><td class="p-3 border">0.1590"</td><td class="p-3 border">4.04 mm</td><td class="p-3 border">#10-32 UNF Cut Tapping (Standard 75%)</td></tr>
-<tr><td class="p-3 border font-bold">#16</td><td class="p-3 border">0.1770"</td><td class="p-3 border">4.50 mm</td><td class="p-3 border">#10-32 UNF Roll Form Tapping (Standard 75%)</td></tr>
-<tr><td class="p-3 border font-bold">#7</td><td class="p-3 border">0.2010"</td><td class="p-3 border">5.11 mm</td><td class="p-3 border">1/4"-20 UNC Cut Tapping (Standard 75%)</td></tr>
-<tr><td class="p-3 border font-bold">#1</td><td class="p-3 border">0.2280"</td><td class="p-3 border">5.79 mm</td><td class="p-3 border">1/4"-20 UNC Roll Form Tapping (Standard 75%)</td></tr>
-<tr><td class="p-3 border font-bold">F</td><td class="p-3 border">0.2570"</td><td class="p-3 border">6.53 mm</td><td class="p-3 border">5/16"-18 UNC Cut Tapping (Standard 75%)</td></tr>
-<tr><td class="p-3 border font-bold">I</td><td class="p-3 border">0.2720"</td><td class="p-3 border">6.91 mm</td><td class="p-3 border">5/16"-24 UNF Cut Tapping (Standard 75%)</td></tr>
-<tr><td class="p-3 border font-bold">5/16"</td><td class="p-3 border">0.3125"</td><td class="p-3 border">7.94 mm</td><td class="p-3 border">3/8"-16 UNC Cut Tapping (Standard 75%)</td></tr>
-<tr><td class="p-3 border font-bold">Q</td><td class="p-3 border">0.3320"</td><td class="p-3 border">8.43 mm</td><td class="p-3 border">3/8"-24 UNF Cut Tapping (Standard 75%)</td></tr>
-<tr><td class="p-3 border font-bold">S</td><td class="p-3 border">0.3480"</td><td class="p-3 border">8.84 mm</td><td class="p-3 border">3/8"-16 UNC Roll Form Tapping (Standard 75%)</td></tr>
-<tr><td class="p-3 border font-bold">U</td><td class="p-3 border">0.3680"</td><td class="p-3 border">9.35 mm</td><td class="p-3 border">7/16"-14 UNC Cut Tapping (Standard 75%)</td></tr>
-<tr><td class="p-3 border font-bold">27/64"</td><td class="p-3 border">0.4219"</td><td class="p-3 border">10.72 mm</td><td class="p-3 border">1/2"-13 UNC Cut Tapping (Standard 75%)</td></tr>
-<tr><td class="p-3 border font-bold">29/64"</td><td class="p-3 border">0.4531"</td><td class="p-3 border">11.51 mm</td><td class="p-3 border">1/2"-20 UNF Cut Tapping (Standard 75%)</td></tr>
-<tr><td class="p-3 border font-bold">15/32"</td><td class="p-3 border">0.4688"</td><td class="p-3 border">11.91 mm</td><td class="p-3 border">1/2"-13 UNC Roll Form Tapping (Standard 75%)</td></tr>
+<tr>
+<td>M3</td>
+<td>0.5</td>
+<td>2.5</td>
+</tr>
+<tr>
+<td>M4</td>
+<td>0.7</td>
+<td>3.3</td>
+</tr>
+<tr>
+<td>M5</td>
+<td>0.8</td>
+<td>4.2</td>
+</tr>
+<tr>
+<td>M6</td>
+<td>1.0</td>
+<td>5.0</td>
+</tr>
+<tr>
+<td>M8</td>
+<td>1.25</td>
+<td>6.75 (6.8 in practice)</td>
+</tr>
+<tr>
+<td>M10</td>
+<td>1.5</td>
+<td>8.5</td>
+</tr>
+<tr>
+<td>M12</td>
+<td>1.75</td>
+<td>10.25 (10.2 in practice)</td>
+</tr>
+<tr>
+<td>M14</td>
+<td>2.0</td>
+<td>12.0</td>
+</tr>
+<tr>
+<td>M16</td>
+<td>2.0</td>
+<td>14.0</td>
+</tr>
+<tr>
+<td>M20</td>
+<td>2.5</td>
+<td>17.5</td>
+</tr>
+<tr>
+<td>M24</td>
+<td>3.0</td>
+<td>21.0</td>
+</tr>
+<tr>
+<td>M30</td>
+<td>3.5</td>
+<td>26.5</td>
+</tr>
 </tbody>
 </table></div>
-<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4" id="section-7">Tap Drill Reference Table (75% Threads)</h2>
-<p>Here is a quick reference tap chart mapping standard imperial and metric thread sizes to cut and form drill bits:</p>
-<div aria-label="Scrollable reference table" class="article-table-scroll" role="region" tabindex="0"><table class="w-full border-collapse my-6 text-sm">
-<thead><tr class="bg-orange-50"><th class="p-3 text-left border">Thread Size</th><th class="p-3 text-left border">Major Dia (in / mm)</th><th class="p-3 text-left border">Cut Tap Drill</th><th class="p-3 text-left border">Form Tap Drill</th></tr></thead>
+<p>The built-in table runs from M1.6 to M42. For a fine thread such as M10 × 1.25, type 1.25 in the pitch field; the tap drill becomes 8.75 mm.</p>
+<figure class="my-8">
+<img alt="Thread pitch and tap drill relationship for ISO metric threads" class="w-full rounded-xl shadow-lg border border-gray-200" decoding="async" height="536" loading="lazy" sizes="(max-width: 760px) calc(100vw - 40px), 760px" src="/assets/articles/cnc-thread-pitch-diagram-f301c4-960.webp" srcset="/assets/articles/cnc-thread-pitch-diagram-f301c4-480.webp 480w, /assets/articles/cnc-thread-pitch-diagram-f301c4-960.webp 960w" width="960"/>
+<figcaption class="text-center text-sm text-gray-500 mt-3 italic">Thread pitch and tap drill relationship for ISO metric threads.</figcaption>
+</figure>
+<h2 id="section-4">How RPM and feed are calculated</h2>
+<p>Spindle speed comes from the cutting speed and diameter:</p>
+<pre><code>RPM = (1000 × Vc) / (π × D)
+</code></pre>
+<p>The app shows a <strong>range</strong>, from 60% to 120% of the calculated RPM, with the standard value in the middle, and caps all values at your machine's maximum RPM. If the cap kicks in, it says so and recalculates the feed.</p>
+<p><strong>Drilling feed</strong> = RPM × feed per revolution. If you leave feed per revolution empty, the app starts from a diameter-based estimate (0.07 mm/rev up to Ø5, 0.10 up to Ø8, 0.14 up to Ø12, 0.18 up to Ø20 and 0.25 above that) and adjusts it for the workpiece material:</p>
+<div class="article-table-scroll"><table>
+<thead>
+<tr>
+<th>Material</th>
+<th>Feed factor</th>
+<th>Peck factor (Q = factor × D)</th>
+</tr>
+</thead>
 <tbody>
-<tr><td class="p-3 border font-bold">#10-32 UNF</td><td class="p-3 border">0.190" (4.82 mm)</td><td class="p-3 border">#21 (0.1590")</td><td class="p-3 border">#16 (0.1770")</td></tr>
-<tr><td class="p-3 border font-bold">1/4"-20 UNC</td><td class="p-3 border">0.250" (6.35 mm)</td><td class="p-3 border">#7 (0.2010")</td><td class="p-3 border">#1 (0.2280")</td></tr>
-<tr><td class="p-3 border font-bold">3/8"-16 UNC</td><td class="p-3 border">0.375" (9.53 mm)</td><td class="p-3 border">5/16" (0.3125")</td><td class="p-3 border">S (0.3480")</td></tr>
-<tr><td class="p-3 border font-bold">1/2"-13 UNC</td><td class="p-3 border">0.500" (12.7 mm)</td><td class="p-3 border">27/64" (0.4219")</td><td class="p-3 border">15/32" (0.4688")</td></tr>
-<tr><td class="p-3 border font-bold">M6 x 1.0</td><td class="p-3 border">6.00 mm</td><td class="p-3 border">5.0 mm</td><td class="p-3 border">5.5 mm</td></tr>
-<tr><td class="p-3 border font-bold">M10 x 1.5</td><td class="p-3 border">10.00 mm</td><td class="p-3 border">8.5 mm</td><td class="p-3 border">9.3 mm</td></tr>
+<tr>
+<td>Mild steel</td>
+<td>1.0</td>
+<td>0.75</td>
+</tr>
+<tr>
+<td>Alloy steel</td>
+<td>0.85</td>
+<td>0.6</td>
+</tr>
+<tr>
+<td>Stainless</td>
+<td>0.75</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td>Aluminium</td>
+<td>1.25</td>
+<td>1.0</td>
+</tr>
+<tr>
+<td>Cast iron</td>
+<td>1.1</td>
+<td>1.0</td>
+</tr>
+<tr>
+<td>Brass / bronze</td>
+<td>1.1</td>
+<td>1.0</td>
+</tr>
 </tbody>
 </table></div>
-<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4" id="section-8">Step-by-Step Practical Setup &amp; Checklist Guide</h2>
-<p>Tapping holes on a CNC machining center requires perfect coordination of speed, feed, and geometry. Follow this step-by-step setup and verification checklist before running any production tapping cycle:</p>
-<ol class="list-decimal pl-6 space-y-3">
-<li><strong>Pre-Drill Diameter Verification (Pin Gages):</strong> Do not assume your drill bit cut the nominal size. Drill deflection, spindle runout, or worn margins can cause a drill to cut oversize or undersize. Use go/no-go pin gages to measure the exact pre-tapped hole diameter before starting a critical tapping job.</li>
-<li><strong>Ensure Spindle Synchronization (Rigid Tapping):</strong> Verify that the CNC controller has rigid tapping activated (using standard <code class="bg-gray-100 px-1 font-mono rounded">G84</code> for right-hand threads or <code class="bg-gray-100 px-1 font-mono rounded">G74</code> for left-hand threads). In rigid tapping mode, the Z-axis feedrate is locked in direct synchronization with the spindle rotation. If the synchronization is not absolute, the tap will act as a thread stripper or break immediately.</li>
-<li><strong>Execute a Chamfer Cycle First:</strong> Prior to tapping, use a 90-degree spot drill or chamfer mill to cut a bevel at the entry of the hole. The chamfer diameter should be slightly larger than the major diameter of the thread (e.g., for a 1/4" tap, chamfer to a 0.260" or 0.270" diameter). This guides the lead threads of the tap, reduces entry torque, and prevents a burr from rolling up on the face of the part.</li>
-<li><strong>Choose the Right Lubricant / Coolant Delivery:</strong>
-<ul class="list-disc pl-6 mt-2 space-y-2">
-<li><strong>For Aluminum:</strong> Use high-performance water-soluble coolant or mist systems to keep the tap cool and wash away sticky aluminum chips.</li>
-<li><strong>For Steel / Alloys:</strong> Use specialized chlorinated or sulfurized cutting oils. If machining stainless steel or titanium, apply highly concentrated tapping fluid (like Moly-Dee) to reduce friction and prevent micro-welding at the cutting edges.</li>
+<p>So an 8 mm drill in stainless gets 0.10 × 0.75 = 0.075 mm/rev and pecks of 4 mm, while the same drill in aluminium gets 0.125 mm/rev and pecks of 8 mm. Tougher materials get lighter feeds and shorter pecks.</p>
+<p><strong>Tapping feed</strong> = RPM × pitch, always. In rigid tapping the spindle and feed axis must stay locked together, so the app rounds the RPM to a whole number first and then multiplies by the pitch. You cannot override the tapping feed; that is deliberate.</p>
+<h3>Built-in cutting speeds (m/min)</h3>
+<div class="article-table-scroll"><table>
+<thead>
+<tr>
+<th>Material</th>
+<th>Drill HSS / HSS-Co / Carbide</th>
+<th>Tap HSS / HSS-Co / Carbide</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mild steel</td>
+<td>22 / 28 / 80</td>
+<td>6 / 8 / 18</td>
+</tr>
+<tr>
+<td>Alloy steel</td>
+<td>18 / 24 / 70</td>
+<td>5 / 7 / 15</td>
+</tr>
+<tr>
+<td>Stainless</td>
+<td>14 / 20 / 60</td>
+<td>4 / 6 / 12</td>
+</tr>
+<tr>
+<td>Aluminium</td>
+<td>60 / 80 / 200</td>
+<td>10 / 12 / 30</td>
+</tr>
+<tr>
+<td>Cast iron</td>
+<td>20 / 26 / 80</td>
+<td>8 / 10 / 20</td>
+</tr>
+<tr>
+<td>Brass / bronze</td>
+<td>45 / 60 / 140</td>
+<td>12 / 15 / 25</td>
+</tr>
+</tbody>
+</table></div>
+<p>These are conservative starting points. Coated carbide drills from a specific maker can often run much faster; enter their cutting speed in the optional field.</p>
+<h2 id="section-5">Warnings the app gives you</h2>
+<ul>
+<li><strong>Peck drilling advised</strong>: when the hole depth is three times the drill diameter or more, the app recommends G83 or G73 to clear chips.</li>
+<li><strong>Table collision risk</strong>: when the hole depth is equal to or greater than the block thickness, the drill will break through. The app reminds you to put parallels or spacers under the part.</li>
+<li><strong>Spindle limit applied</strong>: when the calculated RPM is above your machine's maximum.</li>
 </ul>
-</li>
-<li><strong>Set Proper Clearance Plane and Retract Rates:</strong> Set the retract coordinate (R-plane) in the tapping cycle high enough to allow the spindle to fully synchronize its feed before entering the material. For high-speed tapping, a retraction clearance of at least 0.2 inches (5mm) is recommended. Additionally, consider setting a fast retract speed override (e.g., retraction at 200% feedrate, supported in modern controls) to reduce cycle time.</li>
+<h2 id="section-6">The sample program and preview</h2>
+<p>The app writes a complete sample program from your settings. For an M10 rigid tap on a Fanuc-style control with two holes, it looks like this:</p>
+<pre><code>(SHADER7 SPEEDS &amp; FEEDS G-CODE)
+(OP: TAP, TOOL DIA: 10.00 mm, 2 HOLES)
+G21 G90 G94 G98 G40 G80 G17 G54 (METRIC WORK PLANE)
+T01 M06 (SELECT TOOL)
+G00 X0.0 Y0.0 S255 M03 (RAPID TO HOLE, SPINDLE ON CW)
+G43 H01 Z30.0 M08 (TOOL LENGTH OFFSET, COOLANT ON)
+M29 S255 (RIGID SYNC ENABLER)
+G84 Z-20.000 R2.0 F382.5 (RIGID TAPPING CYCLE)
+X25.0 Y15.0 (HOLE 2)
+G80 M09 (CYCLE CANCEL, COOLANT OFF)
+G00 Z30.0 M05 (SAFE RETRACT, SPINDLE STOP)
+M30 (PROGRAM END)
+</code></pre>
+<p>Choose <em>Haas</em> and the M29 line disappears. Peck cycles add a Q value from the material table above, and G82 adds a one-second dwell (P1000). Check the exact output in the app, since it follows every option you set.</p>
+<p>When tapping a blind hole with a target depth, the results also show a <strong>Pre-drill Depth (blind)</strong>: the thread depth plus about four pitches for the tap's chamfer and clearance, plus 0.3 × the drill diameter for the drill point.</p>
+<p>The <strong>cycle preview</strong> animates the spindle through the approach, feed, peck retracts, dwell and retract, so you can see how G83 differs from G73 before running it.</p>
+<h2 id="section-7">Practical tips</h2>
+<ul>
+<li><strong>Spot drill first</strong> on anything bigger than a few millimetres or on curved surfaces.</li>
+<li><strong>Drill deeper than the thread.</strong> For blind tapped holes, use the app's pre-drill depth, which leaves room for the tap's lead, chips and the drill point.</li>
+<li><strong>Use cobalt or carbide in stainless</strong> and keep the feed steady; rubbing work-hardens the material.</li>
+<li><strong>For bolt-hole patterns</strong>, get the coordinates from the <a href="/cnc-machinist/pcd/">PCD Generator</a>, then use this calculator for the cutting data.</li>
+</ul>
+<h2 id="section-8">Worked example: an M10 blind tapped hole in mild steel</h2>
+<ol>
+<li><strong>Start with the tap.</strong> Choose <strong>Rigid Tapping (G84)</strong>, <strong>Tool Diameter</strong> 10, <strong>Cobalt (HSS-Co)</strong>, <strong>Mild Carbon Steel</strong>, <strong>Hole Target Depth</strong> 20 (the full thread depth) and <strong>Block Thickness</strong> 40. The app fills in a pitch of 1.5 and shows a tap drill of 8.5 mm. With an HSS-Co tap at 8 m/min, the RPM is about 255 and the feed is 255 × 1.5 = 382.5 mm/min. The <strong>Pre-drill Depth (blind)</strong> is 20 + 4 × 1.5 + 0.3 × 8.5 = 28.55 mm.</li>
+<li><strong>Then the drill.</strong> Switch to <strong>Twist Drilling</strong>, <strong>Tool Diameter</strong> 8.5, cycle <strong>G83</strong>, <strong>Hole Target Depth</strong> 28.55. With HSS-Co in mild steel (28 m/min), the standard RPM is about 1,049 and the feed is 1,049 × 0.14 ≈ 147 mm/min. Because the depth is more than three times the diameter, the app recommends peck drilling, and the G83 block uses Q6.38 (0.75 × 8.5).</li>
+<li><strong>Add the hole positions</strong> in the hole list, use <strong>Copy link to this setup</strong> to save each setup, and copy both programs to your control.</li>
 </ol>
-<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4" id="section-9">Safety Rules for Manual and CNC Tapping Operations</h2>
-<p>Safety is the single most critical aspect of CNC operations. When verifying a newly generated or modified tapping program, always employ these rules:</p>
-<ul class="list-disc pl-6 space-y-3">
-<li><strong>Wear Proper Eye Protection:</strong> Tapping generates sharp, highly stressed chips. Standard safety glasses with side shields are mandatory. During high-spindle retracts, chips can be flung at high speeds out of the flutes.</li>
-<li><strong>Avoid Loose Clothing and Gloves:</strong> Never wear gloves while operating open manual drills or spindles. The rotating tap can grab the fabric, pulling your hand or fingers directly into the cutter in fractions of a second.</li>
-<li><strong>Check for Bottom Clearance:</strong> When tapping a blind hole, ensure the pre-drill depth is significantly deeper than the tap engagement depth. The tip of the tap (especially plug or taper chamfer styles) has an incomplete thread profile and requires space. A tap bottoming out in a hole will instantly shatter due to the astronomical torque increase.</li>
-<li><strong>Monitor Spindle Load Meter:</strong> On CNC controls, keep the spindle and axis load meters displayed on the CRT screen. If the spindle load rises above normal limits during the tapping stroke, immediately hit the Feed Hold or Emergency Stop to inspect for tool wear or hole undersize issues.</li>
-</ul>
-<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4" id="section-10">Frequently Asked Questions (FAQ)</h2>
-<div class="space-y-6">
-<div>
-<h3 class="font-bold text-gray-900 text-lg">Q1: What is the physical difference between G84 (Right-Hand) and G74 (Left-Hand) cycles in CNC programming?</h3>
-<p class="mt-2 text-gray-700"><strong>Answer:</strong> The core difference lies in the spindle rotation direction during entry and retraction. A <code class="bg-gray-100 px-1 font-mono rounded">G84</code> cycle represents standard right-hand tapping; the spindle spins clockwise (M03) as the tap feeds down into the hole, and reverses to counter-clockwise (M04) to retract. In contrast, the <code class="bg-gray-100 px-1 font-mono rounded">G74</code> cycle represents left-hand tapping. The spindle spins counter-clockwise (M04) during feed-in and reverses to clockwise (M03) during retract. Using the wrong cycle will spin the tap in reverse, instantly crushing the cutting margins or lobes against the workpiece wall instead of threading it.</p>
+<h2 id="section-9">Troubleshooting drilling and tapping</h2>
+<div class="article-table-scroll"><table>
+<thead>
+<tr>
+<th>Problem</th>
+<th>Likely cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Drill squeals or burns</td>
+<td>Speed too high or feed too low</td>
+<td>Reduce RPM or increase feed per revolution</td>
+</tr>
+<tr>
+<td>Chips pack in the flutes</td>
+<td>Hole too deep for G81</td>
+<td>Use G83 or a smaller peck depth</td>
+</tr>
+<tr>
+<td>Oversize or bell-mouthed hole</td>
+<td>Drill walked on entry</td>
+<td>Spot drill first; check runout</td>
+</tr>
+<tr>
+<td>Tap breaks</td>
+<td>Tap drill too small, tap bottoming, or worn tap</td>
+<td>Check tap drill size; leave clearance at the bottom; replace the tap</td>
+</tr>
+<tr>
+<td>Threads strip or are loose</td>
+<td>Feed not matching pitch, or tap drill too large</td>
+<td>Use the app's synced feed; check the tap drill size</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="section-10">Frequently asked questions</h2>
+<h3>How does the app choose the thread pitch?</h3>
+<p>For standard metric sizes it fills in the ISO coarse pitch from its built-in table (M1.6 to M42). Type a different value to use a fine pitch.</p>
+<h3>What tap drill does it recommend?</h3>
+<p>Nominal diameter minus pitch, which gives about 75% thread engagement. Round to the nearest drill you have, such as 6.8 mm for M8.</p>
+<h3>Why can't I change the tapping feed?</h3>
+<p>In rigid tapping the feed must equal RPM × pitch, or the tap will strip or break. The app rounds the RPM to a whole number and calculates the feed from it.</p>
+<h3>When should I use G83 instead of G73?</h3>
+<p>G83 retracts fully out of the hole after each peck, which clears chips best in deep holes. G73 retracts only a little to break the chip, which is faster in shallower holes and free-cutting materials.</p>
+<h3>Is the calculator metric only?</h3>
+<p>Yes. Diameters, depths and feeds are in millimetres.</p>
+<section class="bg-gradient-to-r from-indigo-900 to-blue-900 text-white p-8 rounded-2xl text-center space-y-4 my-10">
+<h2 class="text-2xl md:text-3xl font-bold text-white" id="section-11">Calculate your drill or tap setup</h2>
+<p class="text-indigo-200 max-w-xl mx-auto text-sm md:text-base">Pick drilling or rigid tapping, enter the diameter and materials, and get RPM, feed, tap drill size, a canned-cycle program and an animated cycle preview.</p>
+<div class="pt-2">
+<a class="inline-block bg-white text-indigo-900 font-bold px-8 py-3 rounded-full hover:bg-indigo-50 transition shadow-lg" href="/cnc-machinist/drill/">Open the Drill Feed &amp; RPM Calculator →</a>
 </div>
-<div>
-<h3 class="font-bold text-gray-900 text-lg">Q2: What happens if I accidentally use a cut tap drill size for a roll form tap?</h3>
-<p class="mt-2 text-gray-700"><strong>Answer:</strong> Doing so will almost certainly result in catastrophic tool failure. A cut tap drill size is much smaller than a roll form tap drill size because cut taps remove material, whereas form taps displace it. If a form tap is forced into a hole sized for a cut tap, the volume of material to displace will exceed the relief clearances. The extreme mechanical pressure will cause the tap to seize, gall, or snap, often destroying the part. In thin-walled sections, it can also cause the metal to bulge or crack due to excessive expansion.</p>
-</div>
-<div>
-<h3 class="font-bold text-gray-900 text-lg">Q3: How does the length of thread engagement (hole depth) affect the choice of my tap drill size?</h3>
-<p class="mt-2 text-gray-700"><strong>Answer:</strong> The longer the thread engagement, the more friction and torque the tap must overcome. If the thread engagement length is short (less than 1.5 times the major diameter), you must target a higher thread percentage (70% to 75%) to prevent thread shear. However, if the thread depth exceeds 2 times the major diameter, the joint strength is already maximum. You can safely increase the drill size to target a lower thread percentage (55% to 60%). This drastically cuts torque requirements, reduces heat buildup, improves chip evacuation, and prevents tap breakage in deep holes.</p>
-</div>
-<div>
-<h3 class="font-bold text-gray-900 text-lg">Q4: How do I handle tapping extremely hard materials (above 40 HRC) without breaking high-speed steel (HSS) taps?</h3>
-<p class="mt-2 text-gray-700"><strong>Answer:</strong> For hardened materials, HSS taps lack the required hardness and wear resistance. Instead, utilize solid carbide or powder-metal (PM) taps specifically designed for hardened steels. These premium tools feature aggressive geometries (high negative rake angles) and specialized PVD coatings (such as TiAlN or AlCrN) to withstand extreme thermal loads. Additionally, drop your target thread percentage to 55% or 60% to reduce contact area, run at low RPMs, and use high-pressure, highly concentrated sulfur-based cutting oil rather than standard soluble coolant.</p>
-</div>
-<div>
-<h3 class="font-bold text-gray-900 text-lg">Q5: When should I choose a spiral point (gun tap) versus a spiral flute tap for CNC hole-making?</h3>
-<p class="mt-2 text-gray-700"><strong>Answer:</strong> The choice depends entirely on whether you are tapping a through-hole or a blind hole. Spiral point (or "gun") taps feature straight flutes with an angled web at the tip. This geometry forces the chips forward, shooting them out ahead of the tap. They are the premier choice for <em>through-holes</em>. Conversely, spiral flute taps feature helical grooves (similar to a twist drill). This design pulls the chips upward, lifting them out of the hole. They are mandatory for <em>blind holes</em> where chips cannot escape through the bottom, preventing chip compaction and subsequent tool fracture.</p>
-</div>
-</div>
-<div class="bg-orange-50 p-6 rounded-lg my-8 border-l-4 border-orange-600">
-<h3 class="font-bold text-orange-900 mb-2">Access Interactive Drill &amp; Tap Calculator</h3>
-<p class="mb-4">Calculate spindle speeds, feeds, dynamic peck depths, and rigid tapping parameters instantly. Cross-reference metrics, fractions, and gauges on all mobile and PC browsers.</p>
-<a class="inline-block bg-orange-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-700 transition" href="cnc-machinist/drill/">Open Drill Calculator →</a>
-</div>
+</section>
+
 </div></div><section aria-labelledby="related-title" class="related-reading">
 <h2 id="related-title">
   Keep reading
@@ -306,8 +476,7 @@
     CNC &amp; design
    </span>
 <strong>
-    Browser-based 3D CAD for CNC machinists
-   </strong>
+    Model, program and simulate a part in Shader7 3D CAD Studio</strong>
 <span>
     Read guide →
    </span>
@@ -317,8 +486,7 @@
     CNC &amp; design
    </span>
 <strong>
-    CNC angles, lengths, and tapers
-   </strong>
+    Points on a circle with the Shader7 Angle Length Calculator</strong>
 <span>
     Read guide →
    </span>
@@ -328,8 +496,7 @@
     CNC &amp; design
    </span>
 <strong>
-    CNC chamfer programming
-   </strong>
+    CNC chamfer programs with the Shader7 Circular and XY Chamfer generators</strong>
 <span>
     Read guide →
    </span>
